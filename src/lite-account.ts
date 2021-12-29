@@ -1,8 +1,17 @@
-import { createHash } from "crypto";
+import { sha256 } from "./crypto";
 import { AccURL } from "./acc-url";
+import { u64 } from "./bigint";
 import { Keypair } from "./keypair";
+import nacl from "tweetnacl";
+import { uvarintMarshalBinary } from "./encoding";
 
 export const ACME_TOKEN_URL = AccURL.parse("acc://ACME");
+
+export type Signature = {
+  nonce: u64;
+  publicKey: Uint8Array;
+  signature: Uint8Array;
+};
 
 export class LiteAccount {
   private _keypair: Keypair;
@@ -34,18 +43,21 @@ export class LiteAccount {
   }
 
   getUrl(): AccURL {
-    const pkHash = createHash("sha256")
-      .update(this._keypair.publicKey)
-      .digest()
-      .slice(0, 20);
-    const checkSum = createHash("sha256")
-      .update(pkHash.toString("hex"))
-      .digest()
-      .slice(28);
+    const pkHash = sha256(this._keypair.publicKey).slice(0, 20);
+    const checkSum = sha256(pkHash.toString("hex")).slice(28);
     const authority = Buffer.concat([pkHash, checkSum]).toString("hex");
     return AccURL.parse(
       `acc://${authority}/${this.tokenUrl.authority}${this.tokenUrl.path}`
     );
   }
-}
 
+  sign(nonce: u64, data: Uint8Array): Signature {
+    const nData = Buffer.concat([uvarintMarshalBinary(nonce), data]);
+    console.log("nData", new Uint8Array(nData))
+    return {
+      nonce,
+      publicKey: this._keypair.publicKey,
+      signature: nacl.sign.detached(nData, this._keypair.secretKey),
+    };
+  }
+}
