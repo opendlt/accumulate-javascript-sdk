@@ -1,16 +1,18 @@
-
 import { SignatureInfo, marshalSignatureInfo } from "./signature-info";
 import { sha256 } from "../crypto";
+import { uvarintMarshalBinary } from "../encoding";
 
 export function transactionHash(
-    payload: Uint8Array,
-    si: SignatureInfo
-  ): Buffer {
-    // console.log("transactionHash")
-    // console.log(new Uint8Array(marshalSignatureInfo(si)));
-    const sHash = sha256(marshalSignatureInfo(si));
-    // console.log("sHash", new Uint8Array(sHash));
-    const tHash = sha256(payload);
-    // console.log("tHash", new Uint8Array(tHash));
-    return sha256(Buffer.concat([sHash, tHash]));
-  }
+  payload: Uint8Array,
+  si: SignatureInfo
+): Buffer {
+  const sHash = sha256(marshalSignatureInfo(si));
+  const tHash = sha256(payload);
+  return sha256(Buffer.concat([sHash, tHash]));
+}
+
+export function txDataToSign(payload: Uint8Array, si: SignatureInfo): Buffer {
+  return Buffer.concat([
+    uvarintMarshalBinary(si.nonce), 
+    transactionHash(payload, si)])
+}

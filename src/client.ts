@@ -1,46 +1,24 @@
-import axios from "axios";
 import { AccURL } from "./acc-url";
+import { LiteAccount, Signature } from "./lite-account";
+import { txRequestToParams, getTxRequest } from "./api/tx-request";
+import { SendTokens, marshalBinarySendTokens } from "./protocol/send-tokens";
+import { txDataToSign } from "./api/gen-transaction";
+import { u64 } from "./bigint";
+import { AddCredits, marshalBinaryAddCredits } from "./protocol/add-credits";
+import { SignatureInfo } from "./api/signature-info";
+import { RpcClient } from "./rpc-client";
 
-const ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
+const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
 export class Client {
+  private _rpcClient: RpcClient;
+
+  constructor(endpoint?: string) {
+    this._rpcClient = new RpcClient(endpoint || TESTNET_ENDPOINT);
+  }
+
   async apiCall(method: string, params: any): Promise<void> {
-    const data = {
-      jsonrpc: "2.0",
-      id: 0,
-      method: method,
-      params: params,
-    };
-
-    console.log(params);
-
-    return axios
-      .post(ENDPOINT, data)
-      .then((r) => {
-        const { error, result } = r.data;
-        if (error) {
-          console.error(error);
-        } else {
-          console.log(result);
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
-        }
-      });
+    return this._rpcClient.call(method, params);
   }
 
   faucet(url: AccURL): Promise<void> {
@@ -48,4 +26,44 @@ export class Client {
       url: url.toString(),
     });
   }
+
+  sendTokens(sendTokens: SendTokens, acc: LiteAccount): Promise<void> {
+    return this._execute(marshalBinarySendTokens(sendTokens), acc);
+  }
+
+  addCredits(addCredits: AddCredits, acc: LiteAccount): Promise<void> {
+    return this._execute(marshalBinaryAddCredits(addCredits), acc);
+  }
+
+  execute(
+    origin: AccURL,
+    binary: Buffer,
+    si: SignatureInfo,
+    signature: Signature
+  ): Promise<void> {
+    const txRequest = getTxRequest(
+      origin,
+      binary.toString("base64"),
+      signature,
+      si
+    );
+
+    return this._rpcClient.call("execute", txRequestToParams(txRequest));
+  }
+
+  _execute(binary: Buffer, acc: LiteAccount): Promise<void> {
+    const si = generateSignatureInfo(acc.getUrl());
+    const signature = acc.sign(txDataToSign(binary, si));
+
+    return this.execute(acc.getUrl(), binary, si, signature);
+  }
+}
+
+function generateSignatureInfo(url: AccURL): SignatureInfo {
+  return {
+    url,
+    nonce: new u64(Date.now()),
+    keyPageHeight: new u64(1),
+    keyPageIndex: new u64(0),
+  };
 }
