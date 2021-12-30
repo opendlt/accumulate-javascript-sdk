@@ -1,16 +1,15 @@
 import { AccURL } from "../acc-url";
-import { u64 } from "../bigint";
 import { Signature } from "../lite-account";
 import { SignatureInfo } from "./signature-info";
 
 export type Signer = {
   publicKey: Uint8Array;
-  nonce: u64;
+  nonce: number;
 };
 
 export type KeyPage = {
-  height: u64;
-  index: u64;
+  height: number;
+  index: number;
 };
 
 export type TxRequest = {
@@ -51,14 +50,12 @@ export function txRequestToParams(txr: TxRequest): any {
     sponsor: txr.origin.toString(),
     signer: {
       publicKey: Buffer.from(txr.signer.publicKey).toString("hex"),
-      // TODO toNumber
-      nonce: txr.signer.nonce.toNumber(),
+      nonce: txr.signer.nonce,
     },
     signature: Buffer.from(txr.signature).toString("hex"),
     keyPage: {
-      // TODO toNumber
-      height: txr.keyPage.height.toNumber(),
-      index: txr.keyPage.index.toNumber(),
+      height: txr.keyPage.height,
+      index: txr.keyPage.index,
     },
     payload: txr.payload,
   };

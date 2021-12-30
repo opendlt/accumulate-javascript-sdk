@@ -46,22 +46,6 @@ function marshalBinaryTokenRecipient(tr: TokenRecipient): Buffer {
   ]);
 }
 
-export function marshalJSONSendTokens(st: SendTokens): any {
-  const obj = {
-    hash: st.hash
-      ? Buffer.from(st.hash).toString("hex")
-      : Buffer.alloc(32, 0).toString("hex"),
-    meta: st.meta ? Buffer.from(st.meta).toString("base64") : undefined,
-    to: st.to.map((recipient) => ({
-      url: recipient.url.toString(),
-      // TODO: to number
-      amount: new u64(recipient.amount).toNumber(),
-    })),
-  };
-
-  return obj;
-}
-
 function validateHash(bytes: Uint8Array) {
   if (bytes.length !== 32) {
     throw new Error("Invalid hash length");

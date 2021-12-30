@@ -15,11 +15,3 @@ export function marshalBinaryAddCredits(ac: AddCredits): Buffer {
     uvarintMarshalBinary(ac.amount),
   ]);
 }
-
-export function marshalJSONAddCredits(ac: AddCredits): any {
-  return {
-    recipient: ac.recipient.toString(),
-    // TODO: to number
-    amount: new u64(ac.amount).toNumber(),
-  };
-}
