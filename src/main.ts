@@ -33,21 +33,18 @@ const sendTokens = {
 
 const addCredits = {
   recipient: acc.getUrl(),
-  amount: 100
-}
+  amount: 100,
+};
 
 /////////////////////////
 
-const client = new Client();
+const client = new Client("http://127.0.1.1:26660/v2");
 
-client.addCredits(addCredits, acc);
-client.sendTokens(sendTokens, acc);
+async function run() {
+  // await client.faucet(acc.getUrl());
 
+  await client.addCredits(addCredits, acc);
+  await client.sendTokens(sendTokens, acc);
+}
 
-// client.faucet(acc.getUrl());
-
-// const params = txRequestToParams(txRequest);
-// console.log(JSON.stringify(params))
-
-// client.apiCall("execute", params);
-
+run();

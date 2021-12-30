@@ -3,7 +3,6 @@ import { LiteAccount, Signature } from "./lite-account";
 import { txRequestToParams, getTxRequest } from "./api/tx-request";
 import { SendTokens, marshalBinarySendTokens } from "./protocol/send-tokens";
 import { txDataToSign } from "./api/gen-transaction";
-import { u64 } from "./bigint";
 import { AddCredits, marshalBinaryAddCredits } from "./protocol/add-credits";
 import { SignatureInfo } from "./api/signature-info";
 import { RpcClient } from "./rpc-client";
@@ -62,8 +61,8 @@ export class Client {
 function generateSignatureInfo(url: AccURL): SignatureInfo {
   return {
     url,
-    nonce: new u64(Date.now()),
-    keyPageHeight: new u64(1),
-    keyPageIndex: new u64(0),
+    nonce: Date.now(),
+    keyPageHeight: 1,
+    keyPageIndex: 0,
   };
 }
