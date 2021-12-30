@@ -1,7 +1,7 @@
 import { AccURL } from "../acc-url";
 import { u64 } from "../bigint";
-import { SignatureInfo, marshalSignatureInfo } from "./signature-info";
-import { sha256 } from "../crypto";
+import { Signature } from "../lite-account";
+import { SignatureInfo } from "./signature-info";
 
 export type Signer = {
   publicKey: Uint8Array;
@@ -22,6 +22,28 @@ export type TxRequest = {
   payload: any;
 };
 
+export function getTxRequest(
+  origin: AccURL,
+  payload: any,
+  signature: Signature,
+  si: SignatureInfo
+): TxRequest {
+  return {
+    checkOnly: false,
+    payload,
+    signer: {
+      publicKey: signature.publicKey,
+      nonce: signature.nonce,
+    },
+    origin,
+    keyPage: {
+      height: si.keyPageHeight,
+      index: si.keyPageIndex,
+    },
+    signature: signature.signature,
+  };
+}
+
 export function txRequestToParams(txr: TxRequest): any {
   return {
     checkOnly: txr.checkOnly || false,
@@ -40,17 +62,4 @@ export function txRequestToParams(txr: TxRequest): any {
     },
     payload: txr.payload,
   };
-}
-
-export function transactionHash(
-  payload: Uint8Array,
-  si: SignatureInfo
-): Buffer {
-  // console.log("transactionHash")
-  // console.log(new Uint8Array(marshalSignatureInfo(si)));
-  const sHash = sha256(marshalSignatureInfo(si));
-  // console.log("sHash", new Uint8Array(sHash));
-  const tHash = sha256(payload);
-  // console.log("tHash", new Uint8Array(tHash));
-  return sha256(Buffer.concat([sHash, tHash]));
 }
