@@ -4,7 +4,7 @@ import { u64 } from "./bigint";
 export function uvarintMarshalBinary(val: number | u64): Buffer {
   if (typeof val === "number" && val > Number.MAX_SAFE_INTEGER) {
     throw new Error(
-      "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use `u64` class."
+      "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use `u64` class instead."
     );
   }
 
@@ -23,7 +23,11 @@ export function uvarintMarshalBinary(val: number | u64): Buffer {
   return Buffer.from(buffer);
 }
 
-export function stringMarshalBinary(val: string): Buffer {
+export function stringMarshalBinary(val?: string): Buffer {
+  if (!val) {
+    return Buffer.allocUnsafe(0);
+  }
+
   const buffer = Buffer.from(val);
   const length = uvarintMarshalBinary(buffer.length);
   return Buffer.concat([length, buffer]);

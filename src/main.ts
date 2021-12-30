@@ -21,30 +21,35 @@ console.log(acc.getUrl().toString());
 // };
 
 /////////////////////////
+// const recipient = LiteAccount.generate().getUrl();
+// console.log("Sending to " + recipient);
 
-const recipient = LiteAccount.generate().getUrl();
-console.log("Sending to " + recipient);
-
-const sendTokens = {
-  to: [{ url: recipient.toString(), amount: 1000000000 }],
-};
-
+// const sendTokens = {
+//   to: [{ url: recipient.toString(), amount: 1000000000 }],
+// };
 /////////////////////////
-
-const addCredits = {
-  recipient: acc.getUrl(),
-  amount: 100,
-};
-
+// const addCredits = {
+//   recipient: acc.getUrl(),
+//   amount: 100,
+// };
+/////////////////////////
+// const createIdentity = {
+//   url: "acc://luap",
+//   publicKey: acc.keypair.publicKey,
+//   keyBookName: "luap-book",
+//   keyPageName: "luap-page",
+// };
 /////////////////////////
 
 const client = new Client("http://127.0.1.1:26660/v2");
 
 async function run() {
-  // await client.faucet(acc.getUrl());
+  await client.faucet(acc.getUrl());
+  // await client.addCredits(addCredits, acc);
+  // await client.sendTokens(sendTokens, acc);
+  // await client.createIdentity(createIdentity, acc);
+  await client.query("acc://luap");
 
-  await client.addCredits(addCredits, acc);
-  await client.sendTokens(sendTokens, acc);
 }
 
 run();
