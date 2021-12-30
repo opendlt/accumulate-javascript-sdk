@@ -1,4 +1,4 @@
-import nacl from 'tweetnacl';
+import nacl from "tweetnacl";
 
 /**
  * Ed25519 Keypair
@@ -49,15 +49,17 @@ export class Keypair {
    */
   static fromSecretKey(
     secretKey: Uint8Array,
-    options?: {skipValidation?: boolean},
+    options?: { skipValidation?: boolean }
   ): Keypair {
     const keypair = nacl.sign.keyPair.fromSecretKey(secretKey);
     if (!options || !options.skipValidation) {
       const encoder = new TextEncoder();
-      const signData = encoder.encode('@accumulate/accumulate.js-validation-v1');
+      const signData = encoder.encode(
+        "@accumulate/accumulate.js-validation-v1"
+      );
       const signature = nacl.sign.detached(signData, keypair.secretKey);
       if (!nacl.sign.detached.verify(signData, signature, keypair.publicKey)) {
-        throw new Error('provided secretKey is invalid');
+        throw new Error("provided secretKey is invalid");
       }
     }
     return new Keypair(keypair);

@@ -13,6 +13,7 @@ export function transactionHash(
 
 export function txDataToSign(payload: Uint8Array, si: SignatureInfo): Buffer {
   return Buffer.concat([
-    uvarintMarshalBinary(si.nonce), 
-    transactionHash(payload, si)])
+    uvarintMarshalBinary(si.nonce),
+    transactionHash(payload, si),
+  ]);
 }
