@@ -1,11 +1,17 @@
 import { AccURL } from "./acc-url";
 import { LiteAccount, Signature } from "./lite-account";
 import { txRequestToParams, getTxRequest } from "./api/tx-request";
-import { SendTokens, marshalBinarySendTokens } from "./protocol/send-tokens";
+
 import { txDataToSign } from "./api/gen-transaction";
-import { AddCredits, marshalBinaryAddCredits } from "./protocol/add-credits";
 import { SignatureInfo } from "./api/signature-info";
 import { RpcClient } from "./rpc-client";
+
+import { AddCredits, marshalBinaryAddCredits } from "./protocol/add-credits";
+import {
+  CreateIdentity,
+  marshalBinaryCreateIdentity,
+} from "./protocol/create-identity";
+import { SendTokens, marshalBinarySendTokens } from "./protocol/send-tokens";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -20,6 +26,12 @@ export class Client {
     return this._rpcClient.call(method, params);
   }
 
+  query(url: string | AccURL): Promise<void> {
+    return this.apiCall("query", {
+      url: url.toString(),
+    });
+  }
+
   faucet(url: AccURL): Promise<void> {
     return this.apiCall("faucet", {
       url: url.toString(),
@@ -32,6 +44,13 @@ export class Client {
 
   addCredits(addCredits: AddCredits, acc: LiteAccount): Promise<void> {
     return this._execute(marshalBinaryAddCredits(addCredits), acc);
+  }
+
+  createIdentity(
+    createIdentity: CreateIdentity,
+    acc: LiteAccount
+  ): Promise<void> {
+    return this._execute(marshalBinaryCreateIdentity(createIdentity), acc);
   }
 
   execute(
