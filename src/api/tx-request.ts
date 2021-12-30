@@ -33,7 +33,7 @@ export function getTxRequest(
     payload,
     signer: {
       publicKey: signature.publicKey,
-      nonce: signature.nonce,
+      nonce: si.nonce,
     },
     origin,
     keyPage: {
@@ -46,7 +46,7 @@ export function getTxRequest(
 
 export function txRequestToParams(txr: TxRequest): any {
   return {
-    checkOnly: txr.checkOnly || false,
+    checkOnly: txr.checkOnly ? txr.checkOnly : undefined,
     origin: txr.origin.toString(),
     sponsor: txr.origin.toString(),
     signer: {

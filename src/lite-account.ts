@@ -1,14 +1,11 @@
 import { sha256 } from "./crypto";
 import { AccURL } from "./acc-url";
-import { u64 } from "./bigint";
 import { Keypair } from "./keypair";
 import nacl from "tweetnacl";
-import { uvarintMarshalBinary } from "./encoding";
 
 export const ACME_TOKEN_URL = AccURL.parse("acc://ACME");
 
 export type Signature = {
-  nonce: u64;
   publicKey: Uint8Array;
   signature: Uint8Array;
 };
@@ -51,13 +48,10 @@ export class LiteAccount {
     );
   }
 
-  sign(nonce: u64, data: Uint8Array): Signature {
-    const nData = Buffer.concat([uvarintMarshalBinary(nonce), data]);
-    console.log("nData", new Uint8Array(nData))
+  sign(data: Uint8Array): Signature {
     return {
-      nonce,
       publicKey: this._keypair.publicKey,
-      signature: nacl.sign.detached(nData, this._keypair.secretKey),
+      signature: nacl.sign.detached(data, this._keypair.secretKey),
     };
   }
 }
