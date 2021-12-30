@@ -34,3 +34,8 @@ export function stringMarshalBinary(val: string): Buffer {
   const length = uvarintMarshalBinary(buffer.length);
   return Buffer.concat([length, buffer]);
 }
+
+export function bytesMarshalBinary(val: Uint8Array): Buffer {
+    const length = uvarintMarshalBinary(val.length);
+    return Buffer.concat([length, val]);
+  }
