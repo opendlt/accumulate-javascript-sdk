@@ -1,18 +1,12 @@
 import { sha256 } from "./crypto";
-import { AccURL } from "./acc-url";
+import { AccURL, ACME_TOKEN_URL } from "./acc-url";
 import { Keypair } from "./keypair";
 import nacl from "tweetnacl";
+import { Origin, Signature } from "./origin";
 
-export const ACME_TOKEN_URL = AccURL.parse("acc://ACME");
-
-export type Signature = {
-  publicKey: Uint8Array;
-  signature: Uint8Array;
-};
-
-export class LiteAccount {
-  private _keypair: Keypair;
-  private _tokenUrl: AccURL;
+export class LiteAccount implements Origin {
+  private readonly _keypair: Keypair;
+  private readonly _tokenUrl: AccURL;
 
   constructor(tokenUrl: AccURL, keypair: Keypair) {
     this._tokenUrl = tokenUrl;
@@ -31,21 +25,15 @@ export class LiteAccount {
     return new LiteAccount(tokenUrl, new Keypair());
   }
 
-  get keypair(): Keypair {
-    return this._keypair;
-  }
-
   get tokenUrl(): AccURL {
     return this._tokenUrl;
   }
 
-  getUrl(): AccURL {
+  get url(): AccURL {
     const pkHash = sha256(this._keypair.publicKey).slice(0, 20);
     const checkSum = sha256(pkHash.toString("hex")).slice(28);
     const authority = Buffer.concat([pkHash, checkSum]).toString("hex");
-    return AccURL.parse(
-      `acc://${authority}/${this.tokenUrl.authority}${this.tokenUrl.path}`
-    );
+    return AccURL.parse(`acc://${authority}/${this.tokenUrl.authority}${this.tokenUrl.path}`);
   }
 
   sign(data: Uint8Array): Signature {

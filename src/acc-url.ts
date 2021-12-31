@@ -1,7 +1,7 @@
 import { URL } from "url";
 
 export class AccURL {
-  private _url: URL;
+  private readonly _url: URL;
 
   constructor(url: URL) {
     if (url.protocol !== "acc:") {
@@ -38,3 +38,5 @@ export class AccURL {
     return this._url.toString();
   }
 }
+
+export const ACME_TOKEN_URL = AccURL.parse("acc://ACME");

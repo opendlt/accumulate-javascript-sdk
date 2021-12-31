@@ -12,7 +12,7 @@ export interface Ed25519Keypair {
  * An account keypair used for signing transactions.
  */
 export class Keypair {
-  private _keypair: Ed25519Keypair;
+  private readonly _keypair: Ed25519Keypair;
 
   /**
    * Create a new keypair instance.
@@ -47,16 +47,11 @@ export class Keypair {
    * @param secretKey secret key byte array
    * @param options: skip secret key validation
    */
-  static fromSecretKey(
-    secretKey: Uint8Array,
-    options?: { skipValidation?: boolean }
-  ): Keypair {
+  static fromSecretKey(secretKey: Uint8Array, options?: { skipValidation?: boolean }): Keypair {
     const keypair = nacl.sign.keyPair.fromSecretKey(secretKey);
     if (!options || !options.skipValidation) {
       const encoder = new TextEncoder();
-      const signData = encoder.encode(
-        "@accumulate/accumulate.js-validation-v1"
-      );
+      const signData = encoder.encode("@accumulate/accumulate.js-validation-v1");
       const signature = nacl.sign.detached(signData, keypair.secretKey);
       if (!nacl.sign.detached.verify(signData, signature, keypair.publicKey)) {
         throw new Error("provided secretKey is invalid");

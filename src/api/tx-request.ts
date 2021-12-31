@@ -1,5 +1,5 @@
 import { AccURL } from "../acc-url";
-import { Signature } from "../lite-account";
+import { Signature } from "../origin";
 import { SignatureInfo } from "./signature-info";
 
 export type Signer = {
