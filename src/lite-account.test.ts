@@ -9,7 +9,7 @@ test("should compute correct lite account URL", () => {
 
   const keypair = Keypair.fromSeed(seed);
   const liteAccount = LiteAccount.generateWithKeypair(keypair);
-  expect(liteAccount.getUrl().toString()).toBe(
+  expect(liteAccount.url.toString()).toBe(
     "acc://105251bb367baa372c748930531ae63d6e143c9aa4470eff/ACME"
   );
 });

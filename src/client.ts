@@ -1,22 +1,21 @@
 import { AccURL } from "./acc-url";
-import { LiteAccount, Signature } from "./lite-account";
+import { LiteAccount } from "./lite-account";
 import { txRequestToParams, getTxRequest } from "./api/tx-request";
-
+import { RpcClient } from "./rpc-client";
+import { Payload } from "./payload";
 import { txDataToSign } from "./api/gen-transaction";
 import { SignatureInfo } from "./api/signature-info";
-import { RpcClient } from "./rpc-client";
-
-import { AddCredits, marshalBinaryAddCredits } from "./protocol/add-credits";
-import {
-  CreateIdentity,
-  marshalBinaryCreateIdentity,
-} from "./protocol/create-identity";
-import { SendTokens, marshalBinarySendTokens } from "./protocol/send-tokens";
+import { AddCreditsArg, AddCredits } from "./protocol/add-credits";
+import { CreateIdentityArg, CreateIdentity } from "./protocol/create-identity";
+import { SendTokensArg, SendTokens } from "./protocol/send-tokens";
+import { CreateTokenAccountArg, CreateTokenAccount } from "./protocol/create-token-account";
+import { Identity } from "./identity";
+import { Origin, Signature } from "./origin";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
 export class Client {
-  private _rpcClient: RpcClient;
+  private readonly _rpcClient: RpcClient;
 
   constructor(endpoint?: string) {
     this._rpcClient = new RpcClient(endpoint || TESTNET_ENDPOINT);
@@ -26,9 +25,17 @@ export class Client {
     return this._rpcClient.call(method, params);
   }
 
-  query(url: string | AccURL): Promise<void> {
+  queryUrl(url: string | AccURL | Origin): Promise<void> {
+    const urlStr = url instanceof LiteAccount ? url.url.toString() : url.toString();
+
     return this.apiCall("query", {
-      url: url.toString(),
+      url: urlStr,
+    });
+  }
+
+  queryTx(txId: string): Promise<void> {
+    return this.apiCall("query-tx", {
+      txid: txId,
     });
   }
 
@@ -38,42 +45,34 @@ export class Client {
     });
   }
 
-  sendTokens(sendTokens: SendTokens, acc: LiteAccount): Promise<void> {
-    return this._execute(marshalBinarySendTokens(sendTokens), acc);
+  sendTokens(sendTokens: SendTokensArg, origin: Origin): Promise<void> {
+    return this._execute(new SendTokens(sendTokens), origin);
   }
 
-  addCredits(addCredits: AddCredits, acc: LiteAccount): Promise<void> {
-    return this._execute(marshalBinaryAddCredits(addCredits), acc);
+  addCredits(addCredits: AddCreditsArg, origin: LiteAccount): Promise<void> {
+    return this._execute(new AddCredits(addCredits), origin);
   }
 
-  createIdentity(
-    createIdentity: CreateIdentity,
-    acc: LiteAccount
-  ): Promise<void> {
-    return this._execute(marshalBinaryCreateIdentity(createIdentity), acc);
+  createTokenAccount(createTokenAccount: CreateTokenAccountArg, origin: Identity): Promise<void> {
+    return this._execute(new CreateTokenAccount(createTokenAccount), origin);
   }
 
-  execute(
-    origin: AccURL,
-    binary: Buffer,
-    si: SignatureInfo,
-    signature: Signature
-  ): Promise<void> {
-    const txRequest = getTxRequest(
-      origin,
-      binary.toString("base64"),
-      signature,
-      si
-    );
+  createIdentity(createIdentity: CreateIdentityArg, origin: LiteAccount): Promise<void> {
+    return this._execute(new CreateIdentity(createIdentity), origin);
+  }
+
+  execute(origin: AccURL, binary: Buffer, si: SignatureInfo, signature: Signature): Promise<void> {
+    const txRequest = getTxRequest(origin, binary.toString("base64"), signature, si);
 
     return this._rpcClient.call("execute", txRequestToParams(txRequest));
   }
 
-  _execute(binary: Buffer, acc: LiteAccount): Promise<void> {
-    const si = generateSignatureInfo(acc.getUrl());
-    const signature = acc.sign(txDataToSign(binary, si));
+  _execute(payload: Payload, origin: Origin): Promise<void> {
+    const binary = payload.marshalBinary();
+    const si = generateSignatureInfo(origin.url);
+    const signature = origin.sign(txDataToSign(binary, si));
 
-    return this.execute(acc.getUrl(), binary, si, signature);
+    return this.execute(origin.url, binary, si, signature);
   }
 }
 

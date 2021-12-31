@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export class RpcClient {
-  private _endpoint: string;
+  private readonly _endpoint: string;
 
   constructor(endpoint: string) {
     this._endpoint = endpoint;
@@ -20,9 +20,9 @@ export class RpcClient {
       .then((r) => {
         const { error, result } = r.data;
         if (error) {
-          console.error(error);
+          console.error(JSON.stringify(error, null, 4));
         } else {
-          console.log(result);
+          console.log(JSON.stringify(result, null, 4));
         }
       })
       .catch((error) => {

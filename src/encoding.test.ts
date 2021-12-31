@@ -16,9 +16,7 @@ test("should varint marshal binary u64 numbers", () => {
   expect(uvarintMarshalBinary(new u64(2).pow(new u64(53)))).toStrictEqual(
     Buffer.from([128, 128, 128, 128, 128, 128, 128, 16])
   );
-  expect(
-    uvarintMarshalBinary(new u64(2).pow(new u64(64)).sub(new BN(1)))
-  ).toStrictEqual(
+  expect(uvarintMarshalBinary(new u64(2).pow(new u64(64)).sub(new BN(1)))).toStrictEqual(
     Buffer.from([255, 255, 255, 255, 255, 255, 255, 255, 255, 1])
   );
 });
