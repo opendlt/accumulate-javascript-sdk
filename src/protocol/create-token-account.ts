@@ -16,10 +16,9 @@ export class CreateTokenAccount implements Payload {
   private _binary?: Buffer;
 
   constructor(arg: CreateTokenAccountArg) {
-    this._url = arg.url instanceof AccURL ? arg.url : AccURL.parse(arg.url);
-    this._tokenUrl = arg.tokenUrl instanceof AccURL ? arg.tokenUrl : AccURL.parse(arg.tokenUrl);
-    this._keyBookUrl =
-      arg.keyBookUrl instanceof AccURL ? arg.keyBookUrl : AccURL.parse(arg.keyBookUrl);
+    this._url = AccURL.toAccURL(arg.url);
+    this._tokenUrl = AccURL.toAccURL(arg.tokenUrl);
+    this._keyBookUrl = AccURL.toAccURL(arg.keyBookUrl);
   }
 
   marshalBinary(): Buffer {

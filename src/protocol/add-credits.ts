@@ -15,7 +15,7 @@ export class AddCredits implements Payload {
   private _binary?: Buffer;
 
   constructor(arg: AddCreditsArg) {
-    this._recipient = arg.recipient instanceof AccURL ? arg.recipient : AccURL.parse(arg.recipient);
+    this._recipient = AccURL.toAccURL(arg.recipient);
     this._amount = arg.amount instanceof u64 ? arg.amount : new u64(arg.amount);
   }
 

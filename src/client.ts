@@ -1,5 +1,4 @@
 import { AccURL } from "./acc-url";
-import { LiteAccount } from "./lite-account";
 import { txRequestToParams, getTxRequest } from "./api/tx-request";
 import { RpcClient } from "./rpc-client";
 import { Payload } from "./payload";
@@ -9,8 +8,7 @@ import { AddCreditsArg, AddCredits } from "./protocol/add-credits";
 import { CreateIdentityArg, CreateIdentity } from "./protocol/create-identity";
 import { SendTokensArg, SendTokens } from "./protocol/send-tokens";
 import { CreateTokenAccountArg, CreateTokenAccount } from "./protocol/create-token-account";
-import { Identity } from "./identity";
-import { Origin, Signature } from "./origin";
+import { OriginSigner, Signature } from "./origin-signer";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -25,8 +23,8 @@ export class Client {
     return this._rpcClient.call(method, params);
   }
 
-  queryUrl(url: string | AccURL | Origin): Promise<void> {
-    const urlStr = url instanceof LiteAccount ? url.url.toString() : url.toString();
+  queryUrl(url: string | AccURL | OriginSigner): Promise<void> {
+    const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
 
     return this.apiCall("query", {
       url: urlStr,
@@ -45,20 +43,20 @@ export class Client {
     });
   }
 
-  sendTokens(sendTokens: SendTokensArg, origin: Origin): Promise<void> {
-    return this._execute(new SendTokens(sendTokens), origin);
+  sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new SendTokens(sendTokens), signer);
   }
 
-  addCredits(addCredits: AddCreditsArg, origin: LiteAccount): Promise<void> {
-    return this._execute(new AddCredits(addCredits), origin);
+  addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new AddCredits(addCredits), signer);
   }
 
-  createTokenAccount(createTokenAccount: CreateTokenAccountArg, origin: Identity): Promise<void> {
-    return this._execute(new CreateTokenAccount(createTokenAccount), origin);
+  createTokenAccount(createTokenAccount: CreateTokenAccountArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new CreateTokenAccount(createTokenAccount), signer);
   }
 
-  createIdentity(createIdentity: CreateIdentityArg, origin: LiteAccount): Promise<void> {
-    return this._execute(new CreateIdentity(createIdentity), origin);
+  createIdentity(createIdentity: CreateIdentityArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new CreateIdentity(createIdentity), signer);
   }
 
   execute(origin: AccURL, binary: Buffer, si: SignatureInfo, signature: Signature): Promise<void> {
@@ -67,12 +65,12 @@ export class Client {
     return this._rpcClient.call("execute", txRequestToParams(txRequest));
   }
 
-  _execute(payload: Payload, origin: Origin): Promise<void> {
+  _execute(payload: Payload, signer: OriginSigner): Promise<void> {
     const binary = payload.marshalBinary();
-    const si = generateSignatureInfo(origin.url);
-    const signature = origin.sign(txDataToSign(binary, si));
+    const si = generateSignatureInfo(signer.url);
+    const signature = signer.sign(txDataToSign(binary, si));
 
-    return this.execute(origin.url, binary, si, signature);
+    return this.execute(signer.url, binary, si, signature);
   }
 }
 

@@ -2,7 +2,7 @@ import { Keypair } from "./keypair";
 import { Client } from "./client";
 import { LiteAccount } from "./lite-account";
 import { AccURL } from "./acc-url";
-import { Identity } from "./identity";
+import { OriginSigner } from "./origin-signer";
 
 const sk = Buffer.from(
   "d24c73abfd99dfbc2d10f5e987b8866b0d479742ca9904713aac0fa8f59f62cd2a8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f",
@@ -40,7 +40,7 @@ console.log("Sending to " + recipient);
 const kpIdentity = Keypair.fromSeed(
   Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
 );
-const identity = new Identity(AccURL.parse("acc://luap4"), kpIdentity);
+const identity = new OriginSigner(AccURL.parse("acc://luap4"), kpIdentity);
 
 console.log("pk identity " + Buffer.from(identity.publicKey).toString("hex"));
 
@@ -52,8 +52,9 @@ console.log("Identity " + identity);
 //   keyPageName: "luap4-page",
 // };
 /////////////////////////
+// const tokenAccount = identity.url + "/ACME6"
 // const createTokenAccount = {
-//   url: identity.url + "/ACME",
+//   url: tokenAccount,
 //   tokenUrl: ACME_TOKEN_URL.toString(),
 //   keyBookUrl: "acc://luap4/luap4-book",
 // };
@@ -61,7 +62,8 @@ console.log("Identity " + identity);
 const client = new Client("http://127.0.1.1:26660/v2");
 
 // const sendTokensToLuap = { to: [{ url: identity + "/ACME6", amount: 100000000 }] };
-const sendTokensToAcc2 = { to: [{ url: acc2.url, amount: 100000000 }] };
+// const sendTokensToAcc2 = { to: [{ url: acc2.url, amount: 100000000 }] };
+// const signer = new RecordSigner(tokenAccount, kpIdentity);
 
 async function run() {
   // await client.faucet(acc.url);
@@ -72,9 +74,9 @@ async function run() {
   // await client.queryTx("1bef2c537b27f9869753690588699ec00491e5fb04746f36edbbc68347ed59fa");
   // await client.createTokenAccount(createTokenAccount, identity);
   // await client.queryUrl(identity);
-  await client.queryUrl(identity.toString() + "/ACME6");
+  await client.queryUrl("acc://df9ad7f007e643c29a20e736a3a5f9d31be4395584277143/ACME");
   // await client.sendTokens(sendTokensToLuap, acc);
-  await client.sendTokens(sendTokensToAcc2, identity);
+  // await client.sendTokens(sendTokensToAcc2, signer);
 }
 
 run();

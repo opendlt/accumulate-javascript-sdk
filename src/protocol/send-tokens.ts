@@ -28,7 +28,7 @@ export class SendTokens implements Payload {
 
   constructor(arg: SendTokensArg) {
     this._to = arg.to.map((r) => ({
-      url: r.url instanceof AccURL ? r.url : AccURL.parse(r.url),
+      url: AccURL.toAccURL(r.url),
       amount: r.amount instanceof u64 ? r.amount : new u64(r.amount),
     }));
     this._hash = arg.hash;
