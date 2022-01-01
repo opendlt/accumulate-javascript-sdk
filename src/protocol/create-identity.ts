@@ -18,7 +18,7 @@ export class CreateIdentity implements Payload {
   private _binary?: Buffer;
 
   constructor(arg: CreateIdentityArg) {
-    this._url = arg.url instanceof AccURL ? arg.url : AccURL.parse(arg.url);
+    this._url = AccURL.toAccURL(arg.url);
     this._publicKey = arg.publicKey;
     this._keyBookName = arg.keyBookName;
     this._keyPageName = arg.keyPageName;
