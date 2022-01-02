@@ -61,12 +61,13 @@ console.log("Identity " + identity);
 /////////////////////////
 // const book = new OriginSigner(AccURL.parse("acc://luap/luap-book"), kpIdentity);
 
-// const anotherKey = Keypair.fromSeed(
-//   Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
-// );
+const anotherKey = Keypair.fromSeed(
+  Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
+);
+const keyPage = new OriginSigner(identity.url + "/luap-page2", anotherKey);
 
 // const createKeyPage = {
-//   url: identity.url + "/luap-page6",
+//   url: keyPage.url,
 //   keys: [anotherKey.publicKey],
 // };
 /////////////////////////
@@ -76,6 +77,26 @@ console.log("Identity " + identity);
 // }
 /////////////////////////
 
+// const anotherKey2 = Keypair.fromSeed(
+//   Buffer.from("128d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
+// );
+
+// const addKeyPage = {
+//   operation: 2,
+//   // key: anotherKey.publicKey,
+//   newKey: anotherKey2.publicKey,
+// }
+// const removeKeyPage = {
+//   operation: 3,
+//   key: anotherKey2.publicKey,
+// }
+// const updateKeyPage = {
+//   operation: 1,
+//   key: anotherKey.publicKey,
+//   newKey: anotherKey2.publicKey,
+// }
+
+/////////////////////////
 const client = new Client("http://127.0.1.1:26660/v2");
 
 // const sendTokensToLuap = { to: [{ url: identity + "/ACME6", amount: 100000000 }] };
@@ -95,10 +116,16 @@ async function run() {
   // await client.sendTokens(sendTokensToLuap, acc);
   // await client.sendTokens(sendTokensToAcc2, signer);
   // await client.createKeyPage(createKeyPage, identity);
-  await client.queryUrl(identity.url + "/luap-page3");
+  // await client.queryUrl(identity.url + "/luap-page");
   // await client.queryUrl(identity + "/luap-book");
   // await client.createKeyBook(createKeyBook, identity);
-  await client.queryUrl(identity.url + "/my-book");
+  // await client.queryUrl(identity.url + "/my-book");
+  await client.queryUrl(keyPage);
+  // await client.updateKeyPage(addKeyPage, keyPage);
+  // await client.updateKeyPage(removeKeyPage, keyPage);
+  // await client.updateKeyPage(updateKeyPage, keyPage);
+  
+
 }
 
 run();
