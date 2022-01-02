@@ -2,7 +2,7 @@ import { AccURL } from "../acc-url";
 import { TxType } from "../tx-types";
 import { uvarintMarshalBinary, stringMarshalBinary, bytesMarshalBinary } from "../encoding";
 import { u64 } from "../bigint";
-import { Payload } from "../payload";
+import { BasePayload } from "./base-payload";
 
 export type SendTokensArg = {
   to: TokenRecipientArg[];
@@ -20,13 +20,13 @@ export type TokenRecipient = {
   amount: u64;
 };
 
-export class SendTokens implements Payload {
+export class SendTokens extends BasePayload {
   private readonly _to: TokenRecipient[];
   private readonly _hash?: Uint8Array;
   private readonly _meta?: Uint8Array;
-  private _binary?: Buffer;
 
   constructor(arg: SendTokensArg) {
+    super();
     this._to = arg.to.map((r) => ({
       url: AccURL.toAccURL(r.url),
       amount: r.amount instanceof u64 ? r.amount : new u64(r.amount),
@@ -35,17 +35,7 @@ export class SendTokens implements Payload {
     this._meta = arg.meta;
   }
 
-  marshalBinary(): Buffer {
-    if (this._binary) {
-      return this._binary;
-    }
-
-    this._binary = this._marshalBinary();
-
-    return this._binary;
-  }
-
-  private _marshalBinary() {
+  protected _marshalBinary(): Buffer {
     const hash = this._hash || Buffer.alloc(32, 0);
     validateHash(hash);
     if (this._to.length < 1) {

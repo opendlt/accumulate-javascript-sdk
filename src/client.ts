@@ -2,13 +2,15 @@ import { AccURL } from "./acc-url";
 import { txRequestToParams, getTxRequest } from "./api/tx-request";
 import { RpcClient } from "./rpc-client";
 import { Payload } from "./payload";
+import { OriginSigner, Signature } from "./origin-signer";
 import { txDataToSign } from "./api/gen-transaction";
 import { SignatureInfo } from "./api/signature-info";
 import { AddCreditsArg, AddCredits } from "./protocol/add-credits";
 import { CreateIdentityArg, CreateIdentity } from "./protocol/create-identity";
 import { SendTokensArg, SendTokens } from "./protocol/send-tokens";
 import { CreateTokenAccountArg, CreateTokenAccount } from "./protocol/create-token-account";
-import { OriginSigner, Signature } from "./origin-signer";
+import { CreateKeyBookArg, CreateKeyBook } from "./protocol/create-key-book";
+import { CreateKeyPage, CreateKeyPageArg } from "./protocol/create-key-page";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -51,12 +53,23 @@ export class Client {
     return this._execute(new AddCredits(addCredits), signer);
   }
 
-  createTokenAccount(createTokenAccount: CreateTokenAccountArg, signer: OriginSigner): Promise<void> {
+  createTokenAccount(
+    createTokenAccount: CreateTokenAccountArg,
+    signer: OriginSigner
+  ): Promise<void> {
     return this._execute(new CreateTokenAccount(createTokenAccount), signer);
   }
 
   createIdentity(createIdentity: CreateIdentityArg, signer: OriginSigner): Promise<void> {
     return this._execute(new CreateIdentity(createIdentity), signer);
+  }
+
+  createKeyBook(createKeyBook: CreateKeyBookArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new CreateKeyBook(createKeyBook), signer);
+  }
+
+  createKeyPage(createKeyPage: CreateKeyPageArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new CreateKeyPage(createKeyPage), signer);
   }
 
   execute(origin: AccURL, binary: Buffer, si: SignatureInfo, signature: Signature): Promise<void> {
