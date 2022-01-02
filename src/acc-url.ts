@@ -13,7 +13,7 @@ export class AccURL {
     this._url = url;
   }
 
-  static toAccURL(arg: string | AccURL) {
+  static toAccURL(arg: string | AccURL): AccURL {
     return arg instanceof AccURL ? arg : AccURL.parse(arg);
   }
 
