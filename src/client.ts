@@ -12,6 +12,7 @@ import { CreateTokenAccountArg, CreateTokenAccount } from "./payload/create-toke
 import { CreateKeyBookArg, CreateKeyBook } from "./payload/create-key-book";
 import { CreateKeyPage, CreateKeyPageArg } from "./payload/create-key-page";
 import { UpdateKeyPageArg, UpdateKeyPage } from "./payload/update-key-page";
+import { CreateDataAccountArg, CreateDataAccount } from "./payload/create-data-account";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -25,6 +26,10 @@ export class Client {
   async apiCall(method: string, params: any): Promise<void> {
     return this._rpcClient.call(method, params);
   }
+
+  /******************
+   * Queries
+   ******************/
 
   queryUrl(url: string | AccURL | OriginSigner): Promise<void> {
     const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
@@ -40,11 +45,9 @@ export class Client {
     });
   }
 
-  faucet(url: AccURL): Promise<void> {
-    return this.apiCall("faucet", {
-      url: url.toString(),
-    });
-  }
+  /******************
+   * Transactions
+   ******************/
 
   sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<void> {
     return this._execute(new SendTokens(sendTokens), signer);
@@ -52,13 +55,6 @@ export class Client {
 
   addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<void> {
     return this._execute(new AddCredits(addCredits), signer);
-  }
-
-  createTokenAccount(
-    createTokenAccount: CreateTokenAccountArg,
-    signer: OriginSigner
-  ): Promise<void> {
-    return this._execute(new CreateTokenAccount(createTokenAccount), signer);
   }
 
   createIdentity(createIdentity: CreateIdentityArg, signer: OriginSigner): Promise<void> {
@@ -77,6 +73,17 @@ export class Client {
     return this._execute(new UpdateKeyPage(updateKeyPage), signer);
   }
 
+  createTokenAccount(
+    createTokenAccount: CreateTokenAccountArg,
+    signer: OriginSigner
+  ): Promise<void> {
+    return this._execute(new CreateTokenAccount(createTokenAccount), signer);
+  }
+
+  createDataAccount(createDataAccount: CreateDataAccountArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new CreateDataAccount(createDataAccount), signer);
+  }
+
   execute(origin: AccURL, binary: Buffer, si: SignatureInfo, signature: Signature): Promise<void> {
     const txRequest = getTxRequest(origin, binary.toString("base64"), signature, si);
 
@@ -89,6 +96,16 @@ export class Client {
     const signature = signer.sign(txDataToSign(binary, si));
 
     return this.execute(signer.url, binary, si, signature);
+  }
+
+  /******************
+   * Others
+   ******************/
+
+  faucet(url: AccURL): Promise<void> {
+    return this.apiCall("faucet", {
+      url: url.toString(),
+    });
   }
 }
 

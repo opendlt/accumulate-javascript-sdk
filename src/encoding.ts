@@ -28,9 +28,7 @@ export function stringMarshalBinary(val?: string): Buffer {
     return Buffer.allocUnsafe(0);
   }
 
-  const buffer = Buffer.from(val);
-  const length = uvarintMarshalBinary(buffer.length);
-  return Buffer.concat([length, buffer]);
+  return bytesMarshalBinary(Buffer.from(val));
 }
 
 export function bytesMarshalBinary(val: Uint8Array): Buffer {
