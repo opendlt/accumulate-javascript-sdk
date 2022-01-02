@@ -5,13 +5,13 @@ import { Payload } from "./payload";
 import { OriginSigner, Signature } from "./origin-signer";
 import { txDataToSign } from "./api/gen-transaction";
 import { SignatureInfo } from "./api/signature-info";
-import { AddCreditsArg, AddCredits } from "./protocol/add-credits";
-import { CreateIdentityArg, CreateIdentity } from "./protocol/create-identity";
-import { SendTokensArg, SendTokens } from "./protocol/send-tokens";
-import { CreateTokenAccountArg, CreateTokenAccount } from "./protocol/create-token-account";
-import { CreateKeyBookArg, CreateKeyBook } from "./protocol/create-key-book";
-import { CreateKeyPage, CreateKeyPageArg } from "./protocol/create-key-page";
-import { UpdateKeyPageArg, UpdateKeyPage } from "./protocol/update-key-page";
+import { AddCreditsArg, AddCredits } from "./payload/add-credits";
+import { CreateIdentityArg, CreateIdentity } from "./payload/create-identity";
+import { SendTokensArg, SendTokens } from "./payload/send-tokens";
+import { CreateTokenAccountArg, CreateTokenAccount } from "./payload/create-token-account";
+import { CreateKeyBookArg, CreateKeyBook } from "./payload/create-key-book";
+import { CreateKeyPage, CreateKeyPageArg } from "./payload/create-key-page";
+import { UpdateKeyPageArg, UpdateKeyPage } from "./payload/update-key-page";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
