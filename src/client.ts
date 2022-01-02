@@ -11,6 +11,7 @@ import { SendTokensArg, SendTokens } from "./protocol/send-tokens";
 import { CreateTokenAccountArg, CreateTokenAccount } from "./protocol/create-token-account";
 import { CreateKeyBookArg, CreateKeyBook } from "./protocol/create-key-book";
 import { CreateKeyPage, CreateKeyPageArg } from "./protocol/create-key-page";
+import { UpdateKeyPageArg, UpdateKeyPage } from "./protocol/update-key-page";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -72,6 +73,10 @@ export class Client {
     return this._execute(new CreateKeyPage(createKeyPage), signer);
   }
 
+  updateKeyPage(updateKeyPage: UpdateKeyPageArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new UpdateKeyPage(updateKeyPage), signer);
+  }
+
   execute(origin: AccURL, binary: Buffer, si: SignatureInfo, signature: Signature): Promise<void> {
     const txRequest = getTxRequest(origin, binary.toString("base64"), signature, si);
 
@@ -91,7 +96,7 @@ function generateSignatureInfo(url: AccURL): SignatureInfo {
   return {
     url,
     nonce: Date.now(),
-    keyPageHeight: 1,
+    keyPageHeight: 6,
     keyPageIndex: 0,
   };
 }

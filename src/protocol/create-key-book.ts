@@ -24,7 +24,7 @@ export class CreateKeyBook extends BasePayload {
     forConcat.push(stringMarshalBinary(this._url.toString()));
     forConcat.push(uvarintMarshalBinary(this._pages.length));
 
-    this._pages.forEach((page) => forConcat.push(stringMarshalBinary(page)));
+    this._pages.forEach((page) => forConcat.push(stringMarshalBinary(page.toString())));
 
     return Buffer.concat(forConcat);
   }
