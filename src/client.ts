@@ -1,10 +1,8 @@
 import { AccURL } from "./acc-url";
-import { txRequestToParams, getTxRequest } from "./api/tx-request";
 import { RpcClient } from "./rpc-client";
 import { Payload } from "./payload";
-import { OriginSigner, Signature } from "./origin-signer";
-import { txDataToSign } from "./api/gen-transaction";
-import { SignatureInfo } from "./api/signature-info";
+import { OriginSigner } from "./origin-signer";
+import { SignatureInfo } from "./signature-info";
 import { AddCreditsArg, AddCredits } from "./payload/add-credits";
 import { CreateIdentityArg, CreateIdentity } from "./payload/create-identity";
 import { SendTokensArg, SendTokens } from "./payload/send-tokens";
@@ -13,6 +11,8 @@ import { CreateKeyBookArg, CreateKeyBook } from "./payload/create-key-book";
 import { CreateKeyPage, CreateKeyPageArg } from "./payload/create-key-page";
 import { UpdateKeyPageArg, UpdateKeyPage } from "./payload/update-key-page";
 import { CreateDataAccountArg, CreateDataAccount } from "./payload/create-data-account";
+import { WriteData, WriteDataArg } from "./payload/write-data";
+import { Transaction } from "./transaction";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -84,18 +84,20 @@ export class Client {
     return this._execute(new CreateDataAccount(createDataAccount), signer);
   }
 
-  execute(origin: AccURL, binary: Buffer, si: SignatureInfo, signature: Signature): Promise<void> {
-    const txRequest = getTxRequest(origin, binary.toString("base64"), signature, si);
-
-    return this._rpcClient.call("execute", txRequestToParams(txRequest));
+  writeData(writeData: WriteDataArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new WriteData(writeData), signer);
   }
 
-  _execute(payload: Payload, signer: OriginSigner): Promise<void> {
-    const binary = payload.marshalBinary();
-    const si = generateSignatureInfo(signer.url);
-    const signature = signer.sign(txDataToSign(binary, si));
+  execute(tx: Transaction): Promise<void> {
+    return this._rpcClient.call("execute", tx.toTxRequest());
+  }
 
-    return this.execute(signer.url, binary, si, signature);
+  private _execute(payload: Payload, signer: OriginSigner): Promise<void> {
+    const si = generateSignatureInfo(signer);
+    const tx = new Transaction(payload, si);
+    tx.sign(signer);
+
+    return this.execute(tx);
   }
 
   /******************
@@ -109,11 +111,11 @@ export class Client {
   }
 }
 
-function generateSignatureInfo(url: AccURL): SignatureInfo {
+function generateSignatureInfo(signer: OriginSigner): SignatureInfo {
   return {
-    url,
+    url: signer.url,
     nonce: Date.now(),
-    keyPageHeight: 6,
-    keyPageIndex: 0,
+    keyPageHeight: signer.keyPageHeigt,
+    keyPageIndex: signer.keyPageIndex,
   };
 }

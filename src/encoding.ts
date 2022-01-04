@@ -25,7 +25,7 @@ export function uvarintMarshalBinary(val: number | u64): Buffer {
 
 export function stringMarshalBinary(val?: string): Buffer {
   if (!val) {
-    return Buffer.allocUnsafe(0);
+    return Buffer.from([0]);
   }
 
   return bytesMarshalBinary(Buffer.from(val));

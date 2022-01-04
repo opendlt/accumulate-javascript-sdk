@@ -56,15 +56,14 @@ console.log("Identity " + identity);
 // const createTokenAccount = {
 //   url: tokenAccount,
 //   tokenUrl: ACME_TOKEN_URL.toString(),
-//   keyBookUrl: "acc://luap4/luap4-book",
 // };
 /////////////////////////
 // const book = new OriginSigner(AccURL.parse("acc://luap/luap-book"), kpIdentity);
 
-const anotherKey = Keypair.fromSeed(
-  Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
-);
-const keyPage = new OriginSigner(identity.url + "/luap-page2", anotherKey);
+// const anotherKey = Keypair.fromSeed(
+//   Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
+// );
+// const keyPage = new OriginSigner(identity.url + "/luap-page2", anotherKey);
 
 // const createKeyPage = {
 //   url: keyPage.url,
@@ -95,8 +94,12 @@ const keyPage = new OriginSigner(identity.url + "/luap-page2", anotherKey);
 //   key: anotherKey.publicKey,
 //   newKey: anotherKey2.publicKey,
 // }
-
 /////////////////////////
+const createDataAccount = {
+  url: "acc://luap/my-data",
+};
+/////////////////////////
+
 const client = new Client("http://127.0.1.1:26660/v2");
 
 // const sendTokensToLuap = { to: [{ url: identity + "/ACME6", amount: 100000000 }] };
@@ -120,12 +123,12 @@ async function run() {
   // await client.queryUrl(identity + "/luap-book");
   // await client.createKeyBook(createKeyBook, identity);
   // await client.queryUrl(identity.url + "/my-book");
-  await client.queryUrl(keyPage);
+  // await client.queryUrl(keyPage);
   // await client.updateKeyPage(addKeyPage, keyPage);
   // await client.updateKeyPage(removeKeyPage, keyPage);
   // await client.updateKeyPage(updateKeyPage, keyPage);
-  
-
+  // await client.createDataAccount(createDataAccount, identity);
+  await client.queryUrl(createDataAccount.url);
 }
 
 run();
