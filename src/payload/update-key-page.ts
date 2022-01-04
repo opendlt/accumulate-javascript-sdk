@@ -1,6 +1,6 @@
 import assert from "assert";
 import { uvarintMarshalBinary, bytesMarshalBinary } from "../encoding";
-import { TxType } from "../tx-types";
+import { TxType } from "./tx-types";
 import { BasePayload } from "./base-payload";
 
 export enum KeyPageOperation {

@@ -1,4 +1,4 @@
-import { TxType } from "../tx-types";
+import { TxType } from "./tx-types";
 import { uvarintMarshalBinary, stringMarshalBinary } from "../encoding";
 import { AccURL } from "../acc-url";
 import { BasePayload } from "./base-payload";
@@ -23,7 +23,7 @@ export class CreateDataAccount extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     return Buffer.concat([
-      uvarintMarshalBinary(TxType.CreateTokenAccount),
+      uvarintMarshalBinary(TxType.CreateDataAccount),
       stringMarshalBinary(this._url.toString()),
       stringMarshalBinary(this._keyBookUrl?.toString()),
       stringMarshalBinary(this._managerKeyBookUrl?.toString()),

@@ -1,6 +1,6 @@
 import { AccURL } from "../acc-url";
 import { uvarintMarshalBinary, stringMarshalBinary, bytesMarshalBinary } from "../encoding";
-import { TxType } from "../tx-types";
+import { TxType } from "./tx-types";
 import { BasePayload } from "./base-payload";
 
 export type CreateIdentityArg = {

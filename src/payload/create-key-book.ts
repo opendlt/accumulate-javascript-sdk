@@ -1,5 +1,5 @@
 import { AccURL } from "../acc-url";
-import { TxType } from "../tx-types";
+import { TxType } from "./tx-types";
 import { uvarintMarshalBinary, stringMarshalBinary } from "../encoding";
 import { BasePayload } from "./base-payload";
 

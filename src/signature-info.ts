@@ -1,5 +1,5 @@
-import { AccURL } from "../acc-url";
-import { uvarintMarshalBinary, stringMarshalBinary } from "../encoding";
+import { AccURL } from "./acc-url";
+import { uvarintMarshalBinary, stringMarshalBinary } from "./encoding";
 
 export type SignatureInfo = {
   url: AccURL;
