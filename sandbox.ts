@@ -1,8 +1,4 @@
-import { Keypair } from "./keypair";
-import { Client } from "./client";
-import { LiteAccount } from "./lite-account";
-import { AccURL } from "./acc-url";
-import { OriginSigner } from "./origin-signer";
+import { Keypair, Client, LiteAccount, AccURL, OriginSigner } from ".";
 
 const sk = Buffer.from(
   "d24c73abfd99dfbc2d10f5e987b8866b0d479742ca9904713aac0fa8f59f62cd2a8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f",
@@ -98,7 +94,13 @@ console.log("Identity " + identity);
 const createDataAccount = {
   url: "acc://luap/my-data",
 };
+const dataAccout = new OriginSigner(createDataAccount.url, kpIdentity);
 /////////////////////////
+// const writeData = {
+//   extIds: [],
+//   data: Buffer.from("hello")
+// }
+////////////////
 
 const client = new Client("http://127.0.1.1:26660/v2");
 
@@ -112,7 +114,7 @@ async function run() {
   // await client.addCredits(addCredits, acc);
   // await client.sendTokens(sendTokens, acc);
   // await client.createIdentity(createIdentity, acc);
-  // await client.queryTx("44be775fe48466a771c43a67cc98d7adafc7258f5607b50cce47c39bb69afb0f");
+  // await client.queryTx("dfb1114acec1e596974b3809dc42a4b1f5436a7bacf1691bc33d809566bcaa6b");
   // await client.createTokenAccount(createTokenAccount, identity);
   // await client.queryUrl(identity);
   // await client.queryUrl("acc://df9ad7f007e643c29a20e736a3a5f9d31be4395584277143/ACME");
@@ -128,7 +130,11 @@ async function run() {
   // await client.updateKeyPage(removeKeyPage, keyPage);
   // await client.updateKeyPage(updateKeyPage, keyPage);
   // await client.createDataAccount(createDataAccount, identity);
-  await client.queryUrl(createDataAccount.url);
+  // await client.queryUrl(createDataAccount.url);
+  // await client.writeData(writeData, dataAccout);
+  // dfb1114acec1e596974b3809dc42a4b1f5436a7bacf1691bc33d809566bcaa6b
+  await client.queryData(dataAccout.url, "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")
+  // await client.queryDirectory(identity.url)
 }
 
 run();
