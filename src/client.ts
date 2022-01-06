@@ -13,6 +13,7 @@ import { UpdateKeyPageArg, UpdateKeyPage } from "./payload/update-key-page";
 import { CreateDataAccountArg, CreateDataAccount } from "./payload/create-data-account";
 import { WriteData, WriteDataArg } from "./payload/write-data";
 import { Transaction } from "./transaction";
+import { QueryOptions, QueryPagination } from "./api-args";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -42,6 +43,21 @@ export class Client {
   queryTx(txId: string): Promise<void> {
     return this.apiCall("query-tx", {
       txid: txId,
+    });
+  }
+
+  queryDirectory(url: string | AccURL, pagination?: QueryPagination, options?: QueryOptions): Promise<void> {
+    return this.apiCall("query-directory", {
+      url: url.toString(),
+      queryPagination: pagination,
+      queryOptions: options
+    });
+  }
+
+  queryData(url: string | AccURL, entryHash: string): Promise<void> {
+    return this.apiCall("query-data", {
+      url: url.toString(),
+      entryHash
     });
   }
 
