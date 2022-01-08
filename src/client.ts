@@ -14,6 +14,7 @@ import { CreateDataAccountArg, CreateDataAccount } from "./payload/create-data-a
 import { WriteData, WriteDataArg } from "./payload/write-data";
 import { Transaction } from "./transaction";
 import { QueryMultiResponse, QueryOptions, QueryPagination, QueryResponse } from "./query-types";
+import { CreateToken, CreateTokenArg } from "./payload/create-token";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -24,7 +25,7 @@ export class Client {
     this._rpcClient = new RpcClient(endpoint || TESTNET_ENDPOINT);
   }
 
-  async apiCall<T>(method: string, params: any): Promise<T> {
+  async call<T>(method: string, params: any): Promise<T> {
     return this._rpcClient.call(method, params);
   }
 
@@ -35,7 +36,7 @@ export class Client {
   queryUrl(url: string | AccURL | OriginSigner): Promise<QueryResponse<any>> {
     const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
 
-    return this.apiCall("query", {
+    return this.call("query", {
       url: urlStr,
     });
   }
@@ -44,13 +45,13 @@ export class Client {
     const chainIdStr =
       chainId instanceof Uint8Array ? Buffer.from(chainId).toString("hex") : chainId;
 
-    return this.apiCall("query-chain", {
+    return this.call("query-chain", {
       chainId: chainIdStr,
     });
   }
 
   queryTx(txId: string): Promise<QueryResponse<any>> {
-    return this.apiCall("query-tx", {
+    return this.call("query-tx", {
       txid: txId,
     });
   }
@@ -60,7 +61,7 @@ export class Client {
     pagination: QueryPagination
   ): Promise<QueryMultiResponse<any>> {
     const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
-    return this.apiCall("query-tx-history", {
+    return this.call("query-tx-history", {
       url: urlStr,
       ...pagination,
     });
@@ -71,7 +72,7 @@ export class Client {
     pagination: QueryPagination,
     options?: QueryOptions
   ): Promise<QueryResponse<any>> {
-    return this.apiCall("query-directory", {
+    return this.call("query-directory", {
       url: url.toString(),
       ...pagination,
       ...options,
@@ -79,7 +80,7 @@ export class Client {
   }
 
   queryData(url: string | AccURL, entryHash?: string): Promise<QueryResponse<any>> {
-    return this.apiCall("query-data", {
+    return this.call("query-data", {
       url: url.toString(),
       entryHash,
     });
@@ -90,7 +91,7 @@ export class Client {
     pagination: QueryPagination,
     options?: QueryOptions
   ): Promise<QueryResponse<any>> {
-    return this.apiCall("query-data-set", {
+    return this.call("query-data-set", {
       url: url.toString(),
       ...pagination,
       ...options,
@@ -104,7 +105,7 @@ export class Client {
     const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
     const keyStr = key instanceof Uint8Array ? Buffer.from(key).toString("hex") : key;
 
-    return this.apiCall("query-key-index", {
+    return this.call("query-key-index", {
       url: urlStr,
       key: keyStr,
     });
@@ -138,6 +139,10 @@ export class Client {
     return this._execute(new UpdateKeyPage(updateKeyPage), signer);
   }
 
+  createToken(createToken: CreateTokenArg, signer: OriginSigner): Promise<void> {
+    return this._execute(new CreateToken(createToken), signer);
+  }
+
   createTokenAccount(
     createTokenAccount: CreateTokenAccountArg,
     signer: OriginSigner
@@ -154,7 +159,7 @@ export class Client {
   }
 
   execute(tx: Transaction): Promise<void> {
-    return this._rpcClient.call("execute", tx.toTxRequest());
+    return this.call("execute", tx.toTxRequest());
   }
 
   private _execute(payload: Payload, signer: OriginSigner): Promise<void> {
@@ -170,7 +175,7 @@ export class Client {
    ******************/
 
   faucet(url: AccURL): Promise<void> {
-    return this.apiCall("faucet", {
+    return this.call("faucet", {
       url: url.toString(),
     });
   }

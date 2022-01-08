@@ -91,15 +91,22 @@ console.log("Identity " + identity);
 //   newKey: anotherKey2.publicKey,
 // }
 /////////////////////////
-const createDataAccount = {
-  url: "acc://luap/my-data",
-};
-const dataAccout = new OriginSigner(createDataAccount.url, kpIdentity);
+// const createDataAccount = {
+//   url: "acc://luap/my-data",
+// };
+// const dataAccout = new OriginSigner(createDataAccount.url, kpIdentity);
 /////////////////////////
 // const writeData = {
 //   extIds: [],
 //   data: Buffer.from("hello2")
 // }
+////////////////
+const createToken = {
+  url: identity.url + "/LUAP",
+  symbol: "LUAP-yolo",
+  precision: 0,
+  
+}
 ////////////////
 
 const client = new Client("http://127.0.1.1:26660/v2");
@@ -136,8 +143,10 @@ async function run() {
   // await client.queryData(dataAccout.url)
   // await client.queryDataSet(dataAccout.url, {start: 0, count: 10})
   // await client.queryTxHistory(dataAccout.url, {start: 0, count: 2});
-  await client.queryKeyPageIndex(dataAccout.url, kpIdentity.publicKey);
-  await client.queryKeyPageIndex(identity.url, kpIdentity.publicKey);
+  // await client.queryKeyPageIndex(dataAccout.url, kpIdentity.publicKey);
+  // await client.queryKeyPageIndex(identity.url, kpIdentity.publicKey);
+  await client.createToken(createToken, identity);
+
 }
 
 run();
