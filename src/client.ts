@@ -13,7 +13,13 @@ import { UpdateKeyPageArg, UpdateKeyPage } from "./payload/update-key-page";
 import { CreateDataAccountArg, CreateDataAccount } from "./payload/create-data-account";
 import { WriteData, WriteDataArg } from "./payload/write-data";
 import { Transaction } from "./transaction";
-import { QueryMultiResponse, QueryOptions, QueryPagination, QueryResponse } from "./query-types";
+import {
+  QueryMultiResponse,
+  QueryOptions,
+  QueryPagination,
+  QueryResponse,
+  TransactionResponse,
+} from "./api-types";
 import { CreateToken, CreateTokenArg } from "./payload/create-token";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
@@ -25,7 +31,7 @@ export class Client {
     this._rpcClient = new RpcClient(endpoint || TESTNET_ENDPOINT);
   }
 
-  async call<T>(method: string, params: any): Promise<T> {
+  async call<T>(method: string, params?: any): Promise<T> {
     return this._rpcClient.call(method, params);
   }
 
@@ -115,54 +121,69 @@ export class Client {
    * Transactions
    ******************/
 
-  sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<void> {
+  sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<TransactionResponse> {
     return this._execute(new SendTokens(sendTokens), signer);
   }
 
-  addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<void> {
+  addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<TransactionResponse> {
     return this._execute(new AddCredits(addCredits), signer);
   }
 
-  createIdentity(createIdentity: CreateIdentityArg, signer: OriginSigner): Promise<void> {
+  createIdentity(
+    createIdentity: CreateIdentityArg,
+    signer: OriginSigner
+  ): Promise<TransactionResponse> {
     return this._execute(new CreateIdentity(createIdentity), signer);
   }
 
-  createKeyBook(createKeyBook: CreateKeyBookArg, signer: OriginSigner): Promise<void> {
+  createKeyBook(
+    createKeyBook: CreateKeyBookArg,
+    signer: OriginSigner
+  ): Promise<TransactionResponse> {
     return this._execute(new CreateKeyBook(createKeyBook), signer);
   }
 
-  createKeyPage(createKeyPage: CreateKeyPageArg, signer: OriginSigner): Promise<void> {
+  createKeyPage(
+    createKeyPage: CreateKeyPageArg,
+    signer: OriginSigner
+  ): Promise<TransactionResponse> {
     return this._execute(new CreateKeyPage(createKeyPage), signer);
   }
 
-  updateKeyPage(updateKeyPage: UpdateKeyPageArg, signer: OriginSigner): Promise<void> {
+  updateKeyPage(
+    updateKeyPage: UpdateKeyPageArg,
+    signer: OriginSigner
+  ): Promise<TransactionResponse> {
     return this._execute(new UpdateKeyPage(updateKeyPage), signer);
   }
 
-  createToken(createToken: CreateTokenArg, signer: OriginSigner): Promise<void> {
+  createToken(createToken: CreateTokenArg, signer: OriginSigner): Promise<TransactionResponse> {
     return this._execute(new CreateToken(createToken), signer);
   }
 
   createTokenAccount(
     createTokenAccount: CreateTokenAccountArg,
     signer: OriginSigner
-  ): Promise<void> {
+  ): Promise<TransactionResponse> {
     return this._execute(new CreateTokenAccount(createTokenAccount), signer);
   }
 
-  createDataAccount(createDataAccount: CreateDataAccountArg, signer: OriginSigner): Promise<void> {
+  createDataAccount(
+    createDataAccount: CreateDataAccountArg,
+    signer: OriginSigner
+  ): Promise<TransactionResponse> {
     return this._execute(new CreateDataAccount(createDataAccount), signer);
   }
 
-  writeData(writeData: WriteDataArg, signer: OriginSigner): Promise<void> {
+  writeData(writeData: WriteDataArg, signer: OriginSigner): Promise<TransactionResponse> {
     return this._execute(new WriteData(writeData), signer);
   }
 
-  execute(tx: Transaction): Promise<void> {
+  execute(tx: Transaction): Promise<TransactionResponse> {
     return this.call("execute", tx.toTxRequest());
   }
 
-  private _execute(payload: Payload, signer: OriginSigner): Promise<void> {
+  private _execute(payload: Payload, signer: OriginSigner): Promise<TransactionResponse> {
     const si = generateSignatureInfo(signer);
     const tx = new Transaction(payload, si);
     tx.sign(signer);
@@ -174,10 +195,14 @@ export class Client {
    * Others
    ******************/
 
-  faucet(url: AccURL): Promise<void> {
+  faucet(url: AccURL): Promise<TransactionResponse> {
     return this.call("faucet", {
       url: url.toString(),
     });
+  }
+
+  version(): Promise<QueryResponse<any>> {
+    return this.call("version");
   }
 }
 

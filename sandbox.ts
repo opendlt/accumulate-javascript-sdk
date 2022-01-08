@@ -105,7 +105,7 @@ const createToken = {
   url: identity.url + "/LUAP",
   symbol: "LUAP-yolo",
   precision: 0,
-  
+
 }
 ////////////////
 
@@ -117,6 +117,7 @@ const client = new Client("http://127.0.1.1:26660/v2");
 
 async function run() {
   // await client.faucet(acc.url);
+  // await client.version();
   // await client.queryUrl(acc.url);
   // await client.addCredits(addCredits, acc);
   // await client.sendTokens(sendTokens, acc);
@@ -145,6 +146,8 @@ async function run() {
   // await client.queryTxHistory(dataAccout.url, {start: 0, count: 2});
   // await client.queryKeyPageIndex(dataAccout.url, kpIdentity.publicKey);
   // await client.queryKeyPageIndex(identity.url, kpIdentity.publicKey);
+  
+
   await client.createToken(createToken, identity);
 
 }

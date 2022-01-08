@@ -19,7 +19,7 @@ export class RpcClient {
   }
 
   async call(method: string, params: any): Promise<any> {
-    const data = {
+    const request = {
       jsonrpc: "2.0",
       id: 0,
       method: method,
@@ -27,14 +27,14 @@ export class RpcClient {
     };
 
     return axios
-      .post(this._endpoint, data)
+      .post(this._endpoint, request)
       .then((r) => {
         const { error, result } = r.data;
         if (error) {
-          console.error(JSON.stringify(error, null, 4));
+          console.error("error", JSON.stringify(error, null, 4));
           throw new RpcError(error);
         } else {
-          console.log(JSON.stringify(result, null, 4));
+          console.log("success", JSON.stringify(result, null, 4));
           return result;
         }
       })
