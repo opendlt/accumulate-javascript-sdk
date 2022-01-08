@@ -36,3 +36,9 @@ export type QueryResponse<T> = {
   };
   syntheticTxids?: string[];
 };
+
+export type TransactionResponse = {
+  hash: string;
+  message: string;
+  txod: string;
+};
