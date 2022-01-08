@@ -1,5 +1,16 @@
 import axios from "axios";
 
+export class RpcError extends Error {
+  readonly code: number;
+  readonly data?: any;
+
+  constructor(err: any) {
+    super(err.message);
+    this.code = err.code;
+    this.data = err.data;
+  }
+}
+
 export class RpcClient {
   private readonly _endpoint: string;
 
@@ -7,7 +18,7 @@ export class RpcClient {
     this._endpoint = endpoint;
   }
 
-  async call(method: string, params: any): Promise<void> {
+  async call(method: string, params: any): Promise<any> {
     const data = {
       jsonrpc: "2.0",
       id: 0,
@@ -21,8 +32,10 @@ export class RpcClient {
         const { error, result } = r.data;
         if (error) {
           console.error(JSON.stringify(error, null, 4));
+          throw new RpcError(error);
         } else {
           console.log(JSON.stringify(result, null, 4));
+          return result;
         }
       })
       .catch((error) => {

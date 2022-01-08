@@ -13,7 +13,7 @@ import { UpdateKeyPageArg, UpdateKeyPage } from "./payload/update-key-page";
 import { CreateDataAccountArg, CreateDataAccount } from "./payload/create-data-account";
 import { WriteData, WriteDataArg } from "./payload/write-data";
 import { Transaction } from "./transaction";
-import { QueryOptions, QueryPagination } from "./api-args";
+import { QueryMultiResponse, QueryOptions, QueryPagination, QueryResponse } from "./query-types";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -24,7 +24,7 @@ export class Client {
     this._rpcClient = new RpcClient(endpoint || TESTNET_ENDPOINT);
   }
 
-  async apiCall(method: string, params: any): Promise<void> {
+  async apiCall<T>(method: string, params: any): Promise<T> {
     return this._rpcClient.call(method, params);
   }
 
@@ -32,7 +32,7 @@ export class Client {
    * Queries
    ******************/
 
-  queryUrl(url: string | AccURL | OriginSigner): Promise<void> {
+  queryUrl(url: string | AccURL | OriginSigner): Promise<QueryResponse<any>> {
     const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
 
     return this.apiCall("query", {
@@ -40,24 +40,73 @@ export class Client {
     });
   }
 
-  queryTx(txId: string): Promise<void> {
+  queryChain(chainId: string | Uint8Array): Promise<QueryResponse<any>> {
+    const chainIdStr =
+      chainId instanceof Uint8Array ? Buffer.from(chainId).toString("hex") : chainId;
+
+    return this.apiCall("query-chain", {
+      chainId: chainIdStr,
+    });
+  }
+
+  queryTx(txId: string): Promise<QueryResponse<any>> {
     return this.apiCall("query-tx", {
       txid: txId,
     });
   }
 
-  queryDirectory(url: string | AccURL, pagination?: QueryPagination, options?: QueryOptions): Promise<void> {
-    return this.apiCall("query-directory", {
-      url: url.toString(),
-      queryPagination: pagination,
-      queryOptions: options
+  queryTxHistory(
+    url: string | AccURL | OriginSigner,
+    pagination: QueryPagination
+  ): Promise<QueryMultiResponse<any>> {
+    const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
+    return this.apiCall("query-tx-history", {
+      url: urlStr,
+      ...pagination,
     });
   }
 
-  queryData(url: string | AccURL, entryHash: string): Promise<void> {
+  queryDirectory(
+    url: string | AccURL,
+    pagination: QueryPagination,
+    options?: QueryOptions
+  ): Promise<QueryResponse<any>> {
+    return this.apiCall("query-directory", {
+      url: url.toString(),
+      ...pagination,
+      ...options,
+    });
+  }
+
+  queryData(url: string | AccURL, entryHash?: string): Promise<QueryResponse<any>> {
     return this.apiCall("query-data", {
       url: url.toString(),
-      entryHash
+      entryHash,
+    });
+  }
+
+  queryDataSet(
+    url: string | AccURL,
+    pagination: QueryPagination,
+    options?: QueryOptions
+  ): Promise<QueryResponse<any>> {
+    return this.apiCall("query-data-set", {
+      url: url.toString(),
+      ...pagination,
+      ...options,
+    });
+  }
+
+  queryKeyPageIndex(
+    url: string | AccURL | OriginSigner,
+    key: string | Uint8Array
+  ): Promise<QueryResponse<any>> {
+    const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
+    const keyStr = key instanceof Uint8Array ? Buffer.from(key).toString("hex") : key;
+
+    return this.apiCall("query-key-index", {
+      url: urlStr,
+      key: keyStr,
     });
   }
 

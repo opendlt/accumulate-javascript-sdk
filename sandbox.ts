@@ -98,7 +98,7 @@ const dataAccout = new OriginSigner(createDataAccount.url, kpIdentity);
 /////////////////////////
 // const writeData = {
 //   extIds: [],
-//   data: Buffer.from("hello")
+//   data: Buffer.from("hello2")
 // }
 ////////////////
 
@@ -114,9 +114,10 @@ async function run() {
   // await client.addCredits(addCredits, acc);
   // await client.sendTokens(sendTokens, acc);
   // await client.createIdentity(createIdentity, acc);
-  // await client.queryTx("dfb1114acec1e596974b3809dc42a4b1f5436a7bacf1691bc33d809566bcaa6b");
+  // await client.queryTx("39b6274c7924da01f66bbf0eb40daad2d6cd4ffc6843dbae9f047ca33385c3ab");
   // await client.createTokenAccount(createTokenAccount, identity);
   // await client.queryUrl(identity);
+  // await client.queryDirectory(identity.url, { start: 0, count: 10 });
   // await client.queryUrl("acc://df9ad7f007e643c29a20e736a3a5f9d31be4395584277143/ACME");
   // await client.sendTokens(sendTokensToLuap, acc);
   // await client.sendTokens(sendTokensToAcc2, signer);
@@ -132,9 +133,11 @@ async function run() {
   // await client.createDataAccount(createDataAccount, identity);
   // await client.queryUrl(createDataAccount.url);
   // await client.writeData(writeData, dataAccout);
-  // dfb1114acec1e596974b3809dc42a4b1f5436a7bacf1691bc33d809566bcaa6b
-  await client.queryData(dataAccout.url, "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")
-  // await client.queryDirectory(identity.url)
+  // await client.queryData(dataAccout.url)
+  // await client.queryDataSet(dataAccout.url, {start: 0, count: 10})
+  // await client.queryTxHistory(dataAccout.url, {start: 0, count: 2});
+  await client.queryKeyPageIndex(dataAccout.url, kpIdentity.publicKey);
+  await client.queryKeyPageIndex(identity.url, kpIdentity.publicKey);
 }
 
 run();
