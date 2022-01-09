@@ -26,34 +26,30 @@ export class RpcClient {
       params: params,
     };
 
-    return axios
-      .post(this._endpoint, request)
-      .then((r) => {
-        const { error, result } = r.data;
-        if (error) {
-          console.error("error", JSON.stringify(error, null, 4));
-          throw new RpcError(error);
-        } else {
-          console.log("success", JSON.stringify(result, null, 4));
-          return result;
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
-        }
-      });
+    try {
+      const {
+        data: { error, result },
+      } = await axios.post(this._endpoint, request);
+
+      if (error) {
+        console.error("error", JSON.stringify(error, null, 4));
+        return Promise.reject(new RpcError(error));
+      } else {
+        console.log("success", JSON.stringify(result, null, 4));
+        return result;
+      }
+    } catch (error: any) {
+      console.log("Error message", error.message);
+      console.log("Error code", error.code);
+      console.log("Erro numberr", error.errno);
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      }
+    }
   }
 }

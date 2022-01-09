@@ -51,7 +51,7 @@ export class UpdateKeyPage extends BasePayload {
     const forConcat = [];
 
     forConcat.push(uvarintMarshalBinary(TxType.UpdateKeyPage));
-    
+
     const opBuff = Buffer.allocUnsafe(1);
     opBuff.writeInt8(this._operation);
     forConcat.push(opBuff);

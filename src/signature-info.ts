@@ -2,7 +2,7 @@ import { AccURL } from "./acc-url";
 import { uvarintMarshalBinary, stringMarshalBinary } from "./encoding";
 
 export type SignatureInfo = {
-  url: AccURL;
+  origin: AccURL;
   nonce: number;
   keyPageHeight: number;
   keyPageIndex: number;
@@ -10,10 +10,9 @@ export type SignatureInfo = {
 
 export function marshalSignatureInfo(si: SignatureInfo): Buffer {
   return Buffer.concat([
-    stringMarshalBinary(si.url.toString()),
-    uvarintMarshalBinary(si.nonce),
+    stringMarshalBinary(si.origin.toString()),
     uvarintMarshalBinary(si.keyPageHeight),
-    uvarintMarshalBinary(0),
     uvarintMarshalBinary(si.keyPageIndex),
+    uvarintMarshalBinary(si.nonce),
   ]);
 }

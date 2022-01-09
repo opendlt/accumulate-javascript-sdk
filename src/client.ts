@@ -13,13 +13,7 @@ import { UpdateKeyPageArg, UpdateKeyPage } from "./payload/update-key-page";
 import { CreateDataAccountArg, CreateDataAccount } from "./payload/create-data-account";
 import { WriteData, WriteDataArg } from "./payload/write-data";
 import { Transaction } from "./transaction";
-import {
-  QueryMultiResponse,
-  QueryOptions,
-  QueryPagination,
-  QueryResponse,
-  TransactionResponse,
-} from "./api-types";
+import { QueryOptions, QueryPagination } from "./api-types";
 import { CreateToken, CreateTokenArg } from "./payload/create-token";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
@@ -39,7 +33,7 @@ export class Client {
    * Queries
    ******************/
 
-  queryUrl(url: string | AccURL | OriginSigner): Promise<QueryResponse<any>> {
+  queryUrl(url: string | AccURL | OriginSigner): Promise<any> {
     const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
 
     return this.call("query", {
@@ -47,7 +41,7 @@ export class Client {
     });
   }
 
-  queryChain(chainId: string | Uint8Array): Promise<QueryResponse<any>> {
+  queryChain(chainId: string | Uint8Array): Promise<any> {
     const chainIdStr =
       chainId instanceof Uint8Array ? Buffer.from(chainId).toString("hex") : chainId;
 
@@ -56,16 +50,13 @@ export class Client {
     });
   }
 
-  queryTx(txId: string): Promise<QueryResponse<any>> {
+  queryTx(txId: string): Promise<any> {
     return this.call("query-tx", {
       txid: txId,
     });
   }
 
-  queryTxHistory(
-    url: string | AccURL | OriginSigner,
-    pagination: QueryPagination
-  ): Promise<QueryMultiResponse<any>> {
+  queryTxHistory(url: string | AccURL | OriginSigner, pagination: QueryPagination): Promise<any> {
     const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
     return this.call("query-tx-history", {
       url: urlStr,
@@ -77,7 +68,7 @@ export class Client {
     url: string | AccURL,
     pagination: QueryPagination,
     options?: QueryOptions
-  ): Promise<QueryResponse<any>> {
+  ): Promise<any> {
     return this.call("query-directory", {
       url: url.toString(),
       ...pagination,
@@ -85,7 +76,7 @@ export class Client {
     });
   }
 
-  queryData(url: string | AccURL, entryHash?: string): Promise<QueryResponse<any>> {
+  queryData(url: string | AccURL, entryHash?: string): Promise<any> {
     return this.call("query-data", {
       url: url.toString(),
       entryHash,
@@ -96,7 +87,7 @@ export class Client {
     url: string | AccURL,
     pagination: QueryPagination,
     options?: QueryOptions
-  ): Promise<QueryResponse<any>> {
+  ): Promise<any> {
     return this.call("query-data-set", {
       url: url.toString(),
       ...pagination,
@@ -104,10 +95,7 @@ export class Client {
     });
   }
 
-  queryKeyPageIndex(
-    url: string | AccURL | OriginSigner,
-    key: string | Uint8Array
-  ): Promise<QueryResponse<any>> {
+  queryKeyPageIndex(url: string | AccURL | OriginSigner, key: string | Uint8Array): Promise<any> {
     const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
     const keyStr = key instanceof Uint8Array ? Buffer.from(key).toString("hex") : key;
 
@@ -121,69 +109,54 @@ export class Client {
    * Transactions
    ******************/
 
-  sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<TransactionResponse> {
+  sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<any> {
     return this._execute(new SendTokens(sendTokens), signer);
   }
 
-  addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<TransactionResponse> {
+  addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<any> {
     return this._execute(new AddCredits(addCredits), signer);
   }
 
-  createIdentity(
-    createIdentity: CreateIdentityArg,
-    signer: OriginSigner
-  ): Promise<TransactionResponse> {
+  createIdentity(createIdentity: CreateIdentityArg, signer: OriginSigner): Promise<any> {
     return this._execute(new CreateIdentity(createIdentity), signer);
   }
 
-  createKeyBook(
-    createKeyBook: CreateKeyBookArg,
-    signer: OriginSigner
-  ): Promise<TransactionResponse> {
+  createKeyBook(createKeyBook: CreateKeyBookArg, signer: OriginSigner): Promise<any> {
     return this._execute(new CreateKeyBook(createKeyBook), signer);
   }
 
-  createKeyPage(
-    createKeyPage: CreateKeyPageArg,
-    signer: OriginSigner
-  ): Promise<TransactionResponse> {
+  createKeyPage(createKeyPage: CreateKeyPageArg, signer: OriginSigner): Promise<any> {
     return this._execute(new CreateKeyPage(createKeyPage), signer);
   }
 
-  updateKeyPage(
-    updateKeyPage: UpdateKeyPageArg,
-    signer: OriginSigner
-  ): Promise<TransactionResponse> {
+  updateKeyPage(updateKeyPage: UpdateKeyPageArg, signer: OriginSigner): Promise<any> {
     return this._execute(new UpdateKeyPage(updateKeyPage), signer);
   }
 
-  createToken(createToken: CreateTokenArg, signer: OriginSigner): Promise<TransactionResponse> {
+  createToken(createToken: CreateTokenArg, signer: OriginSigner): Promise<any> {
     return this._execute(new CreateToken(createToken), signer);
   }
 
   createTokenAccount(
     createTokenAccount: CreateTokenAccountArg,
     signer: OriginSigner
-  ): Promise<TransactionResponse> {
+  ): Promise<any> {
     return this._execute(new CreateTokenAccount(createTokenAccount), signer);
   }
 
-  createDataAccount(
-    createDataAccount: CreateDataAccountArg,
-    signer: OriginSigner
-  ): Promise<TransactionResponse> {
+  createDataAccount(createDataAccount: CreateDataAccountArg, signer: OriginSigner): Promise<any> {
     return this._execute(new CreateDataAccount(createDataAccount), signer);
   }
 
-  writeData(writeData: WriteDataArg, signer: OriginSigner): Promise<TransactionResponse> {
+  writeData(writeData: WriteDataArg, signer: OriginSigner): Promise<any> {
     return this._execute(new WriteData(writeData), signer);
   }
 
-  execute(tx: Transaction): Promise<TransactionResponse> {
+  execute(tx: Transaction): Promise<any> {
     return this.call("execute", tx.toTxRequest());
   }
 
-  private _execute(payload: Payload, signer: OriginSigner): Promise<TransactionResponse> {
+  private _execute(payload: Payload, signer: OriginSigner): Promise<any> {
     const si = generateSignatureInfo(signer);
     const tx = new Transaction(payload, si);
     tx.sign(signer);
@@ -195,20 +168,20 @@ export class Client {
    * Others
    ******************/
 
-  faucet(url: AccURL): Promise<TransactionResponse> {
+  faucet(url: AccURL): Promise<any> {
     return this.call("faucet", {
       url: url.toString(),
     });
   }
 
-  version(): Promise<QueryResponse<any>> {
+  version(): Promise<any> {
     return this.call("version");
   }
 }
 
 function generateSignatureInfo(signer: OriginSigner): SignatureInfo {
   return {
-    url: signer.url,
+    origin: signer.url,
     nonce: Date.now(),
     keyPageHeight: signer.keyPageHeigt,
     keyPageIndex: signer.keyPageIndex,

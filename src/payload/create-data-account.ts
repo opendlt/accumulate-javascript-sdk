@@ -18,7 +18,9 @@ export class CreateDataAccount extends BasePayload {
     super();
     this._url = AccURL.toAccURL(arg.url);
     this._keyBookUrl = arg.keyBookUrl ? AccURL.toAccURL(arg.keyBookUrl) : undefined;
-    this._managerKeyBookUrl = arg.managerKeyBookUrl ? AccURL.toAccURL(arg.managerKeyBookUrl) : undefined;
+    this._managerKeyBookUrl = arg.managerKeyBookUrl
+      ? AccURL.toAccURL(arg.managerKeyBookUrl)
+      : undefined;
   }
 
   protected _marshalBinary(): Buffer {

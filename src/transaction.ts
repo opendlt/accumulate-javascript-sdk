@@ -9,6 +9,7 @@ export class Transaction {
   private readonly _sigInfo: SignatureInfo;
   private readonly _payloadBinary: Buffer;
   private _signature?: Signature;
+  private _hash?: Buffer;
 
   constructor(payload: Payload, sigInfo: SignatureInfo, signature?: Signature) {
     this._payloadBinary = payload.marshalBinary();
@@ -17,9 +18,13 @@ export class Transaction {
   }
 
   hash(): Buffer {
+    if (this._hash) {
+      return this._hash;
+    }
     const sHash = sha256(marshalSignatureInfo(this._sigInfo));
     const tHash = sha256(this._payloadBinary);
-    return sha256(Buffer.concat([sHash, tHash]));
+    this._hash = sha256(Buffer.concat([sHash, tHash]));
+    return this._hash;
   }
 
   dataForSigning() {
@@ -31,7 +36,7 @@ export class Transaction {
   }
 
   get origin(): AccURL {
-    return this._sigInfo.url;
+    return this._sigInfo.origin;
   }
 
   get signatureInfo(): SignatureInfo {
@@ -67,7 +72,7 @@ export class Transaction {
         height: this._sigInfo.keyPageHeight,
         index: this._sigInfo.keyPageIndex,
       },
-      payload: this._payloadBinary.toString("base64"),
+      payload: this._payloadBinary.toString("hex"),
     };
   }
 }
