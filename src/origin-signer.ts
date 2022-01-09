@@ -15,16 +15,16 @@ type KeyPageOptions = {
 };
 
 export class OriginSigner {
-  private readonly _url: AccURL;
+  private readonly _origin: AccURL;
   private readonly _keypair: Keypair;
   private readonly _keyPageHeight: number;
   private readonly _keyPageIndex: number;
 
-  constructor(url: string | AccURL, keypair: Keypair, keyPageOptions?: KeyPageOptions) {
-    this._url = AccURL.toAccURL(url);
+  constructor(origin: string | AccURL, keypair: Keypair, keyPageOptions?: KeyPageOptions) {
+    this._origin = AccURL.toAccURL(origin);
     this._keypair = keypair;
-    this._keyPageHeight = keyPageOptions?.keyPageHeigt || 1;
-    this._keyPageIndex = keyPageOptions?.keyPageIndex || 0;
+    this._keyPageHeight = keyPageOptions?.keyPageHeigt ?? 1;
+    this._keyPageIndex = keyPageOptions?.keyPageIndex ?? 0;
   }
 
   get publicKey(): Uint8Array {
@@ -32,7 +32,7 @@ export class OriginSigner {
   }
 
   get url(): AccURL {
-    return this._url;
+    return this._origin;
   }
 
   get keyPageHeigt(): number {
@@ -44,7 +44,7 @@ export class OriginSigner {
   }
 
   toString() {
-    return this._url.toString();
+    return this._origin.toString();
   }
 
   sign(tx: Transaction): Signature {
