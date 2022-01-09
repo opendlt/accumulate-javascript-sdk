@@ -8,14 +8,6 @@ const kp = Keypair.fromSecretKey(sk);
 const acc = LiteAccount.generateWithKeypair(kp);
 console.log(acc.url.toString());
 
-// const nonce = new u64(Date.now());
-// const si = {
-//   url: acc.url,
-//   nonce,
-//   keyPageHeight: new u64(1),
-//   keyPageIndex: new u64(0),
-// };
-
 /////////////////////////
 
 const kp2 = Keypair.fromSeed(
@@ -24,7 +16,7 @@ const kp2 = Keypair.fromSeed(
 const acc2 = LiteAccount.generateWithKeypair(kp2);
 const recipient = acc2.url;
 console.log("Sending to " + recipient);
-// const sendTokens = { to: [{ url: recipient.toString(), amount: 1000000000 }] };
+// const sendTokens = { to: [{ url: recipient, amount: 1000000000 }] };
 
 /////////////////////////
 // const addCredits = {
@@ -101,12 +93,12 @@ console.log("Identity " + identity);
 //   data: Buffer.from("hello2")
 // }
 ////////////////
-const createToken = {
-  url: identity.url + "/LUAP",
-  symbol: "LUAP-yolo",
-  precision: 0,
+// const createToken = {
+//   url: identity.url + "/LUAP",
+//   symbol: "LUAP-yolo",
+//   precision: 0,
 
-}
+// }
 ////////////////
 
 const client = new Client("http://127.0.1.1:26660/v2");
@@ -118,7 +110,7 @@ const client = new Client("http://127.0.1.1:26660/v2");
 async function run() {
   // await client.faucet(acc.url);
   // await client.version();
-  // await client.queryUrl(acc.url);
+  await client.queryUrl(acc.url);
   // await client.addCredits(addCredits, acc);
   // await client.sendTokens(sendTokens, acc);
   // await client.createIdentity(createIdentity, acc);
@@ -146,10 +138,7 @@ async function run() {
   // await client.queryTxHistory(dataAccout.url, {start: 0, count: 2});
   // await client.queryKeyPageIndex(dataAccout.url, kpIdentity.publicKey);
   // await client.queryKeyPageIndex(identity.url, kpIdentity.publicKey);
-  
-
-  await client.createToken(createToken, identity);
-
+  // await client.createToken(createToken, identity);
 }
 
 run();
