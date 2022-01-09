@@ -1,5 +1,5 @@
-import { uvarintMarshalBinary, bytesMarshalBinary, stringMarshalBinary } from "./encoding";
-import { u64 } from "./bigint";
+import { uvarintMarshalBinary, bytesMarshalBinary, stringMarshalBinary } from "../src/encoding";
+import { u64 } from "../src/bigint";
 import { BN } from "bn.js";
 
 test("should varint marshal binary u64 numbers", () => {
