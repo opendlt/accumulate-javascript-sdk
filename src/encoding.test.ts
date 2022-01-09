@@ -1,4 +1,4 @@
-import { uvarintMarshalBinary } from "./encoding";
+import { uvarintMarshalBinary, bytesMarshalBinary, stringMarshalBinary } from "./encoding";
 import { u64 } from "./bigint";
 import { BN } from "bn.js";
 
@@ -25,4 +25,15 @@ test("should throw on number input greater than MAX_SAFE_INTEGER", () => {
   expect(() => uvarintMarshalBinary(Number.MAX_SAFE_INTEGER + 1)).toThrowError(
     /Cannot marshal binary number greater than MAX_SAFE_INTEGER/
   );
+});
+
+test("should marshal binary bytes arrays", () => {
+  expect(bytesMarshalBinary(Buffer.from([]))).toStrictEqual(Buffer.from([0]));
+  expect(bytesMarshalBinary(Buffer.from([0, 1, 2, 3]))).toStrictEqual(Buffer.from([4, 0, 1, 2, 3]));
+});
+
+test("should marshal binary strings", () => {
+  expect(stringMarshalBinary()).toStrictEqual(Buffer.from([0]));
+  expect(stringMarshalBinary("")).toStrictEqual(Buffer.from([0]));
+  expect(stringMarshalBinary("hello")).toStrictEqual(Buffer.from([5, 104, 101, 108, 108, 111]));
 });
