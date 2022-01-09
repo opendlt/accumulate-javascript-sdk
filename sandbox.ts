@@ -110,13 +110,13 @@ const client = new Client("http://127.0.1.1:26660/v2");
 async function run() {
   // await client.faucet(acc.url);
   // await client.version();
-  await client.queryUrl(acc.url);
+  // await client.queryUrl(acc.url);
   // await client.addCredits(addCredits, acc);
   // await client.sendTokens(sendTokens, acc);
   // await client.createIdentity(createIdentity, acc);
   // await client.queryTx("39b6274c7924da01f66bbf0eb40daad2d6cd4ffc6843dbae9f047ca33385c3ab");
   // await client.createTokenAccount(createTokenAccount, identity);
-  // await client.queryUrl(identity);
+  await client.queryUrl("acc://luap/ACME");
   // await client.queryDirectory(identity.url, { start: 0, count: 10 });
   // await client.queryUrl("acc://df9ad7f007e643c29a20e736a3a5f9d31be4395584277143/ACME");
   // await client.sendTokens(sendTokensToLuap, acc);

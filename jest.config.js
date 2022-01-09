@@ -6,4 +6,5 @@ module.exports = {
   },
   collectCoverage: true,
   collectCoverageFrom: ["<rootDir>/src/**"],
+  testTimeout: 60000,
 };

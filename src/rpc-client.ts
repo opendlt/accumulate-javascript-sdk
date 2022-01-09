@@ -32,7 +32,7 @@ export class RpcClient {
       } = await axios.post(this._endpoint, request);
 
       if (error) {
-        console.error("error", JSON.stringify(error, null, 4));
+        console.error("error", method, JSON.stringify(error, null, 4));
         return Promise.reject(new RpcError(error));
       } else {
         console.log("success", JSON.stringify(result, null, 4));
