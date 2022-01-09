@@ -1,19 +1,63 @@
-import { SignatureInfo, marshalSignatureInfo } from "./signature-info";
 import { sha256 } from "./crypto";
-import { uvarintMarshalBinary } from "./encoding";
+import { stringMarshalBinary, uvarintMarshalBinary } from "./encoding";
 import { Payload } from "./payload";
 import { OriginSigner, Signature } from "./origin-signer";
 import { AccURL } from "./acc-url";
 
+type HeaderOptions = {
+  nonce?: number;
+  keyPageHeight?: number;
+  keyPageIndex?: number;
+};
+
+export class Header {
+  private readonly _origin: AccURL;
+  private readonly _nonce: number;
+  private readonly _keyPageHeight: number;
+  private readonly _keyPageIndex: number;
+
+  constructor(origin: string | AccURL, opts?: HeaderOptions) {
+    this._origin = AccURL.toAccURL(origin);
+    this._nonce = opts?.nonce ?? Date.now();
+    this._keyPageHeight = opts?.keyPageHeight ?? 1;
+    this._keyPageIndex = opts?.keyPageHeight ?? 0;
+  }
+
+  get origin(): AccURL {
+    return this._origin;
+  }
+
+  get nonce(): number {
+    return this._nonce;
+  }
+
+  get keyPageHeight(): number {
+    return this._keyPageHeight;
+  }
+
+  get keyPageIndex(): number {
+    return this._keyPageIndex;
+  }
+
+  marshalBinary(): Buffer {
+    return Buffer.concat([
+      stringMarshalBinary(this._origin.toString()),
+      uvarintMarshalBinary(this._keyPageHeight),
+      uvarintMarshalBinary(this._keyPageIndex),
+      uvarintMarshalBinary(this._nonce),
+    ]);
+  }
+}
+
 export class Transaction {
-  private readonly _sigInfo: SignatureInfo;
+  private readonly _header: Header;
   private readonly _payloadBinary: Buffer;
   private _signature?: Signature;
   private _hash?: Buffer;
 
-  constructor(payload: Payload, sigInfo: SignatureInfo, signature?: Signature) {
+  constructor(payload: Payload, header: Header, signature?: Signature) {
     this._payloadBinary = payload.marshalBinary();
-    this._sigInfo = sigInfo;
+    this._header = header;
     this._signature = signature;
   }
 
@@ -21,14 +65,14 @@ export class Transaction {
     if (this._hash) {
       return this._hash;
     }
-    const sHash = sha256(marshalSignatureInfo(this._sigInfo));
+    const sHash = sha256(this._header.marshalBinary());
     const tHash = sha256(this._payloadBinary);
     this._hash = sha256(Buffer.concat([sHash, tHash]));
     return this._hash;
   }
 
   dataForSigning() {
-    return Buffer.concat([uvarintMarshalBinary(this._sigInfo.nonce), this.hash()]);
+    return Buffer.concat([uvarintMarshalBinary(this._header.nonce), this.hash()]);
   }
 
   get payload(): Uint8Array {
@@ -36,11 +80,11 @@ export class Transaction {
   }
 
   get origin(): AccURL {
-    return this._sigInfo.origin;
+    return this._header.origin;
   }
 
-  get signatureInfo(): SignatureInfo {
-    return this._sigInfo;
+  get header(): Header {
+    return this._header;
   }
 
   get signature(): Signature | undefined {
@@ -65,12 +109,12 @@ export class Transaction {
       origin: this.origin.toString(),
       signer: {
         publicKey: Buffer.from(this._signature!.publicKey).toString("hex"),
-        nonce: this._sigInfo.nonce,
+        nonce: this._header.nonce,
       },
       signature: Buffer.from(this._signature!.signature).toString("hex"),
       keyPage: {
-        height: this._sigInfo.keyPageHeight,
-        index: this._sigInfo.keyPageIndex,
+        height: this._header.keyPageHeight,
+        index: this._header.keyPageIndex,
       },
       payload: this._payloadBinary.toString("hex"),
     };

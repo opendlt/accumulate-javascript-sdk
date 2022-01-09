@@ -2,7 +2,6 @@ import { AccURL } from "./acc-url";
 import { RpcClient } from "./rpc-client";
 import { Payload } from "./payload";
 import { OriginSigner } from "./origin-signer";
-import { SignatureInfo } from "./signature-info";
 import { AddCreditsArg, AddCredits } from "./payload/add-credits";
 import { CreateIdentityArg, CreateIdentity } from "./payload/create-identity";
 import { SendTokensArg, SendTokens } from "./payload/send-tokens";
@@ -15,6 +14,7 @@ import { WriteData, WriteDataArg } from "./payload/write-data";
 import { Transaction } from "./transaction";
 import { QueryOptions, QueryPagination } from "./api-types";
 import { CreateToken, CreateTokenArg } from "./payload/create-token";
+import { Header } from ".";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -157,8 +157,11 @@ export class Client {
   }
 
   private _execute(payload: Payload, signer: OriginSigner): Promise<any> {
-    const si = generateSignatureInfo(signer);
-    const tx = new Transaction(payload, si);
+    const header = new Header(signer.url, {
+      keyPageHeight: signer.keyPageHeigt,
+      keyPageIndex: signer.keyPageIndex,
+    });
+    const tx = new Transaction(payload, header);
     tx.sign(signer);
 
     return this.execute(tx);
@@ -177,13 +180,4 @@ export class Client {
   version(): Promise<any> {
     return this.call("version");
   }
-}
-
-function generateSignatureInfo(signer: OriginSigner): SignatureInfo {
-  return {
-    origin: signer.url,
-    nonce: Date.now(),
-    keyPageHeight: signer.keyPageHeigt,
-    keyPageIndex: signer.keyPageIndex,
-  };
 }
