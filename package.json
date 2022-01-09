@@ -7,7 +7,9 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "jest",
+    "test": "jest --config=test/jest.config.js",
+    "integration-test": "jest --config=test-it/jest.config.js",
+    "test-all": "jest",
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "build": "tsc -p tsconfig.json",
