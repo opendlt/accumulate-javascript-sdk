@@ -20,7 +20,7 @@ export class Header {
     this._origin = AccURL.toAccURL(origin);
     this._nonce = opts?.nonce ?? Date.now();
     this._keyPageHeight = opts?.keyPageHeight ?? 1;
-    this._keyPageIndex = opts?.keyPageHeight ?? 0;
+    this._keyPageIndex = opts?.keyPageIndex ?? 0;
   }
 
   get origin(): AccURL {
