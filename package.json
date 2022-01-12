@@ -1,9 +1,9 @@
 {
   "name": "accumulate.js",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Accumulate blockchain JS/TS SDK",
   "main": "src/index.ts",
-  "author": "Paul Bernier",
+  "author": "Luciap Technology Inc.",
   "license": "MIT",
   "private": false,
   "scripts": {
