@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 
 export class RpcError extends Error {
   readonly code: number;
@@ -12,16 +12,24 @@ export class RpcError extends Error {
 }
 
 export class RpcClient {
+  private readonly _httpCli: AxiosInstance;
   private readonly _endpoint: string;
+  private _idCounter: number;
 
   constructor(endpoint: string) {
+    const httpCliOptions = {
+      headers: { "Content-Type": "application/json" },
+    };
+
+    this._httpCli = axios.create(httpCliOptions);
     this._endpoint = endpoint;
+    this._idCounter = 0;
   }
 
   async call(method: string, params: any): Promise<any> {
     const request = {
       jsonrpc: "2.0",
-      id: 0,
+      id: this._idCounter++,
       method: method,
       params: params,
     };
@@ -29,7 +37,7 @@ export class RpcClient {
     try {
       const {
         data: { error, result },
-      } = await axios.post(this._endpoint, request);
+      } = await this._httpCli.post(this._endpoint, request);
 
       if (error) {
         console.error("error", method, JSON.stringify(error, null, 4));
