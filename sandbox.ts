@@ -116,7 +116,7 @@ async function run() {
   // await client.createIdentity(createIdentity, acc);
   // await client.queryTx("39b6274c7924da01f66bbf0eb40daad2d6cd4ffc6843dbae9f047ca33385c3ab");
   // await client.createTokenAccount(createTokenAccount, identity);
-  await client.queryUrl("acc://luap/ACME");
+  // await client.queryUrl("acc://luap/ACME");
   // await client.queryDirectory(identity.url, { start: 0, count: 10 });
   // await client.queryUrl("acc://df9ad7f007e643c29a20e736a3a5f9d31be4395584277143/ACME");
   // await client.sendTokens(sendTokensToLuap, acc);
@@ -139,6 +139,7 @@ async function run() {
   // await client.queryKeyPageIndex(dataAccout.url, kpIdentity.publicKey);
   // await client.queryKeyPageIndex(identity.url, kpIdentity.publicKey);
   // await client.createToken(createToken, identity);
+  // await client.queryDataSet("acc://302e37313538/my-data", { start: 0, count: 10 });
 }
 
 run();

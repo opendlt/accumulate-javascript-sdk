@@ -35,7 +35,7 @@ export class RpcClient {
         console.error("error", method, JSON.stringify(error, null, 4));
         return Promise.reject(new RpcError(error));
       } else {
-        console.log("success", JSON.stringify(result, null, 4));
+        console.log("success", method, JSON.stringify(result, null, 4));
         return result;
       }
     } catch (error: any) {
