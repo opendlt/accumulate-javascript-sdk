@@ -1,9 +1,9 @@
 import { sha256 } from "./crypto";
 import { AccURL, ACME_TOKEN_URL } from "./acc-url";
 import { Keypair } from "./keypair";
-import { OriginSigner } from "./origin-signer";
+import { KeypairSigner } from "./keypair-signer";
 
-export class LiteAccount extends OriginSigner {
+export class LiteAccount extends KeypairSigner {
   private readonly _tokenUrl: AccURL;
 
   constructor(tokenUrl: string | AccURL, keypair: Keypair) {
@@ -21,6 +21,10 @@ export class LiteAccount extends OriginSigner {
 
   static generateWithTokenUrl(tokenUrl: AccURL): LiteAccount {
     return new LiteAccount(tokenUrl, new Keypair());
+  }
+
+  get url(): AccURL {
+    return this._origin;
   }
 
   get tokenUrl(): AccURL {

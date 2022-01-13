@@ -1,4 +1,4 @@
-import { Keypair, Client, LiteAccount, AccURL, OriginSigner } from ".";
+import { Keypair, Client, LiteAccount, AccURL, KeypairSigner } from ".";
 
 const sk = Buffer.from(
   "d24c73abfd99dfbc2d10f5e987b8866b0d479742ca9904713aac0fa8f59f62cd2a8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f",
@@ -28,7 +28,7 @@ console.log("Sending to " + recipient);
 const kpIdentity = Keypair.fromSeed(
   Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
 );
-const identity = new OriginSigner(AccURL.parse("acc://luap"), kpIdentity);
+const identity = new KeypairSigner(AccURL.parse("acc://luap"), kpIdentity);
 
 console.log("pk identity " + Buffer.from(identity.publicKey).toString("hex"));
 
@@ -46,12 +46,12 @@ console.log("Identity " + identity);
 //   tokenUrl: ACME_TOKEN_URL.toString(),
 // };
 /////////////////////////
-// const book = new OriginSigner(AccURL.parse("acc://luap/luap-book"), kpIdentity);
+// const book = new KeypairSigner(AccURL.parse("acc://luap/luap-book"), kpIdentity);
 
 // const anotherKey = Keypair.fromSeed(
 //   Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
 // );
-// const keyPage = new OriginSigner(identity.url + "/luap-page2", anotherKey);
+// const keyPage = new KeypairSigner(identity.url + "/luap-page2", anotherKey);
 
 // const createKeyPage = {
 //   url: keyPage.url,
@@ -86,7 +86,7 @@ console.log("Identity " + identity);
 // const createDataAccount = {
 //   url: "acc://luap/my-data",
 // };
-// const dataAccout = new OriginSigner(createDataAccount.url, kpIdentity);
+// const dataAccout = new KeypairSigner(createDataAccount.url, kpIdentity);
 /////////////////////////
 // const writeData = {
 //   extIds: [],
@@ -105,7 +105,7 @@ const client = new Client("http://127.0.1.1:26660/v2");
 
 // const sendTokensToLuap = { to: [{ url: identity + "/ACME6", amount: 100000000 }] };
 // const sendTokensToAcc2 = { to: [{ url: acc2.url, amount: 100000000 }] };
-// const signer = new OriginSigner(tokenAccount, kpIdentity);
+// const signer = new KeypairSigner(tokenAccount, kpIdentity);
 
 async function run() {
   // await client.faucet(acc.url);

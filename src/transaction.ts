@@ -95,8 +95,8 @@ export class Transaction {
     this._signature = signature;
   }
 
-  sign(signer: OriginSigner): void {
-    this._signature = signer.sign(this);
+  async sign(signer: OriginSigner): Promise<void> {
+    this._signature = await signer.sign(this);
   }
 
   toTxRequest(checkOnly?: boolean): TxRequest {
