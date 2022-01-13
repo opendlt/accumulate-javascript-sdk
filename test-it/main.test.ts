@@ -40,7 +40,7 @@ test("should add credits", async () => {
   });
 });
 
-test("should create identity", async () => {
+test("should manage identity", async () => {
   const identityKeyPair = Keypair.generate();
   const authority = randomString();
   const identity = new OriginSigner(`acc://${authority}`, identityKeyPair);
@@ -56,9 +56,15 @@ test("should create identity", async () => {
   await client.createIdentity(createIdentity, acc);
   await waitOn(() => client.queryUrl(identity.url));
 
-  let res = await client.queryUrl(identity.url);
+  const res = await client.queryUrl(identity.url);
   expect(res.type).toStrictEqual("identity");
 
+  await testTokenAccount(identity);
+  await testKeyPageAndBook(identity);
+  await testData(identity, identityKeyPair);
+});
+
+async function testTokenAccount(identity) {
   // Create token account
   const tokenAccountUrl = identity.url + "/ACME";
   const createTokenAccount = {
@@ -68,9 +74,40 @@ test("should create identity", async () => {
   await client.createTokenAccount(createTokenAccount, identity);
   await waitOn(() => client.queryUrl(tokenAccountUrl));
 
-  res = await client.queryUrl(tokenAccountUrl);
+  const res = await client.queryUrl(tokenAccountUrl);
   expect(res.type).toStrictEqual("tokenAccount");
+}
 
+async function testKeyPageAndBook(identity) {
+  // Create a new key page
+  const pageKeypair = Keypair.generate();
+  const newKeyPageUrl = identity + "/p/" + randomString();
+  const createKeyPage = {
+    url: newKeyPageUrl,
+    keys: [pageKeypair.publicKey],
+  };
+
+  await client.createKeyPage(createKeyPage, identity);
+  await waitOn(() => client.queryUrl(newKeyPageUrl));
+
+  let res = await client.queryUrl(newKeyPageUrl);
+  expect(res.type).toStrictEqual("keyPage");
+
+  // Create a new key book
+  const newKeyBookUrl = identity + "/b/" + randomString();
+  const createKeyBook = {
+    url: newKeyBookUrl,
+    pages: [newKeyPageUrl],
+  };
+
+  await client.createKeyBook(createKeyBook, identity);
+  await waitOn(() => client.queryUrl(newKeyBookUrl));
+
+  res = await client.queryUrl(newKeyBookUrl);
+  expect(res.type).toStrictEqual("keyBook");
+}
+
+async function testData(identity, identityKeyPair) {
   // Create data account
   const dataAccountUrl = identity.url + "/my-data";
   const createDataAccount = {
@@ -80,7 +117,7 @@ test("should create identity", async () => {
   await client.createDataAccount(createDataAccount, identity);
   await waitOn(() => client.queryUrl(dataAccountUrl));
 
-  res = await client.queryUrl(dataAccountUrl);
+  let res = await client.queryUrl(dataAccountUrl);
   expect(res.type).toStrictEqual("dataAccount");
 
   // Write data
@@ -120,7 +157,7 @@ test("should create identity", async () => {
   // Query data per entry hash
   res = await client.queryData(dataAccountUrl, firstEntryHash);
   expect(res.data.entry.data).toStrictEqual(data.toString("hex"));
-});
+}
 
 async function waitOn(fn: () => void, timeout?: number) {
   const to = timeout ?? 10_000;
@@ -142,8 +179,8 @@ function randomBuffer(length = 12) {
   return Buffer.from(randomBytes(length));
 }
 
-function randomString(length = 12) {
-  return Buffer.from(Math.random().toString()).toString("hex").slice(0, length);
+function randomString(length = 6) {
+  return randomBuffer(length * 2).toString("hex");
 }
 
 async function sleep(millis: number) {
