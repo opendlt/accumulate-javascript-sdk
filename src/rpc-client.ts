@@ -34,6 +34,8 @@ export class RpcClient {
       params: params,
     };
 
+    console.log(params)
+
     try {
       const {
         data: { error, result },
