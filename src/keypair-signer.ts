@@ -1,0 +1,55 @@
+import { AccURL } from "./acc-url";
+import { Keypair } from "./keypair";
+
+import nacl from "tweetnacl";
+import { Transaction } from "./transaction";
+import { OriginSigner, Signature, KeyPageOptions } from "./origin-signer";
+
+export class KeypairSigner implements OriginSigner {
+  protected readonly _origin: AccURL;
+  protected readonly _keypair: Keypair;
+  protected readonly _keyPageHeight: number;
+  protected readonly _keyPageIndex: number;
+
+  constructor(origin: string | AccURL, keypair: Keypair, keyPageOptions?: KeyPageOptions) {
+    this._origin = AccURL.toAccURL(origin);
+    this._keypair = keypair;
+    this._keyPageHeight = keyPageOptions?.keyPageHeigt ?? 1;
+    this._keyPageIndex = keyPageOptions?.keyPageIndex ?? 0;
+  }
+
+  get keypair(): Keypair {
+    return this._keypair;
+  }
+
+  get publicKey(): Uint8Array {
+    return this._keypair.publicKey;
+  }
+
+  get origin(): AccURL {
+    return this._origin;
+  }
+
+  get keyPageHeight(): number {
+    return this._keyPageHeight;
+  }
+
+  get keyPageIndex(): number {
+    return this._keyPageIndex;
+  }
+
+  toString() {
+    return this._origin.toString();
+  }
+
+  async sign(tx: Transaction): Promise<Signature> {
+    return this.signRaw(tx.dataForSigning());
+  }
+
+  async signRaw(data: Uint8Array): Promise<Signature> {
+    return {
+      publicKey: this._keypair.publicKey,
+      signature: nacl.sign.detached(data, this._keypair.secretKey),
+    };
+  }
+}

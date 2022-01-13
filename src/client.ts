@@ -33,8 +33,8 @@ export class Client {
    * Queries
    ******************/
 
-  queryUrl(url: string | AccURL | OriginSigner): Promise<any> {
-    const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
+  queryUrl(url: string | AccURL): Promise<any> {
+    const urlStr = url.toString();
 
     return this.call("query", {
       url: urlStr,
@@ -56,8 +56,8 @@ export class Client {
     });
   }
 
-  queryTxHistory(url: string | AccURL | OriginSigner, pagination: QueryPagination): Promise<any> {
-    const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
+  queryTxHistory(url: string | AccURL, pagination: QueryPagination): Promise<any> {
+    const urlStr = url.toString();
     return this.call("query-tx-history", {
       url: urlStr,
       ...pagination,
@@ -95,8 +95,8 @@ export class Client {
     });
   }
 
-  queryKeyPageIndex(url: string | AccURL | OriginSigner, key: string | Uint8Array): Promise<any> {
-    const urlStr = url instanceof OriginSigner ? url.url.toString() : url.toString();
+  queryKeyPageIndex(url: string | AccURL, key: string | Uint8Array): Promise<any> {
+    const urlStr = url.toString();
     const keyStr = key instanceof Uint8Array ? Buffer.from(key).toString("hex") : key;
 
     return this.call("query-key-index", {
@@ -156,13 +156,13 @@ export class Client {
     return this.call("execute", tx.toTxRequest());
   }
 
-  private _execute(payload: Payload, signer: OriginSigner): Promise<any> {
-    const header = new Header(signer.url, {
-      keyPageHeight: signer.keyPageHeigt,
+  private async _execute(payload: Payload, signer: OriginSigner): Promise<any> {
+    const header = new Header(signer.origin, {
+      keyPageHeight: signer.keyPageHeight,
       keyPageIndex: signer.keyPageIndex,
     });
     const tx = new Transaction(payload, header);
-    tx.sign(signer);
+    await tx.sign(signer);
 
     return this.execute(tx);
   }

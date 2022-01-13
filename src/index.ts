@@ -3,6 +3,7 @@ export * from "./acc-url";
 export * from "./bigint";
 export * from "./encoding";
 export * from "./keypair";
+export * from "./keypair-signer";
 export * from "./lite-account";
 export * from "./origin-signer";
 export * from "./transaction";

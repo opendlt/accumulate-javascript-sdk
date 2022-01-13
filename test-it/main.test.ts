@@ -1,5 +1,5 @@
 import { randomBytes } from "tweetnacl";
-import { ACME_TOKEN_URL, Client, Keypair, LiteAccount, OriginSigner } from "..";
+import { ACME_TOKEN_URL, Client, Keypair, LiteAccount, KeypairSigner, OriginSigner } from "..";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
@@ -41,32 +41,33 @@ test("should add credits", async () => {
 });
 
 test("should manage identity", async () => {
-  const identityKeyPair = Keypair.generate();
-  const authority = randomString();
-  const identity = new OriginSigner(`acc://${authority}`, identityKeyPair);
+  const identityKeypair = Keypair.generate();
+  const identityUrl = `acc://${randomString()}`;
 
   // Create identity
   const createIdentity = {
-    url: identity.url,
-    publicKey: identityKeyPair.publicKey,
+    url: identityUrl,
+    publicKey: identityKeypair.publicKey,
     keyBookName: "book0",
     keyPageName: "page0",
   };
 
   await client.createIdentity(createIdentity, acc);
-  await waitOn(() => client.queryUrl(identity.url));
+  await waitOn(() => client.queryUrl(identityUrl));
 
-  const res = await client.queryUrl(identity.url);
+  const res = await client.queryUrl(identityUrl);
   expect(res.type).toStrictEqual("identity");
+
+  const identity = new KeypairSigner(identityUrl, identityKeypair);
 
   await testTokenAccount(identity);
   await testKeyPageAndBook(identity);
-  await testData(identity, identityKeyPair);
+  await testData(identity);
 });
 
-async function testTokenAccount(identity) {
+async function testTokenAccount(identity: OriginSigner) {
   // Create token account
-  const tokenAccountUrl = identity.url + "/ACME";
+  const tokenAccountUrl = identity.origin + "/ACME";
   const createTokenAccount = {
     url: tokenAccountUrl,
     tokenUrl: ACME_TOKEN_URL,
@@ -78,7 +79,7 @@ async function testTokenAccount(identity) {
   expect(res.type).toStrictEqual("tokenAccount");
 }
 
-async function testKeyPageAndBook(identity) {
+async function testKeyPageAndBook(identity: OriginSigner) {
   // Create a new key page
   const pageKeypair = Keypair.generate();
   const newKeyPageUrl = identity + "/p/" + randomString();
@@ -107,9 +108,9 @@ async function testKeyPageAndBook(identity) {
   expect(res.type).toStrictEqual("keyBook");
 }
 
-async function testData(identity, identityKeyPair) {
+async function testData(identity: KeypairSigner) {
   // Create data account
-  const dataAccountUrl = identity.url + "/my-data";
+  const dataAccountUrl = identity.origin + "/my-data";
   const createDataAccount = {
     url: dataAccountUrl,
   };
@@ -121,7 +122,7 @@ async function testData(identity, identityKeyPair) {
   expect(res.type).toStrictEqual("dataAccount");
 
   // Write data
-  const dataAccout = new OriginSigner(dataAccountUrl, identityKeyPair);
+  const dataAccout = new KeypairSigner(dataAccountUrl, identity.keypair);
   const data = randomBuffer();
   const writeData = {
     extIds: [randomBuffer(), randomBuffer()],
