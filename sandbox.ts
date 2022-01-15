@@ -34,7 +34,7 @@ console.log("pk identity " + Buffer.from(identity.publicKey).toString("hex"));
 
 console.log("Identity " + identity);
 // const createIdentity = {
-//   url: identity.url,
+//   url: identity.origin,
 //   publicKey: kpIdentity.publicKey,
 //   keyBookName: "luap-book",
 //   keyPageName: "luap-page",
@@ -46,35 +46,31 @@ console.log("Identity " + identity);
 //   tokenUrl: ACME_TOKEN_URL.toString(),
 // };
 /////////////////////////
-// const book = new KeypairSigner(AccURL.parse("acc://luap/luap-book"), kpIdentity);
-
-// const anotherKey = Keypair.fromSeed(
-//   Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
-// );
-// const keyPage = new KeypairSigner(identity.url + "/luap-page2", anotherKey);
+const anotherKey = Keypair.fromSeed(
+  Buffer.from("aa8d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
+);
+const keyPage = new KeypairSigner(identity.origin + "/luap-page2", anotherKey, {keyPageHeigt: 2});
 
 // const createKeyPage = {
-//   url: keyPage.url,
+//   url: keyPage.origin,
 //   keys: [anotherKey.publicKey],
 // };
 /////////////////////////
 // const createKeyBook = {
 //   url: "acc://luap/my-book",
-//   pages: [identity.url + "/luap-page2"]
+//   pages: [identity.origin + "/luap-page2"]
 // }
 /////////////////////////
+const anotherKey2 = Keypair.fromSeed(
+  Buffer.from("128d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
+);
 
-// const anotherKey2 = Keypair.fromSeed(
-//   Buffer.from("128d9c138157cee634352772aa2cf8ab50d6d5cb69064550ba06abe63eabcb8f", "hex")
-// );
-
-// const addKeyPage = {
-//   operation: 2,
-//   // key: anotherKey.publicKey,
-//   newKey: anotherKey2.publicKey,
-// }
+const addKeyPage = {
+  operation: 3,
+  newKey: anotherKey2.publicKey,
+}
 // const removeKeyPage = {
-//   operation: 3,
+//   operation: 2,
 //   key: anotherKey2.publicKey,
 // }
 // const updateKeyPage = {
@@ -114,9 +110,9 @@ async function run() {
   // await client.addCredits(addCredits, acc);
   // await client.sendTokens(sendTokens, acc);
   // await client.createIdentity(createIdentity, acc);
-  await client.queryTx("8fab9dbdfc7e6a66568898d3a88300070ef23e06df368edb0388fda77656f3a1");
+  // await client.queryTx("8fab9dbdfc7e6a66568898d3a88300070ef23e06df368edb0388fda77656f3a1");
   // await client.createTokenAccount(createTokenAccount, identity);
-  await client.queryUrl("acc://400fbe3fd7e86b3891c3ddb5/p/b69fb2a685c2b3894734fb0a");
+  // await client.queryUrl("acc://400fbe3fd7e86b3891c3ddb5/p/b69fb2a685c2b3894734fb0a");
   // await client.queryDirectory(identity.url, { start: 0, count: 10 });
   // await client.queryUrl("acc://df9ad7f007e643c29a20e736a3a5f9d31be4395584277143/ACME");
   // await client.sendTokens(sendTokensToLuap, acc);
@@ -125,9 +121,9 @@ async function run() {
   // await client.queryUrl(identity.url + "/luap-page");
   // await client.queryUrl(identity + "/luap-book");
   // await client.createKeyBook(createKeyBook, identity);
-  // await client.queryUrl(identity.url + "/my-book");
-  // await client.queryUrl(keyPage);
-  // await client.updateKeyPage(addKeyPage, keyPage);
+  // await client.queryUrl(identity.origin + "/my-book");
+  await client.queryUrl(keyPage.origin);
+  await client.updateKeyPage(addKeyPage, keyPage);
   // await client.updateKeyPage(removeKeyPage, keyPage);
   // await client.updateKeyPage(updateKeyPage, keyPage);
   // await client.createDataAccount(createDataAccount, identity);
