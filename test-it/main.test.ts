@@ -1,5 +1,13 @@
 import { randomBytes } from "tweetnacl";
-import { ACME_TOKEN_URL, Client, Keypair, LiteAccount, KeypairSigner, OriginSigner } from "..";
+import {
+  ACME_TOKEN_URL,
+  Client,
+  Keypair,
+  LiteAccount,
+  KeypairSigner,
+  OriginSigner,
+  KeyPageOperation,
+} from "..";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
@@ -61,8 +69,8 @@ test("should manage identity", async () => {
   const identity = new KeypairSigner(identityUrl, identityKeypair);
 
   await testTokenAccount(identity);
-  await testKeyPageAndBook(identity);
   await testData(identity);
+  await testKeyPageAndBook(identity);
 });
 
 async function testTokenAccount(identity: OriginSigner) {
@@ -79,10 +87,10 @@ async function testTokenAccount(identity: OriginSigner) {
   expect(res.type).toStrictEqual("tokenAccount");
 }
 
-async function testKeyPageAndBook(identity: OriginSigner) {
+async function testKeyPageAndBook(identity: KeypairSigner) {
   // Create a new key page
   const pageKeypair = Keypair.generate();
-  const newKeyPageUrl = identity + "/p/" + randomString();
+  const newKeyPageUrl = identity + "/" + randomString();
   const createKeyPage = {
     url: newKeyPageUrl,
     keys: [pageKeypair.publicKey],
@@ -95,7 +103,7 @@ async function testKeyPageAndBook(identity: OriginSigner) {
   expect(res.type).toStrictEqual("keyPage");
 
   // Create a new key book
-  const newKeyBookUrl = identity + "/b/" + randomString();
+  const newKeyBookUrl = identity + "/" + randomString();
   const createKeyBook = {
     url: newKeyBookUrl,
     pages: [newKeyPageUrl],
@@ -106,6 +114,56 @@ async function testKeyPageAndBook(identity: OriginSigner) {
 
   res = await client.queryUrl(newKeyBookUrl);
   expect(res.type).toStrictEqual("keyBook");
+
+  // verify page is part of the book now
+  res = await client.queryUrl(newKeyPageUrl);
+  expect(res.data.keyBook).toStrictEqual(newKeyBookUrl.toString());
+
+  let keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 2 });
+
+  // Add new key to keypage
+  const newKey = Keypair.generate();
+  const addKeyPage = {
+    operation: KeyPageOperation.AddKey,
+    newKey: newKey.publicKey,
+  };
+
+  await client.updateKeyPage(addKeyPage, keyPage);
+  await waitOn(async () => {
+    const res = await client.queryUrl(newKeyPageUrl);
+    expect(res.data.keys.length).toStrictEqual(2);
+  });
+
+  // Update keypage
+  keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 3 });
+  const newNewKey = Keypair.generate();
+  const updateKeyPage = {
+    operation: KeyPageOperation.UpdateKey,
+    key: newKey.publicKey,
+    newKey: newNewKey.publicKey,
+  };
+  await client.updateKeyPage(updateKeyPage, keyPage);
+  await waitOn(async () => {
+    const res = await client.queryUrl(newKeyPageUrl);
+    expect(res.data.keys[1].publicKey).toStrictEqual(
+      Buffer.from(newNewKey.publicKey).toString("hex")
+    );
+  });
+
+  // Remove key from keypage
+  keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 4 });
+  const removeKeyPage = {
+    operation: KeyPageOperation.RemoveKey,
+    key: newNewKey.publicKey,
+  };
+  await client.updateKeyPage(removeKeyPage, keyPage);
+  await waitOn(async () => {
+    const res = await client.queryUrl(newKeyPageUrl);
+    expect(res.data.keys.length).toStrictEqual(1);
+    expect(res.data.keys[0].publicKey).toStrictEqual(
+      Buffer.from(pageKeypair.publicKey).toString("hex")
+    );
+  });
 }
 
 async function testData(identity: KeypairSigner) {
