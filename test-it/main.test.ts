@@ -164,6 +164,25 @@ async function testKeyPageAndBook(identity: KeypairSigner) {
       Buffer.from(pageKeypair.publicKey).toString("hex")
     );
   });
+
+    // Create a new key page directly to the book
+    const pageKeypair2 = Keypair.generate();
+    const newKeyPageUrl2 = identity + "/" + randomString();
+    const createKeyPage2 = {
+      url: newKeyPageUrl2,
+      keys: [pageKeypair2.publicKey],
+    };
+
+    const keyBook = new KeypairSigner(newKeyBookUrl, pageKeypair, { keyPageHeigt: 5 });
+
+    await client.createKeyPage(createKeyPage2, keyBook);
+    await waitOn(() => client.queryUrl(newKeyPageUrl2));
+
+    res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair.publicKey)
+    expect(res.data.index).toStrictEqual(0);
+    res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair2.publicKey)
+    expect(res.data.index).toStrictEqual(1);
+
 }
 
 async function testData(identity: KeypairSigner) {
