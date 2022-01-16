@@ -1,4 +1,3 @@
-import { randomBytes } from "tweetnacl";
 import {
   ACME_TOKEN_URL,
   Client,
@@ -8,6 +7,7 @@ import {
   OriginSigner,
   KeyPageOperation,
 } from "..";
+import { randomBuffer, randomString, waitOn } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
@@ -248,30 +248,7 @@ async function testData(identity: KeypairSigner) {
   expect(res.data.entry.data).toStrictEqual(data.toString("hex"));
 }
 
-async function waitOn(fn: () => void, timeout?: number) {
-  const to = timeout ?? 10_000;
-  const start = Date.now();
-  let lastError;
-  while (Date.now() - start < to) {
-    try {
-      await fn();
-      return;
-    } catch (e) {
-      lastError = e;
-      await sleep(500);
-    }
-  }
-  throw lastError;
-}
-
-function randomBuffer(length = 12) {
-  return Buffer.from(randomBytes(length));
-}
-
-function randomString(length = 6) {
-  return randomBuffer(length * 2).toString("hex");
-}
-
-async function sleep(millis: number) {
-  return new Promise((resolve) => setTimeout(resolve, millis));
-}
+test("should get version", async () => {
+  const res = await client.version();
+  expect(res.type).toStrictEqual("version");
+});
