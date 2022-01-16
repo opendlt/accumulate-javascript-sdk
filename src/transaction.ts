@@ -71,7 +71,7 @@ export class Transaction {
     return this._hash;
   }
 
-  dataForSigning() {
+  dataForSignature(): Buffer {
     return Buffer.concat([uvarintMarshalBinary(this._header.nonce), this.hash()]);
   }
 
