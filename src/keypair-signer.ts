@@ -43,7 +43,7 @@ export class KeypairSigner implements OriginSigner {
   }
 
   async sign(tx: Transaction): Promise<Signature> {
-    return this.signRaw(tx.dataForSigning());
+    return this.signRaw(tx.dataForSignature());
   }
 
   async signRaw(data: Uint8Array): Promise<Signature> {
