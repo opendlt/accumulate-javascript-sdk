@@ -121,7 +121,7 @@ async function run() {
   // await client.queryTx("8fab9dbdfc7e6a66568898d3a88300070ef23e06df368edb0388fda77656f3a1");
   // await client.createTokenAccount(createTokenAccount, identity);
   // await client.queryUrl("acc://400fbe3fd7e86b3891c3ddb5/p/b69fb2a685c2b3894734fb0a");
-  // await client.queryDirectory(identity.url, { start: 0, count: 10 });
+  // await client.queryDirectory(identity.origin, { start: 0, count: 10 });
   // await client.queryUrl("acc://df9ad7f007e643c29a20e736a3a5f9d31be4395584277143/ACME");
   // await client.sendTokens(sendTokensToLuap, acc);
   // await client.sendTokens(sendTokensToAcc2, signer);

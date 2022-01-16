@@ -63,7 +63,7 @@ test("should manage identity", async () => {
   await client.createIdentity(createIdentity, acc);
   await waitOn(() => client.queryUrl(identityUrl));
 
-  const res = await client.queryUrl(identityUrl);
+  let res = await client.queryUrl(identityUrl);
   expect(res.type).toStrictEqual("identity");
 
   const identity = new KeypairSigner(identityUrl, identityKeypair);
@@ -71,6 +71,12 @@ test("should manage identity", async () => {
   await testTokenAccount(identity);
   await testData(identity);
   await testKeyPageAndBook(identity);
+
+  res = await client.queryDirectory(identity.origin, { start: 0, count: 3 });
+  expect(res.type).toStrictEqual("directory");
+  expect(res.items.length).toStrictEqual(3);
+  res = await client.queryDirectory(identity.origin, { start: 0, count: res.total });
+  expect(res.items.length).toStrictEqual(res.total);
 });
 
 async function testTokenAccount(identity: OriginSigner) {
