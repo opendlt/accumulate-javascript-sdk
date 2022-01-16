@@ -8,4 +8,5 @@
 .DS_Store
 coverage
 *.log
-notes.txt
+_notes.txt
+_sandbox.ts
