@@ -26,12 +26,16 @@ test("should send tokens", async () => {
 
   const amount = 50;
   const sendTokens = { to: [{ url: recipient.url, amount: amount }] };
-  await client.sendTokens(sendTokens, acc);
+  const { txid } = await client.sendTokens(sendTokens, acc);
 
   await waitOn(() => client.queryUrl(recipient.url));
 
   const { data } = await client.queryUrl(recipient.url);
   expect(data.balance).toStrictEqual(amount);
+
+  const res = await client.queryTx(txid);
+  expect(res.type).toStrictEqual("sendTokens");
+  expect(res.txid).toStrictEqual(txid);
 });
 
 test("should add credits", async () => {
@@ -196,10 +200,18 @@ async function testKeyPageAndBook(identity: KeypairSigner) {
   await client.createKeyPage(createKeyPage2, keyBook);
   await waitOn(() => client.queryUrl(newKeyPageUrl2));
 
+  // Test query key page index
   res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair.publicKey);
   expect(res.data.index).toStrictEqual(0);
   res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair2.publicKey);
   expect(res.data.index).toStrictEqual(1);
+
+  // Test query tx history
+  res = await client.queryTxHistory(keyPage.origin, { start: 0, count: 3 });
+  expect(res.type).toStrictEqual("txHistory");
+  expect(res.items.length).toStrictEqual(3);
+  res = await client.queryTxHistory(keyPage.origin, { start: 0, count: res.total });
+  expect(res.items.length).toStrictEqual(res.total);
 }
 
 async function testData(identity: KeypairSigner) {
