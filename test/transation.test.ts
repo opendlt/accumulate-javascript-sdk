@@ -1,6 +1,6 @@
 import { Header } from "../src/transaction";
 
-test("should marshall binary Header", () => {
+test("should marshal binary Header", () => {
   const header = new Header("acc://hello", {
     nonce: 55,
   });
@@ -10,7 +10,7 @@ test("should marshall binary Header", () => {
   );
 });
 
-// test("should marshall binary Transaction", () => {
+// test("should marshal binary Transaction", () => {
 //   const header = new Header("acc://hello", {
 //     nonce: 55,
 //   });
