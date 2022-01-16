@@ -41,15 +41,6 @@ export class Client {
     });
   }
 
-  queryChain(chainId: string | Uint8Array): Promise<any> {
-    const chainIdStr =
-      chainId instanceof Uint8Array ? Buffer.from(chainId).toString("hex") : chainId;
-
-    return this.call("query-chain", {
-      chainId: chainIdStr,
-    });
-  }
-
   queryTx(txId: string): Promise<any> {
     return this.call("query-tx", {
       txid: txId,
