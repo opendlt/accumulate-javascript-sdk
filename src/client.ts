@@ -171,4 +171,11 @@ export class Client {
   version(): Promise<any> {
     return this.call("version");
   }
+
+  metrics(metric: string, duration: number): Promise<any> {
+    return this.call("metrics", {
+      metric,
+      duration,
+    });
+  }
 }
