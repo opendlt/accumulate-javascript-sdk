@@ -56,7 +56,7 @@ console.log("Identity " + identity);
 //   keys: [anotherKey.publicKey],
 // };
 /////////////////////////
-const keyBookUrl = "acc://luap/my-book"
+// const keyBookUrl = "acc://luap/my-book"
 // const keyBook = new KeypairSigner(keyBookUrl, anotherKey, {keyPageHeigt: 2});
 
 // const createKeyBook = {
@@ -112,6 +112,7 @@ const client = new Client("http://127.0.1.1:26660/v2");
 // const signer = new KeypairSigner(tokenAccount, kpIdentity);
 
 async function run() {
+  await client.metrics();
   // await client.faucet(acc.url);
   // await client.version();
   // await client.queryUrl(acc.url);
@@ -130,7 +131,7 @@ async function run() {
   // await client.queryUrl(identity + "/luap-book");
   // await client.createKeyBook(createKeyBook, identity);
   // await client.createKeyPage(createKeyPage2, keyBook);
-  await client.queryUrl(keyBookUrl);
+  // await client.queryUrl(keyBookUrl);
   // await client.queryUrl(keyPage.origin);
   // await client.updateKeyPage(addKeyPage, keyPage);
   // await client.updateKeyPage(removeKeyPage, keyPage);

@@ -271,4 +271,9 @@ describe("Test Accumulate APIs", () => {
     const res = await client.version();
     expect(res.type).toStrictEqual("version");
   });
+
+  test("should get metrics", async () => {
+    const res = await client.metrics("tps", 60);
+    expect(res.type).toStrictEqual("metrics");
+  });
 });
