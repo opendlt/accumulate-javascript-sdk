@@ -134,8 +134,20 @@ async function testKeyPageAndBook(identity: KeypairSigner) {
     expect(res.data.keys.length).toStrictEqual(2);
   });
 
-  // Update keypage
+  // Set threshold
+  const setThreshold = {
+    operation: KeyPageOperation.SetThreshold,
+    threshold: 2,
+  };
   keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 3 });
+  await client.updateKeyPage(setThreshold, keyPage);
+  await waitOn(async () => {
+    const res = await client.queryUrl(newKeyPageUrl);
+    expect(res.data.threshold).toStrictEqual(2);
+  });
+
+  // Update keypage
+  keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 4 });
   const newNewKey = Keypair.generate();
   const updateKeyPage = {
     operation: KeyPageOperation.UpdateKey,
@@ -151,7 +163,7 @@ async function testKeyPageAndBook(identity: KeypairSigner) {
   });
 
   // Remove key from keypage
-  keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 4 });
+  keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 5 });
   const removeKeyPage = {
     operation: KeyPageOperation.RemoveKey,
     key: newNewKey.publicKey,
@@ -165,24 +177,23 @@ async function testKeyPageAndBook(identity: KeypairSigner) {
     );
   });
 
-    // Create a new key page directly to the book
-    const pageKeypair2 = Keypair.generate();
-    const newKeyPageUrl2 = identity + "/" + randomString();
-    const createKeyPage2 = {
-      url: newKeyPageUrl2,
-      keys: [pageKeypair2.publicKey],
-    };
+  // Create a new key page directly to the book
+  const pageKeypair2 = Keypair.generate();
+  const newKeyPageUrl2 = identity + "/" + randomString();
+  const createKeyPage2 = {
+    url: newKeyPageUrl2,
+    keys: [pageKeypair2.publicKey],
+  };
 
-    const keyBook = new KeypairSigner(newKeyBookUrl, pageKeypair, { keyPageHeigt: 5 });
+  const keyBook = new KeypairSigner(newKeyBookUrl, pageKeypair, { keyPageHeigt: 6 });
 
-    await client.createKeyPage(createKeyPage2, keyBook);
-    await waitOn(() => client.queryUrl(newKeyPageUrl2));
+  await client.createKeyPage(createKeyPage2, keyBook);
+  await waitOn(() => client.queryUrl(newKeyPageUrl2));
 
-    res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair.publicKey)
-    expect(res.data.index).toStrictEqual(0);
-    res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair2.publicKey)
-    expect(res.data.index).toStrictEqual(1);
-
+  res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair.publicKey);
+  expect(res.data.index).toStrictEqual(0);
+  res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair2.publicKey);
+  expect(res.data.index).toStrictEqual(1);
 }
 
 async function testData(identity: KeypairSigner) {
