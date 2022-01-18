@@ -2,7 +2,9 @@
 
 **The TS/JS SDK is currently under active development and is not deemed stable.**
 
-For usage exmples see the file `test-it/client.test.ts`.
+## Usage
+
+For usage examples see the file `test-it/client.test.ts`.
 
 ## For contributors
 
