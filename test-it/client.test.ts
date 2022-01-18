@@ -6,13 +6,14 @@ import {
   KeypairSigner,
   OriginSigner,
   KeyPageOperation,
+  RpcError,
 } from "../src";
 import { randomBuffer, randomString, waitOn } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
 
-describe("Test Accumulate APIs", () => {
+describe("Test Accumulate client", () => {
   beforeAll(async () => {
     acc = LiteAccount.generate();
     await client.faucet(acc.url);
@@ -275,5 +276,28 @@ describe("Test Accumulate APIs", () => {
   test("should get metrics", async () => {
     const res = await client.metrics("tps", 60);
     expect(res.type).toStrictEqual("metrics");
+  });
+
+  test("should reject unknown method", async () => {
+    try {
+      await client.call("unknown");
+    } catch (e: any) {
+      expect(e).toBeInstanceOf(RpcError);
+      return;
+    }
+    throw "should have thrown";
+  });
+
+  test("should reject invalid path", async () => {
+    try {
+      const cli = new Client(
+        (process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2") + "_unknown"
+      );
+      await cli.version();
+    } catch (e: any) {
+      expect(e.response.status).toStrictEqual(404);
+      return;
+    }
+    throw "should have thrown";
   });
 });
