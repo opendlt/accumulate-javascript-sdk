@@ -16,3 +16,4 @@ export * from "./payload/create-token-account";
 export * from "./payload/send-tokens";
 export * from "./payload/update-key-page";
 export * from "./payload/write-data";
+export { RpcError } from "./rpc-client";

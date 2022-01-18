@@ -34,32 +34,14 @@ export class RpcClient {
       params: params,
     };
 
-    console.log(params)
+    const {
+      data: { error, result },
+    } = await this._httpCli.post(this._endpoint, request);
 
-    try {
-      const {
-        data: { error, result },
-      } = await this._httpCli.post(this._endpoint, request);
-
-      if (error) {
-        console.error("error", method, JSON.stringify(error, null, 4));
-        return Promise.reject(new RpcError(error));
-      } else {
-        console.log("success", method, JSON.stringify(result, null, 4));
-        return result;
-      }
-    } catch (error: any) {
-      console.log("Error message", error.message);
-      console.log("Error code", error.code);
-      console.log("Erro numberr", error.errno);
-
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      }
+    if (error) {
+      return Promise.reject(new RpcError(error));
+    } else {
+      return result;
     }
   }
 }
