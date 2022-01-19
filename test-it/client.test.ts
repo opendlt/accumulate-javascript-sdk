@@ -8,7 +8,7 @@ import {
   KeyPageOperation,
   RpcError,
 } from "../src";
-import { randomBuffer, randomString, waitOn } from "./util";
+import { randomBuffer, randomString, waitOn, addCredits } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
@@ -17,16 +17,20 @@ describe("Test Accumulate client", () => {
   beforeAll(async () => {
     acc = LiteAccount.generate();
     await client.faucet(acc.url);
+    await client.faucet(acc.url);
+    await client.faucet(acc.url);
     await waitOn(async () => {
       const { data } = await client.queryUrl(acc.url);
       expect(data.type).toStrictEqual("liteTokenAccount");
     });
+
+    await addCredits(client, acc.url, 100_000, acc);
   });
 
   test("should send tokens", async () => {
     const recipient = LiteAccount.generate();
 
-    const amount = 50;
+    const amount = 12;
     const sendTokens = { to: [{ url: recipient.url, amount: amount }] };
     const { txid } = await client.sendTokens(sendTokens, acc);
 
@@ -38,20 +42,6 @@ describe("Test Accumulate client", () => {
     const res = await client.queryTx(txid);
     expect(res.type).toStrictEqual("sendTokens");
     expect(res.txid).toStrictEqual(txid);
-  });
-
-  test("should add credits", async () => {
-    const amount = 1000;
-    const addCredits = {
-      recipient: acc.url,
-      amount,
-    };
-
-    await client.addCredits(addCredits, acc);
-    await waitOn(async () => {
-      const { data } = await client.queryUrl(acc.url);
-      expect(data.creditBalance).toStrictEqual(amount);
-    });
   });
 
   test("should manage identity", async () => {
@@ -72,7 +62,8 @@ describe("Test Accumulate client", () => {
     let res = await client.queryUrl(identityUrl);
     expect(res.type).toStrictEqual("identity");
 
-    const identity = new KeypairSigner(identityUrl, identityKeypair);
+    await addCredits(client, identityUrl + "/page0", 100_000, acc);
+    const identity = new KeypairSigner(identityUrl, identityKeypair, { keyPageHeigt: 2 });
 
     await testTokenAccount(identity);
     await testData(identity);
@@ -130,8 +121,9 @@ describe("Test Accumulate client", () => {
     // verify page is part of the book now
     res = await client.queryUrl(newKeyPageUrl);
     expect(res.data.keyBook).toStrictEqual(newKeyBookUrl.toString());
+    await addCredits(client, newKeyPageUrl, 20_000, acc);
 
-    let keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 2 });
+    let keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 3 });
 
     // Add new key to keypage
     const newKey = Keypair.generate();
@@ -151,7 +143,7 @@ describe("Test Accumulate client", () => {
       operation: KeyPageOperation.SetThreshold,
       threshold: 2,
     };
-    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 3 });
+    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 4 });
     await client.updateKeyPage(setThreshold, keyPage);
     await waitOn(async () => {
       const res = await client.queryUrl(newKeyPageUrl);
@@ -159,7 +151,7 @@ describe("Test Accumulate client", () => {
     });
 
     // Update keypage
-    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 4 });
+    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 5 });
     const newNewKey = Keypair.generate();
     const updateKeyPage = {
       operation: KeyPageOperation.UpdateKey,
@@ -175,7 +167,7 @@ describe("Test Accumulate client", () => {
     });
 
     // Remove key from keypage
-    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 5 });
+    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 6 });
     const removeKeyPage = {
       operation: KeyPageOperation.RemoveKey,
       key: newNewKey.publicKey,
@@ -197,7 +189,7 @@ describe("Test Accumulate client", () => {
       keys: [pageKeypair2.publicKey],
     };
 
-    const keyBook = new KeypairSigner(newKeyBookUrl, pageKeypair, { keyPageHeigt: 6 });
+    const keyBook = new KeypairSigner(newKeyBookUrl, pageKeypair, { keyPageHeigt: 7 });
 
     await client.createKeyPage(createKeyPage2, keyBook);
     await waitOn(() => client.queryUrl(newKeyPageUrl2));
@@ -230,7 +222,7 @@ describe("Test Accumulate client", () => {
     expect(res.type).toStrictEqual("dataAccount");
 
     // Write data
-    const dataAccout = new KeypairSigner(dataAccountUrl, identity.keypair);
+    const dataAccout = new KeypairSigner(dataAccountUrl, identity.keypair, { keyPageHeigt: 2 });
     const data = randomBuffer();
     const writeData = {
       extIds: [randomBuffer(), randomBuffer()],
