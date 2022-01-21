@@ -1,10 +1,9 @@
 import BN from "bn.js";
-import { u64 } from "./bigint";
 
-export function uvarintMarshalBinary(val: number | u64): Buffer {
+export function uvarintMarshalBinary(val: number | BN): Buffer {
   if (typeof val === "number" && val > Number.MAX_SAFE_INTEGER) {
     throw new Error(
-      "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use `u64` class instead."
+      "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use `BN` class instead."
     );
   }
 
@@ -21,6 +20,10 @@ export function uvarintMarshalBinary(val: number | u64): Buffer {
   buffer[i] = x.maskn(8).toNumber();
 
   return Buffer.from(buffer);
+}
+
+export function bigNumberMarshalBinary(bn: BN) {
+  return bytesMarshalBinary(bn.toArrayLike(Buffer, "be"));
 }
 
 export function stringMarshalBinary(val?: string): Buffer {

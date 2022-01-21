@@ -7,6 +7,7 @@ import {
   OriginSigner,
   KeyPageOperation,
   RpcError,
+  BN,
 } from "../src";
 import { randomBuffer, randomString, waitOn, addCredits } from "./util";
 
@@ -30,14 +31,14 @@ describe("Test Accumulate client", () => {
   test("should send tokens", async () => {
     const recipient = LiteAccount.generate();
 
-    const amount = 12;
+    const amount = new BN(12);
     const sendTokens = { to: [{ url: recipient.url, amount: amount }] };
     const { txid } = await client.sendTokens(sendTokens, acc);
 
     await waitOn(() => client.queryUrl(recipient.url));
 
     const { data } = await client.queryUrl(recipient.url);
-    expect(data.balance).toStrictEqual(amount);
+    expect(new BN(data.balance)).toStrictEqual(amount);
 
     const res = await client.queryTx(txid);
     expect(res.type).toStrictEqual("sendTokens");

@@ -1,6 +1,5 @@
 export * from "./client";
 export * from "./acc-url";
-export * from "./bigint";
 export * from "./encoding";
 export * from "./keypair";
 export * from "./keypair-signer";
@@ -17,3 +16,4 @@ export * from "./payload/send-tokens";
 export * from "./payload/update-key-page";
 export * from "./payload/write-data";
 export { RpcError } from "./rpc-client";
+export { BN } from "bn.js";

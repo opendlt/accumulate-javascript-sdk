@@ -1,8 +1,12 @@
-import { uvarintMarshalBinary, bytesMarshalBinary, stringMarshalBinary } from "../src/encoding";
-import { u64 } from "../src/bigint";
+import {
+  uvarintMarshalBinary,
+  bytesMarshalBinary,
+  stringMarshalBinary,
+  bigNumberMarshalBinary,
+} from "../src/encoding";
 import { BN } from "bn.js";
 
-test("should varint marshal binary u64 numbers", () => {
+test("should varint marshal binary BN numbers", () => {
   expect(uvarintMarshalBinary(0)).toStrictEqual(Buffer.from([0]));
   expect(uvarintMarshalBinary(1)).toStrictEqual(Buffer.from([1]));
   expect(uvarintMarshalBinary(127)).toStrictEqual(Buffer.from([127]));
@@ -13,10 +17,10 @@ test("should varint marshal binary u64 numbers", () => {
   );
 
   // MAX_SAFE_INTEGER + 1
-  expect(uvarintMarshalBinary(new u64(2).pow(new u64(53)))).toStrictEqual(
+  expect(uvarintMarshalBinary(new BN(2).pow(new BN(53)))).toStrictEqual(
     Buffer.from([128, 128, 128, 128, 128, 128, 128, 16])
   );
-  expect(uvarintMarshalBinary(new u64(2).pow(new u64(64)).sub(new BN(1)))).toStrictEqual(
+  expect(uvarintMarshalBinary(new BN(2).pow(new BN(64)).sub(new BN(1)))).toStrictEqual(
     Buffer.from([255, 255, 255, 255, 255, 255, 255, 255, 255, 1])
   );
 });
@@ -36,4 +40,13 @@ test("should marshal binary strings", () => {
   expect(stringMarshalBinary()).toStrictEqual(Buffer.from([0]));
   expect(stringMarshalBinary("")).toStrictEqual(Buffer.from([0]));
   expect(stringMarshalBinary("hello")).toStrictEqual(Buffer.from([5, 104, 101, 108, 108, 111]));
+});
+
+test("should marshal binary BN", () => {
+  expect(bigNumberMarshalBinary(new BN(0))).toStrictEqual(Buffer.from([1, 0]));
+  expect(bigNumberMarshalBinary(new BN(255))).toStrictEqual(Buffer.from([1, 255]));
+  expect(bigNumberMarshalBinary(new BN(256))).toStrictEqual(Buffer.from([2, 1, 0]));
+  expect(bigNumberMarshalBinary(new BN(1486548674))).toStrictEqual(
+    Buffer.from([4, 88, 154, 238, 194])
+  );
 });
