@@ -1,5 +1,5 @@
 import { randomBytes } from "tweetnacl";
-import { AccURL, Client, OriginSigner } from "..";
+import { AccURL, Client, OriginSigner, BN } from "..";
 
 export async function waitOn(fn: () => void, timeout?: number) {
   const to = timeout ?? 10_000;
@@ -36,7 +36,7 @@ export async function addCredits(
   signer: OriginSigner
 ) {
   const { data } = await client.queryUrl(recipient);
-  const originalBalance = data.creditBalance;
+  const originalBalance = new BN(data.creditBalance);
   const addCredits = {
     recipient,
     amount,
@@ -44,6 +44,6 @@ export async function addCredits(
   await client.addCredits(addCredits, signer);
   await waitOn(async () => {
     const { data } = await client.queryUrl(recipient);
-    expect(data.creditBalance).toStrictEqual(originalBalance + amount);
+    expect(new BN(data.creditBalance)).toStrictEqual(originalBalance.add(new BN(amount)));
   });
 }

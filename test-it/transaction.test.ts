@@ -1,4 +1,4 @@
-import { Transaction, Client, SendTokens, LiteAccount, Header } from "../src";
+import { Transaction, Client, SendTokens, LiteAccount, Header, BN } from "../src";
 import { waitOn, addCredits } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
@@ -21,7 +21,7 @@ describe("Test manual transactions", () => {
 
   test("should send tokens with manual transaction", async () => {
     const recipient = LiteAccount.generate();
-    const amount = 11;
+    const amount = new BN(1025);
     const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
     const header = new Header(acc.origin);
 
@@ -35,7 +35,7 @@ describe("Test manual transactions", () => {
     await waitOn(() => client.queryUrl(recipient.url));
 
     const { data } = await client.queryUrl(recipient.url);
-    expect(data.balance).toStrictEqual(amount);
+    expect(new BN(data.balance)).toStrictEqual(amount);
   });
 
   test("should reject unsigned transaction", async () => {

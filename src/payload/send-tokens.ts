@@ -1,7 +1,12 @@
+import BN from "bn.js";
 import { AccURL } from "../acc-url";
 import { TxType } from "./tx-types";
-import { uvarintMarshalBinary, stringMarshalBinary, bytesMarshalBinary } from "../encoding";
-import { u64 } from "../bigint";
+import {
+  uvarintMarshalBinary,
+  stringMarshalBinary,
+  bytesMarshalBinary,
+  bigNumberMarshalBinary,
+} from "../encoding";
 import { BasePayload } from "./base-payload";
 
 export type SendTokensArg = {
@@ -12,12 +17,12 @@ export type SendTokensArg = {
 
 export type TokenRecipientArg = {
   url: string | AccURL;
-  amount: number | u64;
+  amount: number | BN | string;
 };
 
 export type TokenRecipient = {
   url: AccURL;
-  amount: u64;
+  amount: BN;
 };
 
 export class SendTokens extends BasePayload {
@@ -29,7 +34,7 @@ export class SendTokens extends BasePayload {
     super();
     this._to = arg.to.map((r) => ({
       url: AccURL.toAccURL(r.url),
-      amount: r.amount instanceof u64 ? r.amount : new u64(r.amount),
+      amount: r.amount instanceof BN ? r.amount : new BN(r.amount),
     }));
     this._hash = arg.hash;
     this._meta = arg.meta;
@@ -56,7 +61,7 @@ export class SendTokens extends BasePayload {
 }
 
 function marshalBinaryTokenRecipient(tr: TokenRecipient): Buffer {
-  return Buffer.concat([stringMarshalBinary(tr.url.toString()), uvarintMarshalBinary(tr.amount)]);
+  return Buffer.concat([stringMarshalBinary(tr.url.toString()), bigNumberMarshalBinary(tr.amount)]);
 }
 
 function validateHash(bytes: Uint8Array) {

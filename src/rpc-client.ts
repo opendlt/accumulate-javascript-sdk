@@ -5,7 +5,11 @@ export class RpcError extends Error {
   readonly data?: any;
 
   constructor(err: any) {
-    super(err.message);
+    let message = err.message;
+    if (err.data) {
+      message += `: ${JSON.stringify(err.data, null, 4)}`;
+    }
+    super(message);
     this.code = err.code;
     this.data = err.data;
   }
