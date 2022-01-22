@@ -14,8 +14,22 @@ export class KeypairSigner implements OriginSigner {
   constructor(origin: string | AccURL, keypair: Keypair, keyPageOptions?: KeyPageOptions) {
     this._origin = AccURL.toAccURL(origin);
     this._keypair = keypair;
-    this._keyPageHeight = keyPageOptions?.keyPageHeigt ?? 1;
+    this._keyPageHeight = keyPageOptions?.keyPageHeight ?? 1;
     this._keyPageIndex = keyPageOptions?.keyPageIndex ?? 0;
+  }
+
+  static withNewOrigin(signer: KeypairSigner, origin: string | AccURL): KeypairSigner {
+    return new KeypairSigner(origin, signer.keypair, {
+      keyPageHeight: signer.keyPageHeight,
+      keyPageIndex: signer.keyPageIndex,
+    });
+  }
+
+  static incrementKeyPageHeight(signer: KeypairSigner): KeypairSigner {
+    return new KeypairSigner(signer.origin, signer.keypair, {
+      keyPageHeight: signer.keyPageHeight + 1,
+      keyPageIndex: signer.keyPageIndex,
+    });
   }
 
   get keypair(): Keypair {

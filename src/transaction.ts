@@ -100,7 +100,7 @@ export class Transaction {
   }
 
   toTxRequest(checkOnly?: boolean): TxRequest {
-    if (this._signature === undefined) {
+    if (!this._signature) {
       throw new Error("Unsigned transaction cannot be converted to TxRequest");
     }
 
@@ -108,10 +108,10 @@ export class Transaction {
       checkOnly: checkOnly ? checkOnly : undefined,
       origin: this.origin.toString(),
       signer: {
-        publicKey: Buffer.from(this._signature!.publicKey).toString("hex"),
+        publicKey: Buffer.from(this._signature.publicKey).toString("hex"),
         nonce: this._header.nonce,
       },
-      signature: Buffer.from(this._signature!.signature).toString("hex"),
+      signature: Buffer.from(this._signature.signature).toString("hex"),
       keyPage: {
         height: this._header.keyPageHeight,
         index: this._header.keyPageIndex,

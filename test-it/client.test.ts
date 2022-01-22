@@ -78,7 +78,7 @@ describe("Test Accumulate client", () => {
     expect(res.type).toStrictEqual("identity");
 
     await addCredits(client, identityUrl + "/page0", 100_000, acc);
-    const identity = new KeypairSigner(identityUrl, identityKeypair, { keyPageHeigt: 2 });
+    const identity = new KeypairSigner(identityUrl, identityKeypair, { keyPageHeight: 2 });
 
     await testTokenAccount(identity);
     await testData(identity);
@@ -138,7 +138,7 @@ describe("Test Accumulate client", () => {
     expect(res.data.keyBook).toStrictEqual(newKeyBookUrl.toString());
     await addCredits(client, newKeyPageUrl, 20_000, acc);
 
-    let keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 3 });
+    let keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeight: 3 });
 
     // Add new key to keypage
     const newKey = Keypair.generate();
@@ -158,7 +158,7 @@ describe("Test Accumulate client", () => {
       operation: KeyPageOperation.SetThreshold,
       threshold: 2,
     };
-    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 4 });
+    keyPage = KeypairSigner.incrementKeyPageHeight(keyPage);
     await client.updateKeyPage(setThreshold, keyPage);
     await waitOn(async () => {
       const res = await client.queryUrl(newKeyPageUrl);
@@ -166,7 +166,7 @@ describe("Test Accumulate client", () => {
     });
 
     // Update keypage
-    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 5 });
+    keyPage = KeypairSigner.incrementKeyPageHeight(keyPage);
     const newNewKey = Keypair.generate();
     const updateKeyPage = {
       operation: KeyPageOperation.UpdateKey,
@@ -182,7 +182,7 @@ describe("Test Accumulate client", () => {
     });
 
     // Remove key from keypage
-    keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeigt: 6 });
+    keyPage = KeypairSigner.incrementKeyPageHeight(keyPage);
     const removeKeyPage = {
       operation: KeyPageOperation.RemoveKey,
       key: newNewKey.publicKey,
@@ -204,7 +204,7 @@ describe("Test Accumulate client", () => {
       keys: [pageKeypair2.publicKey],
     };
 
-    const keyBook = new KeypairSigner(newKeyBookUrl, pageKeypair, { keyPageHeigt: 7 });
+    const keyBook = new KeypairSigner(newKeyBookUrl, pageKeypair, { keyPageHeight: 7 });
 
     await client.createKeyPage(createKeyPage2, keyBook);
     await waitOn(() => client.queryUrl(newKeyPageUrl2));
@@ -237,7 +237,7 @@ describe("Test Accumulate client", () => {
     expect(res.type).toStrictEqual("dataAccount");
 
     // Write data
-    const dataAccout = new KeypairSigner(dataAccountUrl, identity.keypair, { keyPageHeigt: 2 });
+    const dataAccout = new KeypairSigner(dataAccountUrl, identity.keypair, { keyPageHeight: 2 });
     const data = randomBuffer();
     const writeData = {
       extIds: [randomBuffer(), randomBuffer()],

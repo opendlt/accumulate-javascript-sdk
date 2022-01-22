@@ -14,6 +14,6 @@ export type Signature = {
 };
 
 export type KeyPageOptions = {
-  keyPageHeigt?: number;
+  keyPageHeight?: number;
   keyPageIndex?: number;
 };
