@@ -3,6 +3,7 @@ import {
   bytesMarshalBinary,
   stringMarshalBinary,
   bigNumberMarshalBinary,
+  booleanMarshalBinary,
 } from "../src/encoding";
 import { BN } from "bn.js";
 
@@ -49,4 +50,9 @@ test("should marshal binary BN", () => {
   expect(bigNumberMarshalBinary(new BN(1486548674))).toStrictEqual(
     Buffer.from([4, 88, 154, 238, 194])
   );
+});
+
+test("should marshal binary boolean", () => {
+  expect(booleanMarshalBinary(true)).toStrictEqual(Buffer.from([1]));
+  expect(booleanMarshalBinary(false)).toStrictEqual(Buffer.from([0]));
 });

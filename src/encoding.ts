@@ -22,8 +22,12 @@ export function uvarintMarshalBinary(val: number | BN): Buffer {
   return Buffer.from(buffer);
 }
 
-export function bigNumberMarshalBinary(bn: BN) {
+export function bigNumberMarshalBinary(bn: BN): Buffer {
   return bytesMarshalBinary(bn.toArrayLike(Buffer, "be"));
+}
+
+export function booleanMarshalBinary(b: boolean): Buffer {
+  return b ? Buffer.from([1]) : Buffer.from([0]);
 }
 
 export function stringMarshalBinary(val?: string): Buffer {
