@@ -4,7 +4,7 @@ import { Payload } from "./payload";
 import { OriginSigner, Signature } from "./origin-signer";
 import { AccURL } from "./acc-url";
 
-type HeaderOptions = {
+export type HeaderOptions = {
   nonce?: number;
   keyPageHeight?: number;
   keyPageIndex?: number;

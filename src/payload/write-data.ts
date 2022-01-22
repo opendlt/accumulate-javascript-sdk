@@ -2,9 +2,7 @@ import { TxType } from "./tx-types";
 import { uvarintMarshalBinary, bytesMarshalBinary } from "../encoding";
 import { BasePayload } from "./base-payload";
 
-export type WriteDataArg = DataEntry;
-
-type DataEntry = {
+export type WriteDataArg = {
   extIds: Uint8Array[];
   data: Uint8Array;
 };
