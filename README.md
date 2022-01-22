@@ -1,6 +1,17 @@
-# Accumulate JacaScript SDK
+# Accumulate JavaScript SDK
 
 **The TS/JS SDK is currently under active development and is not deemed stable.**
+
+This is the Accumulate JavaScript SDK built on the Accumulate JSON RPC API.
+
+## Installation
+
+```bash
+# Yarn
+$ yarn add accumulate.js
+# npm
+$ npm install --save accumulate.js
+```
 
 ## Usage
 

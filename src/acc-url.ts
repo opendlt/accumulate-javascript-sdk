@@ -1,5 +1,8 @@
 import { URL } from "url";
 
+/**
+ * An Accumulate URL (e.g: 'acc://my-identity/mydata')
+ */
 export class AccURL {
   private readonly _url: URL;
 
@@ -13,10 +16,16 @@ export class AccURL {
     this._url = url;
   }
 
+  /**
+   * Parse, if necessary, argument into an AccURL
+   */
   static toAccURL(arg: string | AccURL): AccURL {
     return arg instanceof AccURL ? arg : AccURL.parse(arg);
   }
 
+  /**
+   * Parse a string into an AccURL
+   */
   static parse(str: string): AccURL {
     const url = new URL(str);
     return new AccURL(url);
@@ -43,4 +52,7 @@ export class AccURL {
   }
 }
 
+/**
+ * The URL of the ACME token
+ */
 export const ACME_TOKEN_URL = AccURL.parse("acc://ACME");
