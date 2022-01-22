@@ -45,6 +45,20 @@ describe("Test Accumulate client", () => {
     expect(res.txid).toStrictEqual(txid);
   });
 
+  test("should burn tokens", async () => {
+    const { data } = await client.queryUrl(acc.url);
+    const originalBalance = new BN(data.balance);
+
+    const amount = new BN(15);
+    const burnTokens = { amount };
+    await client.burnTokens(burnTokens, acc);
+
+    await waitOn(async () => {
+      const { data } = await client.queryUrl(acc.url);
+      expect(new BN(data.balance)).toStrictEqual(originalBalance.sub(amount));
+    });
+  });
+
   test("should manage identity", async () => {
     const identityKeypair = Keypair.generate();
     const identityUrl = `acc://${randomString()}`;
