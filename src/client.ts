@@ -11,10 +11,10 @@ import { CreateKeyPage, CreateKeyPageArg } from "./payload/create-key-page";
 import { UpdateKeyPageArg, UpdateKeyPage } from "./payload/update-key-page";
 import { CreateDataAccountArg, CreateDataAccount } from "./payload/create-data-account";
 import { WriteData, WriteDataArg } from "./payload/write-data";
-import { Transaction } from "./transaction";
+import { Transaction, Header } from "./transaction";
 import { QueryOptions, QueryPagination } from "./api-types";
 import { CreateToken, CreateTokenArg } from "./payload/create-token";
-import { Header } from ".";
+import { BurnTokens, BurnTokensArg } from "./payload/burn-tokens";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -102,6 +102,10 @@ export class Client {
 
   sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<any> {
     return this._execute(new SendTokens(sendTokens), signer);
+  }
+
+  burnTokens(burnTokens: BurnTokensArg, signer: OriginSigner): Promise<any> {
+    return this._execute(new BurnTokens(burnTokens), signer);
   }
 
   addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<any> {
