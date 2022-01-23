@@ -15,6 +15,8 @@ $ npm install --save accumulate.js
 
 ## Usage
 
+[Latest SDK Documentation](https://accumulatenetwork.gitlab.io/accumulate.js/).
+
 For more usage examples see the file `test-it/client.test.ts`.
 
 ### Quick start tutorial
