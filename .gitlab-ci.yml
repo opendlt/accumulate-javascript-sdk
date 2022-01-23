@@ -1,0 +1,42 @@
+image: ruby:2.7
+
+stages:
+  - build
+  - deploy
+
+cache:
+  paths:
+    - vendor/
+    - .yarn
+
+before_script:
+  - gem install bundler
+  - bundle config set --local path 'vendor'
+  - bundle install
+  - apt-get update -qy
+  - apt-get install -y nodejs npm
+  - npm install yarn -g
+
+build docs:
+  stage: build
+  script:
+    - yarn install
+    - yarn doc
+  artifacts:
+    paths:
+      - docs
+  rules:
+    - if: $CI_COMMIT_TAG || $PUBLISH_DOC
+
+pages:
+  stage: deploy
+  script:
+    - ls -al docs
+    - bundle exec jekyll build -s docs -d public
+  artifacts:
+    paths:
+      - public
+  dependencies:
+    - build docs
+  rules:
+    - if: $CI_COMMIT_TAG || $PUBLISH_DOC
