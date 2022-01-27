@@ -31,7 +31,7 @@ export class LiteAccount extends KeypairSigner {
   /**
    * Generate a new random LiteAccount for the given token URL
    */
-  static generateWithTokenUrl(tokenUrl: AccURL): LiteAccount {
+  static generateWithTokenUrl(tokenUrl: string | AccURL): LiteAccount {
     return new LiteAccount(tokenUrl, new Keypair());
   }
 

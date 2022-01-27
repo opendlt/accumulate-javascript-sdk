@@ -20,12 +20,16 @@ describe("Test Accumulate client", () => {
     await client.faucet(acc.url);
     await client.faucet(acc.url);
     await client.faucet(acc.url);
+    await client.faucet(acc.url);
+    await client.faucet(acc.url);
+    await client.faucet(acc.url);
+    await client.faucet(acc.url);
     await waitOn(async () => {
       const { data } = await client.queryUrl(acc.url);
       expect(data.type).toStrictEqual("liteTokenAccount");
     });
 
-    await addCredits(client, acc.url, 100_000, acc);
+    await addCredits(client, acc.url, 60_000, acc);
   });
 
   test("should send tokens", async () => {
@@ -77,7 +81,7 @@ describe("Test Accumulate client", () => {
     let res = await client.queryUrl(identityUrl);
     expect(res.type).toStrictEqual("identity");
 
-    await addCredits(client, identityUrl + "/page0", 100_000, acc);
+    await addCredits(client, identityUrl + "/page0", 600_000, acc);
 
     const keyPageHeight = await client.queryKeyPageHeight(identityUrl, identityKeypair.publicKey);
     const identity = new KeypairSigner(identityUrl, identityKeypair, { keyPageHeight });
@@ -85,6 +89,7 @@ describe("Test Accumulate client", () => {
     await testTokenAccount(identity);
     await testData(identity);
     await testKeyPageAndBook(identity);
+    await testCreateToken(identity);
 
     res = await client.queryDirectory(identity.origin, { start: 0, count: 3 });
     expect(res.type).toStrictEqual("directory");
@@ -283,6 +288,37 @@ describe("Test Accumulate client", () => {
     // Query data per entry hash
     res = await client.queryData(dataAccountUrl, firstEntryHash);
     expect(res.data.entry.data).toStrictEqual(data.toString("hex"));
+  }
+
+  async function testCreateToken(identity: KeypairSigner) {
+    const tokenUrl = identity.origin + "/TEST";
+    const createToken = {
+      url: tokenUrl,
+      symbol: "TEST",
+      precision: 0,
+    };
+
+    const keyPageHeight = await client.queryKeyPageHeight(
+      identity.origin,
+      identity.keypair.publicKey
+    );
+    identity = new KeypairSigner(identity.origin, identity.keypair, { keyPageHeight });
+
+    await client.createToken(createToken, identity);
+    await waitOn(() => client.queryUrl(tokenUrl));
+
+    const recipient = LiteAccount.generateWithTokenUrl(tokenUrl);
+    const amount = new BN(123);
+    const issueToken = {
+      recipient: recipient.url,
+      amount,
+    };
+
+    await client.issueTokens(issueToken, KeypairSigner.withNewOrigin(identity, tokenUrl));
+    await waitOn(() => client.queryUrl(recipient.url));
+
+    const { data } = await client.queryUrl(recipient.url);
+    expect(new BN(data.balance)).toStrictEqual(amount);
   }
 
   test("should get version", async () => {
