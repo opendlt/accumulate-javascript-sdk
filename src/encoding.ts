@@ -22,11 +22,11 @@ export function uvarintMarshalBinary(val: number | BN): Buffer {
   return Buffer.from(buffer);
 }
 
-export function bigNumberMarshalBinary(bn: BN): Buffer {
-  return bytesMarshalBinary(bn.toArrayLike(Buffer, "be"));
+export function bigNumberMarshalBinary(bn?: BN): Buffer {
+  return bytesMarshalBinary(bn ? bn.toArrayLike(Buffer, "be") : Buffer.allocUnsafe(0));
 }
 
-export function booleanMarshalBinary(b: boolean): Buffer {
+export function booleanMarshalBinary(b?: boolean): Buffer {
   return b ? Buffer.from([1]) : Buffer.from([0]);
 }
 

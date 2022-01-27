@@ -16,6 +16,7 @@ export * from "./payload/create-key-book";
 export * from "./payload/create-key-page";
 export * from "./payload/create-token";
 export * from "./payload/create-token-account";
+export * from "./payload/issue-tokens";
 export * from "./payload/send-tokens";
 export * from "./payload/update-key-page";
 export * from "./payload/write-data";

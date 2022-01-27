@@ -15,6 +15,7 @@ import { Transaction, Header } from "./transaction";
 import { QueryOptions, QueryPagination } from "./api-types";
 import { CreateToken, CreateTokenArg } from "./payload/create-token";
 import { BurnTokens, BurnTokensArg } from "./payload/burn-tokens";
+import { IssueTokens, IssueTokensArg } from "./payload/issue-tokens";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
@@ -96,20 +97,29 @@ export class Client {
     });
   }
 
+  async queryKeyPageHeight(url: string | AccURL, key: string | Uint8Array): Promise<number> {
+    const {
+      data: { keyPage },
+    } = await this.queryKeyPageIndex(url, key);
+
+    const res = await this.queryUrl(keyPage);
+    return res.mainChain.height;
+  }
+
   /******************
    * Transactions
    ******************/
 
-  sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new SendTokens(sendTokens), signer);
+  addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<any> {
+    return this._execute(new AddCredits(addCredits), signer);
   }
 
   burnTokens(burnTokens: BurnTokensArg, signer: OriginSigner): Promise<any> {
     return this._execute(new BurnTokens(burnTokens), signer);
   }
 
-  addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new AddCredits(addCredits), signer);
+  createDataAccount(createDataAccount: CreateDataAccountArg, signer: OriginSigner): Promise<any> {
+    return this._execute(new CreateDataAccount(createDataAccount), signer);
   }
 
   createIdentity(createIdentity: CreateIdentityArg, signer: OriginSigner): Promise<any> {
@@ -124,10 +134,6 @@ export class Client {
     return this._execute(new CreateKeyPage(createKeyPage), signer);
   }
 
-  updateKeyPage(updateKeyPage: UpdateKeyPageArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new UpdateKeyPage(updateKeyPage), signer);
-  }
-
   createToken(createToken: CreateTokenArg, signer: OriginSigner): Promise<any> {
     return this._execute(new CreateToken(createToken), signer);
   }
@@ -139,16 +145,24 @@ export class Client {
     return this._execute(new CreateTokenAccount(createTokenAccount), signer);
   }
 
-  createDataAccount(createDataAccount: CreateDataAccountArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new CreateDataAccount(createDataAccount), signer);
+  execute(tx: Transaction): Promise<any> {
+    return this.call("execute", tx.toTxRequest());
+  }
+
+  issueTokens(issueTokens: IssueTokensArg, signer: OriginSigner): Promise<any> {
+    return this._execute(new IssueTokens(issueTokens), signer);
+  }
+
+  sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<any> {
+    return this._execute(new SendTokens(sendTokens), signer);
+  }
+
+  updateKeyPage(updateKeyPage: UpdateKeyPageArg, signer: OriginSigner): Promise<any> {
+    return this._execute(new UpdateKeyPage(updateKeyPage), signer);
   }
 
   writeData(writeData: WriteDataArg, signer: OriginSigner): Promise<any> {
     return this._execute(new WriteData(writeData), signer);
-  }
-
-  execute(tx: Transaction): Promise<any> {
-    return this.call("execute", tx.toTxRequest());
   }
 
   private async _execute(payload: Payload, signer: OriginSigner): Promise<any> {
