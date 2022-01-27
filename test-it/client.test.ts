@@ -326,6 +326,11 @@ describe("Test Accumulate client", () => {
     expect(res.type).toStrictEqual("version");
   });
 
+  test("should call describe", async () => {
+    const res = await client.describe();
+    expect(res).toBeTruthy()
+  });
+
   test("should get metrics", async () => {
     const res = await client.metrics("tps", 60);
     expect(res.type).toStrictEqual("metrics");

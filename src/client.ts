@@ -190,6 +190,10 @@ export class Client {
     return this.call("version");
   }
 
+  describe(): Promise<any> {
+    return this.call("describe");
+  }
+
   metrics(metric: string, duration: number): Promise<any> {
     return this.call("metrics", {
       metric,
