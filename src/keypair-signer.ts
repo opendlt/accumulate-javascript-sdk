@@ -25,10 +25,13 @@ export class KeypairSigner implements OriginSigner {
     });
   }
 
-  static incrementKeyPageHeight(signer: KeypairSigner): KeypairSigner {
+  static withNewKeyPageOptions(
+    signer: KeypairSigner,
+    keyPageOptions: KeyPageOptions
+  ): KeypairSigner {
     return new KeypairSigner(signer.origin, signer.keypair, {
-      keyPageHeight: signer.keyPageHeight + 1,
-      keyPageIndex: signer.keyPageIndex,
+      keyPageHeight: keyPageOptions.keyPageHeight ?? signer.keyPageHeight,
+      keyPageIndex: keyPageOptions.keyPageIndex ?? signer.keyPageIndex,
     });
   }
 

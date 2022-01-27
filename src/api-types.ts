@@ -4,5 +4,5 @@ export type QueryPagination = {
 };
 
 export type QueryOptions = {
-  expandChains: boolean;
+  expand: boolean;
 };
