@@ -73,18 +73,28 @@ await client.createIdentity(createIdentity, acc);
 console.log(await client.queryUrl(identityUrl));
 ```
 
-## For contributors
+### Manually building and signing a transaction
 
-### Build
+```js
+// You need to import the Payload class for the type of transaction you want to make.
+// Here we are building a SendTokens transaction.
+import { Transaction, Client, SendTokens, LiteAccount, Header, BN } from "../src";
 
+// Build the Payload
+const recipient = LiteAccount.generate();
+const amount = new BN(10);
+const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
+// Build the transaction header with the transaction origin
+// and optionally the keyPageHeight, keyPageIndex or nonce.
+const header = new Header("acc://my-identity/token-account");
+
+// Finally build the (unsigned yet) transaction
+const tx = new Transaction(payload, header);
+const dataForSignature = tx.dataForSignature();
+const signature = ... // manually sign `dataForSignature` with (custom key store, Ledger, etc)
+// Set the signature on the transaction
+tx.signature = signature;
+
+const client = new Client("https://testnet.accumulatenetwork.io/v2");
+await client.execute(tx);
 ```
-yarn build
-```
-
-### Tests
-
-- `yarn test` runs unit tests.
-- `yarn test-integration` runs integration tests that require to run against a live instance of Accumulate RPC API.
-- `yarn test-all` run both unit and integration tests, with code coverage.
-
-Integration tests require a running instance of Accumulate RPC API, by default it will assume one is running locally at `http://127.0.1.1:26660/v2`. The endpoint can be overriden with an environment variable: `ACC_ENDPOINT="https://testnet.accumulatenetwork.io/v2" yarn test-integration`.
