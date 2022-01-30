@@ -19,6 +19,9 @@ import { IssueTokens, IssueTokensArg } from "./payload/issue-tokens";
 
 const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
 
+/**
+ * Client to call Accumulate RPC APIs.
+ */
 export class Client {
   private readonly _rpcClient: RpcClient;
 
@@ -26,6 +29,11 @@ export class Client {
     this._rpcClient = new RpcClient(endpoint || TESTNET_ENDPOINT);
   }
 
+  /**
+   * Direct RPC call.
+   * @param method RPC method
+   * @param params method parameters
+   */
   async call<T>(method: string, params?: any): Promise<T> {
     return this._rpcClient.call(method, params);
   }
