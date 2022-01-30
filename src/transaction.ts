@@ -10,6 +10,9 @@ export type HeaderOptions = {
   keyPageIndex?: number;
 };
 
+/**
+ * Transaction header
+ */
 export class Header {
   private readonly _origin: AccURL;
   private readonly _nonce: number;
@@ -49,6 +52,9 @@ export class Header {
   }
 }
 
+/**
+ * An Accumulate Transaction
+ */
 export class Transaction {
   private readonly _header: Header;
   private readonly _payloadBinary: Buffer;
@@ -61,6 +67,9 @@ export class Transaction {
     this._signature = signature;
   }
 
+  /**
+   * Compute the hash of the transaction
+   */
   hash(): Buffer {
     if (this._hash) {
       return this._hash;
@@ -71,6 +80,9 @@ export class Transaction {
     return this._hash;
   }
 
+  /**
+   * Data that needs to be signed in order to submit the transaction.
+   */
   dataForSignature(): Buffer {
     return Buffer.concat([uvarintMarshalBinary(this._header.nonce), this.hash()]);
   }
@@ -99,6 +111,9 @@ export class Transaction {
     this._signature = await signer.sign(this);
   }
 
+  /**
+   * Convert the Transaction into the param object for the `execute` API method
+   */
   toTxRequest(checkOnly?: boolean): TxRequest {
     if (!this._signature) {
       throw new Error("Unsigned transaction cannot be converted to TxRequest");

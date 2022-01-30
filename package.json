@@ -13,7 +13,7 @@
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "build": "tsc -p tsconfig.json",
-    "clean": "rm -rf dist build",
+    "clean": "rm -rf dist build coverage docs",
     "ts-node": "ts-node",
     "doc": "typedoc --treatWarningsAsErrors"
   },

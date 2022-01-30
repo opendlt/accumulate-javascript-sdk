@@ -5,6 +5,9 @@ import nacl from "tweetnacl";
 import { Transaction } from "./transaction";
 import { OriginSigner, Signature, KeyPageOptions } from "./origin-signer";
 
+/**
+ * Class to sign Transactions backed by in-memory keypair.
+ */
 export class KeypairSigner implements OriginSigner {
   protected readonly _origin: AccURL;
   protected readonly _keypair: Keypair;
@@ -18,6 +21,13 @@ export class KeypairSigner implements OriginSigner {
     this._keyPageIndex = keyPageOptions?.keyPageIndex ?? 0;
   }
 
+  /**
+   * Helper to create a new instance of KeypairSigner with a new origin
+   * while copying other KeypairSigner attributes
+   * @param signer original KeypairSigner
+   * @param origin new origin
+   * @returns
+   */
   static withNewOrigin(signer: KeypairSigner, origin: string | AccURL): KeypairSigner {
     return new KeypairSigner(origin, signer.keypair, {
       keyPageHeight: signer.keyPageHeight,
@@ -25,6 +35,13 @@ export class KeypairSigner implements OriginSigner {
     });
   }
 
+  /**
+   * Helper to create a new instance of KeypairSigner with a new keyPageOptions
+   * while copying other KeypairSigner attributes
+   * @param signer original KeypairSigner
+   * @param keyPageOptions new key page options
+   * @returns
+   */
   static withNewKeyPageOptions(
     signer: KeypairSigner,
     keyPageOptions: KeyPageOptions
@@ -63,6 +80,9 @@ export class KeypairSigner implements OriginSigner {
     return this.signRaw(tx.dataForSignature());
   }
 
+  /**
+   * Sign arbitrary data.
+   */
   async signRaw(data: Uint8Array): Promise<Signature> {
     return {
       publicKey: this._keypair.publicKey,
