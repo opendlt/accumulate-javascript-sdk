@@ -2,20 +2,30 @@
   "name": "accumulate.js",
   "version": "0.1.0",
   "description": "Accumulate blockchain JS/TS SDK",
+  "keywords": [
+    "blockchain",
+    "accumulate"
+  ],
   "main": "src/index.ts",
   "author": "Luciap Technology Inc.",
   "license": "MIT",
+  "homepage": "https://gitlab.com/accumulatenetwork/accumulate.js",
+  "bugs": "https://gitlab.com/accumulatenetwork/accumulate.js/-/issues",
+  "repository": "gitlab:accumulatenetwork/accumulate.js",
   "private": false,
   "scripts": {
-    "test": "jest --config=test/jest.config.js",
+    "test-unit": "jest --config=test/jest.config.js",
     "test-integration": "jest --config=test-it/jest.config.js",
     "test-all": "jest",
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "format-check": "prettier --config .prettierrc 'src/**/*.ts' --check",
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist build coverage docs",
     "ts-node": "ts-node",
-    "doc": "typedoc --treatWarningsAsErrors"
+    "doc": "typedoc --treatWarningsAsErrors",
+    "code-check": "yarn clean && yarn build && yarn format-check && yarn lint && yarn doc",
+    "prepublish": "yarn code-check && yarn test-all"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",
