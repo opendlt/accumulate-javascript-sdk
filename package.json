@@ -24,8 +24,7 @@
     "clean": "rm -rf dist build coverage docs",
     "ts-node": "ts-node",
     "doc": "typedoc --treatWarningsAsErrors",
-    "code-check": "yarn clean && yarn build && yarn format-check && yarn lint && yarn doc",
-    "prepublish": "yarn code-check && yarn test-all"
+    "code-check": "yarn clean && yarn build && yarn format-check && yarn lint && yarn doc"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",
