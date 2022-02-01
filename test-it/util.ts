@@ -2,7 +2,7 @@ import { randomBytes } from "tweetnacl";
 import { AccURL, Client, OriginSigner, BN } from "..";
 
 export async function waitOn(fn: () => void, timeout?: number) {
-  const to = timeout ?? 10_000;
+  const to = timeout ?? 12_000;
   const start = Date.now();
   let lastError;
   while (Date.now() - start < to) {
