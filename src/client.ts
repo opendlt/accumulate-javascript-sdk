@@ -17,16 +17,14 @@ import { CreateToken, CreateTokenArg } from "./payload/create-token";
 import { BurnTokens, BurnTokensArg } from "./payload/burn-tokens";
 import { IssueTokens, IssueTokensArg } from "./payload/issue-tokens";
 
-const TESTNET_ENDPOINT = "https://testnet.accumulatenetwork.io/v2";
-
 /**
  * Client to call Accumulate RPC APIs.
  */
 export class Client {
   private readonly _rpcClient: RpcClient;
 
-  constructor(endpoint?: string) {
-    this._rpcClient = new RpcClient(endpoint || TESTNET_ENDPOINT);
+  constructor(endpoint: string) {
+    this._rpcClient = new RpcClient(endpoint);
   }
 
   /**
