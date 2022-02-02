@@ -27,11 +27,11 @@ build:
     paths:
       - docs
 
-test-unit:
+test:unit:
   stage: test
   script:
     - yarn install --immutable --immutable-cache --check-cache
-    - yarn test-unit
+    - yarn test:unit
 
 pages:
   stage: deploy

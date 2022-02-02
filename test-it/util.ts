@@ -1,5 +1,5 @@
 import { randomBytes } from "tweetnacl";
-import { AccURL, Client, OriginSigner, BN } from "..";
+import { AccURL, Client, OriginSigner, BN } from "../src";
 
 export async function waitOn(fn: () => void, timeout?: number) {
   const to = timeout ?? 12_000;
