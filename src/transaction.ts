@@ -21,7 +21,7 @@ export class Header {
 
   constructor(origin: string | AccURL, opts?: HeaderOptions) {
     this._origin = AccURL.toAccURL(origin);
-    this._nonce = opts?.nonce ?? Date.now();
+    this._nonce = opts?.nonce ?? Date.now() * 1000;
     this._keyPageHeight = opts?.keyPageHeight ?? 1;
     this._keyPageIndex = opts?.keyPageIndex ?? 0;
   }
