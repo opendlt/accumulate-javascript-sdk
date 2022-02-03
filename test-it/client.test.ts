@@ -331,7 +331,7 @@ describe("Test Accumulate client", () => {
     expect(res).toBeTruthy()
   });
 
-  test("should get metrics", async () => {
+  xtest("should get metrics", async () => {
     const res = await client.metrics("tps", 60);
     expect(res.type).toStrictEqual("metrics");
   });
