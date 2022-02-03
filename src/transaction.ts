@@ -19,11 +19,19 @@ export class Header {
   private readonly _keyPageHeight: number;
   private readonly _keyPageIndex: number;
 
-  constructor(origin: string | AccURL, opts?: HeaderOptions) {
+  /**
+   * Construct a Transaction Header
+   * @param origin origin of the transaction
+   * @param options options.
+   * - If nonce is not specified it defaults to the current timestamp in microseconds.
+   * - If keyPageHeight is not specified, it defaults to 1.
+   * - If keyPageIndex is not specified, it defaults to 0.
+   */
+  constructor(origin: string | AccURL, options?: HeaderOptions) {
     this._origin = AccURL.toAccURL(origin);
-    this._nonce = opts?.nonce ?? Date.now() * 1000;
-    this._keyPageHeight = opts?.keyPageHeight ?? 1;
-    this._keyPageIndex = opts?.keyPageIndex ?? 0;
+    this._nonce = options?.nonce ?? Date.now() * 1000;
+    this._keyPageHeight = options?.keyPageHeight ?? 1;
+    this._keyPageIndex = options?.keyPageIndex ?? 0;
   }
 
   get origin(): AccURL {
