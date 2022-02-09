@@ -8,6 +8,7 @@ export type CreateIdentityArg = {
   publicKey: Uint8Array;
   keyBookName: string;
   keyPageName: string;
+  manager?: string | AccURL;
 };
 
 export class CreateIdentity extends BasePayload {
@@ -15,6 +16,7 @@ export class CreateIdentity extends BasePayload {
   private readonly _publicKey: Uint8Array;
   private readonly _keyBookName: string;
   private readonly _keyPageName: string;
+  private readonly _manager?: AccURL;
 
   constructor(arg: CreateIdentityArg) {
     super();
@@ -22,6 +24,7 @@ export class CreateIdentity extends BasePayload {
     this._publicKey = arg.publicKey;
     this._keyBookName = arg.keyBookName;
     this._keyPageName = arg.keyPageName;
+    this._manager = arg.manager ? AccURL.toAccURL(arg.manager) : undefined;
   }
 
   protected _marshalBinary(): Buffer {
@@ -31,6 +34,7 @@ export class CreateIdentity extends BasePayload {
       bytesMarshalBinary(this._publicKey),
       stringMarshalBinary(this._keyBookName),
       stringMarshalBinary(this._keyPageName),
+      stringMarshalBinary(this._manager?.toString()),
     ]);
   }
 }

@@ -13,6 +13,7 @@ export type CreateTokenArg = {
   properties?: string | AccURL;
   initialSupply?: number | BN | string;
   hasSupplyLimit?: boolean;
+  manager?: string | AccURL;
 };
 
 export class CreateToken extends BasePayload {
@@ -23,6 +24,7 @@ export class CreateToken extends BasePayload {
   private readonly _properties?: AccURL;
   private readonly _initialSupply?: BN;
   private readonly _hasSupplyLimit?: boolean;
+  private readonly _manager?: AccURL;
 
   constructor(arg: CreateTokenArg) {
     super();
@@ -33,6 +35,7 @@ export class CreateToken extends BasePayload {
     this._properties = arg.properties ? AccURL.toAccURL(arg.properties) : undefined;
     this._initialSupply = arg.initialSupply ? new BN(arg.initialSupply) : undefined;
     this._hasSupplyLimit = arg.hasSupplyLimit;
+    this._manager = arg.manager ? AccURL.toAccURL(arg.manager) : undefined;
   }
 
   protected _marshalBinary(): Buffer {
@@ -45,6 +48,7 @@ export class CreateToken extends BasePayload {
       stringMarshalBinary(this._properties?.toString()),
       bigNumberMarshalBinary(this._initialSupply),
       booleanMarshalBinary(this._hasSupplyLimit),
+      stringMarshalBinary(this._manager?.toString()),
     ]);
   }
 }
