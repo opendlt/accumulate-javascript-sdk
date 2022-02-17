@@ -1,7 +1,7 @@
 import BN from "bn.js";
 import { AccURL } from "../acc-url";
-import { TxType } from "./tx-types";
-import { uvarintMarshalBinary, bigNumberMarshalBinary, stringMarshalBinary } from "../encoding";
+import { bigNumberMarshalBinary, stringMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { TransactionType } from "../types";
 import { BasePayload } from "./base-payload";
 
 export type IssueTokensArg = {
@@ -21,7 +21,7 @@ export class IssueTokens extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     return Buffer.concat([
-      uvarintMarshalBinary(TxType.IssueTokens),
+      uvarintMarshalBinary(TransactionType.IssueTokens),
       stringMarshalBinary(this._recipient.toString()),
       bigNumberMarshalBinary(this._amount),
     ]);
