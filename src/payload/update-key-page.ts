@@ -1,9 +1,9 @@
 import assert from "assert";
-import { uvarintMarshalBinary, bytesMarshalBinary } from "../encoding";
-import { TxType } from "./tx-types";
-import { BasePayload } from "./base-payload";
-import { AccURL } from "../acc-url";
 import { stringMarshalBinary } from "..";
+import { AccURL } from "../acc-url";
+import { bytesMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { TransactionType } from "../types";
+import { BasePayload } from "./base-payload";
 
 export enum KeyPageOperation {
   UpdateKey = 1,
@@ -61,7 +61,7 @@ export class UpdateKeyPage extends BasePayload {
   protected _marshalBinary(): Buffer {
     const forConcat = [];
 
-    forConcat.push(uvarintMarshalBinary(TxType.UpdateKeyPage));
+    forConcat.push(uvarintMarshalBinary(TransactionType.UpdateKeyPage));
 
     const opBuff = Buffer.allocUnsafe(1);
     opBuff.writeInt8(this._operation);

@@ -1,6 +1,6 @@
 import { AccURL } from "../acc-url";
-import { TxType } from "./tx-types";
-import { uvarintMarshalBinary, stringMarshalBinary } from "../encoding";
+import { stringMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { TransactionType } from "../types";
 import { BasePayload } from "./base-payload";
 
 export type CreateKeyBookArg = {
@@ -23,7 +23,7 @@ export class CreateKeyBook extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     const forConcat = [];
-    forConcat.push(uvarintMarshalBinary(TxType.CreateKeyBook));
+    forConcat.push(uvarintMarshalBinary(TransactionType.CreateKeyBook));
     forConcat.push(stringMarshalBinary(this._url.toString()));
     forConcat.push(uvarintMarshalBinary(this._pages.length));
 

@@ -1,6 +1,6 @@
 import { AccURL } from "../acc-url";
-import { TxType } from "./tx-types";
-import { uvarintMarshalBinary, stringMarshalBinary, bytesMarshalBinary } from "../encoding";
+import { bytesMarshalBinary, stringMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { TransactionType } from "../types";
 import { BasePayload } from "./base-payload";
 
 export type CreateKeyPageArg = {
@@ -23,7 +23,7 @@ export class CreateKeyPage extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     const forConcat = [];
-    forConcat.push(uvarintMarshalBinary(TxType.CreateKeyPage));
+    forConcat.push(uvarintMarshalBinary(TransactionType.CreateKeyPage));
     forConcat.push(stringMarshalBinary(this._url.toString()));
     forConcat.push(uvarintMarshalBinary(this._keys.length));
 
