@@ -1,9 +1,9 @@
-import { AccURL } from "../acc-url";
-import { TxType } from "./tx-types";
-import { uvarintMarshalBinary, stringMarshalBinary } from "../encoding";
-import { BasePayload } from "./base-payload";
 import BN from "bn.js";
 import { bigNumberMarshalBinary, booleanMarshalBinary } from "..";
+import { AccURL } from "../acc-url";
+import { stringMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { TransactionType } from "../types";
+import { BasePayload } from "./base-payload";
 
 export type CreateTokenArg = {
   url: string | AccURL;
@@ -40,7 +40,7 @@ export class CreateToken extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     return Buffer.concat([
-      uvarintMarshalBinary(TxType.CreateToken),
+      uvarintMarshalBinary(TransactionType.CreateToken),
       stringMarshalBinary(this._url.toString()),
       stringMarshalBinary(this._keyBookUrl?.toString()),
       stringMarshalBinary(this._symbol),

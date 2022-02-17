@@ -1,9 +1,8 @@
+import nacl from "tweetnacl";
 import { AccURL } from "./acc-url";
 import { Keypair } from "./keypair";
-
-import nacl from "tweetnacl";
+import { KeyPageOptions, OriginSigner, Signature } from "./origin-signer";
 import { Transaction } from "./transaction";
-import { OriginSigner, Signature, KeyPageOptions } from "./origin-signer";
 
 /**
  * Class to sign Transactions backed by in-memory keypair.

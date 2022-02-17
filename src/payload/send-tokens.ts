@@ -1,12 +1,12 @@
 import BN from "bn.js";
 import { AccURL } from "../acc-url";
-import { TxType } from "./tx-types";
 import {
-  uvarintMarshalBinary,
-  stringMarshalBinary,
-  bytesMarshalBinary,
   bigNumberMarshalBinary,
+  bytesMarshalBinary,
+  stringMarshalBinary,
+  uvarintMarshalBinary,
 } from "../encoding";
+import { TransactionType } from "../types";
 import { BasePayload } from "./base-payload";
 
 export type SendTokensArg = {
@@ -49,7 +49,7 @@ export class SendTokens extends BasePayload {
 
     const forConcat = [];
 
-    forConcat.push(uvarintMarshalBinary(TxType.SendTokens));
+    forConcat.push(uvarintMarshalBinary(TransactionType.SendTokens));
     forConcat.push(hash);
     forConcat.push(bytesMarshalBinary(this._meta || Buffer.allocUnsafe(0)));
     forConcat.push(uvarintMarshalBinary(this._to.length));

@@ -49,6 +49,7 @@
   "dependencies": {
     "axios": "^0.25.0",
     "bn.js": "^5.2.0",
+    "prettier-plugin-organize-imports": "^2.3.4",
     "tweetnacl": "^1.0.3"
   }
 }

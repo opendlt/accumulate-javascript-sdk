@@ -1,0 +1,4 @@
+[submodule "accumulate"]
+	path = accumulate
+	url = ../accumulate.git
+	branch = develop

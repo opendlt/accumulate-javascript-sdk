@@ -1,5 +1,13 @@
 import BN from "bn.js";
 
+export function arrayMarshalBinary<T>(val: T[], marshal: (val: T) => Buffer): Buffer {
+  const forConcat = [];
+
+  forConcat.push(uvarintMarshalBinary(val.length));
+  val.forEach((val) => forConcat.push(marshal(val)));
+  return Buffer.concat(forConcat);
+}
+
 export function uvarintMarshalBinary(val: number | BN): Buffer {
   if (typeof val === "number" && val > Number.MAX_SAFE_INTEGER) {
     throw new Error(
@@ -41,4 +49,11 @@ export function stringMarshalBinary(val?: string): Buffer {
 export function bytesMarshalBinary(val: Uint8Array): Buffer {
   const length = uvarintMarshalBinary(val.length);
   return Buffer.concat([length, val]);
+}
+
+export function hashMarshalBinary(val: Uint8Array): Buffer {
+  if (val.length != 32) {
+    throw new Error(`Invalid length, value is not a hash`);
+  }
+  return Buffer.from(val);
 }

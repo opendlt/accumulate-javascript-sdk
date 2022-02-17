@@ -1,6 +1,6 @@
 import BN from "bn.js";
-import { TxType } from "./tx-types";
-import { uvarintMarshalBinary, bigNumberMarshalBinary } from "../encoding";
+import { bigNumberMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { TransactionType } from "../types";
 import { BasePayload } from "./base-payload";
 
 export type BurnTokensArg = {
@@ -17,7 +17,7 @@ export class BurnTokens extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     return Buffer.concat([
-      uvarintMarshalBinary(TxType.BurnTokens),
+      uvarintMarshalBinary(TransactionType.BurnTokens),
       bigNumberMarshalBinary(this._amount),
     ]);
   }
