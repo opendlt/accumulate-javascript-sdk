@@ -1,8 +1,8 @@
+import { AccURL } from "./acc-url";
 import { sha256 } from "./crypto";
 import { stringMarshalBinary, uvarintMarshalBinary } from "./encoding";
-import { Payload } from "./payload";
 import { OriginSigner, Signature } from "./origin-signer";
-import { AccURL } from "./acc-url";
+import { Payload } from "./payload";
 
 export type HeaderOptions = {
   nonce?: number;

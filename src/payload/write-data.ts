@@ -1,5 +1,5 @@
-import { TxType } from "./tx-types";
-import { uvarintMarshalBinary, bytesMarshalBinary } from "../encoding";
+import { bytesMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { TransactionType } from "../types";
 import { BasePayload } from "./base-payload";
 
 export type WriteDataArg = {
@@ -19,7 +19,7 @@ export class WriteData extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     const forConcat = [];
-    forConcat.push(uvarintMarshalBinary(TxType.WriteData));
+    forConcat.push(uvarintMarshalBinary(TransactionType.WriteData));
     forConcat.push(uvarintMarshalBinary(this._extIds.length));
 
     this._extIds.forEach((extId) => forConcat.push(bytesMarshalBinary(extId)));
