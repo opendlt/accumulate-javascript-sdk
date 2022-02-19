@@ -1,11 +1,10 @@
 import BN from "bn.js";
 
-export function arrayMarshalBinary<T>(val: T[], marshal: (val: T) => Buffer): Buffer {
-  const forConcat = [];
-
-  forConcat.push(uvarintMarshalBinary(val.length));
-  val.forEach((val) => forConcat.push(marshal(val)));
-  return Buffer.concat(forConcat);
+export function marshalField(field: number, val: Buffer): Buffer {
+  if (field < 1 || field > 32) {
+    throw new Error(`Field number is out of range [1, 32]: ${field}`);
+  }
+  return Buffer.concat([uvarintMarshalBinary(field), val]);
 }
 
 export function uvarintMarshalBinary(val: number | BN): Buffer {
