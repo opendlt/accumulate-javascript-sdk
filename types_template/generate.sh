@@ -10,6 +10,7 @@ go run ./tools/cmd/gen-enum -l ../types_template/enums.ts.tmpl -o ../src/types/e
 
 # Transactions
 go run ./tools/cmd/gen-types -l ../types_template/types.ts.tmpl:protocol -o ../src/types/transactions.ts \
+    -i Envelope,Transaction,TransactionHeader,ED25519Sig \
     -i CreateIdentity,CreateTokenAccount,SendTokens,CreateDataAccount,WriteData,WriteDataTo,CreateToken,IssueTokens,BurnTokens,CreateKeyPage,CreateKeyBook,AddCredits,UpdateKeyPage,SignPending \
     -i KeySpecParams,TokenRecipient,DataEntry \
     protocol/transactions.yml protocol/general.yml

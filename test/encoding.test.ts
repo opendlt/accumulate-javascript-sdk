@@ -5,7 +5,7 @@ import {
   bigNumberMarshalBinary,
   booleanMarshalBinary,
   hashMarshalBinary,
-  arrayMarshalBinary,
+  marshalField,
 } from "../src/encoding";
 import { BN } from "bn.js";
 
@@ -67,8 +67,7 @@ test("should marshal binary hash", () => {
   );
 })
 
-test("should marshal binary array", () => {
-  expect(arrayMarshalBinary([], uvarintMarshalBinary)).toStrictEqual(Buffer.from([0]))
-  expect(arrayMarshalBinary([1, 2, 3], uvarintMarshalBinary)).toStrictEqual(Buffer.from([3, 1, 2, 3]))
-  expect(arrayMarshalBinary(["hello", "world"], stringMarshalBinary)).toStrictEqual(Buffer.from([2, 5, 104, 101, 108, 108, 111, 5, 119, 111, 114, 108, 100]))
+test("should marshal field", () => {
+  expect(marshalField(1, booleanMarshalBinary(true))).toStrictEqual(Buffer.from([1, 1]));
+  expect(marshalField(2, booleanMarshalBinary(false))).toStrictEqual(Buffer.from([2, 0]));
 })
