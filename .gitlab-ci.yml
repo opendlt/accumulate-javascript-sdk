@@ -29,6 +29,8 @@ build:
 
 test:unit:
   stage: test
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - yarn install --immutable --immutable-cache --check-cache
     - yarn test:unit
