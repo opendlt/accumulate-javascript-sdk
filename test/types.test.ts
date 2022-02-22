@@ -1,4 +1,4 @@
-import { ED25519Sig, Envelope, Transaction, TransactionBody } from "../src/types";
+import { Envelope, LegacyED25519Signature, Transaction, TransactionBody } from "../src/types";
 import { transactions as transactionTests } from "./data/sdk/protocol.1.json";
 
 const userTransactionTests = transactionTests.filter(
@@ -10,7 +10,7 @@ describe.each(userTransactionTests)("transactions", ({ name, cases }) => {
     it.each(cases)("should marshal correctly", ({ json, binary }) => {
       const { body, ...header } = json.transaction;
       const env = new Envelope({
-        signatures: json.signatures.map((v) => new ED25519Sig(v)),
+        signatures: json.signatures.map((v) => new LegacyED25519Signature(v)),
         transaction: new Transaction({
           ...header,
           keyPageIndex: 0,
