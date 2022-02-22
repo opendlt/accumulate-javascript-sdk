@@ -11,7 +11,7 @@ import {
   uvarintMarshalBinary,
 } from "../encoding";
 import { BasePayload } from "../payload/base-payload";
-import { KeyPageOperation, TransactionType } from "./enums";
+import { KeyPageOperation, SignatureType, TransactionType } from "./enums";
 
 /* eslint-disable @typescript-eslint/no-namespace,no-constant-condition */
 
@@ -30,6 +30,8 @@ export type TransactionBody =
   | UpdateKeyPage
   | WriteData
   | WriteDataTo;
+
+export type Signature = ED25519Signature | LegacyED25519Signature;
 
 type TransactionPayload = TransactionBody;
 
@@ -160,26 +162,24 @@ export class CreateDataAccount extends BasePayload {
 
 export type CreateIdentityArg = {
   url: string | AccURL;
-  publicKey: Uint8Array | string;
-  keyBookName?: string;
-  keyPageName?: string;
+  publicKey?: Uint8Array | string;
+  keyBookUrl?: string | AccURL;
   manager?: string | AccURL;
 };
 
 export class CreateIdentity extends BasePayload {
   public readonly url: AccURL;
-  public readonly publicKey: Uint8Array;
-  public readonly keyBookName?: string;
-  public readonly keyPageName?: string;
+  public readonly publicKey?: Uint8Array;
+  public readonly keyBookUrl?: AccURL;
   public readonly manager?: AccURL;
 
   constructor(arg: CreateIdentityArg) {
     super();
     this.url = AccURL.toAccURL(arg.url);
-    this.publicKey =
-      typeof arg.publicKey === "string" ? Buffer.from(arg.publicKey, "hex") : arg.publicKey;
-    if (arg.keyBookName) this.keyBookName = arg.keyBookName;
-    if (arg.keyPageName) this.keyPageName = arg.keyPageName;
+    if (arg.publicKey)
+      this.publicKey =
+        typeof arg.publicKey === "string" ? Buffer.from(arg.publicKey, "hex") : arg.publicKey;
+    if (arg.keyBookUrl) this.keyBookUrl = AccURL.toAccURL(arg.keyBookUrl);
     if (arg.manager) this.manager = AccURL.toAccURL(arg.manager);
   }
   protected _marshalBinary(): Buffer {
@@ -188,25 +188,14 @@ export class CreateIdentity extends BasePayload {
     if (true) {
       parts.push(marshalField(2, stringMarshalBinary(this.url.toString())));
     }
-    if (true && this.publicKey.length > 0) {
+    if (this.publicKey !== undefined && this.publicKey !== null && this.publicKey?.length > 0) {
       parts.push(marshalField(3, bytesMarshalBinary(this.publicKey)));
     }
-    if (
-      this.keyBookName !== undefined &&
-      this.keyBookName !== null &&
-      this.keyBookName.length > 0
-    ) {
-      parts.push(marshalField(4, stringMarshalBinary(this.keyBookName)));
-    }
-    if (
-      this.keyPageName !== undefined &&
-      this.keyPageName !== null &&
-      this.keyPageName.length > 0
-    ) {
-      parts.push(marshalField(5, stringMarshalBinary(this.keyPageName)));
+    if (this.keyBookUrl !== undefined && this.keyBookUrl !== null) {
+      parts.push(marshalField(4, stringMarshalBinary(this.keyBookUrl.toString())));
     }
     if (this.manager !== undefined && this.manager !== null) {
-      parts.push(marshalField(6, stringMarshalBinary(this.manager.toString())));
+      parts.push(marshalField(5, stringMarshalBinary(this.manager.toString())));
     }
     return Buffer.concat(parts);
   }
@@ -214,19 +203,22 @@ export class CreateIdentity extends BasePayload {
 
 export type CreateKeyBookArg = {
   url: string | AccURL;
-  pages: (string | AccURL)[];
+  publicKeyHash: Uint8Array | string;
   manager?: string | AccURL;
 };
 
 export class CreateKeyBook extends BasePayload {
   public readonly url: AccURL;
-  public readonly pages: AccURL[];
+  public readonly publicKeyHash: Uint8Array;
   public readonly manager?: AccURL;
 
   constructor(arg: CreateKeyBookArg) {
     super();
     this.url = AccURL.toAccURL(arg.url);
-    this.pages = arg.pages.map((v) => AccURL.toAccURL(v));
+    this.publicKeyHash =
+      typeof arg.publicKeyHash === "string"
+        ? Buffer.from(arg.publicKeyHash, "hex")
+        : arg.publicKeyHash;
     if (arg.manager) this.manager = AccURL.toAccURL(arg.manager);
   }
   protected _marshalBinary(): Buffer {
@@ -235,10 +227,8 @@ export class CreateKeyBook extends BasePayload {
     if (true) {
       parts.push(marshalField(2, stringMarshalBinary(this.url.toString())));
     }
-    if (true && this.pages.length > 0) {
-      parts.push(
-        Buffer.concat(this.pages.map((val) => marshalField(3, stringMarshalBinary(val.toString()))))
-      );
+    if (true && this.publicKeyHash?.length > 0) {
+      parts.push(marshalField(3, bytesMarshalBinary(this.publicKeyHash)));
     }
     if (this.manager !== undefined && this.manager !== null) {
       parts.push(marshalField(4, stringMarshalBinary(this.manager.toString())));
@@ -248,37 +238,31 @@ export class CreateKeyBook extends BasePayload {
 }
 
 export type CreateKeyPageArg = {
-  url: string | AccURL;
   keys: (KeySpecParams | KeySpecParamsArg)[];
   manager?: string | AccURL;
 };
 
 export class CreateKeyPage extends BasePayload {
-  public readonly url: AccURL;
   public readonly keys: KeySpecParams[];
   public readonly manager?: AccURL;
 
   constructor(arg: CreateKeyPageArg) {
     super();
-    this.url = AccURL.toAccURL(arg.url);
     this.keys = arg.keys.map((v) => (v instanceof KeySpecParams ? v : new KeySpecParams(v)));
     if (arg.manager) this.manager = AccURL.toAccURL(arg.manager);
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
     parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.CreateKeyPage)));
-    if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.url.toString())));
-    }
-    if (true && this.keys.length > 0) {
+    if (true && this.keys?.length > 0) {
       parts.push(
         Buffer.concat(
-          this.keys.map((val) => marshalField(3, bytesMarshalBinary(val.marshalBinary())))
+          this.keys.map((val) => marshalField(2, bytesMarshalBinary(val.marshalBinary())))
         )
       );
     }
     if (this.manager !== undefined && this.manager !== null) {
-      parts.push(marshalField(4, stringMarshalBinary(this.manager.toString())));
+      parts.push(marshalField(3, stringMarshalBinary(this.manager.toString())));
     }
     return Buffer.concat(parts);
   }
@@ -327,7 +311,7 @@ export class CreateToken extends BasePayload {
     if (this.keyBookUrl !== undefined && this.keyBookUrl !== null) {
       parts.push(marshalField(3, stringMarshalBinary(this.keyBookUrl.toString())));
     }
-    if (true && this.symbol.length > 0) {
+    if (true && this.symbol?.length > 0) {
       parts.push(marshalField(4, stringMarshalBinary(this.symbol)));
     }
     if (true && (this.precision instanceof BN ? !this.precision.isZero() : this.precision !== 0)) {
@@ -420,30 +404,27 @@ export class DataEntry extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    if (this.extIds !== undefined && this.extIds !== null && this.extIds.length > 0) {
+    if (this.extIds !== undefined && this.extIds !== null && this.extIds?.length > 0) {
       parts.push(Buffer.concat(this.extIds.map((val) => marshalField(1, bytesMarshalBinary(val)))));
     }
-    if (this.data !== undefined && this.data !== null && this.data.length > 0) {
+    if (this.data !== undefined && this.data !== null && this.data?.length > 0) {
       parts.push(marshalField(2, bytesMarshalBinary(this.data)));
     }
     return Buffer.concat(parts);
   }
 }
 
-export type ED25519SigArg = {
-  nonce: number | BN;
+export type ED25519SignatureArg = {
   publicKey: Uint8Array | string;
   signature: Uint8Array | string;
 };
 
-export class ED25519Sig extends BasePayload {
-  public readonly nonce: number | BN;
+export class ED25519Signature extends BasePayload {
   public readonly publicKey: Uint8Array;
   public readonly signature: Uint8Array;
 
-  constructor(arg: ED25519SigArg) {
+  constructor(arg: ED25519SignatureArg) {
     super();
-    this.nonce = arg.nonce;
     this.publicKey =
       typeof arg.publicKey === "string" ? Buffer.from(arg.publicKey, "hex") : arg.publicKey;
     this.signature =
@@ -451,13 +432,11 @@ export class ED25519Sig extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    if (true && (this.nonce instanceof BN ? !this.nonce.isZero() : this.nonce !== 0)) {
-      parts.push(marshalField(1, uvarintMarshalBinary(this.nonce)));
-    }
-    if (true && this.publicKey.length > 0) {
+    parts.push(marshalField(1, uvarintMarshalBinary(SignatureType.ED25519)));
+    if (true && this.publicKey?.length > 0) {
       parts.push(marshalField(2, bytesMarshalBinary(this.publicKey)));
     }
-    if (true && this.signature.length > 0) {
+    if (true && this.signature?.length > 0) {
       parts.push(marshalField(3, bytesMarshalBinary(this.signature)));
     }
     return Buffer.concat(parts);
@@ -465,19 +444,19 @@ export class ED25519Sig extends BasePayload {
 }
 
 export type EnvelopeArg = {
-  signatures: (ED25519Sig | ED25519SigArg)[];
+  signatures: Signature[];
   txHash?: Uint8Array | string;
   transaction?: Transaction | TransactionArg;
 };
 
 export class Envelope extends BasePayload {
-  public readonly signatures: ED25519Sig[];
+  public readonly signatures: Signature[];
   public readonly txHash?: Uint8Array;
   public readonly transaction?: Transaction;
 
   constructor(arg: EnvelopeArg) {
     super();
-    this.signatures = arg.signatures.map((v) => (v instanceof ED25519Sig ? v : new ED25519Sig(v)));
+    this.signatures = arg.signatures.map((v) => v);
     if (arg.txHash)
       this.txHash = typeof arg.txHash === "string" ? Buffer.from(arg.txHash, "hex") : arg.txHash;
     if (arg.transaction)
@@ -486,14 +465,14 @@ export class Envelope extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    if (true && this.signatures.length > 0) {
+    if (true && this.signatures?.length > 0) {
       parts.push(
         Buffer.concat(
           this.signatures.map((val) => marshalField(1, bytesMarshalBinary(val.marshalBinary())))
         )
       );
     }
-    if (this.txHash !== undefined && this.txHash !== null && this.txHash.length > 0) {
+    if (this.txHash !== undefined && this.txHash !== null && this.txHash?.length > 0) {
       parts.push(marshalField(2, bytesMarshalBinary(this.txHash)));
     }
     if (this.transaction !== undefined && this.transaction !== null) {
@@ -544,8 +523,43 @@ export class KeySpecParams extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    if (true && this.publicKey.length > 0) {
+    if (true && this.publicKey?.length > 0) {
       parts.push(marshalField(1, bytesMarshalBinary(this.publicKey)));
+    }
+    return Buffer.concat(parts);
+  }
+}
+
+export type LegacyED25519SignatureArg = {
+  nonce: number | BN;
+  publicKey: Uint8Array | string;
+  signature: Uint8Array | string;
+};
+
+export class LegacyED25519Signature extends BasePayload {
+  public readonly nonce: number | BN;
+  public readonly publicKey: Uint8Array;
+  public readonly signature: Uint8Array;
+
+  constructor(arg: LegacyED25519SignatureArg) {
+    super();
+    this.nonce = arg.nonce;
+    this.publicKey =
+      typeof arg.publicKey === "string" ? Buffer.from(arg.publicKey, "hex") : arg.publicKey;
+    this.signature =
+      typeof arg.signature === "string" ? Buffer.from(arg.signature, "hex") : arg.signature;
+  }
+  protected _marshalBinary(): Buffer {
+    const parts = [];
+    parts.push(marshalField(1, uvarintMarshalBinary(SignatureType.LegacyED25519)));
+    if (true && (this.nonce instanceof BN ? !this.nonce.isZero() : this.nonce !== 0)) {
+      parts.push(marshalField(2, uvarintMarshalBinary(this.nonce)));
+    }
+    if (true && this.publicKey?.length > 0) {
+      parts.push(marshalField(3, bytesMarshalBinary(this.publicKey)));
+    }
+    if (true && this.signature?.length > 0) {
+      parts.push(marshalField(4, bytesMarshalBinary(this.signature)));
     }
     return Buffer.concat(parts);
   }
@@ -575,7 +589,7 @@ export class SendTokens extends BasePayload {
     if (
       this.hash !== undefined &&
       this.hash !== null &&
-      this.hash.length > 0 &&
+      this.hash?.length > 0 &&
       this.hash.some((v) => v !== 0)
     ) {
       parts.push(marshalField(2, hashMarshalBinary(this.hash)));
@@ -583,7 +597,7 @@ export class SendTokens extends BasePayload {
     if (this.meta !== undefined && this.meta !== null) {
       parts.push(marshalField(3, stringMarshalBinary(JSON.stringify(this.meta))));
     }
-    if (true && this.to.length > 0) {
+    if (true && this.to?.length > 0) {
       parts.push(
         Buffer.concat(
           this.to.map((val) => marshalField(4, bytesMarshalBinary(val.marshalBinary())))
@@ -638,6 +652,8 @@ export type TransactionArg = {
   keyPageHeight: number | BN;
   keyPageIndex: number | BN;
   nonce: number | BN;
+  memo?: string;
+  metadata?: Uint8Array | string;
   body: TransactionPayload;
 };
 
@@ -646,6 +662,8 @@ export class Transaction extends BasePayload {
   public readonly keyPageHeight: number | BN;
   public readonly keyPageIndex: number | BN;
   public readonly nonce: number | BN;
+  public readonly memo?: string;
+  public readonly metadata?: Uint8Array;
   public readonly body: TransactionPayload;
 
   constructor(arg: TransactionArg) {
@@ -654,6 +672,10 @@ export class Transaction extends BasePayload {
     this.keyPageHeight = arg.keyPageHeight;
     this.keyPageIndex = arg.keyPageIndex;
     this.nonce = arg.nonce;
+    if (arg.memo) this.memo = arg.memo;
+    if (arg.metadata)
+      this.metadata =
+        typeof arg.metadata === "string" ? Buffer.from(arg.metadata, "hex") : arg.metadata;
     this.body = arg.body;
   }
   protected _marshalBinary(): Buffer {
@@ -678,6 +700,12 @@ export class Transaction extends BasePayload {
       if (true && (this.nonce instanceof BN ? !this.nonce.isZero() : this.nonce !== 0)) {
         subParts.push(marshalField(4, uvarintMarshalBinary(this.nonce)));
       }
+      if (this.memo !== undefined && this.memo !== null && this.memo?.length > 0) {
+        subParts.push(marshalField(5, stringMarshalBinary(this.memo)));
+      }
+      if (this.metadata !== undefined && this.metadata !== null && this.metadata?.length > 0) {
+        subParts.push(marshalField(6, bytesMarshalBinary(this.metadata)));
+      }
       parts.push(marshalField(1, bytesMarshalBinary(Buffer.concat(subParts))));
     }
     if (true) {
@@ -692,6 +720,8 @@ export type TransactionHeaderArg = {
   keyPageHeight: number | BN;
   keyPageIndex: number | BN;
   nonce: number | BN;
+  memo?: string;
+  metadata?: Uint8Array | string;
 };
 
 export class TransactionHeader extends BasePayload {
@@ -699,6 +729,8 @@ export class TransactionHeader extends BasePayload {
   public readonly keyPageHeight: number | BN;
   public readonly keyPageIndex: number | BN;
   public readonly nonce: number | BN;
+  public readonly memo?: string;
+  public readonly metadata?: Uint8Array;
 
   constructor(arg: TransactionHeaderArg) {
     super();
@@ -706,6 +738,10 @@ export class TransactionHeader extends BasePayload {
     this.keyPageHeight = arg.keyPageHeight;
     this.keyPageIndex = arg.keyPageIndex;
     this.nonce = arg.nonce;
+    if (arg.memo) this.memo = arg.memo;
+    if (arg.metadata)
+      this.metadata =
+        typeof arg.metadata === "string" ? Buffer.from(arg.metadata, "hex") : arg.metadata;
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
@@ -726,6 +762,12 @@ export class TransactionHeader extends BasePayload {
     }
     if (true && (this.nonce instanceof BN ? !this.nonce.isZero() : this.nonce !== 0)) {
       parts.push(marshalField(4, uvarintMarshalBinary(this.nonce)));
+    }
+    if (this.memo !== undefined && this.memo !== null && this.memo?.length > 0) {
+      parts.push(marshalField(5, stringMarshalBinary(this.memo)));
+    }
+    if (this.metadata !== undefined && this.metadata !== null && this.metadata?.length > 0) {
+      parts.push(marshalField(6, bytesMarshalBinary(this.metadata)));
     }
     return Buffer.concat(parts);
   }
@@ -762,10 +804,10 @@ export class UpdateKeyPage extends BasePayload {
     if (true) {
       parts.push(marshalField(2, uvarintMarshalBinary(this.operation)));
     }
-    if (this.key !== undefined && this.key !== null && this.key.length > 0) {
+    if (this.key !== undefined && this.key !== null && this.key?.length > 0) {
       parts.push(marshalField(3, bytesMarshalBinary(this.key)));
     }
-    if (this.newKey !== undefined && this.newKey !== null && this.newKey.length > 0) {
+    if (this.newKey !== undefined && this.newKey !== null && this.newKey?.length > 0) {
       parts.push(marshalField(4, bytesMarshalBinary(this.newKey)));
     }
     if (this.owner !== undefined && this.owner !== null) {
