@@ -2,100 +2,6 @@
 
 /* eslint-disable @typescript-eslint/no-namespace */
 
-export enum AccountType {
-  /** Unknown represents an unknown account type. */
-  Unknown = 0,
-  /** Anchor is one or more Merkle DAG anchors. */
-  Anchor = 1,
-  /** Identity is an Identity account, aka an ADI. */
-  Identity = 2,
-  /** TokenIssuer is a Token Issuer account. */
-  TokenIssuer = 3,
-  /** TokenAccount is an ADI Token Account. */
-  TokenAccount = 4,
-  /** LiteTokenAccount is a Lite Token Account. */
-  LiteTokenAccount = 5,
-  /** Transaction is a completed transaction. */
-  Transaction = 7,
-  /** PendingTransaction is a pending transaction. */
-  PendingTransaction = 8,
-  /** KeyPage is a Key Page account. */
-  KeyPage = 9,
-  /** KeyBook is a Key Book account. */
-  KeyBook = 10,
-  /** DataAccount is an ADI Data Account. */
-  DataAccount = 11,
-  /** LiteDataAccount is a Lite Data Account. */
-  LiteDataAccount = 12,
-  /** InternalLedger is a ledger that tracks the state of internal operations. */
-  InternalLedger = 14,
-}
-
-export namespace AccountType {
-  export function byName(name: string): AccountType {
-    switch (name) {
-      case "unknown":
-        return AccountType.Unknown;
-      case "anchor":
-        return AccountType.Anchor;
-      case "identity":
-        return AccountType.Identity;
-      case "tokenIssuer":
-        return AccountType.TokenIssuer;
-      case "token":
-        return AccountType.TokenIssuer;
-      case "tokenAccount":
-        return AccountType.TokenAccount;
-      case "liteTokenAccount":
-        return AccountType.LiteTokenAccount;
-      case "transaction":
-        return AccountType.Transaction;
-      case "pendingTransaction":
-        return AccountType.PendingTransaction;
-      case "keyPage":
-        return AccountType.KeyPage;
-      case "keyBook":
-        return AccountType.KeyBook;
-      case "dataAccount":
-        return AccountType.DataAccount;
-      case "liteDataAccount":
-        return AccountType.LiteDataAccount;
-      case "internalLedger":
-        return AccountType.InternalLedger;
-      default:
-        throw new Error(`Unknown AccountType '${name}'`);
-    }
-  }
-}
-
-export enum ChainType {
-  /** Unknown is used when the chain type is not known. */
-  Unknown = 0,
-  /** Transaction holds transaction hashes. */
-  Transaction = 1,
-  /** Anchor holds chain anchors. */
-  Anchor = 2,
-  /** Data holds data entry hashes. */
-  Data = 3,
-}
-
-export namespace ChainType {
-  export function byName(name: string): ChainType {
-    switch (name) {
-      case "unknown":
-        return ChainType.Unknown;
-      case "transaction":
-        return ChainType.Transaction;
-      case "anchor":
-        return ChainType.Anchor;
-      case "data":
-        return ChainType.Data;
-      default:
-        throw new Error(`Unknown ChainType '${name}'`);
-    }
-  }
-}
-
 export enum KeyPageOperation {
   /** Unknown is used when the key page operation is not known. */
   Unknown = 0,
@@ -128,50 +34,34 @@ export namespace KeyPageOperation {
   }
 }
 
-export enum ObjectType {
-  /** Unknown is used when the object type is not known. */
+export enum SignatureType {
+  /** Unknown is used when the signature type is not known. */
   Unknown = 0,
-  /** Account represents an account object. */
-  Account = 1,
-  /** Transaction represents a transaction object. */
-  Transaction = 2,
+  /** LegacyED25519 represents a legacy ED25519 signature. */
+  LegacyED25519 = 1,
+  /** ED25519 represents an ED25519 signature. */
+  ED25519 = 2,
+  /** RCD1 represents an RCD1 signature. */
+  RCD1 = 3,
+  /** Receipt represents a Merkle tree receipt. */
+  Receipt = 4,
 }
 
-export namespace ObjectType {
-  export function byName(name: string): ObjectType {
+export namespace SignatureType {
+  export function byName(name: string): SignatureType {
     switch (name) {
       case "unknown":
-        return ObjectType.Unknown;
-      case "account":
-        return ObjectType.Account;
-      case "transaction":
-        return ObjectType.Transaction;
+        return SignatureType.Unknown;
+      case "legacyED25519":
+        return SignatureType.LegacyED25519;
+      case "eD25519":
+        return SignatureType.ED25519;
+      case "rCD1":
+        return SignatureType.RCD1;
+      case "receipt":
+        return SignatureType.Receipt;
       default:
-        throw new Error(`Unknown ObjectType '${name}'`);
-    }
-  }
-}
-
-export enum TransactionMax {
-  /** User is the highest number reserved for user transactions. */
-  User = 47,
-  /** Synthetic is the highest number reserved for synthetic transactions. */
-  Synthetic = 95,
-  /** Internal is the highest number reserved for internal transactions. */
-  Internal = 255,
-}
-
-export namespace TransactionMax {
-  export function byName(name: string): TransactionMax {
-    switch (name) {
-      case "user":
-        return TransactionMax.User;
-      case "synthetic":
-        return TransactionMax.Synthetic;
-      case "internal":
-        return TransactionMax.Internal;
-      default:
-        throw new Error(`Unknown TransactionMax '${name}'`);
+        throw new Error(`Unknown SignatureType '${name}'`);
     }
   }
 }
