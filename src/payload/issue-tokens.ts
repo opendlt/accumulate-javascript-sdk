@@ -21,9 +21,9 @@ export class IssueTokens extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     return Buffer.concat([
-      uvarintMarshalBinary(TransactionType.IssueTokens),
-      stringMarshalBinary(this._recipient.toString()),
-      bigNumberMarshalBinary(this._amount),
+      uvarintMarshalBinary(TransactionType.IssueTokens, 1),
+      stringMarshalBinary(this._recipient.toString(), 2),
+      bigNumberMarshalBinary(this._amount, 3),
     ]);
   }
 }

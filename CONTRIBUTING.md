@@ -19,8 +19,7 @@ regenerate these types, you must have Go installed and the submodule cloned.
 Cloing with the `--recursive` flag will automatically populate the submodule.
 Otherwise, you must run `git submodule init && git submodule update`.
 
-To regenerate the types, run `./generate-types.sh`. Alternatively, `cd
-accumulate` and run each `go run ...` command listed in the script.
+To regenerate the types, run `./types_template/generate.sh`. Alternatively, `cd accumulate` and run each `go run ...` command listed in the script.
 
 To update to a new version of Accumulate, update the submodule and regenerate
 the types.

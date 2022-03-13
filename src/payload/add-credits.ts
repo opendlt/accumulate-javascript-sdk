@@ -21,9 +21,9 @@ export class AddCredits extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     return Buffer.concat([
-      uvarintMarshalBinary(TransactionType.AddCredits),
-      stringMarshalBinary(this._recipient.toString()),
-      uvarintMarshalBinary(this._amount),
+      uvarintMarshalBinary(TransactionType.AddCredits, 1),
+      stringMarshalBinary(this._recipient.toString(), 2),
+      uvarintMarshalBinary(this._amount, 3),
     ]);
   }
 }

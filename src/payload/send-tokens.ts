@@ -3,6 +3,8 @@ import { AccURL } from "../acc-url";
 import {
   bigNumberMarshalBinary,
   bytesMarshalBinary,
+  hashMarshalBinary,
+  marshalField,
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "../encoding";
@@ -41,27 +43,33 @@ export class SendTokens extends BasePayload {
   }
 
   protected _marshalBinary(): Buffer {
-    const hash = this._hash || Buffer.alloc(32, 0);
-    validateHash(hash);
     if (this._to.length < 1) {
       throw new Error("Missing at least one recipient");
     }
 
     const forConcat = [];
 
-    forConcat.push(uvarintMarshalBinary(TransactionType.SendTokens));
-    forConcat.push(hash);
-    forConcat.push(bytesMarshalBinary(this._meta || Buffer.allocUnsafe(0)));
-    forConcat.push(uvarintMarshalBinary(this._to.length));
+    forConcat.push(uvarintMarshalBinary(TransactionType.SendTokens, 1));
+    if (this._hash) {
+      validateHash(this._hash);
+      forConcat.push(hashMarshalBinary(this._hash, 2));
+    }
+    if (this._meta) {
+      forConcat.push(bytesMarshalBinary(this._meta, 3));
+    }
 
-    this._to.forEach((recipient) => forConcat.push(marshalBinaryTokenRecipient(recipient)));
+    this._to.forEach((recipient) =>
+      forConcat.push(marshalField(4, marshalBinaryTokenRecipient(recipient)))
+    );
 
     return Buffer.concat(forConcat);
   }
 }
 
 function marshalBinaryTokenRecipient(tr: TokenRecipient): Buffer {
-  return Buffer.concat([stringMarshalBinary(tr.url.toString()), bigNumberMarshalBinary(tr.amount)]);
+  return bytesMarshalBinary(
+    Buffer.concat([stringMarshalBinary(tr.url.toString(), 1), bigNumberMarshalBinary(tr.amount, 2)])
+  );
 }
 
 function validateHash(bytes: Uint8Array) {

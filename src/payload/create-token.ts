@@ -39,16 +39,32 @@ export class CreateToken extends BasePayload {
   }
 
   protected _marshalBinary(): Buffer {
-    return Buffer.concat([
-      uvarintMarshalBinary(TransactionType.CreateToken),
-      stringMarshalBinary(this._url.toString()),
-      stringMarshalBinary(this._keyBookUrl?.toString()),
-      stringMarshalBinary(this._symbol),
-      uvarintMarshalBinary(this._precision),
-      stringMarshalBinary(this._properties?.toString()),
-      bigNumberMarshalBinary(this._initialSupply),
-      booleanMarshalBinary(this._hasSupplyLimit),
-      stringMarshalBinary(this._manager?.toString()),
-    ]);
+    const forConcat = [];
+
+    forConcat.push(uvarintMarshalBinary(TransactionType.CreateToken, 1));
+    forConcat.push(stringMarshalBinary(this._url.toString(), 2));
+    if (this._keyBookUrl) {
+      forConcat.push(stringMarshalBinary(this._keyBookUrl.toString(), 3));
+    }
+    if (this._symbol) {
+      forConcat.push(stringMarshalBinary(this._symbol, 4));
+    }
+    if (this._precision) {
+      forConcat.push(uvarintMarshalBinary(this._precision, 5));
+    }
+    if (this._properties) {
+      forConcat.push(stringMarshalBinary(this._properties.toString(), 6));
+    }
+    if (this._initialSupply) {
+      forConcat.push(bigNumberMarshalBinary(this._initialSupply, 7));
+    }
+    if (this._hasSupplyLimit) {
+      forConcat.push(booleanMarshalBinary(this._hasSupplyLimit, 8));
+    }
+    if (this._manager) {
+      forConcat.push(stringMarshalBinary(this._manager.toString(), 9));
+    }
+
+    return Buffer.concat(forConcat);
   }
 }

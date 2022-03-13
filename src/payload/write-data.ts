@@ -1,4 +1,4 @@
-import { bytesMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { bytesMarshalBinary, marshalField, uvarintMarshalBinary } from "../encoding";
 import { TransactionType } from "../types";
 import { BasePayload } from "./base-payload";
 
@@ -19,13 +19,20 @@ export class WriteData extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     const forConcat = [];
-    forConcat.push(uvarintMarshalBinary(TransactionType.WriteData));
-    forConcat.push(uvarintMarshalBinary(this._extIds.length));
 
-    this._extIds.forEach((extId) => forConcat.push(bytesMarshalBinary(extId)));
+    forConcat.push(uvarintMarshalBinary(TransactionType.WriteData, 1));
 
-    forConcat.push(bytesMarshalBinary(this._data));
+    forConcat.push(marshalField(2, marshalDataEntry(this._extIds, this._data)));
 
     return Buffer.concat(forConcat);
   }
+}
+
+function marshalDataEntry(extIds: Uint8Array[], data: Uint8Array): Buffer {
+  const forConcat = [];
+
+  extIds.forEach((extId) => forConcat.push(bytesMarshalBinary(extId, 1)));
+  forConcat.push(bytesMarshalBinary(data, 2));
+
+  return bytesMarshalBinary(Buffer.concat(forConcat));
 }

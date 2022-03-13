@@ -11,6 +11,7 @@ import { BN } from "bn.js";
 
 test("should varint marshal binary BN numbers", () => {
   expect(uvarintMarshalBinary(0)).toStrictEqual(Buffer.from([0]));
+  expect(uvarintMarshalBinary(0, 7)).toStrictEqual(Buffer.from([7, 0]));
   expect(uvarintMarshalBinary(1)).toStrictEqual(Buffer.from([1]));
   expect(uvarintMarshalBinary(127)).toStrictEqual(Buffer.from([127]));
   expect(uvarintMarshalBinary(128)).toStrictEqual(Buffer.from([128, 1]));
@@ -40,7 +41,6 @@ test("should marshal binary bytes arrays", () => {
 });
 
 test("should marshal binary strings", () => {
-  expect(stringMarshalBinary()).toStrictEqual(Buffer.from([0]));
   expect(stringMarshalBinary("")).toStrictEqual(Buffer.from([0]));
   expect(stringMarshalBinary("hello")).toStrictEqual(Buffer.from([5, 104, 101, 108, 108, 111]));
 });
