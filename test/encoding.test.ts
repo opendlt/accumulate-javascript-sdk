@@ -1,13 +1,13 @@
+import { BN } from "bn.js";
 import {
-  uvarintMarshalBinary,
-  bytesMarshalBinary,
-  stringMarshalBinary,
   bigNumberMarshalBinary,
   booleanMarshalBinary,
+  bytesMarshalBinary,
   hashMarshalBinary,
   marshalField,
+  stringMarshalBinary,
+  uvarintMarshalBinary,
 } from "../src/encoding";
-import { BN } from "bn.js";
 
 test("should varint marshal binary BN numbers", () => {
   expect(uvarintMarshalBinary(0)).toStrictEqual(Buffer.from([0]));
@@ -60,14 +60,17 @@ test("should marshal binary boolean", () => {
 });
 
 test("should marshal binary hash", () => {
-  const hash = Buffer.from([0x18, 0x94, 0xa1, 0x9c, 0x85, 0xba, 0x15, 0x3a, 0xcb, 0xf7, 0x43, 0xac, 0x4e, 0x43, 0xfc, 0x00, 0x4c, 0x89, 0x16, 0x04, 0xb2, 0x6f, 0x8c, 0x69, 0xe1, 0xe8, 0x3e, 0xa2, 0xaf, 0xc7, 0xc4, 0x8f])
-  expect(hashMarshalBinary(hash)).toStrictEqual(hash)
+  const hash = Buffer.from([
+    0x18, 0x94, 0xa1, 0x9c, 0x85, 0xba, 0x15, 0x3a, 0xcb, 0xf7, 0x43, 0xac, 0x4e, 0x43, 0xfc, 0x00,
+    0x4c, 0x89, 0x16, 0x04, 0xb2, 0x6f, 0x8c, 0x69, 0xe1, 0xe8, 0x3e, 0xa2, 0xaf, 0xc7, 0xc4, 0x8f,
+  ]);
+  expect(hashMarshalBinary(hash)).toStrictEqual(hash);
   expect(() => hashMarshalBinary(Buffer.from([0]))).toThrowError(
     /Invalid length, value is not a hash/
   );
-})
+});
 
 test("should marshal field", () => {
   expect(marshalField(1, booleanMarshalBinary(true))).toStrictEqual(Buffer.from([1, 1]));
   expect(marshalField(2, booleanMarshalBinary(false))).toStrictEqual(Buffer.from([2, 0]));
-})
+});

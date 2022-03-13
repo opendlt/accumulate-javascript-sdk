@@ -1,5 +1,5 @@
-import { LiteAccount } from "../src/lite-account";
 import { Keypair } from "../src/keypair";
+import { LiteAccount } from "../src/lite-account";
 
 test("should compute correct lite account URL", () => {
   const seed = Buffer.from(
