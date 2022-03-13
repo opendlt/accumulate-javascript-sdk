@@ -17,8 +17,8 @@ export class BurnTokens extends BasePayload {
 
   protected _marshalBinary(): Buffer {
     return Buffer.concat([
-      uvarintMarshalBinary(TransactionType.BurnTokens),
-      bigNumberMarshalBinary(this._amount),
+      uvarintMarshalBinary(TransactionType.BurnTokens, 1),
+      bigNumberMarshalBinary(this._amount, 2),
     ]);
   }
 }

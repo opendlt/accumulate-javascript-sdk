@@ -1,6 +1,11 @@
 import { AccURL } from "./acc-url";
 import { sha256 } from "./crypto";
-import { stringMarshalBinary, uvarintMarshalBinary } from "./encoding";
+import {
+  bytesMarshalBinary,
+  marshalField,
+  stringMarshalBinary,
+  uvarintMarshalBinary,
+} from "./encoding";
 import { OriginSigner, Signature } from "./origin-signer";
 import { Payload } from "./payload";
 
@@ -8,6 +13,8 @@ export type HeaderOptions = {
   nonce?: number;
   keyPageHeight?: number;
   keyPageIndex?: number;
+  memo?: string;
+  metadata?: Uint8Array;
 };
 
 /**
@@ -18,6 +25,8 @@ export class Header {
   private readonly _nonce: number;
   private readonly _keyPageHeight: number;
   private readonly _keyPageIndex: number;
+  private readonly _memo?: string;
+  private readonly _metadata?: Uint8Array;
 
   /**
    * Construct a Transaction Header
@@ -32,6 +41,8 @@ export class Header {
     this._nonce = options?.nonce ?? Date.now() * 1000;
     this._keyPageHeight = options?.keyPageHeight ?? 1;
     this._keyPageIndex = options?.keyPageIndex ?? 0;
+    this._memo = options?.memo;
+    this._metadata = options?.metadata;
   }
 
   get origin(): AccURL {
@@ -50,13 +61,36 @@ export class Header {
     return this._keyPageIndex;
   }
 
+  get memo(): string | undefined {
+    return this._memo;
+  }
+
+  get metadata(): Uint8Array | undefined {
+    return this._metadata;
+  }
+
   marshalBinary(): Buffer {
-    return Buffer.concat([
-      stringMarshalBinary(this._origin.toString()),
-      uvarintMarshalBinary(this._keyPageHeight),
-      uvarintMarshalBinary(this._keyPageIndex),
-      uvarintMarshalBinary(this._nonce),
-    ]);
+    const forConcat = [];
+
+    forConcat.push(marshalField(1, stringMarshalBinary(this._origin.toString())));
+
+    if (this._keyPageHeight !== 0) {
+      forConcat.push(marshalField(2, uvarintMarshalBinary(this._keyPageHeight)));
+    }
+    if (this._keyPageIndex !== 0) {
+      forConcat.push(marshalField(3, uvarintMarshalBinary(this._keyPageIndex)));
+    }
+    if (this._nonce !== 0) {
+      forConcat.push(marshalField(4, uvarintMarshalBinary(this._nonce)));
+    }
+    if (this._memo && this._memo.length !== 0) {
+      forConcat.push(marshalField(5, stringMarshalBinary(this._memo)));
+    }
+    if (this._metadata && this._metadata?.length !== 0) {
+      forConcat.push(marshalField(6, bytesMarshalBinary(this._metadata)));
+    }
+
+    return Buffer.concat(forConcat);
   }
 }
 

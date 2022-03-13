@@ -27,12 +27,21 @@ export class CreateDataAccount extends BasePayload {
   }
 
   protected _marshalBinary(): Buffer {
-    return Buffer.concat([
-      uvarintMarshalBinary(TransactionType.CreateDataAccount),
-      stringMarshalBinary(this._url.toString()),
-      stringMarshalBinary(this._keyBookUrl?.toString()),
-      stringMarshalBinary(this._managerKeyBookUrl?.toString()),
-      booleanMarshalBinary(this._scratch),
-    ]);
+    const forConcat = [];
+
+    forConcat.push(uvarintMarshalBinary(TransactionType.CreateDataAccount, 1));
+    forConcat.push(stringMarshalBinary(this._url.toString(), 2));
+
+    if (this._keyBookUrl) {
+      forConcat.push(stringMarshalBinary(this._keyBookUrl.toString(), 3));
+    }
+    if (this._managerKeyBookUrl) {
+      forConcat.push(stringMarshalBinary(this._managerKeyBookUrl?.toString(), 4));
+    }
+    if (this._scratch) {
+      forConcat.push(booleanMarshalBinary(this._scratch, 5));
+    }
+
+    return Buffer.concat(forConcat);
   }
 }

@@ -1,15 +1,16 @@
 import {
   ACME_TOKEN_URL,
-  Client,
-  Keypair,
-  LiteAccount,
-  KeypairSigner,
-  OriginSigner,
-  KeyPageOperation,
-  RpcError,
   BN,
+  Client,
+  KeyPageOperation,
+  Keypair,
+  KeypairSigner,
+  LiteAccount,
+  OriginSigner,
+  RpcError,
 } from "../src";
-import { randomBuffer, randomString, waitOn, addCredits } from "./util";
+import { sha256 } from "../src/crypto";
+import { addCredits, randomBuffer, randomString, waitOn } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
@@ -17,12 +18,6 @@ let acc: LiteAccount;
 describe("Test Accumulate client", () => {
   beforeAll(async () => {
     acc = LiteAccount.generate();
-    await client.faucet(acc.url);
-    await client.faucet(acc.url);
-    await client.faucet(acc.url);
-    await client.faucet(acc.url);
-    await client.faucet(acc.url);
-    await client.faucet(acc.url);
     await client.faucet(acc.url);
     await waitOn(async () => {
       const { data } = await client.queryUrl(acc.url);
@@ -66,13 +61,13 @@ describe("Test Accumulate client", () => {
   test("should manage identity", async () => {
     const identityKeypair = Keypair.generate();
     const identityUrl = `acc://${randomString()}`;
+    const bookUrl = identityUrl + "/book0";
 
     // Create identity
     const createIdentity = {
       url: identityUrl,
       publicKey: identityKeypair.publicKey,
-      keyBookName: "book0",
-      keyPageName: "page0",
+      keyBookUrl: bookUrl,
     };
 
     await client.createIdentity(createIdentity, acc);
@@ -81,7 +76,7 @@ describe("Test Accumulate client", () => {
     let res = await client.queryUrl(identityUrl);
     expect(res.type).toStrictEqual("identity");
 
-    await addCredits(client, identityUrl + "/page0", 600_000, acc);
+    await addCredits(client, bookUrl + "/1", 600_000, acc);
 
     const keyPageHeight = await client.queryKeyPageHeight(identityUrl, identityKeypair.publicKey);
     const identity = new KeypairSigner(identityUrl, identityKeypair, { keyPageHeight });
@@ -113,40 +108,28 @@ describe("Test Accumulate client", () => {
   }
 
   async function testKeyPageAndBook(identity: KeypairSigner) {
-    // Create a new key page
-    const pageKeypair = Keypair.generate();
-    const newKeyPageUrl = identity + "/" + randomString();
-    const createKeyPage = {
-      url: newKeyPageUrl,
-      keys: [pageKeypair.publicKey],
-    };
-
-    await client.createKeyPage(createKeyPage, identity);
-    await waitOn(() => client.queryUrl(newKeyPageUrl));
-
-    let res = await client.queryUrl(newKeyPageUrl);
-    expect(res.type).toStrictEqual("keyPage");
-
     // Create a new key book
+    const page1Keypair = Keypair.generate();
     const newKeyBookUrl = identity + "/" + randomString();
     const createKeyBook = {
       url: newKeyBookUrl,
-      pages: [newKeyPageUrl],
+      publicKeyHash: sha256(page1Keypair.publicKey),
     };
 
     await client.createKeyBook(createKeyBook, identity);
     await waitOn(() => client.queryUrl(newKeyBookUrl));
 
-    res = await client.queryUrl(newKeyBookUrl);
+    let res = await client.queryUrl(newKeyBookUrl);
     expect(res.type).toStrictEqual("keyBook");
 
-    // verify page is part of the book now
-    res = await client.queryUrl(newKeyPageUrl);
+    // verify page is part of the book
+    const page1Url = newKeyBookUrl + "/1";
+    res = await client.queryUrl(page1Url);
     expect(res.data.keyBook).toStrictEqual(newKeyBookUrl.toString());
-    await addCredits(client, newKeyPageUrl, 20_000, acc);
+    await addCredits(client, page1Url, 20_000, acc);
 
-    let keyPageHeight = await client.queryKeyPageHeight(newKeyPageUrl, pageKeypair.publicKey);
-    let keyPage = new KeypairSigner(newKeyPageUrl, pageKeypair, { keyPageHeight });
+    let keyPageHeight = await client.queryKeyPageHeight(page1Url, page1Keypair.publicKey);
+    let keyPage = new KeypairSigner(page1Url, page1Keypair, { keyPageHeight });
 
     // Add new key to keypage
     const newKey = Keypair.generate();
@@ -157,7 +140,7 @@ describe("Test Accumulate client", () => {
 
     await client.updateKeyPage(addKeyPage, keyPage);
     await waitOn(async () => {
-      const res = await client.queryUrl(newKeyPageUrl);
+      const res = await client.queryUrl(page1Url);
       expect(res.data.keys.length).toStrictEqual(2);
     });
 
@@ -172,7 +155,7 @@ describe("Test Accumulate client", () => {
     };
     await client.updateKeyPage(updateKeyPage, keyPage);
     await waitOn(async () => {
-      const res = await client.queryUrl(newKeyPageUrl);
+      const res = await client.queryUrl(page1Url);
       expect(res.data.keys[1].publicKey).toStrictEqual(
         Buffer.from(newNewKey.publicKey).toString("hex")
       );
@@ -199,31 +182,30 @@ describe("Test Accumulate client", () => {
     };
     await client.updateKeyPage(removeKeyPage, keyPage);
     await waitOn(async () => {
-      const res = await client.queryUrl(newKeyPageUrl);
+      const res = await client.queryUrl(page1Url);
       expect(res.data.keys.length).toStrictEqual(1);
       expect(res.data.keys[0].publicKey).toStrictEqual(
-        Buffer.from(pageKeypair.publicKey).toString("hex")
+        sha256(page1Keypair.publicKey).toString("hex")
       );
     });
 
-    // Create a new key page directly to the book
-    const pageKeypair2 = Keypair.generate();
-    const newKeyPageUrl2 = identity + "/" + randomString();
+    // Create a new key page to the book
+    const page2Keypair = Keypair.generate();
     const createKeyPage2 = {
-      url: newKeyPageUrl2,
-      keys: [pageKeypair2.publicKey],
+      keys: [page2Keypair.publicKey],
     };
 
-    keyPageHeight = await client.queryKeyPageHeight(newKeyBookUrl, pageKeypair.publicKey);
-    const keyBook = new KeypairSigner(newKeyBookUrl, pageKeypair, { keyPageHeight });
+    keyPageHeight = await client.queryKeyPageHeight(newKeyBookUrl, page1Keypair.publicKey);
+    const keyBook = new KeypairSigner(newKeyBookUrl, page1Keypair, { keyPageHeight });
 
     await client.createKeyPage(createKeyPage2, keyBook);
-    await waitOn(() => client.queryUrl(newKeyPageUrl2));
+    const page2Url = newKeyBookUrl + "/2";
+    await waitOn(() => client.queryUrl(page2Url));
 
     // Test query key page index
-    res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair.publicKey);
+    res = await client.queryKeyPageIndex(newKeyBookUrl, page1Keypair.publicKey);
     expect(res.data.index).toStrictEqual(0);
-    res = await client.queryKeyPageIndex(newKeyBookUrl, pageKeypair2.publicKey);
+    res = await client.queryKeyPageIndex(newKeyBookUrl, page2Keypair.publicKey);
     expect(res.data.index).toStrictEqual(1);
 
     // Test query tx history
@@ -328,7 +310,7 @@ describe("Test Accumulate client", () => {
 
   test("should call describe", async () => {
     const res = await client.describe();
-    expect(res).toBeTruthy()
+    expect(res).toBeTruthy();
   });
 
   xtest("should get metrics", async () => {

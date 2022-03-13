@@ -5,36 +5,40 @@ import { BasePayload } from "./base-payload";
 
 export type CreateIdentityArg = {
   url: string | AccURL;
-  publicKey: Uint8Array;
-  keyBookName: string;
-  keyPageName: string;
+  publicKey?: Uint8Array;
+  keyBookUrl?: string | AccURL;
   manager?: string | AccURL;
 };
 
 export class CreateIdentity extends BasePayload {
   private readonly _url: AccURL;
-  private readonly _publicKey: Uint8Array;
-  private readonly _keyBookName: string;
-  private readonly _keyPageName: string;
+  private readonly _publicKey?: Uint8Array;
+  private readonly _keyBookUrl?: AccURL;
   private readonly _manager?: AccURL;
 
   constructor(arg: CreateIdentityArg) {
     super();
     this._url = AccURL.toAccURL(arg.url);
     this._publicKey = arg.publicKey;
-    this._keyBookName = arg.keyBookName;
-    this._keyPageName = arg.keyPageName;
+    this._keyBookUrl = arg.keyBookUrl ? AccURL.toAccURL(arg.keyBookUrl) : undefined;
     this._manager = arg.manager ? AccURL.toAccURL(arg.manager) : undefined;
   }
 
   protected _marshalBinary(): Buffer {
-    return Buffer.concat([
-      uvarintMarshalBinary(TransactionType.CreateIdentity),
-      stringMarshalBinary(this._url.toString()),
-      bytesMarshalBinary(this._publicKey),
-      stringMarshalBinary(this._keyBookName),
-      stringMarshalBinary(this._keyPageName),
-      stringMarshalBinary(this._manager?.toString()),
-    ]);
+    const forConcat = [];
+
+    forConcat.push(uvarintMarshalBinary(TransactionType.CreateIdentity, 1));
+    forConcat.push(stringMarshalBinary(this._url.toString(), 2));
+    if (this._publicKey) {
+      forConcat.push(bytesMarshalBinary(this._publicKey, 3));
+    }
+    if (this._keyBookUrl) {
+      forConcat.push(stringMarshalBinary(this._keyBookUrl.toString(), 4));
+    }
+    if (this._manager) {
+      forConcat.push(stringMarshalBinary(this._manager.toString(), 5));
+    }
+
+    return Buffer.concat(forConcat);
   }
 }

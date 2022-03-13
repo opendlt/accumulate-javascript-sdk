@@ -1,5 +1,5 @@
-import { Transaction, Client, SendTokens, LiteAccount, Header, BN } from "../src";
-import { waitOn, addCredits } from "./util";
+import { BN, Client, Header, LiteAccount, SendTokens, Transaction } from "../src";
+import { addCredits, waitOn } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;

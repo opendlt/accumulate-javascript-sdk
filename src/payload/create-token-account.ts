@@ -28,13 +28,22 @@ export class CreateTokenAccount extends BasePayload {
   }
 
   protected _marshalBinary(): Buffer {
-    return Buffer.concat([
-      uvarintMarshalBinary(TransactionType.CreateTokenAccount),
-      stringMarshalBinary(this._url.toString()),
-      stringMarshalBinary(this._tokenUrl.toString()),
-      stringMarshalBinary(this._keyBookUrl?.toString()),
-      booleanMarshalBinary(this._scratch),
-      stringMarshalBinary(this._manager?.toString()),
-    ]);
+    const forConcat = [];
+
+    forConcat.push(uvarintMarshalBinary(TransactionType.CreateTokenAccount, 1));
+    forConcat.push(stringMarshalBinary(this._url.toString(), 2));
+    forConcat.push(stringMarshalBinary(this._tokenUrl.toString(), 3));
+
+    if (this._keyBookUrl) {
+      forConcat.push(stringMarshalBinary(this._keyBookUrl.toString(), 4));
+    }
+    if (this._scratch) {
+      forConcat.push(booleanMarshalBinary(this._scratch, 5));
+    }
+    if (this._manager) {
+      forConcat.push(stringMarshalBinary(this._manager.toString(), 6));
+    }
+
+    return Buffer.concat(forConcat);
   }
 }

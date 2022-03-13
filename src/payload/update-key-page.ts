@@ -61,17 +61,21 @@ export class UpdateKeyPage extends BasePayload {
   protected _marshalBinary(): Buffer {
     const forConcat = [];
 
-    forConcat.push(uvarintMarshalBinary(TransactionType.UpdateKeyPage));
+    forConcat.push(uvarintMarshalBinary(TransactionType.UpdateKeyPage, 1));
+    forConcat.push(uvarintMarshalBinary(this._operation, 2));
 
-    const opBuff = Buffer.allocUnsafe(1);
-    opBuff.writeInt8(this._operation);
-    forConcat.push(opBuff);
-
-    forConcat.push(bytesMarshalBinary(this._key || Buffer.allocUnsafe(0)));
-    forConcat.push(bytesMarshalBinary(this._newKey || Buffer.allocUnsafe(0)));
-
-    forConcat.push(stringMarshalBinary(this._owner?.toString()));
-    forConcat.push(uvarintMarshalBinary(this._threshold ?? 0));
+    if (this._key) {
+      forConcat.push(bytesMarshalBinary(this._key, 3));
+    }
+    if (this._newKey) {
+      forConcat.push(bytesMarshalBinary(this._newKey, 4));
+    }
+    if (this._owner) {
+      forConcat.push(stringMarshalBinary(this._owner.toString(), 5));
+    }
+    if (this._threshold) {
+      forConcat.push(uvarintMarshalBinary(this._threshold, 6));
+    }
 
     return Buffer.concat(forConcat);
   }
