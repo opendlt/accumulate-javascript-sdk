@@ -18,8 +18,6 @@ export type Signature =
 {{- end}}
 {{- end}};
 
-type TransactionPayload = TransactionBody;
-
 export namespace TransactionBody {
   export function from(arg: unknown): TransactionBody {
     const { type } = <{ type: string }>arg;
