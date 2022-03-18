@@ -11,15 +11,10 @@ go run ./tools/cmd/gen-enum -l ../types_template/enums.ts.tmpl -o ../src/types/e
 
 # Transactions
 go run ./tools/cmd/gen-types -l ../types_template/types.ts.tmpl:protocol -o ../src/types/transactions.ts \
-    -i Envelope,Transaction,TransactionHeader,LegacyED25519Signature,ED25519Signature \
+    -i Envelope,Transaction,TransactionHeader,LegacyED25519Signature,ED25519Signature,RCD1Signature \
     -i CreateIdentity,CreateTokenAccount,SendTokens,CreateDataAccount,WriteData,WriteDataTo,CreateToken,IssueTokens,BurnTokens,CreateKeyPage,CreateKeyBook,AddCredits,UpdateKeyPage,SignPending \
     -i KeySpecParams,TokenRecipient,DataEntry \
     protocol/transactions.yml protocol/general.yml
-
-# # State types
-# go run ./tools/cmd/gen-types -l ../types_template/types.ts.tmpl:state -o ../src/types/state.ts \
-#     -i Object --rename Object:AccObject \
-#     types/state/types.yml
 
 # # Accounts
 # go run ./tools/cmd/gen-types -l ../types_template/types.ts.tmpl:protocol -o ../src/types/accounts.ts \

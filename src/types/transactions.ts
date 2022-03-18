@@ -31,9 +31,7 @@ export type TransactionBody =
   | WriteData
   | WriteDataTo;
 
-export type Signature = ED25519Signature | LegacyED25519Signature;
-
-type TransactionPayload = TransactionBody;
+export type Signature = ED25519Signature | LegacyED25519Signature | RCD1Signature;
 
 export namespace TransactionBody {
   export function from(arg: unknown): TransactionBody {
@@ -417,11 +415,17 @@ export class DataEntry extends BasePayload {
 export type ED25519SignatureArg = {
   publicKey: Uint8Array | string;
   signature: Uint8Array | string;
+  signer: string | AccURL;
+  signerHeight: number | BN;
+  timestamp?: number | BN;
 };
 
 export class ED25519Signature extends BasePayload {
   public readonly publicKey: Uint8Array;
   public readonly signature: Uint8Array;
+  public readonly signer: AccURL;
+  public readonly signerHeight: number | BN;
+  public readonly timestamp?: number | BN;
 
   constructor(arg: ED25519SignatureArg) {
     super();
@@ -429,6 +433,9 @@ export class ED25519Signature extends BasePayload {
       typeof arg.publicKey === "string" ? Buffer.from(arg.publicKey, "hex") : arg.publicKey;
     this.signature =
       typeof arg.signature === "string" ? Buffer.from(arg.signature, "hex") : arg.signature;
+    this.signer = AccURL.toAccURL(arg.signer);
+    this.signerHeight = arg.signerHeight;
+    if (arg.timestamp) this.timestamp = arg.timestamp;
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
@@ -438,6 +445,22 @@ export class ED25519Signature extends BasePayload {
     }
     if (true && this.signature?.length > 0) {
       parts.push(marshalField(3, bytesMarshalBinary(this.signature)));
+    }
+    if (true) {
+      parts.push(marshalField(4, stringMarshalBinary(this.signer.toString())));
+    }
+    if (
+      true &&
+      (this.signerHeight instanceof BN ? !this.signerHeight.isZero() : this.signerHeight !== 0)
+    ) {
+      parts.push(marshalField(5, uvarintMarshalBinary(this.signerHeight)));
+    }
+    if (
+      this.timestamp !== undefined &&
+      this.timestamp !== null &&
+      (this.timestamp instanceof BN ? !this.timestamp.isZero() : this.timestamp !== 0)
+    ) {
+      parts.push(marshalField(6, uvarintMarshalBinary(this.timestamp)));
     }
     return Buffer.concat(parts);
   }
@@ -531,35 +554,104 @@ export class KeySpecParams extends BasePayload {
 }
 
 export type LegacyED25519SignatureArg = {
-  nonce: number | BN;
+  timestamp: number | BN;
   publicKey: Uint8Array | string;
   signature: Uint8Array | string;
+  signer: string | AccURL;
+  signerHeight: number | BN;
 };
 
 export class LegacyED25519Signature extends BasePayload {
-  public readonly nonce: number | BN;
+  public readonly timestamp: number | BN;
   public readonly publicKey: Uint8Array;
   public readonly signature: Uint8Array;
+  public readonly signer: AccURL;
+  public readonly signerHeight: number | BN;
 
   constructor(arg: LegacyED25519SignatureArg) {
     super();
-    this.nonce = arg.nonce;
+    this.timestamp = arg.timestamp;
     this.publicKey =
       typeof arg.publicKey === "string" ? Buffer.from(arg.publicKey, "hex") : arg.publicKey;
     this.signature =
       typeof arg.signature === "string" ? Buffer.from(arg.signature, "hex") : arg.signature;
+    this.signer = AccURL.toAccURL(arg.signer);
+    this.signerHeight = arg.signerHeight;
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
     parts.push(marshalField(1, uvarintMarshalBinary(SignatureType.LegacyED25519)));
-    if (true && (this.nonce instanceof BN ? !this.nonce.isZero() : this.nonce !== 0)) {
-      parts.push(marshalField(2, uvarintMarshalBinary(this.nonce)));
+    if (true && (this.timestamp instanceof BN ? !this.timestamp.isZero() : this.timestamp !== 0)) {
+      parts.push(marshalField(2, uvarintMarshalBinary(this.timestamp)));
     }
     if (true && this.publicKey?.length > 0) {
       parts.push(marshalField(3, bytesMarshalBinary(this.publicKey)));
     }
     if (true && this.signature?.length > 0) {
       parts.push(marshalField(4, bytesMarshalBinary(this.signature)));
+    }
+    if (true) {
+      parts.push(marshalField(5, stringMarshalBinary(this.signer.toString())));
+    }
+    if (
+      true &&
+      (this.signerHeight instanceof BN ? !this.signerHeight.isZero() : this.signerHeight !== 0)
+    ) {
+      parts.push(marshalField(6, uvarintMarshalBinary(this.signerHeight)));
+    }
+    return Buffer.concat(parts);
+  }
+}
+
+export type RCD1SignatureArg = {
+  publicKey: Uint8Array | string;
+  signature: Uint8Array | string;
+  signer: string | AccURL;
+  signerHeight: number | BN;
+  timestamp?: number | BN;
+};
+
+export class RCD1Signature extends BasePayload {
+  public readonly publicKey: Uint8Array;
+  public readonly signature: Uint8Array;
+  public readonly signer: AccURL;
+  public readonly signerHeight: number | BN;
+  public readonly timestamp?: number | BN;
+
+  constructor(arg: RCD1SignatureArg) {
+    super();
+    this.publicKey =
+      typeof arg.publicKey === "string" ? Buffer.from(arg.publicKey, "hex") : arg.publicKey;
+    this.signature =
+      typeof arg.signature === "string" ? Buffer.from(arg.signature, "hex") : arg.signature;
+    this.signer = AccURL.toAccURL(arg.signer);
+    this.signerHeight = arg.signerHeight;
+    if (arg.timestamp) this.timestamp = arg.timestamp;
+  }
+  protected _marshalBinary(): Buffer {
+    const parts = [];
+    parts.push(marshalField(1, uvarintMarshalBinary(SignatureType.RCD1)));
+    if (true && this.publicKey?.length > 0) {
+      parts.push(marshalField(2, bytesMarshalBinary(this.publicKey)));
+    }
+    if (true && this.signature?.length > 0) {
+      parts.push(marshalField(3, bytesMarshalBinary(this.signature)));
+    }
+    if (true) {
+      parts.push(marshalField(4, stringMarshalBinary(this.signer.toString())));
+    }
+    if (
+      true &&
+      (this.signerHeight instanceof BN ? !this.signerHeight.isZero() : this.signerHeight !== 0)
+    ) {
+      parts.push(marshalField(5, uvarintMarshalBinary(this.signerHeight)));
+    }
+    if (
+      this.timestamp !== undefined &&
+      this.timestamp !== null &&
+      (this.timestamp instanceof BN ? !this.timestamp.isZero() : this.timestamp !== 0)
+    ) {
+      parts.push(marshalField(6, uvarintMarshalBinary(this.timestamp)));
     }
     return Buffer.concat(parts);
   }
@@ -648,65 +740,24 @@ export class TokenRecipient extends BasePayload {
 }
 
 export type TransactionArg = {
-  origin: string | AccURL;
-  keyPageHeight: number | BN;
-  keyPageIndex: number | BN;
-  nonce: number | BN;
-  memo?: string;
-  metadata?: Uint8Array | string;
-  body: TransactionPayload;
+  header: TransactionHeader | TransactionHeaderArg;
+  body: TransactionBody;
 };
 
 export class Transaction extends BasePayload {
-  public readonly origin: AccURL;
-  public readonly keyPageHeight: number | BN;
-  public readonly keyPageIndex: number | BN;
-  public readonly nonce: number | BN;
-  public readonly memo?: string;
-  public readonly metadata?: Uint8Array;
-  public readonly body: TransactionPayload;
+  public readonly header: TransactionHeader;
+  public readonly body: TransactionBody;
 
   constructor(arg: TransactionArg) {
     super();
-    this.origin = AccURL.toAccURL(arg.origin);
-    this.keyPageHeight = arg.keyPageHeight;
-    this.keyPageIndex = arg.keyPageIndex;
-    this.nonce = arg.nonce;
-    if (arg.memo) this.memo = arg.memo;
-    if (arg.metadata)
-      this.metadata =
-        typeof arg.metadata === "string" ? Buffer.from(arg.metadata, "hex") : arg.metadata;
+    this.header =
+      arg.header instanceof TransactionHeader ? arg.header : new TransactionHeader(arg.header);
     this.body = arg.body;
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    {
-      const subParts = [];
-      if (true) {
-        subParts.push(marshalField(1, stringMarshalBinary(this.origin.toString())));
-      }
-      if (
-        true &&
-        (this.keyPageHeight instanceof BN ? !this.keyPageHeight.isZero() : this.keyPageHeight !== 0)
-      ) {
-        subParts.push(marshalField(2, uvarintMarshalBinary(this.keyPageHeight)));
-      }
-      if (
-        true &&
-        (this.keyPageIndex instanceof BN ? !this.keyPageIndex.isZero() : this.keyPageIndex !== 0)
-      ) {
-        subParts.push(marshalField(3, uvarintMarshalBinary(this.keyPageIndex)));
-      }
-      if (true && (this.nonce instanceof BN ? !this.nonce.isZero() : this.nonce !== 0)) {
-        subParts.push(marshalField(4, uvarintMarshalBinary(this.nonce)));
-      }
-      if (this.memo !== undefined && this.memo !== null && this.memo?.length > 0) {
-        subParts.push(marshalField(5, stringMarshalBinary(this.memo)));
-      }
-      if (this.metadata !== undefined && this.metadata !== null && this.metadata?.length > 0) {
-        subParts.push(marshalField(6, bytesMarshalBinary(this.metadata)));
-      }
-      parts.push(marshalField(1, bytesMarshalBinary(Buffer.concat(subParts))));
+    if (true) {
+      parts.push(marshalField(1, bytesMarshalBinary(this.header.marshalBinary())));
     }
     if (true) {
       parts.push(marshalField(2, bytesMarshalBinary(this.body.marshalBinary())));
@@ -716,28 +767,23 @@ export class Transaction extends BasePayload {
 }
 
 export type TransactionHeaderArg = {
-  origin: string | AccURL;
-  keyPageHeight: number | BN;
-  keyPageIndex: number | BN;
-  nonce: number | BN;
+  principal: string | AccURL;
+  initiator: Uint8Array | string;
   memo?: string;
   metadata?: Uint8Array | string;
 };
 
 export class TransactionHeader extends BasePayload {
-  public readonly origin: AccURL;
-  public readonly keyPageHeight: number | BN;
-  public readonly keyPageIndex: number | BN;
-  public readonly nonce: number | BN;
+  public readonly principal: AccURL;
+  public readonly initiator: Uint8Array;
   public readonly memo?: string;
   public readonly metadata?: Uint8Array;
 
   constructor(arg: TransactionHeaderArg) {
     super();
-    this.origin = AccURL.toAccURL(arg.origin);
-    this.keyPageHeight = arg.keyPageHeight;
-    this.keyPageIndex = arg.keyPageIndex;
-    this.nonce = arg.nonce;
+    this.principal = AccURL.toAccURL(arg.principal);
+    this.initiator =
+      typeof arg.initiator === "string" ? Buffer.from(arg.initiator, "hex") : arg.initiator;
     if (arg.memo) this.memo = arg.memo;
     if (arg.metadata)
       this.metadata =
@@ -746,28 +792,16 @@ export class TransactionHeader extends BasePayload {
   protected _marshalBinary(): Buffer {
     const parts = [];
     if (true) {
-      parts.push(marshalField(1, stringMarshalBinary(this.origin.toString())));
+      parts.push(marshalField(1, stringMarshalBinary(this.principal.toString())));
     }
-    if (
-      true &&
-      (this.keyPageHeight instanceof BN ? !this.keyPageHeight.isZero() : this.keyPageHeight !== 0)
-    ) {
-      parts.push(marshalField(2, uvarintMarshalBinary(this.keyPageHeight)));
-    }
-    if (
-      true &&
-      (this.keyPageIndex instanceof BN ? !this.keyPageIndex.isZero() : this.keyPageIndex !== 0)
-    ) {
-      parts.push(marshalField(3, uvarintMarshalBinary(this.keyPageIndex)));
-    }
-    if (true && (this.nonce instanceof BN ? !this.nonce.isZero() : this.nonce !== 0)) {
-      parts.push(marshalField(4, uvarintMarshalBinary(this.nonce)));
+    if (true && this.initiator?.length > 0 && this.initiator.some((v) => v !== 0)) {
+      parts.push(marshalField(2, hashMarshalBinary(this.initiator)));
     }
     if (this.memo !== undefined && this.memo !== null && this.memo?.length > 0) {
-      parts.push(marshalField(5, stringMarshalBinary(this.memo)));
+      parts.push(marshalField(3, stringMarshalBinary(this.memo)));
     }
     if (this.metadata !== undefined && this.metadata !== null && this.metadata?.length > 0) {
-      parts.push(marshalField(6, bytesMarshalBinary(this.metadata)));
+      parts.push(marshalField(4, bytesMarshalBinary(this.metadata)));
     }
     return Buffer.concat(parts);
   }
