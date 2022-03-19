@@ -8,14 +8,10 @@ const userTransactionTests = transactionTests.filter(
 describe.each(userTransactionTests)("transactions", ({ name, cases }) => {
   describe(name, () => {
     it.each(cases)("should marshal correctly", ({ json, binary }) => {
-      const { body, ...header } = json.transaction;
+      const { body, header } = json.transaction;
       const env = new Envelope({
         signatures: json.signatures.map((v) => new LegacyED25519Signature(v)),
-        transaction: new Transaction({
-          ...header,
-          keyPageIndex: 0,
-          body: TransactionBody.from(body),
-        }),
+        transaction: new Transaction({ header, body: TransactionBody.from(body) }),
       });
       expect(env.marshalBinary()).toStrictEqual(Buffer.from(binary, "base64"));
     });
