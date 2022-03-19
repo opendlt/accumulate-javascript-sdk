@@ -45,6 +45,10 @@ export enum SignatureType {
   RCD1 = 3,
   /** Receipt represents a Merkle tree receipt. */
   Receipt = 4,
+  /** Synthetic is used when sending synthetic transactions. */
+  Synthetic = 5,
+  /** Internal is used when executing transactions internally. */
+  Internal = 6,
 }
 
 export namespace SignatureType {
@@ -60,6 +64,10 @@ export namespace SignatureType {
         return SignatureType.RCD1;
       case "receipt":
         return SignatureType.Receipt;
+      case "synthetic":
+        return SignatureType.Synthetic;
+      case "internal":
+        return SignatureType.Internal;
       default:
         throw new Error(`Unknown SignatureType '${name}'`);
     }
@@ -101,6 +109,12 @@ export enum TransactionType {
   UpdateManager = 16,
   /** RemoveManager remove manager from existing chain. */
   RemoveManager = 17,
+  /** AddValidator add a validator. */
+  AddValidator = 18,
+  /** RemoveValidator remove a validator. */
+  RemoveValidator = 19,
+  /** UpdateValidatorKey update a validator key. */
+  UpdateValidatorKey = 20,
   /** SignPending is used to sign a pending transaction. */
   SignPending = 48,
   /** SyntheticCreateChain creates or updates chains. */
@@ -166,6 +180,12 @@ export namespace TransactionType {
         return TransactionType.UpdateManager;
       case "removeManager":
         return TransactionType.RemoveManager;
+      case "addValidator":
+        return TransactionType.AddValidator;
+      case "removeValidator":
+        return TransactionType.RemoveValidator;
+      case "updateValidatorKey":
+        return TransactionType.UpdateValidatorKey;
       case "signPending":
         return TransactionType.SignPending;
       case "syntheticCreateChain":
