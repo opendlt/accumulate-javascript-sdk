@@ -51,8 +51,3 @@ export class AccURL {
     return this._url.toString();
   }
 }
-
-/**
- * The URL of the ACME token
- */
-export const ACME_TOKEN_URL = AccURL.parse("acc://ACME");
