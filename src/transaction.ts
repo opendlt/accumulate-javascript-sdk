@@ -2,17 +2,15 @@ import { AccURL } from "./acc-url";
 import { sha256 } from "./crypto";
 import {
   bytesMarshalBinary,
-  marshalField,
+  hashMarshalBinary,
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "./encoding";
-import { OriginSigner, Signature } from "./origin-signer";
 import { Payload } from "./payload";
+import { Signature, Signer, SignerInfo } from "./signer";
 
 export type HeaderOptions = {
-  nonce?: number;
-  keyPageHeight?: number;
-  keyPageIndex?: number;
+  timestamp?: number;
   memo?: string;
   metadata?: Uint8Array;
 };
@@ -21,73 +19,76 @@ export type HeaderOptions = {
  * Transaction header
  */
 export class Header {
-  private readonly _origin: AccURL;
-  private readonly _nonce: number;
-  private readonly _keyPageHeight: number;
-  private readonly _keyPageIndex: number;
+  private readonly _principal: AccURL;
+  private _initiator?: Buffer;
   private readonly _memo?: string;
-  private readonly _metadata?: Uint8Array;
+  private readonly _metadata?: Buffer;
+
+  // Timestamp is not part of Header from a protocol point of view (not marshalled)
+  private readonly _timestamp: number;
 
   /**
    * Construct a Transaction Header
-   * @param origin origin of the transaction
+   * @param principal principal of the transaction
    * @param options options.
-   * - If nonce is not specified it defaults to the current timestamp in microseconds.
-   * - If keyPageHeight is not specified, it defaults to 1.
-   * - If keyPageIndex is not specified, it defaults to 0.
+   * - If timestamp is not specified it defaults to the current timestamp in microseconds.
    */
-  constructor(origin: string | AccURL, options?: HeaderOptions) {
-    this._origin = AccURL.toAccURL(origin);
-    this._nonce = options?.nonce ?? Date.now() * 1000;
-    this._keyPageHeight = options?.keyPageHeight ?? 1;
-    this._keyPageIndex = options?.keyPageIndex ?? 0;
+  constructor(principal: string | AccURL, options?: HeaderOptions) {
+    this._principal = AccURL.toAccURL(principal);
+    this._timestamp = options?.timestamp ?? Date.now() * 1000;
     this._memo = options?.memo;
-    this._metadata = options?.metadata;
+    this._metadata = options?.metadata ? Buffer.from(options.metadata) : undefined;
   }
 
-  get origin(): AccURL {
-    return this._origin;
+  get principal(): AccURL {
+    return this._principal;
   }
 
-  get nonce(): number {
-    return this._nonce;
-  }
-
-  get keyPageHeight(): number {
-    return this._keyPageHeight;
-  }
-
-  get keyPageIndex(): number {
-    return this._keyPageIndex;
+  get timestamp(): number {
+    return this._timestamp;
   }
 
   get memo(): string | undefined {
     return this._memo;
   }
 
-  get metadata(): Uint8Array | undefined {
+  get metadata(): Buffer | undefined {
     return this._metadata;
   }
 
+  computeInitiator(signerInfo: SignerInfo): Buffer {
+    if (this._initiator) {
+      return this._initiator;
+    }
+
+    const binary = [];
+    // SignatureTypeED25519 hardcoded
+    binary.push(uvarintMarshalBinary(2, 1));
+    binary.push(bytesMarshalBinary(signerInfo.publicKey, 2));
+    binary.push(stringMarshalBinary(signerInfo.url.toString(), 4));
+    binary.push(uvarintMarshalBinary(signerInfo.version, 5));
+    binary.push(uvarintMarshalBinary(this._timestamp, 6));
+
+    this._initiator = sha256(Buffer.concat(binary));
+
+    return this._initiator;
+  }
+
   marshalBinary(): Buffer {
+    if (!this._initiator) {
+      throw new Error("Initiator hash missing. Must be initilized by calling computeInitiator");
+    }
+
     const forConcat = [];
 
-    forConcat.push(marshalField(1, stringMarshalBinary(this._origin.toString())));
+    forConcat.push(stringMarshalBinary(this._principal.toString(), 1));
+    forConcat.push(hashMarshalBinary(this._initiator, 2));
 
-    if (this._keyPageHeight !== 0) {
-      forConcat.push(marshalField(2, uvarintMarshalBinary(this._keyPageHeight)));
-    }
-    if (this._keyPageIndex !== 0) {
-      forConcat.push(marshalField(3, uvarintMarshalBinary(this._keyPageIndex)));
-    }
-    if (this._nonce !== 0) {
-      forConcat.push(marshalField(4, uvarintMarshalBinary(this._nonce)));
-    }
     if (this._memo && this._memo.length !== 0) {
-      forConcat.push(marshalField(5, stringMarshalBinary(this._memo)));
+      forConcat.push(stringMarshalBinary(this._memo, 3));
     }
     if (this._metadata && this._metadata?.length !== 0) {
-      forConcat.push(marshalField(6, bytesMarshalBinary(this._metadata)));
+      forConcat.push(bytesMarshalBinary(this._metadata, 4));
     }
 
     return Buffer.concat(forConcat);
@@ -116,25 +117,28 @@ export class Transaction {
     if (this._hash) {
       return this._hash;
     }
-    const sHash = sha256(this._header.marshalBinary());
-    const tHash = sha256(this._payloadBinary);
-    this._hash = sha256(Buffer.concat([sHash, tHash]));
+
+    const headerHash = sha256(this._header.marshalBinary());
+    const bodyHash = sha256(this._payloadBinary);
+    this._hash = sha256(Buffer.concat([headerHash, bodyHash]));
+
     return this._hash;
   }
 
   /**
    * Data that needs to be signed in order to submit the transaction.
    */
-  dataForSignature(): Buffer {
-    return Buffer.concat([uvarintMarshalBinary(this._header.nonce), this.hash()]);
+  dataForSignature(signerInfo: SignerInfo): Buffer {
+    const sigHash = this.header.computeInitiator(signerInfo);
+    return sha256(Buffer.concat([sigHash, this.hash()]));
   }
 
   get payload(): Uint8Array {
     return this._payloadBinary;
   }
 
-  get origin(): AccURL {
-    return this._header.origin;
+  get principal(): AccURL {
+    return this._header.principal;
   }
 
   get header(): Header {
@@ -149,7 +153,7 @@ export class Transaction {
     this._signature = signature;
   }
 
-  async sign(signer: OriginSigner): Promise<void> {
+  async sign(signer: Signer): Promise<void> {
     this._signature = await signer.sign(this);
   }
 
@@ -161,34 +165,43 @@ export class Transaction {
       throw new Error("Unsigned transaction cannot be converted to TxRequest");
     }
 
+    const signerInfo = this._signature.signerInfo;
+
     return {
       checkOnly: checkOnly ? checkOnly : undefined,
-      origin: this.origin.toString(),
+      isEnvelope: false,
+      origin: this._header.principal.toString(),
       signer: {
-        publicKey: Buffer.from(this._signature.publicKey).toString("hex"),
-        nonce: this._header.nonce,
+        url: signerInfo.url.toString(),
+        publicKey: Buffer.from(signerInfo.publicKey).toString("hex"),
+        version: signerInfo.version,
+        timestamp: this._header.timestamp,
+        useSimpleHash: true,
       },
       signature: Buffer.from(this._signature.signature).toString("hex"),
-      keyPage: {
-        height: this._header.keyPageHeight,
-        index: this._header.keyPageIndex,
-      },
+      txHash: this._hash?.toString("hex"),
       payload: this._payloadBinary.toString("hex"),
+      memo: this._header.memo,
+      metadata: this._header.metadata?.toString("hex"),
     };
   }
 }
 
 export type TxRequest = {
   checkOnly?: boolean;
+  isEnvelope?: boolean;
   origin: string;
   signer: {
+    url: string;
+    version: number;
     publicKey: string;
-    nonce: number;
+    timestamp: number;
+    signatureType?: number;
+    useSimpleHash: boolean;
   };
   signature: string;
-  keyPage: {
-    height: number;
-    index: number;
-  };
+  txHash?: string;
   payload: string;
+  memo?: string;
+  metadata?: string;
 };

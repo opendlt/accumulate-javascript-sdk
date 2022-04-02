@@ -1,6 +1,6 @@
 import { AccURL } from "./acc-url";
+import { ACME_ORACLE_URL } from "./acme";
 import { QueryOptions, QueryPagination } from "./api-types";
-import { OriginSigner } from "./origin-signer";
 import { Payload } from "./payload";
 import { AddCredits, AddCreditsArg } from "./payload/add-credits";
 import { BurnTokens, BurnTokensArg } from "./payload/burn-tokens";
@@ -12,9 +12,10 @@ import { CreateToken, CreateTokenArg } from "./payload/create-token";
 import { CreateTokenAccount, CreateTokenAccountArg } from "./payload/create-token-account";
 import { IssueTokens, IssueTokensArg } from "./payload/issue-tokens";
 import { SendTokens, SendTokensArg } from "./payload/send-tokens";
-import { UpdateKeyPage, UpdateKeyPageArg } from "./payload/update-key-page";
+import { KeyPageOperation, UpdateKeyPage } from "./payload/update-key-page";
 import { WriteData, WriteDataArg } from "./payload/write-data";
 import { RpcClient } from "./rpc-client";
+import { Signer } from "./signer";
 import { Header, Transaction } from "./transaction";
 
 /**
@@ -39,6 +40,12 @@ export class Client {
   /******************
    * Queries
    ******************/
+
+  queryAcmeOracle(): Promise<number> {
+    return this.queryData(ACME_ORACLE_URL).then(
+      (r) => JSON.parse(Buffer.from(r.data.entry.data[0], "hex").toString()).price
+    );
+  }
 
   queryUrl(url: string | AccURL): Promise<any> {
     const urlStr = url.toString();
@@ -103,79 +110,126 @@ export class Client {
     });
   }
 
-  async queryKeyPageHeight(url: string | AccURL, key: string | Uint8Array): Promise<number> {
+  async querySignerVersion(signer: Signer | AccURL, publicKeyHash?: Uint8Array): Promise<number> {
+    let signerUrl: AccURL;
+    let pkh: Uint8Array;
+    if (signer instanceof AccURL) {
+      signerUrl = signer;
+      if (!publicKeyHash) {
+        throw new Error("Missing public key hash");
+      }
+      pkh = publicKeyHash;
+    } else {
+      signerUrl = signer.url;
+      pkh = signer.publicKeyHash;
+    }
+
     const {
       data: { keyPage },
-    } = await this.queryKeyPageIndex(url, key);
+    } = await this.queryKeyPageIndex(signerUrl, pkh);
 
     const res = await this.queryUrl(keyPage);
-    return res.mainChain.height;
+    return res.data.version;
   }
 
   /******************
    * Transactions
    ******************/
 
-  addCredits(addCredits: AddCreditsArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new AddCredits(addCredits), signer);
+  addCredits(principal: AccURL | string, addCredits: AddCreditsArg, signer: Signer): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new AddCredits(addCredits), signer);
   }
 
-  burnTokens(burnTokens: BurnTokensArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new BurnTokens(burnTokens), signer);
+  burnTokens(principal: AccURL | string, burnTokens: BurnTokensArg, signer: Signer): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new BurnTokens(burnTokens), signer);
   }
 
-  createDataAccount(createDataAccount: CreateDataAccountArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new CreateDataAccount(createDataAccount), signer);
+  createDataAccount(
+    principal: AccURL | string,
+    createDataAccount: CreateDataAccountArg,
+    signer: Signer
+  ): Promise<any> {
+    return this._execute(
+      AccURL.toAccURL(principal),
+      new CreateDataAccount(createDataAccount),
+      signer
+    );
   }
 
-  createIdentity(createIdentity: CreateIdentityArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new CreateIdentity(createIdentity), signer);
+  createIdentity(
+    principal: AccURL | string,
+    createIdentity: CreateIdentityArg,
+    signer: Signer
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new CreateIdentity(createIdentity), signer);
   }
 
-  createKeyBook(createKeyBook: CreateKeyBookArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new CreateKeyBook(createKeyBook), signer);
+  createKeyBook(
+    principal: AccURL | string,
+    createKeyBook: CreateKeyBookArg,
+    signer: Signer
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new CreateKeyBook(createKeyBook), signer);
   }
 
-  createKeyPage(createKeyPage: CreateKeyPageArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new CreateKeyPage(createKeyPage), signer);
+  createKeyPage(
+    principal: AccURL | string,
+    createKeyPage: CreateKeyPageArg,
+    signer: Signer
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new CreateKeyPage(createKeyPage), signer);
   }
 
-  createToken(createToken: CreateTokenArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new CreateToken(createToken), signer);
+  createToken(
+    principal: AccURL | string,
+    createToken: CreateTokenArg,
+    signer: Signer
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new CreateToken(createToken), signer);
   }
 
   createTokenAccount(
+    principal: AccURL | string,
     createTokenAccount: CreateTokenAccountArg,
-    signer: OriginSigner
+    signer: Signer
   ): Promise<any> {
-    return this._execute(new CreateTokenAccount(createTokenAccount), signer);
+    return this._execute(
+      AccURL.toAccURL(principal),
+      new CreateTokenAccount(createTokenAccount),
+      signer
+    );
   }
 
   execute(tx: Transaction): Promise<any> {
     return this.call("execute", tx.toTxRequest());
   }
 
-  issueTokens(issueTokens: IssueTokensArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new IssueTokens(issueTokens), signer);
+  issueTokens(
+    principal: AccURL | string,
+    issueTokens: IssueTokensArg,
+    signer: Signer
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new IssueTokens(issueTokens), signer);
   }
 
-  sendTokens(sendTokens: SendTokensArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new SendTokens(sendTokens), signer);
+  sendTokens(principal: AccURL | string, sendTokens: SendTokensArg, signer: Signer): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new SendTokens(sendTokens), signer);
   }
 
-  updateKeyPage(updateKeyPage: UpdateKeyPageArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new UpdateKeyPage(updateKeyPage), signer);
+  updateKeyPage(
+    principal: AccURL | string,
+    operation: KeyPageOperation | KeyPageOperation[],
+    signer: Signer
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new UpdateKeyPage(operation), signer);
   }
 
-  writeData(writeData: WriteDataArg, signer: OriginSigner): Promise<any> {
-    return this._execute(new WriteData(writeData), signer);
+  writeData(principal: AccURL | string, writeData: WriteDataArg, signer: Signer): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new WriteData(writeData), signer);
   }
 
-  private async _execute(payload: Payload, signer: OriginSigner): Promise<any> {
-    const header = new Header(signer.origin, {
-      keyPageHeight: signer.keyPageHeight,
-      keyPageIndex: signer.keyPageIndex,
-    });
+  private async _execute(principal: AccURL, payload: Payload, signer: Signer): Promise<any> {
+    const header = new Header(principal);
     const tx = new Transaction(payload, header);
     await tx.sign(signer);
 
