@@ -40,15 +40,17 @@ console.log(await client.queryUrl(acc.url));
 // Send some tokens to another random Lite Account
 const recipient = LiteAccount.generate();
 const sendTokens = { to: [{ url: recipient.url, amount: 12 }] };
-await client.sendTokens(sendTokens, acc);
+await client.sendTokens(acc.url, sendTokens, acc);
 // ... wait a few seconds for the tx to be finalized ...
 
 // Convert some tokens into credits necessary to perform most operations on Accumulate
+const oracle = await client.queryAcmeOracle();
 const addCredits = {
   recipient: acc.url,
-  amount: 10000,
+  amount: 1e8,
+  oracle,
 };
-await client.addCredits(addCredits, acc);
+await client.addCredits(acc.url, addCredits, acc);
 
 // ... wait a few seconds for the tx to be finalized ...
 // check the credits balance
@@ -61,12 +63,11 @@ const identityKeypair = Keypair.generate(); // Root keypair that will control th
 const identityUrl = "acc://my-own-identity";
 const createIdentity = {
   url: identityUrl,
-  publicKey: identityKeypair.publicKey,
-  keyBookName: "book0",
-  keyPageName: "page0",
+  publicKey: sha256(identityKeypair.publicKey),
+  keyBookUrl: identityUrl + "/my-book",
 };
 
-await client.createIdentity(createIdentity, acc);
+await client.createIdentity(acc.url, createIdentity, acc);
 
 // ... wait a few seconds for the tx to be finalized ...
 // check your identity
@@ -80,17 +81,19 @@ console.log(await client.queryUrl(identityUrl));
 // Here we are building a SendTokens transaction.
 import { Transaction, Client, SendTokens, LiteAccount, Header, BN } from "../src";
 
+const sender = LiteAccount.generate();
+
 // Build the Payload
 const recipient = LiteAccount.generate();
 const amount = new BN(10);
 const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
-// Build the transaction header with the transaction origin
-// and optionally the keyPageHeight, keyPageIndex or nonce.
-const header = new Header("acc://my-identity/token-account");
+// Build the transaction header with the transaction principal
+// and optionally a timestamp, memo or metadata.
+const header = new Header(sender.url);
 
 // Finally build the (unsigned yet) transaction
 const tx = new Transaction(payload, header);
-const dataForSignature = tx.dataForSignature();
+const dataForSignature = tx.dataForSignature(sender.info);
 const signature = ... // manually sign `dataForSignature` with (custom key store, Ledger, etc)
 // Set the signature on the transaction
 tx.signature = signature;

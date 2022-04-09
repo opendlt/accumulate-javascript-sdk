@@ -23,10 +23,10 @@ describe("Test manual transactions", () => {
     const recipient = LiteAccount.generate();
     const amount = new BN(1025);
     const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
-    const header = new Header(acc.origin);
+    const header = new Header(acc.url);
 
     const tx = new Transaction(payload, header);
-    const forSignature = tx.dataForSignature();
+    const forSignature = tx.dataForSignature(acc.info);
     const signature = await acc.signRaw(forSignature);
     tx.signature = signature;
 
@@ -42,7 +42,7 @@ describe("Test manual transactions", () => {
     const recipient = LiteAccount.generate();
     const amount = 50;
     const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
-    const header = new Header(acc.origin);
+    const header = new Header(acc.url);
 
     const tx = new Transaction(payload, header);
 

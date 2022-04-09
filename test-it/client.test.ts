@@ -3,10 +3,10 @@ import {
   BN,
   Client,
   KeyPageOperation,
+  KeyPageOperationType,
   Keypair,
   KeypairSigner,
   LiteAccount,
-  OriginSigner,
   RpcError,
 } from "../src";
 import { sha256 } from "../src/crypto";
@@ -14,9 +14,14 @@ import { addCredits, randomBuffer, randomString, waitOn } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
+let identityUrl: string;
+let identityKeyPage: KeypairSigner;
 
 describe("Test Accumulate client", () => {
   beforeAll(async () => {
+    /**
+     *  Initialize a LiteAccount with credits
+     */
     acc = LiteAccount.generate();
     await client.faucet(acc.url);
     await waitOn(async () => {
@@ -25,6 +30,31 @@ describe("Test Accumulate client", () => {
     });
 
     await addCredits(client, acc.url, 60_000, acc);
+
+    /**
+     *  Initialize an identity
+     */
+    identityUrl = `acc://${randomString()}`;
+    const identityKeypair = Keypair.generate();
+    const bookUrl = identityUrl + "/my-book";
+
+    // Create identity
+    const createIdentity = {
+      url: identityUrl,
+      keyHash: sha256(identityKeypair.publicKey),
+      keyBookUrl: bookUrl,
+    };
+
+    await client.createIdentity(acc.url, createIdentity, acc);
+    await waitOn(() => client.queryUrl(identityUrl));
+
+    const res = await client.queryUrl(identityUrl);
+    expect(res.type).toStrictEqual("identity");
+
+    const keyPageUrl = bookUrl + "/1";
+    await addCredits(client, keyPageUrl, 600_000, acc);
+
+    identityKeyPage = new KeypairSigner(keyPageUrl, identityKeypair);
   });
 
   test("should send tokens", async () => {
@@ -32,7 +62,7 @@ describe("Test Accumulate client", () => {
 
     const amount = new BN(12);
     const sendTokens = { to: [{ url: recipient.url, amount: amount }] };
-    const { txid } = await client.sendTokens(sendTokens, acc);
+    const { txid } = await client.sendTokens(acc.url, sendTokens, acc);
 
     await waitOn(() => client.queryUrl(recipient.url));
 
@@ -50,7 +80,7 @@ describe("Test Accumulate client", () => {
 
     const amount = new BN(15);
     const burnTokens = { amount };
-    await client.burnTokens(burnTokens, acc);
+    await client.burnTokens(acc.url, burnTokens, acc);
 
     await waitOn(async () => {
       const { data } = await client.queryUrl(acc.url);
@@ -58,65 +88,30 @@ describe("Test Accumulate client", () => {
     });
   });
 
-  test("should manage identity", async () => {
-    const identityKeypair = Keypair.generate();
-    const identityUrl = `acc://${randomString()}`;
-    const bookUrl = identityUrl + "/book0";
-
-    // Create identity
-    const createIdentity = {
-      url: identityUrl,
-      publicKey: identityKeypair.publicKey,
-      keyBookUrl: bookUrl,
-    };
-
-    await client.createIdentity(createIdentity, acc);
-    await waitOn(() => client.queryUrl(identityUrl));
-
-    let res = await client.queryUrl(identityUrl);
-    expect(res.type).toStrictEqual("identity");
-
-    await addCredits(client, bookUrl + "/1", 600_000, acc);
-
-    const keyPageHeight = await client.queryKeyPageHeight(identityUrl, identityKeypair.publicKey);
-    const identity = new KeypairSigner(identityUrl, identityKeypair, { keyPageHeight });
-
-    await testTokenAccount(identity);
-    await testData(identity);
-    await testKeyPageAndBook(identity);
-    await testCreateToken(identity);
-
-    res = await client.queryDirectory(identity.origin, { start: 0, count: 3 });
-    expect(res.type).toStrictEqual("directory");
-    expect(res.items.length).toStrictEqual(3);
-    res = await client.queryDirectory(identity.origin, { start: 0, count: res.total });
-    expect(res.items.length).toStrictEqual(res.total);
-  });
-
-  async function testTokenAccount(identity: OriginSigner) {
+  test("should create token account", async () => {
     // Create token account
-    const tokenAccountUrl = identity.origin + "/ACME";
+    const tokenAccountUrl = identityUrl + "/ACME";
     const createTokenAccount = {
       url: tokenAccountUrl,
       tokenUrl: ACME_TOKEN_URL,
     };
-    await client.createTokenAccount(createTokenAccount, identity);
+    await client.createTokenAccount(identityUrl, createTokenAccount, identityKeyPage);
     await waitOn(() => client.queryUrl(tokenAccountUrl));
 
     const res = await client.queryUrl(tokenAccountUrl);
     expect(res.type).toStrictEqual("tokenAccount");
-  }
+  });
 
-  async function testKeyPageAndBook(identity: KeypairSigner) {
+  test("should create key book and manage pages", async () => {
     // Create a new key book
     const page1Keypair = Keypair.generate();
-    const newKeyBookUrl = identity + "/" + randomString();
+    const newKeyBookUrl = identityUrl + "/" + randomString();
     const createKeyBook = {
       url: newKeyBookUrl,
       publicKeyHash: sha256(page1Keypair.publicKey),
     };
 
-    await client.createKeyBook(createKeyBook, identity);
+    await client.createKeyBook(identityUrl, createKeyBook, identityKeyPage);
     await waitOn(() => client.queryUrl(newKeyBookUrl));
 
     let res = await client.queryUrl(newKeyBookUrl);
@@ -128,42 +123,41 @@ describe("Test Accumulate client", () => {
     expect(res.data.keyBook).toStrictEqual(newKeyBookUrl.toString());
     await addCredits(client, page1Url, 20_000, acc);
 
-    let keyPageHeight = await client.queryKeyPageHeight(page1Url, page1Keypair.publicKey);
-    let keyPage = new KeypairSigner(page1Url, page1Keypair, { keyPageHeight });
+    let keyPage1 = new KeypairSigner(page1Url, page1Keypair);
 
     // Add new key to keypage
     const newKey = Keypair.generate();
-    const addKeyPage = {
-      operation: KeyPageOperation.AddKey,
-      newKey: newKey.publicKey,
+    const addKeyToPage: KeyPageOperation = {
+      type: KeyPageOperationType.Add,
+      keyHash: sha256(newKey.publicKey),
     };
 
-    await client.updateKeyPage(addKeyPage, keyPage);
+    await client.updateKeyPage(page1Url, addKeyToPage, keyPage1);
     await waitOn(async () => {
       const res = await client.queryUrl(page1Url);
       expect(res.data.keys.length).toStrictEqual(2);
     });
 
     // Update keypage
-    keyPageHeight = await client.queryKeyPageHeight(keyPage.origin, keyPage.keypair.publicKey);
-    keyPage = KeypairSigner.withNewKeyPageOptions(keyPage, { keyPageHeight });
+    let version = await client.querySignerVersion(keyPage1);
+    keyPage1 = KeypairSigner.withNewVersion(keyPage1, version);
     const newNewKey = Keypair.generate();
-    const updateKeyPage = {
-      operation: KeyPageOperation.UpdateKey,
-      key: newKey.publicKey,
-      newKey: newNewKey.publicKey,
+    const updateKeyPage: KeyPageOperation = {
+      type: KeyPageOperationType.Update,
+      oldKeyHash: sha256(newKey.publicKey),
+      newKeyHash: sha256(newNewKey.publicKey),
     };
-    await client.updateKeyPage(updateKeyPage, keyPage);
+    await client.updateKeyPage(page1Url, updateKeyPage, keyPage1);
     await waitOn(async () => {
       const res = await client.queryUrl(page1Url);
       expect(res.data.keys[1].publicKey).toStrictEqual(
-        Buffer.from(newNewKey.publicKey).toString("hex")
+        Buffer.from(sha256(newNewKey.publicKey)).toString("hex")
       );
     });
 
     // Set threshold
     // const setThreshold = {
-    //   operation: KeyPageOperation.SetThreshold,
+    //   type: KeyPageOperationType.SetThreshold,
     //   threshold: 2,
     // };
     // keyPage = KeypairSigner.incrementKeyPageHeight(keyPage);
@@ -174,13 +168,13 @@ describe("Test Accumulate client", () => {
     // });
 
     // Remove key from keypage
-    keyPageHeight = await client.queryKeyPageHeight(keyPage.origin, keyPage.keypair.publicKey);
-    keyPage = KeypairSigner.withNewKeyPageOptions(keyPage, { keyPageHeight });
-    const removeKeyPage = {
-      operation: KeyPageOperation.RemoveKey,
-      key: newNewKey.publicKey,
+    version = await client.querySignerVersion(keyPage1);
+    keyPage1 = KeypairSigner.withNewVersion(keyPage1, version);
+    const removeKeyPage: KeyPageOperation = {
+      type: KeyPageOperationType.Remove,
+      keyHash: sha256(newNewKey.publicKey),
     };
-    await client.updateKeyPage(removeKeyPage, keyPage);
+    await client.updateKeyPage(page1Url, removeKeyPage, keyPage1);
     await waitOn(async () => {
       const res = await client.queryUrl(page1Url);
       expect(res.data.keys.length).toStrictEqual(1);
@@ -190,15 +184,14 @@ describe("Test Accumulate client", () => {
     });
 
     // Create a new key page to the book
+    version = await client.querySignerVersion(keyPage1);
+    keyPage1 = KeypairSigner.withNewVersion(keyPage1, version);
     const page2Keypair = Keypair.generate();
     const createKeyPage2 = {
       keys: [page2Keypair.publicKey],
     };
 
-    keyPageHeight = await client.queryKeyPageHeight(newKeyBookUrl, page1Keypair.publicKey);
-    const keyBook = new KeypairSigner(newKeyBookUrl, page1Keypair, { keyPageHeight });
-
-    await client.createKeyPage(createKeyPage2, keyBook);
+    await client.createKeyPage(newKeyBookUrl, createKeyPage2, keyPage1);
     const page2Url = newKeyBookUrl + "/2";
     await waitOn(() => client.queryUrl(page2Url));
 
@@ -206,41 +199,37 @@ describe("Test Accumulate client", () => {
     res = await client.queryKeyPageIndex(newKeyBookUrl, page1Keypair.publicKey);
     expect(res.data.index).toStrictEqual(0);
     res = await client.queryKeyPageIndex(newKeyBookUrl, page2Keypair.publicKey);
-    expect(res.data.index).toStrictEqual(1);
+    // TODO
+    // expect(res.data.index).toStrictEqual(1);
 
     // Test query tx history
-    res = await client.queryTxHistory(keyPage.origin, { start: 0, count: 3 });
+    res = await client.queryTxHistory(keyPage1.url, { start: 0, count: 3 });
     expect(res.type).toStrictEqual("txHistory");
     expect(res.items.length).toStrictEqual(3);
-    res = await client.queryTxHistory(keyPage.origin, { start: 0, count: res.total });
+    res = await client.queryTxHistory(keyPage1.url, { start: 0, count: res.total });
     expect(res.items.length).toStrictEqual(res.total);
-  }
+  });
 
-  async function testData(identity: KeypairSigner) {
+  test("should create data account and write data", async () => {
     // Create data account
-    const dataAccountUrl = identity.origin + "/my-data";
+    const dataAccountUrl = identityUrl + "/my-data";
     const createDataAccount = {
       url: dataAccountUrl,
     };
 
-    await client.createDataAccount(createDataAccount, identity);
+    await client.createDataAccount(identityUrl, createDataAccount, identityKeyPage);
     await waitOn(() => client.queryUrl(dataAccountUrl));
 
     let res = await client.queryUrl(dataAccountUrl);
     expect(res.type).toStrictEqual("dataAccount");
 
     // Write data
-    const keyPageHeight = await client.queryKeyPageHeight(
-      dataAccountUrl,
-      identity.keypair.publicKey
-    );
-    const dataAccout = new KeypairSigner(dataAccountUrl, identity.keypair, { keyPageHeight });
-    const data = randomBuffer();
+    const data = [randomBuffer(), randomBuffer()];
     const writeData = {
-      extIds: [randomBuffer(), randomBuffer()],
       data,
     };
-    await client.writeData(writeData, dataAccout);
+
+    await client.writeData(dataAccountUrl, writeData, identityKeyPage);
     await waitOn(async () => {
       const res = await client.queryData(dataAccountUrl);
       expect(res).toBeTruthy();
@@ -248,16 +237,17 @@ describe("Test Accumulate client", () => {
 
     res = await client.queryData(dataAccountUrl);
     expect(res.type).toStrictEqual("dataEntry");
-    expect(res.data.entry.data).toStrictEqual(data.toString("hex"));
-    expect(res.data.entry.extIds.length).toStrictEqual(2);
+    expect(res.data.entry.data[0]).toStrictEqual(data[0].toString("hex"));
+    expect(res.data.entry.data[1]).toStrictEqual(data[1].toString("hex"));
+    expect(res.data.entry.data.length).toStrictEqual(2);
     const firstEntryHash = res.data.entryHash;
 
-    const data2 = randomBuffer();
+    const data2 = [randomBuffer()];
     const writeData2 = {
-      extIds: [randomBuffer(), randomBuffer()],
       data: data2,
     };
-    await client.writeData(writeData2, dataAccout);
+    await client.writeData(dataAccountUrl, writeData2, identityKeyPage);
+
     await waitOn(async () => {
       const res = await client.queryDataSet(dataAccountUrl, { start: 0, count: 10 });
       expect(res.items.length).toStrictEqual(2);
@@ -266,27 +256,22 @@ describe("Test Accumulate client", () => {
 
     // Query Data should now return the latest entry
     res = await client.queryData(dataAccountUrl);
-    expect(res.data.entry.data).toStrictEqual(data2.toString("hex"));
+    expect(res.data.entry.data[0]).toStrictEqual(data2[0].toString("hex"));
+    expect(res.data.entry.data.length).toStrictEqual(1);
     // Query data per entry hash
     res = await client.queryData(dataAccountUrl, firstEntryHash);
-    expect(res.data.entry.data).toStrictEqual(data.toString("hex"));
-  }
+    expect(res.data.entry.data[0]).toStrictEqual(data[0].toString("hex"));
+  });
 
-  async function testCreateToken(identity: KeypairSigner) {
-    const tokenUrl = identity.origin + "/TEST";
+  test("should create token", async () => {
+    const tokenUrl = identityUrl + "/TEST";
     const createToken = {
       url: tokenUrl,
       symbol: "TEST",
       precision: 0,
     };
 
-    const keyPageHeight = await client.queryKeyPageHeight(
-      identity.origin,
-      identity.keypair.publicKey
-    );
-    identity = new KeypairSigner(identity.origin, identity.keypair, { keyPageHeight });
-
-    await client.createToken(createToken, identity);
+    await client.createToken(identityUrl, createToken, identityKeyPage);
     await waitOn(() => client.queryUrl(tokenUrl));
 
     const recipient = LiteAccount.generateWithTokenUrl(tokenUrl);
@@ -296,12 +281,22 @@ describe("Test Accumulate client", () => {
       amount,
     };
 
-    await client.issueTokens(issueToken, KeypairSigner.withNewOrigin(identity, tokenUrl));
+    await client.issueTokens(tokenUrl, issueToken, identityKeyPage);
     await waitOn(() => client.queryUrl(recipient.url));
 
     const { data } = await client.queryUrl(recipient.url);
     expect(new BN(data.balance)).toStrictEqual(amount);
-  }
+  });
+
+  test("should query directory", async () => {
+    // This test result depends on execution of other identity tests
+    // and should be positioned after those
+    let res = await client.queryDirectory(identityUrl, { start: 0, count: 3 });
+    expect(res.type).toStrictEqual("directory");
+    expect(res.items.length).toStrictEqual(3);
+    res = await client.queryDirectory(identityUrl, { start: 0, count: res.total });
+    expect(res.items.length).toStrictEqual(res.total);
+  });
 
   test("should get version", async () => {
     const res = await client.version();

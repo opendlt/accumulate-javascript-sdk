@@ -1,82 +1,62 @@
 import nacl from "tweetnacl";
 import { AccURL } from "./acc-url";
+import { sha256 } from "./crypto";
 import { Keypair } from "./keypair";
-import { KeyPageOptions, OriginSigner, Signature } from "./origin-signer";
+import { BaseSigner, Signature } from "./signer";
 import { Transaction } from "./transaction";
 
 /**
  * Class to sign Transactions backed by in-memory keypair.
  */
-export class KeypairSigner implements OriginSigner {
-  protected readonly _origin: AccURL;
+export class KeypairSigner extends BaseSigner {
+  protected readonly _url: AccURL;
   protected readonly _keypair: Keypair;
-  protected readonly _keyPageHeight: number;
-  protected readonly _keyPageIndex: number;
+  protected readonly _version: number;
 
-  constructor(origin: string | AccURL, keypair: Keypair, keyPageOptions?: KeyPageOptions) {
-    this._origin = AccURL.toAccURL(origin);
+  constructor(url: string | AccURL, keypair: Keypair, version?: number) {
+    super();
+    this._url = AccURL.toAccURL(url);
     this._keypair = keypair;
-    this._keyPageHeight = keyPageOptions?.keyPageHeight ?? 1;
-    this._keyPageIndex = keyPageOptions?.keyPageIndex ?? 0;
+    this._version = version ?? 1;
   }
 
   /**
-   * Helper to create a new instance of KeypairSigner with a new origin
+   * Helper to create a new instance of KeypairSigner with a new version
    * while copying other KeypairSigner attributes
    * @param signer original KeypairSigner
-   * @param origin new origin
+   * @param version new version
    * @returns
    */
-  static withNewOrigin(signer: KeypairSigner, origin: string | AccURL): KeypairSigner {
-    return new KeypairSigner(origin, signer.keypair, {
-      keyPageHeight: signer.keyPageHeight,
-      keyPageIndex: signer.keyPageIndex,
-    });
-  }
-
-  /**
-   * Helper to create a new instance of KeypairSigner with a new keyPageOptions
-   * while copying other KeypairSigner attributes
-   * @param signer original KeypairSigner
-   * @param keyPageOptions new key page options
-   * @returns
-   */
-  static withNewKeyPageOptions(
-    signer: KeypairSigner,
-    keyPageOptions: KeyPageOptions
-  ): KeypairSigner {
-    return new KeypairSigner(signer.origin, signer.keypair, {
-      keyPageHeight: keyPageOptions.keyPageHeight ?? signer.keyPageHeight,
-      keyPageIndex: keyPageOptions.keyPageIndex ?? signer.keyPageIndex,
-    });
+  static withNewVersion(signer: KeypairSigner, version: number): KeypairSigner {
+    return new KeypairSigner(signer.info.url, signer.keypair, version);
   }
 
   get keypair(): Keypair {
     return this._keypair;
   }
 
+  get url(): AccURL {
+    return this._url;
+  }
+
   get publicKey(): Uint8Array {
     return this._keypair.publicKey;
   }
 
-  get origin(): AccURL {
-    return this._origin;
+  get publicKeyHash(): Uint8Array {
+    return sha256(this._keypair.publicKey);
   }
 
-  get keyPageHeight(): number {
-    return this._keyPageHeight;
-  }
-
-  get keyPageIndex(): number {
-    return this._keyPageIndex;
+  get version(): number {
+    return this._version;
   }
 
   toString() {
-    return this._origin.toString();
+    return this._url.toString();
   }
 
   async sign(tx: Transaction): Promise<Signature> {
-    return this.signRaw(tx.dataForSignature());
+    return this.signRaw(tx.dataForSignature(this.info));
   }
 
   /**
@@ -84,7 +64,7 @@ export class KeypairSigner implements OriginSigner {
    */
   async signRaw(data: Uint8Array): Promise<Signature> {
     return {
-      publicKey: this._keypair.publicKey,
+      signerInfo: this.info,
       signature: nacl.sign.detached(data, this._keypair.secretKey),
     };
   }
