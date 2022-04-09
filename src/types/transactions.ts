@@ -5,8 +5,8 @@ import {
   bigNumberMarshalBinary,
   booleanMarshalBinary,
   bytesMarshalBinary,
+  fieldMarshalBinary,
   hashMarshalBinary,
-  marshalField,
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "../encoding";
@@ -87,12 +87,12 @@ export class AddCredits extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.AddCredits)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.AddCredits)));
     if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.recipient.toString())));
+      parts.push(fieldMarshalBinary(2, stringMarshalBinary(this.recipient.toString())));
     }
     if (true && (this.amount instanceof BN ? !this.amount.isZero() : this.amount !== 0)) {
-      parts.push(marshalField(3, uvarintMarshalBinary(this.amount)));
+      parts.push(fieldMarshalBinary(3, uvarintMarshalBinary(this.amount)));
     }
     return Buffer.concat(parts);
   }
@@ -111,9 +111,9 @@ export class BurnTokens extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.BurnTokens)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.BurnTokens)));
     if (true && !this.amount.isZero()) {
-      parts.push(marshalField(2, bigNumberMarshalBinary(this.amount)));
+      parts.push(fieldMarshalBinary(2, bigNumberMarshalBinary(this.amount)));
     }
     return Buffer.concat(parts);
   }
@@ -141,18 +141,18 @@ export class CreateDataAccount extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.CreateDataAccount)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.CreateDataAccount)));
     if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.url.toString())));
+      parts.push(fieldMarshalBinary(2, stringMarshalBinary(this.url.toString())));
     }
     if (this.keyBookUrl !== undefined && this.keyBookUrl !== null) {
-      parts.push(marshalField(3, stringMarshalBinary(this.keyBookUrl.toString())));
+      parts.push(fieldMarshalBinary(3, stringMarshalBinary(this.keyBookUrl.toString())));
     }
     if (this.managerKeyBookUrl !== undefined && this.managerKeyBookUrl !== null) {
-      parts.push(marshalField(4, stringMarshalBinary(this.managerKeyBookUrl.toString())));
+      parts.push(fieldMarshalBinary(4, stringMarshalBinary(this.managerKeyBookUrl.toString())));
     }
     if (this.scratch !== undefined && this.scratch !== null && this.scratch === true) {
-      parts.push(marshalField(5, booleanMarshalBinary(this.scratch)));
+      parts.push(fieldMarshalBinary(5, booleanMarshalBinary(this.scratch)));
     }
     return Buffer.concat(parts);
   }
@@ -182,18 +182,18 @@ export class CreateIdentity extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.CreateIdentity)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.CreateIdentity)));
     if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.url.toString())));
+      parts.push(fieldMarshalBinary(2, stringMarshalBinary(this.url.toString())));
     }
     if (this.publicKey !== undefined && this.publicKey !== null && this.publicKey?.length > 0) {
-      parts.push(marshalField(3, bytesMarshalBinary(this.publicKey)));
+      parts.push(fieldMarshalBinary(3, bytesMarshalBinary(this.publicKey)));
     }
     if (this.keyBookUrl !== undefined && this.keyBookUrl !== null) {
-      parts.push(marshalField(4, stringMarshalBinary(this.keyBookUrl.toString())));
+      parts.push(fieldMarshalBinary(4, stringMarshalBinary(this.keyBookUrl.toString())));
     }
     if (this.manager !== undefined && this.manager !== null) {
-      parts.push(marshalField(5, stringMarshalBinary(this.manager.toString())));
+      parts.push(fieldMarshalBinary(5, stringMarshalBinary(this.manager.toString())));
     }
     return Buffer.concat(parts);
   }
@@ -221,15 +221,15 @@ export class CreateKeyBook extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.CreateKeyBook)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.CreateKeyBook)));
     if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.url.toString())));
+      parts.push(fieldMarshalBinary(2, stringMarshalBinary(this.url.toString())));
     }
     if (true && this.publicKeyHash?.length > 0) {
-      parts.push(marshalField(3, bytesMarshalBinary(this.publicKeyHash)));
+      parts.push(fieldMarshalBinary(3, bytesMarshalBinary(this.publicKeyHash)));
     }
     if (this.manager !== undefined && this.manager !== null) {
-      parts.push(marshalField(4, stringMarshalBinary(this.manager.toString())));
+      parts.push(fieldMarshalBinary(4, stringMarshalBinary(this.manager.toString())));
     }
     return Buffer.concat(parts);
   }
@@ -251,16 +251,16 @@ export class CreateKeyPage extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.CreateKeyPage)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.CreateKeyPage)));
     if (true && this.keys?.length > 0) {
       parts.push(
         Buffer.concat(
-          this.keys.map((val) => marshalField(2, bytesMarshalBinary(val.marshalBinary())))
+          this.keys.map((val) => fieldMarshalBinary(2, bytesMarshalBinary(val.marshalBinary())))
         )
       );
     }
     if (this.manager !== undefined && this.manager !== null) {
-      parts.push(marshalField(3, stringMarshalBinary(this.manager.toString())));
+      parts.push(fieldMarshalBinary(3, stringMarshalBinary(this.manager.toString())));
     }
     return Buffer.concat(parts);
   }
@@ -302,38 +302,38 @@ export class CreateToken extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.CreateToken)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.CreateToken)));
     if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.url.toString())));
+      parts.push(fieldMarshalBinary(2, stringMarshalBinary(this.url.toString())));
     }
     if (this.keyBookUrl !== undefined && this.keyBookUrl !== null) {
-      parts.push(marshalField(3, stringMarshalBinary(this.keyBookUrl.toString())));
+      parts.push(fieldMarshalBinary(3, stringMarshalBinary(this.keyBookUrl.toString())));
     }
     if (true && this.symbol?.length > 0) {
-      parts.push(marshalField(4, stringMarshalBinary(this.symbol)));
+      parts.push(fieldMarshalBinary(4, stringMarshalBinary(this.symbol)));
     }
     if (true && (this.precision instanceof BN ? !this.precision.isZero() : this.precision !== 0)) {
-      parts.push(marshalField(5, uvarintMarshalBinary(this.precision)));
+      parts.push(fieldMarshalBinary(5, uvarintMarshalBinary(this.precision)));
     }
     if (this.properties !== undefined && this.properties !== null) {
-      parts.push(marshalField(6, stringMarshalBinary(this.properties.toString())));
+      parts.push(fieldMarshalBinary(6, stringMarshalBinary(this.properties.toString())));
     }
     if (
       this.initialSupply !== undefined &&
       this.initialSupply !== null &&
       !this.initialSupply.isZero()
     ) {
-      parts.push(marshalField(7, bigNumberMarshalBinary(this.initialSupply)));
+      parts.push(fieldMarshalBinary(7, bigNumberMarshalBinary(this.initialSupply)));
     }
     if (
       this.hasSupplyLimit !== undefined &&
       this.hasSupplyLimit !== null &&
       this.hasSupplyLimit === true
     ) {
-      parts.push(marshalField(8, booleanMarshalBinary(this.hasSupplyLimit)));
+      parts.push(fieldMarshalBinary(8, booleanMarshalBinary(this.hasSupplyLimit)));
     }
     if (this.manager !== undefined && this.manager !== null) {
-      parts.push(marshalField(9, stringMarshalBinary(this.manager.toString())));
+      parts.push(fieldMarshalBinary(9, stringMarshalBinary(this.manager.toString())));
     }
     return Buffer.concat(parts);
   }
@@ -364,21 +364,21 @@ export class CreateTokenAccount extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.CreateTokenAccount)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.CreateTokenAccount)));
     if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.url.toString())));
+      parts.push(fieldMarshalBinary(2, stringMarshalBinary(this.url.toString())));
     }
     if (true) {
-      parts.push(marshalField(3, stringMarshalBinary(this.tokenUrl.toString())));
+      parts.push(fieldMarshalBinary(3, stringMarshalBinary(this.tokenUrl.toString())));
     }
     if (this.keyBookUrl !== undefined && this.keyBookUrl !== null) {
-      parts.push(marshalField(4, stringMarshalBinary(this.keyBookUrl.toString())));
+      parts.push(fieldMarshalBinary(4, stringMarshalBinary(this.keyBookUrl.toString())));
     }
     if (this.scratch !== undefined && this.scratch !== null && this.scratch === true) {
-      parts.push(marshalField(5, booleanMarshalBinary(this.scratch)));
+      parts.push(fieldMarshalBinary(5, booleanMarshalBinary(this.scratch)));
     }
     if (this.manager !== undefined && this.manager !== null) {
-      parts.push(marshalField(6, stringMarshalBinary(this.manager.toString())));
+      parts.push(fieldMarshalBinary(6, stringMarshalBinary(this.manager.toString())));
     }
     return Buffer.concat(parts);
   }
@@ -403,10 +403,12 @@ export class DataEntry extends BasePayload {
   protected _marshalBinary(): Buffer {
     const parts = [];
     if (this.extIds !== undefined && this.extIds !== null && this.extIds?.length > 0) {
-      parts.push(Buffer.concat(this.extIds.map((val) => marshalField(1, bytesMarshalBinary(val)))));
+      parts.push(
+        Buffer.concat(this.extIds.map((val) => fieldMarshalBinary(1, bytesMarshalBinary(val))))
+      );
     }
     if (this.data !== undefined && this.data !== null && this.data?.length > 0) {
-      parts.push(marshalField(2, bytesMarshalBinary(this.data)));
+      parts.push(fieldMarshalBinary(2, bytesMarshalBinary(this.data)));
     }
     return Buffer.concat(parts);
   }
@@ -439,28 +441,28 @@ export class ED25519Signature extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(SignatureType.ED25519)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(SignatureType.ED25519)));
     if (true && this.publicKey?.length > 0) {
-      parts.push(marshalField(2, bytesMarshalBinary(this.publicKey)));
+      parts.push(fieldMarshalBinary(2, bytesMarshalBinary(this.publicKey)));
     }
     if (true && this.signature?.length > 0) {
-      parts.push(marshalField(3, bytesMarshalBinary(this.signature)));
+      parts.push(fieldMarshalBinary(3, bytesMarshalBinary(this.signature)));
     }
     if (true) {
-      parts.push(marshalField(4, stringMarshalBinary(this.signer.toString())));
+      parts.push(fieldMarshalBinary(4, stringMarshalBinary(this.signer.toString())));
     }
     if (
       true &&
       (this.signerHeight instanceof BN ? !this.signerHeight.isZero() : this.signerHeight !== 0)
     ) {
-      parts.push(marshalField(5, uvarintMarshalBinary(this.signerHeight)));
+      parts.push(fieldMarshalBinary(5, uvarintMarshalBinary(this.signerHeight)));
     }
     if (
       this.timestamp !== undefined &&
       this.timestamp !== null &&
       (this.timestamp instanceof BN ? !this.timestamp.isZero() : this.timestamp !== 0)
     ) {
-      parts.push(marshalField(6, uvarintMarshalBinary(this.timestamp)));
+      parts.push(fieldMarshalBinary(6, uvarintMarshalBinary(this.timestamp)));
     }
     return Buffer.concat(parts);
   }
@@ -491,15 +493,17 @@ export class Envelope extends BasePayload {
     if (true && this.signatures?.length > 0) {
       parts.push(
         Buffer.concat(
-          this.signatures.map((val) => marshalField(1, bytesMarshalBinary(val.marshalBinary())))
+          this.signatures.map((val) =>
+            fieldMarshalBinary(1, bytesMarshalBinary(val.marshalBinary()))
+          )
         )
       );
     }
     if (this.txHash !== undefined && this.txHash !== null && this.txHash?.length > 0) {
-      parts.push(marshalField(2, bytesMarshalBinary(this.txHash)));
+      parts.push(fieldMarshalBinary(2, bytesMarshalBinary(this.txHash)));
     }
     if (this.transaction !== undefined && this.transaction !== null) {
-      parts.push(marshalField(3, bytesMarshalBinary(this.transaction.marshalBinary())));
+      parts.push(fieldMarshalBinary(3, bytesMarshalBinary(this.transaction.marshalBinary())));
     }
     return Buffer.concat(parts);
   }
@@ -521,12 +525,12 @@ export class IssueTokens extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.IssueTokens)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.IssueTokens)));
     if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.recipient.toString())));
+      parts.push(fieldMarshalBinary(2, stringMarshalBinary(this.recipient.toString())));
     }
     if (true && !this.amount.isZero()) {
-      parts.push(marshalField(3, bigNumberMarshalBinary(this.amount)));
+      parts.push(fieldMarshalBinary(3, bigNumberMarshalBinary(this.amount)));
     }
     return Buffer.concat(parts);
   }
@@ -547,7 +551,7 @@ export class KeySpecParams extends BasePayload {
   protected _marshalBinary(): Buffer {
     const parts = [];
     if (true && this.publicKey?.length > 0) {
-      parts.push(marshalField(1, bytesMarshalBinary(this.publicKey)));
+      parts.push(fieldMarshalBinary(1, bytesMarshalBinary(this.publicKey)));
     }
     return Buffer.concat(parts);
   }
@@ -580,24 +584,24 @@ export class LegacyED25519Signature extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(SignatureType.LegacyED25519)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(SignatureType.LegacyED25519)));
     if (true && (this.timestamp instanceof BN ? !this.timestamp.isZero() : this.timestamp !== 0)) {
-      parts.push(marshalField(2, uvarintMarshalBinary(this.timestamp)));
+      parts.push(fieldMarshalBinary(2, uvarintMarshalBinary(this.timestamp)));
     }
     if (true && this.publicKey?.length > 0) {
-      parts.push(marshalField(3, bytesMarshalBinary(this.publicKey)));
+      parts.push(fieldMarshalBinary(3, bytesMarshalBinary(this.publicKey)));
     }
     if (true && this.signature?.length > 0) {
-      parts.push(marshalField(4, bytesMarshalBinary(this.signature)));
+      parts.push(fieldMarshalBinary(4, bytesMarshalBinary(this.signature)));
     }
     if (true) {
-      parts.push(marshalField(5, stringMarshalBinary(this.signer.toString())));
+      parts.push(fieldMarshalBinary(5, stringMarshalBinary(this.signer.toString())));
     }
     if (
       true &&
       (this.signerHeight instanceof BN ? !this.signerHeight.isZero() : this.signerHeight !== 0)
     ) {
-      parts.push(marshalField(6, uvarintMarshalBinary(this.signerHeight)));
+      parts.push(fieldMarshalBinary(6, uvarintMarshalBinary(this.signerHeight)));
     }
     return Buffer.concat(parts);
   }
@@ -630,28 +634,28 @@ export class RCD1Signature extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(SignatureType.RCD1)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(SignatureType.RCD1)));
     if (true && this.publicKey?.length > 0) {
-      parts.push(marshalField(2, bytesMarshalBinary(this.publicKey)));
+      parts.push(fieldMarshalBinary(2, bytesMarshalBinary(this.publicKey)));
     }
     if (true && this.signature?.length > 0) {
-      parts.push(marshalField(3, bytesMarshalBinary(this.signature)));
+      parts.push(fieldMarshalBinary(3, bytesMarshalBinary(this.signature)));
     }
     if (true) {
-      parts.push(marshalField(4, stringMarshalBinary(this.signer.toString())));
+      parts.push(fieldMarshalBinary(4, stringMarshalBinary(this.signer.toString())));
     }
     if (
       true &&
       (this.signerHeight instanceof BN ? !this.signerHeight.isZero() : this.signerHeight !== 0)
     ) {
-      parts.push(marshalField(5, uvarintMarshalBinary(this.signerHeight)));
+      parts.push(fieldMarshalBinary(5, uvarintMarshalBinary(this.signerHeight)));
     }
     if (
       this.timestamp !== undefined &&
       this.timestamp !== null &&
       (this.timestamp instanceof BN ? !this.timestamp.isZero() : this.timestamp !== 0)
     ) {
-      parts.push(marshalField(6, uvarintMarshalBinary(this.timestamp)));
+      parts.push(fieldMarshalBinary(6, uvarintMarshalBinary(this.timestamp)));
     }
     return Buffer.concat(parts);
   }
@@ -677,22 +681,22 @@ export class SendTokens extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.SendTokens)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.SendTokens)));
     if (
       this.hash !== undefined &&
       this.hash !== null &&
       this.hash?.length > 0 &&
       this.hash.some((v) => v !== 0)
     ) {
-      parts.push(marshalField(2, hashMarshalBinary(this.hash)));
+      parts.push(fieldMarshalBinary(2, hashMarshalBinary(this.hash)));
     }
     if (this.meta !== undefined && this.meta !== null) {
-      parts.push(marshalField(3, stringMarshalBinary(JSON.stringify(this.meta))));
+      parts.push(fieldMarshalBinary(3, stringMarshalBinary(JSON.stringify(this.meta))));
     }
     if (true && this.to?.length > 0) {
       parts.push(
         Buffer.concat(
-          this.to.map((val) => marshalField(4, bytesMarshalBinary(val.marshalBinary())))
+          this.to.map((val) => fieldMarshalBinary(4, bytesMarshalBinary(val.marshalBinary())))
         )
       );
     }
@@ -708,7 +712,7 @@ export class SignPending extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.SignPending)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.SignPending)));
     return Buffer.concat(parts);
   }
 }
@@ -730,10 +734,10 @@ export class TokenRecipient extends BasePayload {
   protected _marshalBinary(): Buffer {
     const parts = [];
     if (true) {
-      parts.push(marshalField(1, stringMarshalBinary(this.url.toString())));
+      parts.push(fieldMarshalBinary(1, stringMarshalBinary(this.url.toString())));
     }
     if (true && !this.amount.isZero()) {
-      parts.push(marshalField(2, bigNumberMarshalBinary(this.amount)));
+      parts.push(fieldMarshalBinary(2, bigNumberMarshalBinary(this.amount)));
     }
     return Buffer.concat(parts);
   }
@@ -757,10 +761,10 @@ export class Transaction extends BasePayload {
   protected _marshalBinary(): Buffer {
     const parts = [];
     if (true) {
-      parts.push(marshalField(1, bytesMarshalBinary(this.header.marshalBinary())));
+      parts.push(fieldMarshalBinary(1, bytesMarshalBinary(this.header.marshalBinary())));
     }
     if (true) {
-      parts.push(marshalField(2, bytesMarshalBinary(this.body.marshalBinary())));
+      parts.push(fieldMarshalBinary(2, bytesMarshalBinary(this.body.marshalBinary())));
     }
     return Buffer.concat(parts);
   }
@@ -792,16 +796,16 @@ export class TransactionHeader extends BasePayload {
   protected _marshalBinary(): Buffer {
     const parts = [];
     if (true) {
-      parts.push(marshalField(1, stringMarshalBinary(this.principal.toString())));
+      parts.push(fieldMarshalBinary(1, stringMarshalBinary(this.principal.toString())));
     }
     if (true && this.initiator?.length > 0 && this.initiator.some((v) => v !== 0)) {
-      parts.push(marshalField(2, hashMarshalBinary(this.initiator)));
+      parts.push(fieldMarshalBinary(2, hashMarshalBinary(this.initiator)));
     }
     if (this.memo !== undefined && this.memo !== null && this.memo?.length > 0) {
-      parts.push(marshalField(3, stringMarshalBinary(this.memo)));
+      parts.push(fieldMarshalBinary(3, stringMarshalBinary(this.memo)));
     }
     if (this.metadata !== undefined && this.metadata !== null && this.metadata?.length > 0) {
-      parts.push(marshalField(4, bytesMarshalBinary(this.metadata)));
+      parts.push(fieldMarshalBinary(4, bytesMarshalBinary(this.metadata)));
     }
     return Buffer.concat(parts);
   }
@@ -834,25 +838,25 @@ export class UpdateKeyPage extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.UpdateKeyPage)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.UpdateKeyPage)));
     if (true) {
-      parts.push(marshalField(2, uvarintMarshalBinary(this.operation)));
+      parts.push(fieldMarshalBinary(2, uvarintMarshalBinary(this.operation)));
     }
     if (this.key !== undefined && this.key !== null && this.key?.length > 0) {
-      parts.push(marshalField(3, bytesMarshalBinary(this.key)));
+      parts.push(fieldMarshalBinary(3, bytesMarshalBinary(this.key)));
     }
     if (this.newKey !== undefined && this.newKey !== null && this.newKey?.length > 0) {
-      parts.push(marshalField(4, bytesMarshalBinary(this.newKey)));
+      parts.push(fieldMarshalBinary(4, bytesMarshalBinary(this.newKey)));
     }
     if (this.owner !== undefined && this.owner !== null) {
-      parts.push(marshalField(5, stringMarshalBinary(this.owner.toString())));
+      parts.push(fieldMarshalBinary(5, stringMarshalBinary(this.owner.toString())));
     }
     if (
       this.threshold !== undefined &&
       this.threshold !== null &&
       (this.threshold instanceof BN ? !this.threshold.isZero() : this.threshold !== 0)
     ) {
-      parts.push(marshalField(6, uvarintMarshalBinary(this.threshold)));
+      parts.push(fieldMarshalBinary(6, uvarintMarshalBinary(this.threshold)));
     }
     return Buffer.concat(parts);
   }
@@ -871,9 +875,9 @@ export class WriteData extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.WriteData)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.WriteData)));
     if (true) {
-      parts.push(marshalField(2, bytesMarshalBinary(this.entry.marshalBinary())));
+      parts.push(fieldMarshalBinary(2, bytesMarshalBinary(this.entry.marshalBinary())));
     }
     return Buffer.concat(parts);
   }
@@ -895,12 +899,12 @@ export class WriteDataTo extends BasePayload {
   }
   protected _marshalBinary(): Buffer {
     const parts = [];
-    parts.push(marshalField(1, uvarintMarshalBinary(TransactionType.WriteDataTo)));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary(TransactionType.WriteDataTo)));
     if (true) {
-      parts.push(marshalField(2, stringMarshalBinary(this.recipient.toString())));
+      parts.push(fieldMarshalBinary(2, stringMarshalBinary(this.recipient.toString())));
     }
     if (true) {
-      parts.push(marshalField(3, bytesMarshalBinary(this.entry.marshalBinary())));
+      parts.push(fieldMarshalBinary(3, bytesMarshalBinary(this.entry.marshalBinary())));
     }
     return Buffer.concat(parts);
   }

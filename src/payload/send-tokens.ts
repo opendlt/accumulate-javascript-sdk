@@ -3,8 +3,8 @@ import { AccURL } from "../acc-url";
 import {
   bigNumberMarshalBinary,
   bytesMarshalBinary,
+  fieldMarshalBinary,
   hashMarshalBinary,
-  marshalField,
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "../encoding";
@@ -59,7 +59,7 @@ export class SendTokens extends BasePayload {
     }
 
     this._to.forEach((recipient) =>
-      forConcat.push(marshalField(4, marshalBinaryTokenRecipient(recipient)))
+      forConcat.push(fieldMarshalBinary(4, marshalBinaryTokenRecipient(recipient)))
     );
 
     return Buffer.concat(forConcat);

@@ -50,7 +50,7 @@ import BN from "bn.js";
 import { AccURL } from "../acc-url";
 import { BasePayload } from "../payload/base-payload";
 import {
-  marshalField,
+  fieldMarshalBinary,
   bigNumberMarshalBinary,
   booleanMarshalBinary,
   bytesMarshalBinary,
@@ -131,7 +131,7 @@ export class {{.Name}} {{if and .IsBinary (not .IsChain)}}extends BasePayload {{
   protected _marshalBinary(): Buffer {
     const parts = [];
     {{- if .IsUnion}}
-    parts.push(marshalField(1, uvarintMarshalBinary({{.UnionType}}.{{.UnionValue}})));
+    parts.push(fieldMarshalBinary(1, uvarintMarshalBinary({{.UnionType}}.{{.UnionValue}})));
     {{- end}}
     {{- range .Embeddings}}
     {
@@ -139,17 +139,17 @@ export class {{.Name}} {{if and .IsBinary (not .IsChain)}}extends BasePayload {{
       {{- range .Fields}}
       {{- if .IsMarshalled}}
       if ({{template "isSet" map "Field" . "Src" (print "this." (lcName .Name))}}) {
-        subParts.push({{template "marshalField" map "Field" . "Src" (print "this." (lcName .Name))}});
+        subParts.push({{template "fieldMarshalBinary" map "Field" . "Src" (print "this." (lcName .Name))}});
       }
       {{- end}}
       {{- end}}
-      parts.push(marshalField(1, bytesMarshalBinary(Buffer.concat(subParts))));
+      parts.push(fieldMarshalBinary(1, bytesMarshalBinary(Buffer.concat(subParts))));
     }
     {{- end}}
     {{- range .Fields}}
     {{- if .IsMarshalled}}
     if ({{template "isSet" map "Field" . "Src" (print "this." (lcName .Name))}}) {
-      parts.push({{template "marshalField" map "Field" . "Src" (print "this." (lcName .Name))}});
+      parts.push({{template "fieldMarshalBinary" map "Field" . "Src" (print "this." (lcName .Name))}});
     }
     {{- end}}
     {{- end}}
@@ -233,23 +233,23 @@ export class {{.Name}} {{if and .IsBinary (not .IsChain)}}extends BasePayload {{
 {{- end}}
 {{- end}}
 
-{{- define "marshalField"}}
-{{- if .Field.Repeatable}}Buffer.concat({{.Src}}.map((val) => {{template "_marshalField" map "Field" .Field "Src" "val"}}))
-{{- else}}{{template "_marshalField" .}}
+{{- define "fieldMarshalBinary"}}
+{{- if .Field.Repeatable}}Buffer.concat({{.Src}}.map((val) => {{template "_fieldMarshalBinary" map "Field" .Field "Src" "val"}}))
+{{- else}}{{template "_fieldMarshalBinary" .}}
 {{- end}}
 {{- end}}
 
-{{- define "_marshalField"}}
-{{-      if eq .Field.Type "url"             }}marshalField({{.Field.Number}}, stringMarshalBinary({{.Src}}.toString()))
-{{- else if eq .Field.Type "bigint"          }}marshalField({{.Field.Number}}, bigNumberMarshalBinary({{.Src}}))
-{{- else if eq .Field.Type "bool"            }}marshalField({{.Field.Number}}, booleanMarshalBinary({{.Src}}))
-{{- else if eq .Field.Type "int"             }}marshalField({{.Field.Number}}, varintMarshalBinary({{.Src}}))
-{{- else if eq .Field.Type "uint"            }}marshalField({{.Field.Number}}, uvarintMarshalBinary({{.Src}}))
-{{- else if eq .Field.Type "chain"           }}marshalField({{.Field.Number}}, hashMarshalBinary({{.Src}}))
-{{- else if eq .Field.Type "rawJson"         }}marshalField({{.Field.Number}}, stringMarshalBinary(JSON.stringify({{.Src}})))
-{{- else if .Field.AsReference               }}marshalField({{.Field.Number}}, bytesMarshalBinary({{.Src}}.marshalBinary()))
-{{- else if .Field.AsValue                   }}marshalField({{.Field.Number}}, bytesMarshalBinary({{.Src}}.marshalBinary()))
-{{- else if .Field.AsEnum                    }}marshalField({{.Field.Number}}, uvarintMarshalBinary({{.Src}}))
-{{- else                                     }}marshalField({{.Field.Number}}, {{.Field.Type}}MarshalBinary({{.Src}}))
+{{- define "_fieldMarshalBinary"}}
+{{-      if eq .Field.Type "url"             }}fieldMarshalBinary({{.Field.Number}}, stringMarshalBinary({{.Src}}.toString()))
+{{- else if eq .Field.Type "bigint"          }}fieldMarshalBinary({{.Field.Number}}, bigNumberMarshalBinary({{.Src}}))
+{{- else if eq .Field.Type "bool"            }}fieldMarshalBinary({{.Field.Number}}, booleanMarshalBinary({{.Src}}))
+{{- else if eq .Field.Type "int"             }}fieldMarshalBinary({{.Field.Number}}, varintMarshalBinary({{.Src}}))
+{{- else if eq .Field.Type "uint"            }}fieldMarshalBinary({{.Field.Number}}, uvarintMarshalBinary({{.Src}}))
+{{- else if eq .Field.Type "chain"           }}fieldMarshalBinary({{.Field.Number}}, hashMarshalBinary({{.Src}}))
+{{- else if eq .Field.Type "rawJson"         }}fieldMarshalBinary({{.Field.Number}}, stringMarshalBinary(JSON.stringify({{.Src}})))
+{{- else if .Field.AsReference               }}fieldMarshalBinary({{.Field.Number}}, bytesMarshalBinary({{.Src}}.marshalBinary()))
+{{- else if .Field.AsValue                   }}fieldMarshalBinary({{.Field.Number}}, bytesMarshalBinary({{.Src}}.marshalBinary()))
+{{- else if .Field.AsEnum                    }}fieldMarshalBinary({{.Field.Number}}, uvarintMarshalBinary({{.Src}}))
+{{- else                                     }}fieldMarshalBinary({{.Field.Number}}, {{.Field.Type}}MarshalBinary({{.Src}}))
 {{- end}}
 {{- end}}

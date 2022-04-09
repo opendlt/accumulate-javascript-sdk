@@ -1,6 +1,6 @@
 import BN from "bn.js";
 
-export function marshalField(field: number, val: Uint8Array): Buffer {
+export function fieldMarshalBinary(field: number, val: Uint8Array): Buffer {
   if (field < 1 || field > 32) {
     throw new Error(`Field number is out of range [1, 32]: ${field}`);
   }
@@ -27,7 +27,7 @@ export function uvarintMarshalBinary(val: number | BN, field?: number): Buffer {
   buffer[i] = x.maskn(8).toNumber();
   const data = Buffer.from(buffer);
 
-  return field ? marshalField(field, data) : data;
+  return field ? fieldMarshalBinary(field, data) : data;
 }
 
 export function bigNumberMarshalBinary(bn: BN, field?: number): Buffer {
@@ -60,5 +60,5 @@ export function hashMarshalBinary(val: Uint8Array, field?: number): Buffer {
 }
 
 function withFieldNumber(data: Buffer, field?: number): Buffer {
-  return field ? marshalField(field, data) : data;
+  return field ? fieldMarshalBinary(field, data) : data;
 }

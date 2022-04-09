@@ -3,8 +3,8 @@ import {
   bigNumberMarshalBinary,
   booleanMarshalBinary,
   bytesMarshalBinary,
+  fieldMarshalBinary,
   hashMarshalBinary,
-  marshalField,
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "../src/encoding";
@@ -71,6 +71,6 @@ test("should marshal binary hash", () => {
 });
 
 test("should marshal field", () => {
-  expect(marshalField(1, booleanMarshalBinary(true))).toStrictEqual(Buffer.from([1, 1]));
-  expect(marshalField(2, booleanMarshalBinary(false))).toStrictEqual(Buffer.from([2, 0]));
+  expect(fieldMarshalBinary(1, booleanMarshalBinary(true))).toStrictEqual(Buffer.from([1, 1]));
+  expect(fieldMarshalBinary(2, booleanMarshalBinary(false))).toStrictEqual(Buffer.from([2, 0]));
 });

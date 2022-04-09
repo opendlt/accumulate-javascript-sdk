@@ -1,4 +1,4 @@
-import { bytesMarshalBinary, marshalField, uvarintMarshalBinary } from "../encoding";
+import { bytesMarshalBinary, fieldMarshalBinary, uvarintMarshalBinary } from "../encoding";
 import { TransactionType } from "../types";
 import { BasePayload } from "./base-payload";
 
@@ -19,7 +19,7 @@ export class WriteData extends BasePayload {
 
     forConcat.push(uvarintMarshalBinary(TransactionType.WriteData, 1));
 
-    forConcat.push(marshalField(2, marshalDataEntry(this._data)));
+    forConcat.push(fieldMarshalBinary(2, marshalDataEntry(this._data)));
 
     return Buffer.concat(forConcat);
   }
