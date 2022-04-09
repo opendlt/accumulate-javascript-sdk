@@ -1,7 +1,7 @@
 import { AccURL } from "../acc-url";
 import {
   bytesMarshalBinary,
-  marshalField,
+  fieldMarshalBinary,
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "../encoding";
@@ -27,7 +27,7 @@ export class CreateKeyPage extends BasePayload {
     const forConcat = [];
 
     forConcat.push(uvarintMarshalBinary(TransactionType.CreateKeyPage, 1));
-    this._keys.forEach((key) => forConcat.push(marshalField(2, marshalBinaryKey(key))));
+    this._keys.forEach((key) => forConcat.push(fieldMarshalBinary(2, marshalBinaryKey(key))));
     if (this._manager) {
       forConcat.push(stringMarshalBinary(this._manager.toString(), 3));
     }
