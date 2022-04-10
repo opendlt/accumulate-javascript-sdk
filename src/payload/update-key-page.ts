@@ -33,8 +33,8 @@ export type SetThresholdKeyPageOperation = {
 
 export type UpdateAllowedKeyPageOperation = {
   type: KeyPageOperationType.UpdateAllowed;
-  allow: TransactionType[];
-  deny: TransactionType[];
+  allow?: TransactionType[];
+  deny?: TransactionType[];
 };
 
 export type KeyPageOperation =
@@ -131,8 +131,8 @@ function marshalBinaryUpdateAllowedKeyPageOperation(
   const forConcat = [];
 
   forConcat.push(uvarintMarshalBinary(operation.type, 1));
-  operation.allow.forEach((a) => uvarintMarshalBinary(a, 2));
-  operation.deny.forEach((d) => uvarintMarshalBinary(d, 3));
+  operation?.allow?.forEach((a) => forConcat.push(uvarintMarshalBinary(a, 2)));
+  operation?.deny?.forEach((d) => forConcat.push(uvarintMarshalBinary(d, 3)));
 
   return Buffer.concat(forConcat);
 }
