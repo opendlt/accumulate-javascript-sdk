@@ -1,12 +1,5 @@
 import { randomBytes } from "tweetnacl";
-import {
-  AccURL,
-  BN,
-  Client,
-  Ed25519KeypairSigner,
-  LiteAccount,
-  TxSigner,
-} from "../src";
+import { AccURL, BN, Client, Ed25519KeypairSigner, LiteAccount, TxSigner } from "../src";
 
 export function randomAcmeLiteAccount() {
   return new LiteAccount(Ed25519KeypairSigner.generate());
