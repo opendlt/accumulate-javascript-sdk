@@ -1,26 +1,23 @@
 import nacl from "tweetnacl";
 
-/**
- * Ed25519 Keypair
- */
-export interface Ed25519Keypair {
+export type Keypair = {
   publicKey: Uint8Array;
   secretKey: Uint8Array;
-}
+};
 
 /**
- * An account keypair used for signing transactions.
+ * An Ed25519 keypair used for signing transactions.
  */
-export class Keypair {
-  private readonly _keypair: Ed25519Keypair;
+export class Ed25519Keypair {
+  private readonly _keypair: Keypair;
 
   /**
    * Create a new keypair instance.
-   * Generate random keypair if no {@link Ed25519Keypair} is provided.
+   * Generate random keypair if no {@link Keypair} is provided.
    *
    * @param keypair ed25519 keypair
    */
-  constructor(keypair?: Ed25519Keypair) {
+  constructor(keypair?: Keypair) {
     if (keypair) {
       this._keypair = keypair;
     } else {
@@ -31,8 +28,8 @@ export class Keypair {
   /**
    * Generate a new random keypair
    */
-  static generate(): Keypair {
-    return new Keypair(nacl.sign.keyPair());
+  static generate(): Ed25519Keypair {
+    return new Ed25519Keypair(nacl.sign.keyPair());
   }
 
   /**
@@ -40,14 +37,17 @@ export class Keypair {
    *
    * This method should only be used to recreate a keypair from a previously
    * generated secret key. Generating keypairs from a random seed should be done
-   * with the {@link Keypair.fromSeed} method.
+   * with the {@link Ed25519Keypair.fromSeed} method.
    *
    * @throws error if the provided secret key is invalid and validation is not skipped.
    *
    * @param secretKey secret key byte array
    * @param options: skip secret key validation
    */
-  static fromSecretKey(secretKey: Uint8Array, options?: { skipValidation?: boolean }): Keypair {
+  static fromSecretKey(
+    secretKey: Uint8Array,
+    options?: { skipValidation?: boolean }
+  ): Ed25519Keypair {
     const keypair = nacl.sign.keyPair.fromSecretKey(secretKey);
     if (!options || !options.skipValidation) {
       const encoder = new TextEncoder();
@@ -57,7 +57,7 @@ export class Keypair {
         throw new Error("provided secretKey is invalid");
       }
     }
-    return new Keypair(keypair);
+    return new Ed25519Keypair(keypair);
   }
 
   /**
@@ -65,8 +65,8 @@ export class Keypair {
    *
    * @param seed seed byte array
    */
-  static fromSeed(seed: Uint8Array): Keypair {
-    return new Keypair(nacl.sign.keyPair.fromSeed(seed));
+  static fromSeed(seed: Uint8Array): Ed25519Keypair {
+    return new Ed25519Keypair(nacl.sign.keyPair.fromSeed(seed));
   }
 
   /**

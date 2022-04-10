@@ -1,5 +1,7 @@
-import { Keypair } from "../src/keypair";
+import { ACME_TOKEN_URL } from "../src/acme";
 import { LiteAccount } from "../src/lite-account";
+import { Ed25519Keypair } from "../src/signing/ed25519-keypair";
+import { Ed25519KeypairSigner } from "../src/signing/ed25519-keypair-signer";
 
 test("should compute correct lite account URL", () => {
   const seed = Buffer.from(
@@ -7,8 +9,8 @@ test("should compute correct lite account URL", () => {
     "hex"
   );
 
-  const keypair = Keypair.fromSeed(seed);
-  const liteAccount = LiteAccount.generateWithKeypair(keypair);
+  const keypair = Ed25519Keypair.fromSeed(seed);
+  const liteAccount = new LiteAccount(new Ed25519KeypairSigner(keypair), ACME_TOKEN_URL);
   expect(liteAccount.url.toString()).toBe(
     "acc://105251bb367baa372c748930531ae63d6e143c9aa4470eff/ACME"
   );
