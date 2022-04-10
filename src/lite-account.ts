@@ -1,39 +1,25 @@
 import { AccURL } from "./acc-url";
 import { ACME_TOKEN_URL } from "./acme";
 import { sha256 } from "./crypto";
-import { Keypair } from "./keypair";
-import { KeypairSigner } from "./keypair-signer";
+import { Signer } from "./signer";
+import { TxSigner } from "./tx-signer";
 
 /**
- * A LiteAccount controlled by an in-memory keypair
+ * A LiteAccount
  */
-export class LiteAccount extends KeypairSigner {
+export class LiteAccount extends TxSigner {
   private readonly _tokenUrl: AccURL;
 
-  constructor(tokenUrl: string | AccURL, keypair: Keypair) {
-    super(LiteAccount.computeUrl(keypair.publicKey, AccURL.toAccURL(tokenUrl)), keypair);
-    this._tokenUrl = AccURL.toAccURL(tokenUrl);
-  }
-
   /**
-   * Generate a new random LiteAccount for the ACME token
+   * Construct a LiteAccount controlled by the Signer.
+   * Default to ACME token if no token URL is specified.
+   * @param signer
+   * @param tokenUrl
    */
-  static generate(): LiteAccount {
-    return new LiteAccount(ACME_TOKEN_URL, new Keypair());
-  }
-
-  /**
-   * Generate a new LiteAccount for the ACME token with the given keypair
-   */
-  static generateWithKeypair(keypair: Keypair): LiteAccount {
-    return new LiteAccount(ACME_TOKEN_URL, keypair);
-  }
-
-  /**
-   * Generate a new random LiteAccount for the given token URL
-   */
-  static generateWithTokenUrl(tokenUrl: string | AccURL): LiteAccount {
-    return new LiteAccount(tokenUrl, new Keypair());
+  constructor(signer: Signer, tokenUrl?: string | AccURL) {
+    const url = tokenUrl ? AccURL.toAccURL(tokenUrl) : ACME_TOKEN_URL;
+    super(LiteAccount.computeUrl(signer.publicKeyHash, url), signer);
+    this._tokenUrl = url;
   }
 
   get tokenUrl(): AccURL {
@@ -41,10 +27,10 @@ export class LiteAccount extends KeypairSigner {
   }
 
   /**
-   * Compute a LiteAccount URL based on publickey and token URL.
+   * Compute a LiteAccount URL based on public key hash and token URL.
    */
-  static computeUrl(publicKey: Uint8Array, tokenUrl: AccURL): AccURL {
-    const pkHash = sha256(publicKey).slice(0, 20);
+  static computeUrl(publicKeyHash: Uint8Array, tokenUrl: AccURL): AccURL {
+    const pkHash = Buffer.from(publicKeyHash.slice(0, 20));
     const checkSum = sha256(pkHash.toString("hex")).slice(28);
     const authority = Buffer.concat([pkHash, checkSum]).toString("hex");
     return AccURL.parse(`acc://${authority}/${tokenUrl.authority}${tokenUrl.path}`);

@@ -1,12 +1,12 @@
 import { BN, Client, Header, LiteAccount, SendTokens, Transaction } from "../src";
-import { addCredits, waitOn } from "./util";
+import { addCredits, randomAcmeLiteAccount, waitOn } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
 
 describe("Test manual transactions", () => {
   beforeAll(async () => {
-    acc = LiteAccount.generate();
+    acc = randomAcmeLiteAccount();
 
     // Get some ACME
     await client.faucet(acc.url);
@@ -20,15 +20,15 @@ describe("Test manual transactions", () => {
   });
 
   test("should send tokens with manual transaction", async () => {
-    const recipient = LiteAccount.generate();
+    const recipient = randomAcmeLiteAccount();
     const amount = new BN(1025);
     const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
     const header = new Header(acc.url);
 
     const tx = new Transaction(payload, header);
     const forSignature = tx.dataForSignature(acc.info);
-    const signature = await acc.signRaw(forSignature);
-    tx.signature = signature;
+    const signature = await acc.signer.signRaw(forSignature);
+    tx.signature = { signerInfo: acc.info, signature };
 
     await client.execute(tx);
 
@@ -39,7 +39,7 @@ describe("Test manual transactions", () => {
   });
 
   test("should reject unsigned transaction", async () => {
-    const recipient = LiteAccount.generate();
+    const recipient = randomAcmeLiteAccount();
     const amount = 50;
     const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
     const header = new Header(acc.url);
