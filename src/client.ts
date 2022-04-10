@@ -15,8 +15,8 @@ import { SendTokens, SendTokensArg } from "./payload/send-tokens";
 import { KeyPageOperation, UpdateKeyPage } from "./payload/update-key-page";
 import { WriteData, WriteDataArg } from "./payload/write-data";
 import { RpcClient } from "./rpc-client";
-import { Signer } from "./signer";
 import { Header, Transaction } from "./transaction";
+import { TxSigner } from "./tx-signer";
 
 /**
  * Client to call Accumulate RPC APIs.
@@ -110,7 +110,7 @@ export class Client {
     });
   }
 
-  async querySignerVersion(signer: Signer | AccURL, publicKeyHash?: Uint8Array): Promise<number> {
+  async querySignerVersion(signer: TxSigner | AccURL, publicKeyHash?: Uint8Array): Promise<number> {
     let signerUrl: AccURL;
     let pkh: Uint8Array;
     if (signer instanceof AccURL) {
@@ -136,18 +136,26 @@ export class Client {
    * Transactions
    ******************/
 
-  addCredits(principal: AccURL | string, addCredits: AddCreditsArg, signer: Signer): Promise<any> {
+  addCredits(
+    principal: AccURL | string,
+    addCredits: AddCreditsArg,
+    signer: TxSigner
+  ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new AddCredits(addCredits), signer);
   }
 
-  burnTokens(principal: AccURL | string, burnTokens: BurnTokensArg, signer: Signer): Promise<any> {
+  burnTokens(
+    principal: AccURL | string,
+    burnTokens: BurnTokensArg,
+    signer: TxSigner
+  ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new BurnTokens(burnTokens), signer);
   }
 
   createDataAccount(
     principal: AccURL | string,
     createDataAccount: CreateDataAccountArg,
-    signer: Signer
+    signer: TxSigner
   ): Promise<any> {
     return this._execute(
       AccURL.toAccURL(principal),
@@ -159,7 +167,7 @@ export class Client {
   createIdentity(
     principal: AccURL | string,
     createIdentity: CreateIdentityArg,
-    signer: Signer
+    signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new CreateIdentity(createIdentity), signer);
   }
@@ -167,7 +175,7 @@ export class Client {
   createKeyBook(
     principal: AccURL | string,
     createKeyBook: CreateKeyBookArg,
-    signer: Signer
+    signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new CreateKeyBook(createKeyBook), signer);
   }
@@ -175,7 +183,7 @@ export class Client {
   createKeyPage(
     principal: AccURL | string,
     createKeyPage: CreateKeyPageArg,
-    signer: Signer
+    signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new CreateKeyPage(createKeyPage), signer);
   }
@@ -183,7 +191,7 @@ export class Client {
   createToken(
     principal: AccURL | string,
     createToken: CreateTokenArg,
-    signer: Signer
+    signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new CreateToken(createToken), signer);
   }
@@ -191,7 +199,7 @@ export class Client {
   createTokenAccount(
     principal: AccURL | string,
     createTokenAccount: CreateTokenAccountArg,
-    signer: Signer
+    signer: TxSigner
   ): Promise<any> {
     return this._execute(
       AccURL.toAccURL(principal),
@@ -207,28 +215,32 @@ export class Client {
   issueTokens(
     principal: AccURL | string,
     issueTokens: IssueTokensArg,
-    signer: Signer
+    signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new IssueTokens(issueTokens), signer);
   }
 
-  sendTokens(principal: AccURL | string, sendTokens: SendTokensArg, signer: Signer): Promise<any> {
+  sendTokens(
+    principal: AccURL | string,
+    sendTokens: SendTokensArg,
+    signer: TxSigner
+  ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new SendTokens(sendTokens), signer);
   }
 
   updateKeyPage(
     principal: AccURL | string,
     operation: KeyPageOperation | KeyPageOperation[],
-    signer: Signer
+    signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new UpdateKeyPage(operation), signer);
   }
 
-  writeData(principal: AccURL | string, writeData: WriteDataArg, signer: Signer): Promise<any> {
+  writeData(principal: AccURL | string, writeData: WriteDataArg, signer: TxSigner): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new WriteData(writeData), signer);
   }
 
-  private async _execute(principal: AccURL, payload: Payload, signer: Signer): Promise<any> {
+  private async _execute(principal: AccURL, payload: Payload, signer: TxSigner): Promise<any> {
     const header = new Header(principal);
     const tx = new Transaction(payload, header);
     await tx.sign(signer);
