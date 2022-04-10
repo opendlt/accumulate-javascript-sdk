@@ -7,7 +7,8 @@ import {
   uvarintMarshalBinary,
 } from "./encoding";
 import { Payload } from "./payload";
-import { Signature, Signer, SignerInfo } from "./signer";
+import { Signature, SignerInfo } from "./signer";
+import { TxSigner } from "./tx-signer";
 
 export type HeaderOptions = {
   timestamp?: number;
@@ -153,7 +154,7 @@ export class Transaction {
     this._signature = signature;
   }
 
-  async sign(signer: Signer): Promise<void> {
+  async sign(signer: TxSigner): Promise<void> {
     this._signature = await signer.sign(this);
   }
 

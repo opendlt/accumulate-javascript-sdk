@@ -1,5 +1,16 @@
 import { randomBytes } from "tweetnacl";
-import { AccURL, Client, Signer, BN } from "../src";
+import {
+  AccURL,
+  BN,
+  Client,
+  Ed25519KeypairSigner,
+  LiteAccount,
+  TxSigner,
+} from "../src";
+
+export function randomAcmeLiteAccount() {
+  return new LiteAccount(Ed25519KeypairSigner.generate());
+}
 
 export async function waitOn(fn: () => void, timeout?: number) {
   const to = timeout ?? 12_000;
@@ -33,15 +44,15 @@ export async function addCredits(
   client: Client,
   recipient: AccURL | string,
   creditAmount: number,
-  signer: Signer
+  signer: TxSigner
 ) {
   const { data } = await client.queryUrl(recipient);
   const originalBalance = new BN(data.creditBalance);
   const oracle = await client.queryAcmeOracle();
   const addCredits = {
     recipient,
-    amount: creditAmount * 1e8 / oracle,
-    oracle
+    amount: (creditAmount * 1e8) / oracle,
+    oracle,
   };
   await client.addCredits(signer.url, addCredits, signer);
   await waitOn(async () => {
