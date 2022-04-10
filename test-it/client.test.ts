@@ -8,6 +8,7 @@ import {
   KeypairSigner,
   LiteAccount,
   RpcError,
+  TransactionType,
 } from "../src";
 import { sha256 } from "../src/crypto";
 import { addCredits, randomBuffer, randomString, waitOn } from "./util";
@@ -156,14 +157,15 @@ describe("Test Accumulate client", () => {
     });
 
     // Set threshold
-    // const setThreshold = {
+    // const setThreshold: KeyPageOperation = {
     //   type: KeyPageOperationType.SetThreshold,
     //   threshold: 2,
     // };
-    // keyPage = KeypairSigner.incrementKeyPageHeight(keyPage);
-    // await client.updateKeyPage(setThreshold, keyPage);
+    // version = await client.querySignerVersion(keyPage1);
+    // keyPage1 = KeypairSigner.withNewVersion(keyPage1, version);
+    // await client.updateKeyPage(page1Url, setThreshold, keyPage1);
     // await waitOn(async () => {
-    //   const res = await client.queryUrl(newKeyPageUrl);
+    //   const res = await client.queryUrl(page1Url);
     //   expect(res.data.threshold).toStrictEqual(2);
     // });
 
@@ -194,6 +196,29 @@ describe("Test Accumulate client", () => {
     await client.createKeyPage(newKeyBookUrl, createKeyPage2, keyPage1);
     const page2Url = newKeyBookUrl + "/2";
     await waitOn(() => client.queryUrl(page2Url));
+
+    // Update allowed
+    const updateAllowed: KeyPageOperation = {
+      type: KeyPageOperationType.UpdateAllowed,
+      deny: [TransactionType.UpdateKeyPage],
+    };
+
+    res = await client.updateKeyPage(page2Url, updateAllowed, keyPage1);
+    await waitOn(async () => client.queryTx(res.txid));
+
+    res = await client.queryUrl(page2Url);
+    expect(res.data.transactionBlacklist).toStrictEqual(2);
+
+    const updateAllowed2: KeyPageOperation = {
+      type: KeyPageOperationType.UpdateAllowed,
+      allow: [TransactionType.UpdateKeyPage],
+    };
+
+    res = await client.updateKeyPage(page2Url, updateAllowed2, keyPage1);
+    await waitOn(async () => client.queryTx(res.txid));
+
+    res = await client.queryUrl(page2Url);
+    expect(res.data.transactionBlacklist).toBeUndefined();
 
     // Test query key page index
     res = await client.queryKeyPageIndex(newKeyBookUrl, page1Keypair.publicKey);
