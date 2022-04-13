@@ -7,7 +7,7 @@ import {
   uvarintMarshalBinary,
 } from "./encoding";
 import { Payload } from "./payload";
-import { Signature, SignerInfo } from "./signer";
+import { Signature, signatureTypeMarshalJSON, SignerInfo } from "./signer";
 import { TxSigner } from "./tx-signer";
 
 export type HeaderOptions = {
@@ -63,8 +63,7 @@ export class Header {
     }
 
     const binary = [];
-    // SignatureTypeED25519 hardcoded
-    binary.push(uvarintMarshalBinary(2, 1));
+    binary.push(uvarintMarshalBinary(signerInfo.type, 1));
     binary.push(bytesMarshalBinary(signerInfo.publicKey, 2));
     binary.push(stringMarshalBinary(signerInfo.url.toString(), 4));
     binary.push(uvarintMarshalBinary(signerInfo.version, 5));
@@ -177,6 +176,7 @@ export class Transaction {
         publicKey: Buffer.from(signerInfo.publicKey).toString("hex"),
         version: signerInfo.version,
         timestamp: this._header.timestamp,
+        signatureType: signatureTypeMarshalJSON(signerInfo.type),
         useSimpleHash: true,
       },
       signature: Buffer.from(this._signature.signature).toString("hex"),
@@ -197,7 +197,7 @@ export type TxRequest = {
     version: number;
     publicKey: string;
     timestamp: number;
-    signatureType?: number;
+    signatureType?: string;
     useSimpleHash: boolean;
   };
   signature: string;
