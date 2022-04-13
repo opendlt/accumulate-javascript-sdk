@@ -22,6 +22,7 @@ export { RpcError } from "./rpc-client";
 export * from "./signer";
 export * from "./signing/ed25519-keypair";
 export * from "./signing/ed25519-keypair-signer";
+export * from "./signing/rcd1-keypair-signer";
 export * from "./transaction";
 export * from "./tx-signer";
 export { TransactionType } from "./types";
