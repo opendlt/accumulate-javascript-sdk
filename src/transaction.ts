@@ -58,10 +58,6 @@ export class Header {
   }
 
   computeInitiator(signerInfo: SignerInfo): Buffer {
-    if (this._initiator) {
-      return this._initiator;
-    }
-
     const binary = [];
     binary.push(uvarintMarshalBinary(signerInfo.type, 1));
     binary.push(bytesMarshalBinary(signerInfo.publicKey, 2));
