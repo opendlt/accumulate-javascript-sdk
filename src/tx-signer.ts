@@ -52,6 +52,7 @@ export class TxSigner {
       url: this.url,
       publicKey: this.publicKey,
       version: this.version,
+      type: this._signer.type,
     };
   }
 
