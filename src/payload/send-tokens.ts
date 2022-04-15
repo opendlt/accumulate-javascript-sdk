@@ -34,6 +34,10 @@ export class SendTokens extends BasePayload {
 
   constructor(arg: SendTokensArg) {
     super();
+    if (arg.to.length < 1) {
+      throw new Error("Missing at least one recipient");
+    }
+
     this._to = arg.to.map((r) => ({
       url: AccURL.toAccURL(r.url),
       amount: r.amount instanceof BN ? r.amount : new BN(r.amount),
@@ -43,10 +47,6 @@ export class SendTokens extends BasePayload {
   }
 
   protected _marshalBinary(): Buffer {
-    if (this._to.length < 1) {
-      throw new Error("Missing at least one recipient");
-    }
-
     const forConcat = [];
 
     forConcat.push(uvarintMarshalBinary(TransactionType.SendTokens, 1));
