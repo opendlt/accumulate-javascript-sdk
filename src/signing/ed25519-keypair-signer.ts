@@ -1,6 +1,6 @@
 import nacl from "tweetnacl";
 import { sha256 } from "../crypto";
-import { Signer } from "../signer";
+import { SignatureType, Signer } from "../signer";
 import { Ed25519Keypair } from "./ed25519-keypair";
 
 export class Ed25519KeypairSigner implements Signer {
@@ -8,6 +8,10 @@ export class Ed25519KeypairSigner implements Signer {
 
   constructor(keypair: Ed25519Keypair) {
     this._keypair = keypair;
+  }
+
+  get type(): SignatureType {
+    return SignatureType.SignatureTypeED25519;
   }
 
   static generate(): Ed25519KeypairSigner {
