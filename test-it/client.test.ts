@@ -138,7 +138,7 @@ describe("Test Accumulate client", () => {
       expect(res.data.keys.length).toStrictEqual(2);
     });
 
-    // Update keypage
+    // Update keyhash in keypage
     let version = await client.querySignerVersion(keyPage1TxSigner);
     keyPage1TxSigner = TxSigner.withNewVersion(keyPage1TxSigner, version);
     const newNewKey = Ed25519KeypairSigner.generate();
@@ -310,6 +310,25 @@ describe("Test Accumulate client", () => {
 
     const { data } = await client.queryUrl(recipient.url);
     expect(new BN(data.balance)).toStrictEqual(amount);
+  });
+
+  test("should update keypage key", async () => {
+    const newKey = Ed25519KeypairSigner.generate();
+    const updateKey = {
+      newKeyHash: newKey.publicKeyHash,
+    };
+
+    let res = await client.updateKey(
+      identityKeyPageTxSigner.url,
+      updateKey,
+      identityKeyPageTxSigner
+    );
+    await waitOn(async () => client.queryTx(res.txid));
+
+    res = await client.queryUrl(identityKeyPageTxSigner.url);
+    expect(res.data.keys[0].publicKeyHash).toStrictEqual(
+      Buffer.from(newKey.publicKeyHash).toString("hex")
+    );
   });
 
   test("should query directory", async () => {
