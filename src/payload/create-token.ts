@@ -2,7 +2,7 @@ import BN from "bn.js";
 import { bigNumberMarshalBinary, booleanMarshalBinary } from "..";
 import { AccURL } from "../acc-url";
 import { stringMarshalBinary, uvarintMarshalBinary } from "../encoding";
-import { TransactionType } from "../types";
+import { TransactionType } from "../tx-types";
 import { BasePayload } from "./base-payload";
 
 export type CreateTokenArg = {

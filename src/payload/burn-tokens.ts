@@ -1,6 +1,6 @@
 import BN from "bn.js";
 import { bigNumberMarshalBinary, uvarintMarshalBinary } from "../encoding";
-import { TransactionType } from "../types";
+import { TransactionType } from "../tx-types";
 import { BasePayload } from "./base-payload";
 
 export type BurnTokensArg = {
