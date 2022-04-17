@@ -258,6 +258,10 @@ export class Client {
     });
   }
 
+  status(): Promise<any> {
+    return this.call("status");
+  }
+
   version(): Promise<any> {
     return this.call("version");
   }
