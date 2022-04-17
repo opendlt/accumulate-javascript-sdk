@@ -1,7 +1,7 @@
 import BN from "bn.js";
 import { AccURL } from "../acc-url";
 import { bigNumberMarshalBinary, stringMarshalBinary, uvarintMarshalBinary } from "../encoding";
-import { TransactionType } from "../types";
+import { TransactionType } from "../tx-types";
 import { BasePayload } from "./base-payload";
 
 export type IssueTokensArg = {
