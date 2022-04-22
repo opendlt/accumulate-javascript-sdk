@@ -1,5 +1,5 @@
 import { Client, LiteAccount, RCD1KeypairSigner, SignatureType } from "../src";
-import { addCredits, waitOn } from "./util";
+import { addCredits } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 
@@ -10,11 +10,10 @@ describe("Test signing schemes", () => {
     expect(rcd1Account.info.type).toStrictEqual(SignatureType.SignatureTypeRCD1);
 
     // Get some ACME
-    await client.faucet(rcd1Account.url);
-    await waitOn(async () => {
-      const { data } = await client.queryUrl(rcd1Account.url);
-      expect(data.type).toStrictEqual("liteTokenAccount");
-    });
+    const res = await client.faucet(rcd1Account.url);
+    await client.waitOnTx(res.txid);
+    const { data } = await client.queryUrl(rcd1Account.url);
+    expect(data.type).toStrictEqual("liteTokenAccount");
 
     // Get some credits
     await addCredits(client, rcd1Account.url, 10_000, rcd1Account);
