@@ -1,6 +1,11 @@
 import { AccURL } from "./acc-url";
 import { ACME_ORACLE_URL } from "./acme";
-import { QueryOptions, QueryPagination } from "./api-types";
+import {
+  MinorBlocksQueryOptions,
+  QueryOptions,
+  QueryPagination,
+  TxQueryOptions,
+} from "./api-types";
 import { Payload } from "./payload";
 import { AddCredits, AddCreditsArg } from "./payload/add-credits";
 import { BurnTokens, BurnTokensArg } from "./payload/burn-tokens";
@@ -48,17 +53,19 @@ export class Client {
     );
   }
 
-  queryUrl(url: string | AccURL): Promise<any> {
+  queryUrl(url: string | AccURL, options?: QueryOptions): Promise<any> {
     const urlStr = url.toString();
 
     return this.call("query", {
       url: urlStr,
+      ...options,
     });
   }
 
-  queryTx(txId: string): Promise<any> {
+  queryTx(txId: string, options?: TxQueryOptions): Promise<any> {
     return this.call("query-tx", {
       txid: txId,
+      ...options,
     });
   }
 
@@ -108,6 +115,18 @@ export class Client {
     return this.call("query-key-index", {
       url: urlStr,
       key: keyStr,
+    });
+  }
+
+  queryMinorBlocks(
+    url: string | AccURL,
+    pagination: QueryPagination,
+    options?: MinorBlocksQueryOptions
+  ): Promise<any> {
+    return this.call("query-minor-blocks", {
+      url: url.toString(),
+      ...pagination,
+      ...options,
     });
   }
 
