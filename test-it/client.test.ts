@@ -353,7 +353,7 @@ describe("Test Accumulate client", () => {
       disable,
       identityKeyPageTxSigner
     );
-    await waitOn(async () => client.queryTx(res.txid));
+    await client.waitOnTx(res.txid);
 
     // // Enable
     // const enable: AccountAuthOperation = {
