@@ -10,6 +10,7 @@ import {
 } from "./api-types";
 import { Payload } from "./payload";
 import { AddCredits, AddCreditsArg } from "./payload/add-credits";
+import { AddValidator, AddValidatorArg } from "./payload/add-validator";
 import { BurnTokens, BurnTokensArg } from "./payload/burn-tokens";
 import { CreateDataAccount, CreateDataAccountArg } from "./payload/create-data-account";
 import { CreateIdentity, CreateIdentityArg } from "./payload/create-identity";
@@ -18,10 +19,12 @@ import { CreateKeyPage, CreateKeyPageArg } from "./payload/create-key-page";
 import { CreateToken, CreateTokenArg } from "./payload/create-token";
 import { CreateTokenAccount, CreateTokenAccountArg } from "./payload/create-token-account";
 import { IssueTokens, IssueTokensArg } from "./payload/issue-tokens";
+import { RemoveValidator, RemoveValidatorArg } from "./payload/remove-validator";
 import { SendTokens, SendTokensArg } from "./payload/send-tokens";
 import { AccountAuthOperation, UpdateAccountAuth } from "./payload/update-account-auth";
 import { UpdateKey, UpdateKeyArg } from "./payload/update-key";
 import { KeyPageOperation, UpdateKeyPage } from "./payload/update-key-page";
+import { UpdateValidatorKey, UpdateValidatorKeyArg } from "./payload/update-validator-key";
 import { WriteData, WriteDataArg } from "./payload/write-data";
 import { RpcClient } from "./rpc-client";
 import { Header, Transaction } from "./transaction";
@@ -227,6 +230,14 @@ export class Client {
     return this._execute(AccURL.toAccURL(principal), new AddCredits(addCredits), signer);
   }
 
+  addValidator(
+    principal: AccURL | string,
+    addValidator: AddValidatorArg,
+    signer: TxSigner
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new AddValidator(addValidator), signer);
+  }
+
   burnTokens(
     principal: AccURL | string,
     burnTokens: BurnTokensArg,
@@ -303,6 +314,14 @@ export class Client {
     return this._execute(AccURL.toAccURL(principal), new IssueTokens(issueTokens), signer);
   }
 
+  removeValidator(
+    principal: AccURL | string,
+    removeValidator: RemoveValidatorArg,
+    signer: TxSigner
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new RemoveValidator(removeValidator), signer);
+  }
+
   sendTokens(
     principal: AccURL | string,
     sendTokens: SendTokensArg,
@@ -329,6 +348,18 @@ export class Client {
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new UpdateKeyPage(operation), signer);
+  }
+
+  updateValidatorKey(
+    principal: AccURL | string,
+    updateValidatorKey: UpdateValidatorKeyArg,
+    signer: TxSigner
+  ): Promise<any> {
+    return this._execute(
+      AccURL.toAccURL(principal),
+      new UpdateValidatorKey(updateValidatorKey),
+      signer
+    );
   }
 
   writeData(principal: AccURL | string, writeData: WriteDataArg, signer: TxSigner): Promise<any> {
