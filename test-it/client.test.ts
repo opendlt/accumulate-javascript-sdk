@@ -12,7 +12,7 @@ import {
   TransactionType,
   TxSigner,
 } from "../src";
-import { addCredits, randomAcmeLiteAccount, randomBuffer, randomString, waitOn } from "./util";
+import { addCredits, randomAcmeLiteAccount, randomBuffer, randomString } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
@@ -25,11 +25,12 @@ describe("Test Accumulate client", () => {
      *  Initialize a LiteAccount with credits
      */
     acc = randomAcmeLiteAccount();
-    await client.faucet(acc.url);
-    await waitOn(async () => {
-      const { data } = await client.queryUrl(acc.url);
-      expect(data.type).toStrictEqual("liteTokenAccount");
-    });
+    let res = await client.faucet(acc.url);
+    await client.waitOnTx(res.txid);
+
+    // Assert lite account type
+    const { data } = await client.queryUrl(acc.url);
+    expect(data.type).toStrictEqual("liteTokenAccount");
 
     await addCredits(client, acc.url, 60_000, acc);
 
@@ -47,10 +48,10 @@ describe("Test Accumulate client", () => {
       keyBookUrl: bookUrl,
     };
 
-    await client.createIdentity(acc.url, createIdentity, acc);
-    await waitOn(() => client.queryUrl(identityUrl));
+    res = await client.createIdentity(acc.url, createIdentity, acc);
+    await client.waitOnTx(res.txid);
 
-    const res = await client.queryUrl(identityUrl);
+    res = await client.queryUrl(identityUrl);
     expect(res.type).toStrictEqual("identity");
 
     const keyPageUrl = bookUrl + "/1";
@@ -66,7 +67,7 @@ describe("Test Accumulate client", () => {
     const sendTokens = { to: [{ url: recipient.url, amount: amount }] };
     const { txid } = await client.sendTokens(acc.url, sendTokens, acc);
 
-    await waitOn(() => client.queryUrl(recipient.url));
+    await client.waitOnTx(txid);
 
     const { data } = await client.queryUrl(recipient.url);
     expect(new BN(data.balance)).toStrictEqual(amount);
@@ -77,17 +78,17 @@ describe("Test Accumulate client", () => {
   });
 
   test("should burn tokens", async () => {
-    const { data } = await client.queryUrl(acc.url);
-    const originalBalance = new BN(data.balance);
+    let res = await client.queryUrl(acc.url);
+    const originalBalance = new BN(res.data.balance);
 
     const amount = new BN(15);
     const burnTokens = { amount };
-    await client.burnTokens(acc.url, burnTokens, acc);
+    res = await client.burnTokens(acc.url, burnTokens, acc);
 
-    await waitOn(async () => {
-      const { data } = await client.queryUrl(acc.url);
-      expect(new BN(data.balance)).toStrictEqual(originalBalance.sub(amount));
-    });
+    await client.waitOnTx(res.txid);
+
+    res = await client.queryUrl(acc.url);
+    expect(new BN(res.data.balance)).toStrictEqual(originalBalance.sub(amount));
   });
 
   test("should create token account", async () => {
@@ -97,10 +98,14 @@ describe("Test Accumulate client", () => {
       url: tokenAccountUrl,
       tokenUrl: ACME_TOKEN_URL,
     };
-    await client.createTokenAccount(identityUrl, createTokenAccount, identityKeyPageTxSigner);
-    await waitOn(() => client.queryUrl(tokenAccountUrl));
+    let res = await client.createTokenAccount(
+      identityUrl,
+      createTokenAccount,
+      identityKeyPageTxSigner
+    );
+    await client.waitOnTx(res.txid);
 
-    const res = await client.queryUrl(tokenAccountUrl);
+    res = await client.queryUrl(tokenAccountUrl);
     expect(res.type).toStrictEqual("tokenAccount");
   });
 
@@ -113,10 +118,10 @@ describe("Test Accumulate client", () => {
       publicKeyHash: page1Signer.publicKeyHash,
     };
 
-    await client.createKeyBook(identityUrl, createKeyBook, identityKeyPageTxSigner);
-    await waitOn(() => client.queryUrl(newKeyBookUrl));
+    let res = await client.createKeyBook(identityUrl, createKeyBook, identityKeyPageTxSigner);
+    await client.waitOnTx(res.txid);
 
-    let res = await client.queryUrl(newKeyBookUrl);
+    res = await client.queryUrl(newKeyBookUrl);
     expect(res.type).toStrictEqual("keyBook");
 
     // verify page is part of the book
@@ -134,11 +139,11 @@ describe("Test Accumulate client", () => {
       keyHash: newKey.publicKeyHash,
     };
 
-    await client.updateKeyPage(page1Url, addKeyToPage, keyPage1TxSigner);
-    await waitOn(async () => {
-      const res = await client.queryUrl(page1Url);
-      expect(res.data.keys.length).toStrictEqual(2);
-    });
+    res = await client.updateKeyPage(page1Url, addKeyToPage, keyPage1TxSigner);
+    await client.waitOnTx(res.txid);
+
+    res = await client.queryUrl(page1Url);
+    expect(res.data.keys.length).toStrictEqual(2);
 
     // Update keyhash in keypage
     let version = await client.querySignerVersion(keyPage1TxSigner);
@@ -149,13 +154,13 @@ describe("Test Accumulate client", () => {
       oldKeyHash: newKey.publicKeyHash,
       newKeyHash: newNewKey.publicKeyHash,
     };
-    await client.updateKeyPage(page1Url, updateKeyPage, keyPage1TxSigner);
-    await waitOn(async () => {
-      const res = await client.queryUrl(page1Url);
-      expect(res.data.keys[1].publicKey).toStrictEqual(
-        Buffer.from(newNewKey.publicKeyHash).toString("hex")
-      );
-    });
+    res = await client.updateKeyPage(page1Url, updateKeyPage, keyPage1TxSigner);
+    await client.waitOnTx(res.txid);
+
+    res = await client.queryUrl(page1Url);
+    expect(res.data.keys[1].publicKey).toStrictEqual(
+      Buffer.from(newNewKey.publicKeyHash).toString("hex")
+    );
 
     // Set threshold
     // const setThreshold: KeyPageOperation = {
@@ -164,11 +169,10 @@ describe("Test Accumulate client", () => {
     // };
     // version = await client.querySignerVersion(keyPage1);
     // keyPage1 = KeypairSigner.withNewVersion(keyPage1, version);
-    // await client.updateKeyPage(page1Url, setThreshold, keyPage1);
-    // await waitOn(async () => {
-    //   const res = await client.queryUrl(page1Url);
-    //   expect(res.data.threshold).toStrictEqual(2);
-    // });
+    // let res = await client.updateKeyPage(page1Url, setThreshold, keyPage1);
+    // await client.waitOnTx(res.txid);
+    // res = await client.queryUrl(page1Url);
+    // expect(res.data.threshold).toStrictEqual(2);
 
     // Remove key from keypage
     version = await client.querySignerVersion(keyPage1TxSigner);
@@ -177,14 +181,14 @@ describe("Test Accumulate client", () => {
       type: KeyPageOperationType.Remove,
       keyHash: newNewKey.publicKeyHash,
     };
-    await client.updateKeyPage(page1Url, removeKeyPage, keyPage1TxSigner);
-    await waitOn(async () => {
-      const res = await client.queryUrl(page1Url);
-      expect(res.data.keys.length).toStrictEqual(1);
-      expect(res.data.keys[0].publicKey).toStrictEqual(
-        Buffer.from(page1Signer.publicKeyHash).toString("hex")
-      );
-    });
+    res = await client.updateKeyPage(page1Url, removeKeyPage, keyPage1TxSigner);
+    await client.waitOnTx(res.txid);
+
+    res = await client.queryUrl(page1Url);
+    expect(res.data.keys.length).toStrictEqual(1);
+    expect(res.data.keys[0].publicKey).toStrictEqual(
+      Buffer.from(page1Signer.publicKeyHash).toString("hex")
+    );
 
     // Create a new key page to the book
     version = await client.querySignerVersion(keyPage1TxSigner);
@@ -194,9 +198,10 @@ describe("Test Accumulate client", () => {
       keys: [page2Signer.publicKey],
     };
 
-    await client.createKeyPage(newKeyBookUrl, createKeyPage2, keyPage1TxSigner);
+    res = await client.createKeyPage(newKeyBookUrl, createKeyPage2, keyPage1TxSigner);
+    await client.waitOnTx(res.txid);
+
     const page2Url = newKeyBookUrl + "/2";
-    await waitOn(() => client.queryUrl(page2Url));
 
     // Update allowed
     const updateAllowed: KeyPageOperation = {
@@ -205,7 +210,7 @@ describe("Test Accumulate client", () => {
     };
 
     res = await client.updateKeyPage(page2Url, updateAllowed, keyPage1TxSigner);
-    await waitOn(async () => client.queryTx(res.txid));
+    await client.waitOnTx(res.txid);
 
     res = await client.queryUrl(page2Url);
     expect(res.data.transactionBlacklist).toStrictEqual(2);
@@ -216,7 +221,7 @@ describe("Test Accumulate client", () => {
     };
 
     res = await client.updateKeyPage(page2Url, updateAllowed2, keyPage1TxSigner);
-    await waitOn(async () => client.queryTx(res.txid));
+    await client.waitOnTx(res.txid);
 
     res = await client.queryUrl(page2Url);
     expect(res.data.transactionBlacklist).toBeUndefined();
@@ -243,10 +248,14 @@ describe("Test Accumulate client", () => {
       url: dataAccountUrl,
     };
 
-    await client.createDataAccount(identityUrl, createDataAccount, identityKeyPageTxSigner);
-    await waitOn(() => client.queryUrl(dataAccountUrl));
+    let res = await client.createDataAccount(
+      identityUrl,
+      createDataAccount,
+      identityKeyPageTxSigner
+    );
+    await client.waitOnTx(res.txid);
 
-    let res = await client.queryUrl(dataAccountUrl);
+    res = await client.queryUrl(dataAccountUrl);
     expect(res.type).toStrictEqual("dataAccount");
 
     // Write data
@@ -255,11 +264,11 @@ describe("Test Accumulate client", () => {
       data,
     };
 
-    await client.writeData(dataAccountUrl, writeData, identityKeyPageTxSigner);
-    await waitOn(async () => {
-      const res = await client.queryData(dataAccountUrl);
-      expect(res).toBeTruthy();
-    });
+    res = await client.writeData(dataAccountUrl, writeData, identityKeyPageTxSigner);
+    await client.waitOnTx(res.txid);
+
+    res = await client.queryData(dataAccountUrl);
+    expect(res).toBeTruthy();
 
     res = await client.queryData(dataAccountUrl);
     expect(res.type).toStrictEqual("dataEntry");
@@ -272,13 +281,12 @@ describe("Test Accumulate client", () => {
     const writeData2 = {
       data: data2,
     };
-    await client.writeData(dataAccountUrl, writeData2, identityKeyPageTxSigner);
+    res = await client.writeData(dataAccountUrl, writeData2, identityKeyPageTxSigner);
+    await client.waitOnTx(res.txid);
 
-    await waitOn(async () => {
-      const res = await client.queryDataSet(dataAccountUrl, { start: 0, count: 10 });
-      expect(res.items.length).toStrictEqual(2);
-      expect(res.total).toStrictEqual(2);
-    });
+    res = await client.queryDataSet(dataAccountUrl, { start: 0, count: 10 });
+    expect(res.items.length).toStrictEqual(2);
+    expect(res.total).toStrictEqual(2);
 
     // Query Data should now return the latest entry
     res = await client.queryData(dataAccountUrl);
@@ -297,8 +305,8 @@ describe("Test Accumulate client", () => {
       precision: 0,
     };
 
-    await client.createToken(identityUrl, createToken, identityKeyPageTxSigner);
-    await waitOn(() => client.queryUrl(tokenUrl));
+    let res = await client.createToken(identityUrl, createToken, identityKeyPageTxSigner);
+    await client.waitOnTx(res.txid);
 
     const recipient = new LiteAccount(Ed25519KeypairSigner.generate(), tokenUrl);
     const amount = new BN(123);
@@ -307,8 +315,8 @@ describe("Test Accumulate client", () => {
       amount,
     };
 
-    await client.issueTokens(tokenUrl, issueToken, identityKeyPageTxSigner);
-    await waitOn(() => client.queryUrl(recipient.url));
+    res = await client.issueTokens(tokenUrl, issueToken, identityKeyPageTxSigner);
+    await client.waitOnTx(res.txid);
 
     const { data } = await client.queryUrl(recipient.url);
     expect(new BN(data.balance)).toStrictEqual(amount);
@@ -325,7 +333,7 @@ describe("Test Accumulate client", () => {
       updateKey,
       identityKeyPageTxSigner
     );
-    await waitOn(async () => client.queryTx(res.txid));
+    await client.waitOnTx(res.txid);
 
     res = await client.queryUrl(identityKeyPageTxSigner.url);
     expect(res.data.keys[0].publicKeyHash).toStrictEqual(
