@@ -17,6 +17,7 @@ import { CreateToken, CreateTokenArg } from "./payload/create-token";
 import { CreateTokenAccount, CreateTokenAccountArg } from "./payload/create-token-account";
 import { IssueTokens, IssueTokensArg } from "./payload/issue-tokens";
 import { SendTokens, SendTokensArg } from "./payload/send-tokens";
+import { AccountAuthOperation, UpdateAccountAuth } from "./payload/update-account-auth";
 import { UpdateKey, UpdateKeyArg } from "./payload/update-key";
 import { KeyPageOperation, UpdateKeyPage } from "./payload/update-key-page";
 import { WriteData, WriteDataArg } from "./payload/write-data";
@@ -246,6 +247,14 @@ export class Client {
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new SendTokens(sendTokens), signer);
+  }
+
+  updateAccountAuth(
+    principal: AccURL | string,
+    operation: AccountAuthOperation | AccountAuthOperation[],
+    signer: TxSigner
+  ): Promise<any> {
+    return this._execute(AccURL.toAccURL(principal), new UpdateAccountAuth(operation), signer);
   }
 
   updateKey(principal: AccURL | string, updateKey: UpdateKeyArg, signer: TxSigner): Promise<any> {
