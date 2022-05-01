@@ -31,17 +31,17 @@ const client = new Client("https://testnet.accumulatenetwork.io/v2");
 // Generate a random LiteAccount (this is only local, until that account receive its first tokens)
 const acc = new LiteAccount(Ed25519KeypairSigner.generate());
 // Request some ACME token to get started from the faucet
-await client.faucet(acc.url);
+let res = await client.faucet(acc.url);
+await client.waitOnTx(res.txid);
 
-// ... wait a few seconds for the tx to be finalized ...
 // check the balance
 console.log(await client.queryUrl(acc.url));
 
 // Send some tokens to another random Lite Account
 const recipient = new LiteAccount(Ed25519KeypairSigner.generate());
 const sendTokens = { to: [{ url: recipient.url, amount: 12 }] };
-await client.sendTokens(acc.url, sendTokens, acc);
-// ... wait a few seconds for the tx to be finalized ...
+res = await client.sendTokens(acc.url, sendTokens, acc);
+await client.waitOnTx(res.txid);
 
 // Convert some tokens into credits necessary to perform most operations on Accumulate
 const oracle = await client.queryAcmeOracle();
@@ -50,9 +50,9 @@ let addCredits = {
   amount: 1e8,
   oracle,
 };
-await client.addCredits(acc.url, addCredits, acc);
+res = await client.addCredits(acc.url, addCredits, acc);
+await client.waitOnTx(res.txid);
 
-// ... wait a few seconds for the tx to be finalized ...
 // check the credits balance
 console.log(await client.queryUrl(acc.url));
 
@@ -69,9 +69,9 @@ const createIdentity = {
   keyBookUrl: bookUrl,
 };
 
-await client.createIdentity(acc.url, createIdentity, acc);
+res = await client.createIdentity(acc.url, createIdentity, acc);
+await client.waitOnTx(res.txid);
 
-// ... wait a few seconds for the tx to be finalized ...
 // check your identity
 console.log(await client.queryUrl(identityUrl));
 
@@ -83,7 +83,8 @@ addCredits = {
   amount: 1e8,
   oracle,
 };
-await client.addCredits(acc.url, addCredits, acc);
+res = await client.addCredits(acc.url, addCredits, acc);
+await client.waitOnTx(res.txid);
 const identityKeyPage = new TxSigner(keyPageUrl, identitySigner);
 ```
 
@@ -112,5 +113,6 @@ const signature = ... // manually sign `dataForSignature` with custom key store,
 tx.signature = { signerInfo: sender.info, signature };
 
 const client = new Client("https://testnet.accumulatenetwork.io/v2");
-await client.execute(tx);
+res = await client.execute(tx);
+await client.waitOnTx(res.txid);
 ```

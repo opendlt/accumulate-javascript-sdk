@@ -1,5 +1,5 @@
 import { BN, Client, Header, LiteAccount, SendTokens, Transaction } from "../src";
-import { addCredits, randomAcmeLiteAccount, waitOn } from "./util";
+import { addCredits, randomAcmeLiteAccount } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let acc: LiteAccount;
@@ -9,11 +9,11 @@ describe("Test manual transactions", () => {
     acc = randomAcmeLiteAccount();
 
     // Get some ACME
-    await client.faucet(acc.url);
-    await waitOn(async () => {
-      const { data } = await client.queryUrl(acc.url);
-      expect(data.type).toStrictEqual("liteTokenAccount");
-    });
+    const res = await client.faucet(acc.url);
+    await client.waitOnTx(res.txid);
+
+    const { data } = await client.queryUrl(acc.url);
+    expect(data.type).toStrictEqual("liteTokenAccount");
 
     // Get some credits
     await addCredits(client, acc.url, 10_000, acc);
@@ -30,9 +30,8 @@ describe("Test manual transactions", () => {
     const signature = await acc.signer.signRaw(forSignature);
     tx.signature = { signerInfo: acc.info, signature };
 
-    await client.execute(tx);
-
-    await waitOn(() => client.queryUrl(recipient.url));
+    const res = await client.execute(tx);
+    await client.waitOnTx(res.txid);
 
     const { data } = await client.queryUrl(recipient.url);
     expect(new BN(data.balance)).toStrictEqual(amount);

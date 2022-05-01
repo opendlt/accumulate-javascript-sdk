@@ -4,7 +4,9 @@ import {
   MinorBlocksQueryOptions,
   QueryOptions,
   QueryPagination,
+  TxError,
   TxQueryOptions,
+  WaitTxOptions,
 } from "./api-types";
 import { Payload } from "./payload";
 import { AddCredits, AddCreditsArg } from "./payload/add-credits";
@@ -24,6 +26,7 @@ import { WriteData, WriteDataArg } from "./payload/write-data";
 import { RpcClient } from "./rpc-client";
 import { Header, Transaction } from "./transaction";
 import { TxSigner } from "./tx-signer";
+import { sleep } from "./util";
 
 /**
  * Client to call Accumulate RPC APIs.
@@ -151,6 +154,65 @@ export class Client {
 
     const res = await this.queryUrl(keyPage);
     return res.data.version;
+  }
+
+  /**
+   * Wait for a transaction (and its associated synthetic tx ids) to be delivered.
+   * Throw an error if the transaction has failed or the timeout is exhausted.
+   * @param txId
+   * @param options
+   * @returns void
+   */
+  async waitOnTx(txId: string, options?: WaitTxOptions): Promise<void> {
+    // Options
+    const to = options?.timeout ?? 30_000;
+    const pollInterval = options?.pollInterval ?? 500;
+    const ignoreSyntheticTxs = options?.ignoreSyntheticTxs ?? false;
+
+    const start = Date.now();
+    let lastError;
+    do {
+      try {
+        const { status, syntheticTxids } = await this.queryTx(txId);
+        if (!status.delivered) {
+          throw new Error("Transaction not delivered");
+        }
+        if (status.code) {
+          throw new TxError(txId, status);
+        }
+
+        if (ignoreSyntheticTxs) {
+          return;
+        }
+
+        // Also verify the associated synthetic txs
+        const timeoutLeft = to - Date.now() + start;
+        const stxIds: string[] = syntheticTxids || [];
+        await Promise.all(
+          stxIds.map((stxId) =>
+            this.waitOnTx(stxId, {
+              timeout: timeoutLeft,
+              pollInterval: options?.pollInterval,
+              ignoreSyntheticTxs: options?.ignoreSyntheticTxs,
+            })
+          )
+        );
+        return;
+      } catch (e) {
+        // Do not retry on definitive transaction errors
+        if (e instanceof TxError) {
+          throw e;
+        }
+
+        lastError = e;
+        await sleep(pollInterval);
+      }
+      // Poll while timeout is not reached
+    } while (Date.now() - start < to);
+
+    throw new Error(
+      `Transaction ${txId} was not confirmed within ${to / 1000}s. Cause: ${lastError}`
+    );
   }
 
   /******************
