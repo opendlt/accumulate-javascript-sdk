@@ -1,4 +1,6 @@
 import {
+  AccountAuthOperation,
+  AccountAuthOperationType,
   ACME_TOKEN_URL,
   BN,
   Client,
@@ -329,6 +331,60 @@ describe("Test Accumulate client", () => {
     expect(res.data.keys[0].publicKeyHash).toStrictEqual(
       Buffer.from(newKey.publicKeyHash).toString("hex")
     );
+  });
+
+  xtest("should update account auth", async () => {
+    // Disable
+    const disable: AccountAuthOperation = {
+      type: AccountAuthOperationType.Disable,
+      authority: identityKeyPageTxSigner.url,
+    };
+
+    const res = await client.updateAccountAuth(
+      identityKeyPageTxSigner.url,
+      disable,
+      identityKeyPageTxSigner
+    );
+    await waitOn(async () => client.queryTx(res.txid));
+
+    // // Enable
+    // const enable: AccountAuthOperation = {
+    //   type: AccountAuthOperationType.Enable,
+    //   authority: identityKeyPageTxSigner.url,
+    // };
+
+    // res = await client.updateAccountAuth(
+    //   identityKeyPageTxSigner.url,
+    //   enable,
+    //   identityKeyPageTxSigner
+    // );
+    // await waitOn(async () => client.queryTx(res.txid));
+
+    // // Add authority
+    // const addAuthority: AccountAuthOperation = {
+    //   type: AccountAuthOperationType.AddAuthority,
+    //   authority: "xxxxxx",
+    // };
+
+    // res = await client.updateAccountAuth(
+    //   identityKeyPageTxSigner.url,
+    //   addAuthority,
+    //   identityKeyPageTxSigner
+    // );
+    // await waitOn(async () => client.queryTx(res.txid));
+
+    // // Remove authority
+    // const removeAuthority: AccountAuthOperation = {
+    //   type: AccountAuthOperationType.RemoveAuthority,
+    //   authority: "xxxxxx",
+    // };
+
+    // res = await client.updateAccountAuth(
+    //   identityKeyPageTxSigner.url,
+    //   removeAuthority,
+    //   identityKeyPageTxSigner
+    // );
+    // await waitOn(async () => client.queryTx(res.txid));
   });
 
   test("should query directory", async () => {
