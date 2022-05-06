@@ -6,7 +6,7 @@ import { BasePayload } from "./base-payload";
 export type CreateIdentityArg = {
   url: string | AccURL;
   keyHash?: Uint8Array;
-  keyBookUrl: string | AccURL;
+  keyBookUrl?: string | AccURL;
   manager?: string | AccURL;
 };
 
@@ -20,7 +20,7 @@ export class CreateIdentity extends BasePayload {
     super();
     this._url = AccURL.toAccURL(arg.url);
     this._keyHash = arg.keyHash;
-    this._keyBookUrl = AccURL.toAccURL(arg.keyBookUrl);
+    this._keyBookUrl = arg.keyBookUrl ? AccURL.toAccURL(arg.keyBookUrl) : undefined;
     this._manager = arg.manager ? AccURL.toAccURL(arg.manager) : undefined;
   }
 
