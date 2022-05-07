@@ -1,8 +1,8 @@
 import { randomBytes } from "tweetnacl";
-import { AccURL, BN, Client, Ed25519KeypairSigner, LiteAccount, TxSigner } from "../src";
+import { AccURL, BN, Client, Ed25519KeypairSigner, LiteIdentity } from "../src";
 
-export function randomAcmeLiteAccount() {
-  return new LiteAccount(Ed25519KeypairSigner.generate());
+export function randomLiteIdentity(): LiteIdentity {
+  return new LiteIdentity(Ed25519KeypairSigner.generate());
 }
 
 export function randomBuffer(length = 12) {
@@ -17,7 +17,7 @@ export async function addCredits(
   client: Client,
   recipient: AccURL | string,
   creditAmount: number,
-  signer: TxSigner
+  signer: LiteIdentity
 ) {
   let res = await client.queryUrl(recipient);
   const originalBalance = new BN(res.data.creditBalance);
@@ -27,7 +27,7 @@ export async function addCredits(
     amount: (creditAmount * 1e8) / oracle,
     oracle,
   };
-  res = await client.addCredits(signer.url, addCredits, signer);
+  res = await client.addCredits(signer.acmeTokenAccount, addCredits, signer);
   await client.waitOnTx(res.txid);
 
   res = await client.queryUrl(recipient);

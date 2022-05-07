@@ -7,32 +7,34 @@ import {
   Ed25519KeypairSigner,
   KeyPageOperation,
   KeyPageOperationType,
-  LiteAccount,
+  LiteIdentity,
   RpcError,
   TransactionType,
   TxSigner,
 } from "../src";
-import { addCredits, randomAcmeLiteAccount, randomBuffer, randomString } from "./util";
+import { addCredits, randomBuffer, randomLiteIdentity, randomString } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
-let acc: LiteAccount;
+let lid: LiteIdentity;
 let identityUrl: string;
 let identityKeyPageTxSigner: TxSigner;
 
 describe("Test Accumulate client", () => {
   beforeAll(async () => {
     /**
-     *  Initialize a LiteAccount with credits
+     *  Initialize a LiteIdentity with credits
      */
-    acc = randomAcmeLiteAccount();
-    let res = await client.faucet(acc.url);
+    lid = randomLiteIdentity();
+    let res = await client.faucet(lid.acmeTokenAccount);
     await client.waitOnTx(res.txid);
 
-    // Assert lite account type
-    const { data } = await client.queryUrl(acc.url);
-    expect(data.type).toStrictEqual("liteTokenAccount");
+    // Assert lite identity and lite token account type
+    res = await client.queryUrl(lid.url);
+    expect(res.data.type).toStrictEqual("liteIdentity");
+    res = await client.queryUrl(lid.acmeTokenAccount);
+    expect(res.data.type).toStrictEqual("liteTokenAccount");
 
-    await addCredits(client, acc.url, 60_000, acc);
+    await addCredits(client, lid.url, 60_000, lid);
 
     /**
      *  Initialize an identity
@@ -48,28 +50,28 @@ describe("Test Accumulate client", () => {
       keyBookUrl: bookUrl,
     };
 
-    res = await client.createIdentity(acc.url, createIdentity, acc);
+    res = await client.createIdentity(lid.url, createIdentity, lid);
     await client.waitOnTx(res.txid);
 
     res = await client.queryUrl(identityUrl);
     expect(res.type).toStrictEqual("identity");
 
     const keyPageUrl = bookUrl + "/1";
-    await addCredits(client, keyPageUrl, 600_000, acc);
+    await addCredits(client, keyPageUrl, 600_000, lid);
 
     identityKeyPageTxSigner = new TxSigner(keyPageUrl, identitySigner);
   });
 
   test("should send tokens", async () => {
-    const recipient = randomAcmeLiteAccount();
+    const recipient = randomLiteIdentity().acmeTokenAccount;
 
     const amount = new BN(12);
-    const sendTokens = { to: [{ url: recipient.url, amount: amount }] };
-    const { txid } = await client.sendTokens(acc.url, sendTokens, acc);
+    const sendTokens = { to: [{ url: recipient, amount: amount }] };
+    const { txid } = await client.sendTokens(lid.acmeTokenAccount, sendTokens, lid);
 
     await client.waitOnTx(txid);
 
-    const { data } = await client.queryUrl(recipient.url);
+    const { data } = await client.queryUrl(recipient);
     expect(new BN(data.balance)).toStrictEqual(amount);
 
     const res = await client.queryTx(txid);
@@ -78,16 +80,16 @@ describe("Test Accumulate client", () => {
   });
 
   test("should burn tokens", async () => {
-    let res = await client.queryUrl(acc.url);
+    let res = await client.queryUrl(lid.url);
     const originalBalance = new BN(res.data.balance);
 
     const amount = new BN(15);
     const burnTokens = { amount };
-    res = await client.burnTokens(acc.url, burnTokens, acc);
+    res = await client.burnTokens(lid.acmeTokenAccount, burnTokens, lid);
 
     await client.waitOnTx(res.txid);
 
-    res = await client.queryUrl(acc.url);
+    res = await client.queryUrl(lid.url);
     expect(new BN(res.data.balance)).toStrictEqual(originalBalance.sub(amount));
   });
 
@@ -128,7 +130,7 @@ describe("Test Accumulate client", () => {
     const page1Url = newKeyBookUrl + "/1";
     res = await client.queryUrl(page1Url);
     expect(res.data.keyBook).toStrictEqual(newKeyBookUrl.toString());
-    await addCredits(client, page1Url, 20_000, acc);
+    await addCredits(client, page1Url, 20_000, lid);
 
     let keyPage1TxSigner = new TxSigner(page1Url, page1Signer);
 
@@ -308,17 +310,17 @@ describe("Test Accumulate client", () => {
     let res = await client.createToken(identityUrl, createToken, identityKeyPageTxSigner);
     await client.waitOnTx(res.txid);
 
-    const recipient = new LiteAccount(Ed25519KeypairSigner.generate(), tokenUrl);
+    const recipient = new LiteIdentity(Ed25519KeypairSigner.generate()).url.append(tokenUrl);
     const amount = new BN(123);
     const issueToken = {
-      recipient: recipient.url,
+      recipient: recipient,
       amount,
     };
 
     res = await client.issueTokens(tokenUrl, issueToken, identityKeyPageTxSigner);
     await client.waitOnTx(res.txid);
 
-    const { data } = await client.queryUrl(recipient.url);
+    const { data } = await client.queryUrl(recipient);
     expect(new BN(data.balance)).toStrictEqual(amount);
   });
 
