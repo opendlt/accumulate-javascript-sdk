@@ -24,37 +24,37 @@ For more usage examples see the file `test-it/client.test.ts`.
 Demo of some of the main APIs of Accumualte:
 
 ```js
-import { Client, LiteAccount, TxSigner, Ed25519KeypairSigner } from "accumulate.js";
+import { Client, LiteIdentity, TxSigner, Ed25519KeypairSigner } from "accumulate.js";
 
 const client = new Client("https://testnet.accumulatenetwork.io/v2");
 
-// Generate a random LiteAccount (this is only local, until that account receive its first tokens)
-const acc = new LiteAccount(Ed25519KeypairSigner.generate());
+// Generate a random LiteIdentity (this is only local, until that account receive its first tokens)
+const lid = new LiteIdentity(Ed25519KeypairSigner.generate());
 // Request some ACME token to get started from the faucet
-let res = await client.faucet(acc.url);
+let res = await client.faucet(lid.acmeTokenAccount);
 await client.waitOnTx(res.txid);
 
-// check the balance
-console.log(await client.queryUrl(acc.url));
+// check the ACME token balance
+console.log(await client.queryUrl(lid.acmeTokenAccount));
 
-// Send some tokens to another random Lite Account
-const recipient = new LiteAccount(Ed25519KeypairSigner.generate());
-const sendTokens = { to: [{ url: recipient.url, amount: 12 }] };
-res = await client.sendTokens(acc.url, sendTokens, acc);
-await client.waitOnTx(res.txid);
-
-// Convert some tokens into credits necessary to perform most operations on Accumulate
+// Convert some tokens into credits necessary to perform operations on Accumulate
 const oracle = await client.queryAcmeOracle();
-let addCredits = {
-  recipient: acc.url,
-  amount: 1e8,
+const addCredits = {
+  recipient: lid.url,
+  amount: 1000 * 1e8,
   oracle,
 };
-res = await client.addCredits(acc.url, addCredits, acc);
+res = await client.addCredits(lid.acmeTokenAccount, addCredits, lid);
 await client.waitOnTx(res.txid);
 
 // check the credits balance
-console.log(await client.queryUrl(acc.url));
+console.log(await client.queryUrl(lid.url));
+
+// Send some tokens to another random Lite ACME token Account
+const recipient = new LiteIdentity(Ed25519KeypairSigner.generate());
+const sendTokens = { to: [{ url: recipient.acmeTokenAccount, amount: 12 }] };
+res = await client.sendTokens(lid.acmeTokenAccount, sendTokens, lid);
+await client.waitOnTx(res.txid);
 
 // Now with the credits we can create an Accumulate Digital Identifier (ADI)
 // which is one of the fundamental feature of the network
@@ -69,7 +69,7 @@ const createIdentity = {
   keyBookUrl: bookUrl,
 };
 
-res = await client.createIdentity(acc.url, createIdentity, acc);
+res = await client.createIdentity(lid.url, createIdentity, lid);
 await client.waitOnTx(res.txid);
 
 // check your identity
@@ -78,12 +78,12 @@ console.log(await client.queryUrl(identityUrl));
 // Instantiate a TxSigner that can now sign transactions on behalf of this identity
 // (after receiving credits on the identity initial key page)
 const keyPageUrl = bookUrl + "/1";
-addCredits = {
+const addCredits2 = {
   recipient: keyPageUrl,
-  amount: 1e8,
+  amount: 1000 * 1e8,
   oracle,
 };
-res = await client.addCredits(acc.url, addCredits, acc);
+res = await client.addCredits(lid.acmeTokenAccount, addCredits2, lid);
 await client.waitOnTx(res.txid);
 const identityKeyPage = new TxSigner(keyPageUrl, identitySigner);
 ```
@@ -93,17 +93,17 @@ const identityKeyPage = new TxSigner(keyPageUrl, identitySigner);
 ```js
 // You need to import the Payload class for the type of transaction you want to make.
 // Here we are building a SendTokens transaction.
-import { Transaction, Header, Client, SendTokens, LiteAccount, Ed25519KeypairSigner } from "../src";
+import { Transaction, Header, Client, SendTokens, LiteIdentity, Ed25519KeypairSigner } from "../src";
 
-const sender = new LiteAccount(Ed25519KeypairSigner.generate());
+const sender = new LiteIdentity(Ed25519KeypairSigner.generate());
 
 // Build the Payload
-const recipient = new LiteAccount(Ed25519KeypairSigner.generate());
+const recipient = new LiteIdentity(Ed25519KeypairSigner.generate());
 const amount = 10;
-const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
+const payload = new SendTokens({ to: [{ url: recipient.acmeTokenAccount, amount: amount }] });
 // Build the transaction header with the transaction principal
 // and optionally a timestamp, memo or metadata.
-const header = new Header(sender.url);
+const header = new Header(sender.acmeTokenAccount);
 
 // Finally build the (unsigned yet) transaction
 const tx = new Transaction(payload, header);
