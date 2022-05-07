@@ -1,47 +1,44 @@
-import { BN, Client, Header, LiteAccount, SendTokens, Transaction } from "../src";
-import { addCredits, randomAcmeLiteAccount } from "./util";
+import { BN, Client, Header, LiteIdentity, SendTokens, Transaction } from "../src";
+import { addCredits, randomLiteIdentity } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
-let acc: LiteAccount;
+let lid: LiteIdentity;
 
 describe("Test manual transactions", () => {
   beforeAll(async () => {
-    acc = randomAcmeLiteAccount();
+    lid = randomLiteIdentity();
 
     // Get some ACME
-    const res = await client.faucet(acc.url);
+    const res = await client.faucet(lid.acmeTokenAccount);
     await client.waitOnTx(res.txid);
 
-    const { data } = await client.queryUrl(acc.url);
-    expect(data.type).toStrictEqual("liteTokenAccount");
-
     // Get some credits
-    await addCredits(client, acc.url, 10_000, acc);
+    await addCredits(client, lid.url, 10_000, lid);
   });
 
   test("should send tokens with manual transaction", async () => {
-    const recipient = randomAcmeLiteAccount();
+    const recipient = randomLiteIdentity().acmeTokenAccount;
     const amount = new BN(1025);
-    const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
-    const header = new Header(acc.url);
+    const payload = new SendTokens({ to: [{ url: recipient, amount: amount }] });
+    const header = new Header(lid.acmeTokenAccount);
 
     const tx = new Transaction(payload, header);
-    const forSignature = tx.dataForSignature(acc.info);
-    const signature = await acc.signer.signRaw(forSignature);
-    tx.signature = { signerInfo: acc.info, signature };
+    const forSignature = tx.dataForSignature(lid.info);
+    const signature = await lid.signer.signRaw(forSignature);
+    tx.signature = { signerInfo: lid.info, signature };
 
     const res = await client.execute(tx);
     await client.waitOnTx(res.txid);
 
-    const { data } = await client.queryUrl(recipient.url);
+    const { data } = await client.queryUrl(recipient);
     expect(new BN(data.balance)).toStrictEqual(amount);
   });
 
   test("should reject unsigned transaction", async () => {
-    const recipient = randomAcmeLiteAccount();
+    const recipient = randomLiteIdentity().acmeTokenAccount;
     const amount = 50;
-    const payload = new SendTokens({ to: [{ url: recipient.url, amount: amount }] });
-    const header = new Header(acc.url);
+    const payload = new SendTokens({ to: [{ url: recipient, amount: amount }] });
+    const header = new Header(lid.url);
 
     const tx = new Transaction(payload, header);
 

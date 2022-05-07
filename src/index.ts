@@ -4,7 +4,7 @@ export * from "./acme";
 export * from "./api-types";
 export * from "./client";
 export * from "./encoding";
-export * from "./lite-account";
+export * from "./lite-identity";
 export * from "./payload";
 export * from "./payload/add-credits";
 export * from "./payload/add-validator";

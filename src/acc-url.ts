@@ -17,6 +17,27 @@ export class AccURL {
   }
 
   /**
+   * Append path to url and return a *new* AccURL instance
+   * @param path
+   * @returns new AccURL instance with appended path
+   */
+  append(path: string | AccURL): AccURL {
+    const pathStr = path.toString();
+    let url = this._url.toString();
+    if (pathStr.length > 0) {
+      if (pathStr.startsWith("acc://")) {
+        url += pathStr.slice(5);
+      } else if (pathStr[0] === "/") {
+        url += pathStr;
+      } else {
+        url += `/${pathStr}`;
+      }
+    }
+
+    return AccURL.parse(url);
+  }
+
+  /**
    * Parse, if necessary, argument into an AccURL
    */
   static toAccURL(arg: string | AccURL): AccURL {
