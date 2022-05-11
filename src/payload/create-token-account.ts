@@ -6,25 +6,22 @@ import { BasePayload } from "./base-payload";
 export type CreateTokenAccountArg = {
   url: string | AccURL;
   tokenUrl: string | AccURL;
-  keyBookUrl?: string | AccURL;
   scratch?: boolean;
-  manager?: string | AccURL;
+  authorities?: (string | AccURL)[];
 };
 
 export class CreateTokenAccount extends BasePayload {
   private readonly _url: AccURL;
   private readonly _tokenUrl: AccURL;
-  private readonly _keyBookUrl?: AccURL;
   private readonly _scratch: boolean;
-  private readonly _manager?: AccURL;
+  private readonly _authorities: AccURL[];
 
   constructor(arg: CreateTokenAccountArg) {
     super();
     this._url = AccURL.toAccURL(arg.url);
     this._tokenUrl = AccURL.toAccURL(arg.tokenUrl);
-    this._keyBookUrl = arg.keyBookUrl ? AccURL.toAccURL(arg.keyBookUrl) : undefined;
     this._scratch = arg.scratch || false;
-    this._manager = arg.manager ? AccURL.toAccURL(arg.manager) : undefined;
+    this._authorities = arg?.authorities?.map((a) => AccURL.toAccURL(a)) || [];
   }
 
   protected _marshalBinary(): Buffer {
@@ -34,14 +31,11 @@ export class CreateTokenAccount extends BasePayload {
     forConcat.push(stringMarshalBinary(this._url.toString(), 2));
     forConcat.push(stringMarshalBinary(this._tokenUrl.toString(), 3));
 
-    if (this._keyBookUrl) {
-      forConcat.push(stringMarshalBinary(this._keyBookUrl.toString(), 4));
-    }
     if (this._scratch) {
       forConcat.push(booleanMarshalBinary(this._scratch, 5));
     }
-    if (this._manager) {
-      forConcat.push(stringMarshalBinary(this._manager.toString(), 6));
+    if (this._authorities.length > 0) {
+      this._authorities.forEach((a) => forConcat.push(stringMarshalBinary(a.toString(), 7)));
     }
 
     return Buffer.concat(forConcat);
