@@ -7,21 +7,21 @@ export type CreateIdentityArg = {
   url: string | AccURL;
   keyHash?: Uint8Array;
   keyBookUrl?: string | AccURL;
-  manager?: string | AccURL;
+  authorities?: (string | AccURL)[];
 };
 
 export class CreateIdentity extends BasePayload {
   private readonly _url: AccURL;
   private readonly _keyHash?: Uint8Array;
   private readonly _keyBookUrl?: AccURL;
-  private readonly _manager?: AccURL;
+  private readonly _authorities: AccURL[];
 
   constructor(arg: CreateIdentityArg) {
     super();
     this._url = AccURL.toAccURL(arg.url);
     this._keyHash = arg.keyHash;
     this._keyBookUrl = arg.keyBookUrl ? AccURL.toAccURL(arg.keyBookUrl) : undefined;
-    this._manager = arg.manager ? AccURL.toAccURL(arg.manager) : undefined;
+    this._authorities = arg?.authorities?.map((a) => AccURL.toAccURL(a)) || [];
   }
 
   protected _marshalBinary(): Buffer {
@@ -35,8 +35,8 @@ export class CreateIdentity extends BasePayload {
     if (this._keyBookUrl) {
       forConcat.push(stringMarshalBinary(this._keyBookUrl.toString(), 4));
     }
-    if (this._manager) {
-      forConcat.push(stringMarshalBinary(this._manager.toString(), 5));
+    if (this._authorities.length > 0) {
+      this._authorities.forEach((a) => forConcat.push(stringMarshalBinary(a.toString(), 6)));
     }
 
     return Buffer.concat(forConcat);
