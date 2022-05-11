@@ -5,25 +5,20 @@ import { BasePayload } from "./base-payload";
 
 export type CreateDataAccountArg = {
   url: string | AccURL;
-  keyBookUrl?: string | AccURL;
-  managerKeyBookUrl?: string | AccURL;
   scratch?: boolean;
+  authorities?: (string | AccURL)[];
 };
 
 export class CreateDataAccount extends BasePayload {
   private readonly _url: AccURL;
-  private readonly _keyBookUrl?: AccURL;
-  private readonly _managerKeyBookUrl?: AccURL;
   private readonly _scratch: boolean;
+  private readonly _authorities: AccURL[];
 
   constructor(arg: CreateDataAccountArg) {
     super();
     this._url = AccURL.toAccURL(arg.url);
-    this._keyBookUrl = arg.keyBookUrl ? AccURL.toAccURL(arg.keyBookUrl) : undefined;
-    this._managerKeyBookUrl = arg.managerKeyBookUrl
-      ? AccURL.toAccURL(arg.managerKeyBookUrl)
-      : undefined;
     this._scratch = arg.scratch || false;
+    this._authorities = arg?.authorities?.map((a) => AccURL.toAccURL(a)) || [];
   }
 
   protected _marshalBinary(): Buffer {
@@ -32,14 +27,11 @@ export class CreateDataAccount extends BasePayload {
     forConcat.push(uvarintMarshalBinary(TransactionType.CreateDataAccount, 1));
     forConcat.push(stringMarshalBinary(this._url.toString(), 2));
 
-    if (this._keyBookUrl) {
-      forConcat.push(stringMarshalBinary(this._keyBookUrl.toString(), 3));
-    }
-    if (this._managerKeyBookUrl) {
-      forConcat.push(stringMarshalBinary(this._managerKeyBookUrl?.toString(), 4));
-    }
     if (this._scratch) {
       forConcat.push(booleanMarshalBinary(this._scratch, 5));
+    }
+    if (this._authorities.length > 0) {
+      this._authorities.forEach((a) => forConcat.push(stringMarshalBinary(a.toString(), 6)));
     }
 
     return Buffer.concat(forConcat);
