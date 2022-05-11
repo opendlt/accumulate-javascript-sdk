@@ -6,19 +6,19 @@ import { BasePayload } from "./base-payload";
 export type CreateKeyBookArg = {
   url: string | AccURL;
   publicKeyHash: Uint8Array;
-  manager?: string | AccURL;
+  authorities?: (string | AccURL)[];
 };
 
 export class CreateKeyBook extends BasePayload {
   private readonly _url: AccURL;
   private readonly _publicKeyHash: Uint8Array;
-  private readonly _manager?: AccURL;
+  private readonly _authorities: AccURL[];
 
   constructor(arg: CreateKeyBookArg) {
     super();
     this._url = AccURL.toAccURL(arg.url);
     this._publicKeyHash = arg.publicKeyHash;
-    this._manager = arg.manager ? AccURL.toAccURL(arg.manager) : undefined;
+    this._authorities = arg?.authorities?.map((a) => AccURL.toAccURL(a)) || [];
   }
 
   protected _marshalBinary(): Buffer {
@@ -27,8 +27,8 @@ export class CreateKeyBook extends BasePayload {
     forConcat.push(uvarintMarshalBinary(TransactionType.CreateKeyBook, 1));
     forConcat.push(stringMarshalBinary(this._url.toString(), 2));
     forConcat.push(bytesMarshalBinary(this._publicKeyHash, 3));
-    if (this._manager) {
-      forConcat.push(stringMarshalBinary(this._manager.toString(), 4));
+    if (this._authorities.length > 0) {
+      this._authorities.forEach((a) => forConcat.push(stringMarshalBinary(a.toString(), 5)));
     }
 
     return Buffer.concat(forConcat);
