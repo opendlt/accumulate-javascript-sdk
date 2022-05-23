@@ -80,7 +80,7 @@ describe("Test Accumulate client", () => {
   });
 
   test("should burn tokens", async () => {
-    let res = await client.queryUrl(lid.url);
+    let res = await client.queryUrl(lid.acmeTokenAccount);
     const originalBalance = new BN(res.data.balance);
 
     const amount = new BN(15);
@@ -89,7 +89,7 @@ describe("Test Accumulate client", () => {
 
     await client.waitOnTx(res.txid);
 
-    res = await client.queryUrl(lid.url);
+    res = await client.queryUrl(lid.acmeTokenAccount);
     expect(new BN(res.data.balance)).toStrictEqual(originalBalance.sub(amount));
   });
 
