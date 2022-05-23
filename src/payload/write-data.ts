@@ -1,3 +1,4 @@
+import { hashTree } from "../crypto";
 import {
   booleanMarshalBinary,
   bytesMarshalBinary,
@@ -15,6 +16,7 @@ export type WriteDataArg = {
 export class WriteData extends BasePayload {
   private readonly _data: Uint8Array[];
   private readonly _scratch: boolean;
+  private _dataHash?: Buffer;
 
   constructor(arg: WriteDataArg) {
     super();
@@ -34,9 +36,26 @@ export class WriteData extends BasePayload {
 
     return Buffer.concat(forConcat);
   }
+
+  // Overrides default payload hash with tree hash of the entry
+  hash(): Buffer {
+    if (this._dataHash) {
+      return this._dataHash;
+    }
+
+    this._dataHash = hashTree(this._data);
+
+    return this._dataHash;
+  }
 }
 
 function marshalDataEntry(data: Uint8Array[]): Buffer {
-  const forConcat = data.map((d) => bytesMarshalBinary(d, 1));
+  const forConcat = [];
+
+  // AccumulateDataEntry DataEntryType 2
+  forConcat.push(uvarintMarshalBinary(2, 1));
+  // Data
+  forConcat.push(Buffer.concat(data.map((d) => bytesMarshalBinary(d, 3))));
+
   return bytesMarshalBinary(Buffer.concat(forConcat));
 }
