@@ -99,11 +99,13 @@ export class Transaction {
   private readonly _payloadBinary: Buffer;
   private _signature?: Signature;
   private _hash?: Buffer;
+  private _bodyHash: Buffer;
 
   constructor(payload: Payload, header: Header, signature?: Signature) {
     this._payloadBinary = payload.marshalBinary();
     this._header = header;
     this._signature = signature;
+    this._bodyHash = payload.hash();
   }
 
   /**
@@ -115,8 +117,7 @@ export class Transaction {
     }
 
     const headerHash = sha256(this._header.marshalBinary());
-    const bodyHash = sha256(this._payloadBinary);
-    this._hash = sha256(Buffer.concat([headerHash, bodyHash]));
+    this._hash = sha256(Buffer.concat([headerHash, this._bodyHash]));
 
     return this._hash;
   }
