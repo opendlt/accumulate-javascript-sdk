@@ -261,7 +261,7 @@ describe("Test Accumulate client", () => {
     expect(res.type).toStrictEqual("dataAccount");
 
     // Write data
-    const data = [randomBuffer(), randomBuffer()];
+    const data = [randomBuffer(), randomBuffer(), randomBuffer()];
     const writeData = {
       data,
     };
@@ -276,10 +276,11 @@ describe("Test Accumulate client", () => {
     expect(res.type).toStrictEqual("dataEntry");
     expect(res.data.entry.data[0]).toStrictEqual(data[0].toString("hex"));
     expect(res.data.entry.data[1]).toStrictEqual(data[1].toString("hex"));
-    expect(res.data.entry.data.length).toStrictEqual(2);
+    expect(res.data.entry.data[2]).toStrictEqual(data[2].toString("hex"));
+    expect(res.data.entry.data.length).toStrictEqual(3);
     const firstEntryHash = res.data.entryHash;
 
-    const data2 = [randomBuffer()];
+    const data2 = [randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer()];
     const writeData2 = {
       data: data2,
     };
@@ -293,7 +294,7 @@ describe("Test Accumulate client", () => {
     // Query Data should now return the latest entry
     res = await client.queryData(dataAccountUrl);
     expect(res.data.entry.data[0]).toStrictEqual(data2[0].toString("hex"));
-    expect(res.data.entry.data.length).toStrictEqual(1);
+    expect(res.data.entry.data.length).toStrictEqual(5);
     // Query data per entry hash
     res = await client.queryData(dataAccountUrl, firstEntryHash);
     expect(res.data.entry.data[0]).toStrictEqual(data[0].toString("hex"));
