@@ -1,5 +1,4 @@
 import { AccURL } from "./acc-url";
-import { ACME_ORACLE_URL } from "./acme";
 import {
   MinorBlocksQueryOptions,
   QueryOptions,
@@ -55,9 +54,7 @@ export class Client {
    ******************/
 
   queryAcmeOracle(): Promise<number> {
-    return this.queryData(ACME_ORACLE_URL).then(
-      (r) => JSON.parse(Buffer.from(r.data.entry.data[0], "hex").toString()).price
-    );
+    return this.describe().then((d) => d.values.oracle.price);
   }
 
   queryUrl(url: string | AccURL, options?: QueryOptions): Promise<any> {
@@ -70,6 +67,11 @@ export class Client {
   }
 
   queryTx(txId: string, options?: TxQueryOptions): Promise<any> {
+    // TODO: remove after https://gitlab.com/accumulatenetwork/accumulate/-/issues/43
+    if (txId.startsWith("acc://")) {
+      txId = txId.slice(6).split("@")[0];
+    }
+
     return this.call("query-tx", {
       txid: txId,
       ...options,
@@ -177,11 +179,15 @@ export class Client {
     do {
       try {
         const { status, syntheticTxids } = await this.queryTx(txId);
-        if (!status.delivered) {
-          throw new Error("Transaction not delivered");
-        }
-        if (status.code) {
-          throw new TxError(txId, status);
+
+        switch (status.code) {
+          case "pending":
+            await sleep(pollInterval);
+            continue;
+          case "delivered":
+            break;
+          default:
+            throw new TxError(txId, status);
         }
 
         if (ignoreSyntheticTxs) {

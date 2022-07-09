@@ -39,7 +39,7 @@ describe("Test Accumulate client", () => {
     /**
      *  Initialize an identity
      */
-    identityUrl = `acc://${randomString()}`;
+    identityUrl = `acc://${randomString()}.acme`;
     const identitySigner = Ed25519KeypairSigner.generate();
     const bookUrl = identityUrl + "/my-book";
 
@@ -160,9 +160,11 @@ describe("Test Accumulate client", () => {
     await client.waitOnTx(res.txid);
 
     res = await client.queryUrl(page1Url);
-    expect(res.data.keys[1].publicKey).toStrictEqual(
-      Buffer.from(newNewKey.publicKeyHash).toString("hex")
-    );
+    const newKeyHash = Buffer.from(newNewKey.publicKeyHash).toString("hex");
+    const found = res.data.keys
+      .map((k: any) => k.publicKey)
+      .find((pk: string) => pk === newKeyHash);
+    expect(found).not.toBeUndefined();
 
     // Set threshold
     // const setThreshold: KeyPageOperation = {
@@ -215,7 +217,7 @@ describe("Test Accumulate client", () => {
     await client.waitOnTx(res.txid);
 
     res = await client.queryUrl(page2Url);
-    expect(res.data.transactionBlacklist).toStrictEqual(2);
+    expect(res.data.transactionBlacklist).toStrictEqual(["updateKeyPage"]);
 
     const updateAllowed2: KeyPageOperation = {
       type: KeyPageOperationType.UpdateAllowed,
@@ -314,8 +316,7 @@ describe("Test Accumulate client", () => {
     const recipient = new LiteIdentity(Ed25519KeypairSigner.generate()).url.append(tokenUrl);
     const amount = new BN(123);
     const issueToken = {
-      recipient: recipient,
-      amount,
+      to: [{ url: recipient, amount }],
     };
 
     res = await client.issueTokens(tokenUrl, issueToken, identityKeyPageTxSigner);

@@ -18,6 +18,7 @@ export * from "./payload/create-token-account";
 export * from "./payload/issue-tokens";
 export * from "./payload/remove-validator";
 export * from "./payload/send-tokens";
+export * from "./payload/token-recipient";
 export * from "./payload/update-account-auth";
 export * from "./payload/update-key";
 export * from "./payload/update-key-page";

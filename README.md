@@ -60,7 +60,7 @@ await client.waitOnTx(res.txid);
 // which is one of the fundamental feature of the network
 
 const identitySigner = Ed25519KeypairSigner.generate(); // Root signer that will control the identity
-const identityUrl = "acc://my-own-identity";
+const identityUrl = "acc://my-own-identity.acme";
 const bookUrl = identityUrl + "/my-book";
 
 const createIdentity = {

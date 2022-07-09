@@ -1,4 +1,4 @@
-import { hashTree } from "../crypto";
+import { hashTree, sha256 } from "../crypto";
 import {
   booleanMarshalBinary,
   bytesMarshalBinary,
@@ -11,27 +11,36 @@ import { BasePayload } from "./base-payload";
 export type WriteDataArg = {
   data: Uint8Array[];
   scratch?: boolean;
+  writeToState?: boolean;
 };
 
 export class WriteData extends BasePayload {
   private readonly _data: Uint8Array[];
   private readonly _scratch: boolean;
-  private _dataHash?: Buffer;
+  private readonly _writeToState: boolean;
+  private _customHash?: Buffer;
 
   constructor(arg: WriteDataArg) {
     super();
     this._data = arg.data;
     this._scratch = arg.scratch || false;
+    this._writeToState = arg.writeToState || false;
   }
 
-  protected _marshalBinary(): Buffer {
+  protected _marshalBinary(withoutEntry = false): Buffer {
     const forConcat = [];
 
     forConcat.push(uvarintMarshalBinary(TransactionType.WriteData, 1));
 
-    forConcat.push(fieldMarshalBinary(2, marshalDataEntry(this._data)));
+    if (!withoutEntry) {
+      forConcat.push(fieldMarshalBinary(2, marshalDataEntry(this._data)));
+    }
+
     if (this._scratch) {
       forConcat.push(booleanMarshalBinary(this._scratch, 3));
+    }
+    if (this._writeToState) {
+      forConcat.push(booleanMarshalBinary(this._writeToState, 4));
     }
 
     return Buffer.concat(forConcat);
@@ -39,13 +48,16 @@ export class WriteData extends BasePayload {
 
   // Overrides default payload hash with tree hash of the entry
   hash(): Buffer {
-    if (this._dataHash) {
-      return this._dataHash;
+    if (this._customHash) {
+      return this._customHash;
     }
 
-    this._dataHash = hashTree(this._data);
+    const bodyHash = sha256(this._marshalBinary(true));
+    const dataHash = hashTree(this._data);
 
-    return this._dataHash;
+    this._customHash = sha256(Buffer.concat([bodyHash, dataHash]));
+
+    return this._customHash;
   }
 }
 
@@ -55,7 +67,7 @@ function marshalDataEntry(data: Uint8Array[]): Buffer {
   // AccumulateDataEntry DataEntryType 2
   forConcat.push(uvarintMarshalBinary(2, 1));
   // Data
-  forConcat.push(Buffer.concat(data.map((d) => bytesMarshalBinary(d, 3))));
+  forConcat.push(Buffer.concat(data.map((d) => bytesMarshalBinary(d, 2))));
 
   return bytesMarshalBinary(Buffer.concat(forConcat));
 }
