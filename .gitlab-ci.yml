@@ -14,8 +14,10 @@ before_script:
   - gem install bundler
   - bundle config set --local path 'vendor'
   - bundle install
+  - apt-get install -y curl
+  - curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
   - apt-get update -qy
-  - apt-get install -y nodejs npm
+  - apt-get install -y nodejs
   - npm install yarn -g
 
 build:
