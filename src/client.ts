@@ -3,7 +3,9 @@ import {
   MinorBlocksQueryOptions,
   QueryOptions,
   QueryPagination,
+  SyntheticTxQueryOptions,
   TxError,
+  TxHistoryQueryOptions,
   TxQueryOptions,
   WaitTxOptions,
 } from "./api-types";
@@ -78,11 +80,16 @@ export class Client {
     });
   }
 
-  queryTxHistory(url: string | AccURL, pagination: QueryPagination): Promise<any> {
+  queryTxHistory(
+    url: string | AccURL,
+    pagination: QueryPagination,
+    options?: TxHistoryQueryOptions
+  ): Promise<any> {
     const urlStr = url.toString();
     return this.call("query-tx-history", {
       url: urlStr,
       ...pagination,
+      ...options,
     });
   }
 
@@ -127,6 +134,13 @@ export class Client {
     });
   }
 
+  queryMajorBlocks(url: string | AccURL, pagination: QueryPagination): Promise<any> {
+    return this.call("query-major-blocks", {
+      url: url.toString(),
+      ...pagination,
+    });
+  }
+
   queryMinorBlocks(
     url: string | AccURL,
     pagination: QueryPagination,
@@ -135,6 +149,18 @@ export class Client {
     return this.call("query-minor-blocks", {
       url: url.toString(),
       ...pagination,
+      ...options,
+    });
+  }
+
+  querySyntheticTx(
+    source: string | AccURL,
+    destination: string | AccURL,
+    options?: SyntheticTxQueryOptions
+  ): Promise<any> {
+    return this.call("query-synth", {
+      source: source.toString(),
+      destination: destination.toString(),
       ...options,
     });
   }
@@ -384,7 +410,7 @@ export class Client {
    * Others
    ******************/
 
-  faucet(url: AccURL): Promise<any> {
+  faucet(url: string | AccURL): Promise<any> {
     return this.call("faucet", {
       url: url.toString(),
     });
