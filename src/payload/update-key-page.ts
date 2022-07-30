@@ -1,4 +1,5 @@
-import { bytesMarshalBinary, uvarintMarshalBinary } from "../encoding";
+import { AccURL } from "../acc-url";
+import { bytesMarshalBinary, stringMarshalBinary, uvarintMarshalBinary } from "../encoding";
 import { TransactionType } from "../tx-types";
 import { BasePayload } from "./base-payload";
 
@@ -12,18 +13,18 @@ export enum KeyPageOperationType {
 
 export type AddKeyOperation = {
   type: KeyPageOperationType.Add;
-  keyHash: string | Uint8Array;
+  key: KeySpec;
 };
 
 export type RemoveKeyOperation = {
   type: KeyPageOperationType.Remove;
-  keyHash: string | Uint8Array;
+  key: KeySpec;
 };
 
 export type UpdateKeyOperation = {
   type: KeyPageOperationType.Update;
-  oldKeyHash: string | Uint8Array;
-  newKeyHash: string | Uint8Array;
+  oldKey: KeySpec;
+  newKey: KeySpec;
 };
 
 export type SetThresholdKeyPageOperation = {
@@ -35,6 +36,11 @@ export type UpdateAllowedKeyPageOperation = {
   type: KeyPageOperationType.UpdateAllowed;
   allow?: TransactionType[];
   deny?: TransactionType[];
+};
+
+export type KeySpec = {
+  keyHash: string | Uint8Array;
+  delegate?: string | AccURL;
 };
 
 export type KeyPageOperation =
@@ -84,6 +90,17 @@ function marshalBinaryKeyPageOperation(operation: KeyPageOperation): Buffer {
   }
 }
 
+function marshalBinaryKeySpec(keySpec: KeySpec): Buffer {
+  const forConcat = [];
+
+  forConcat.push(bytesMarshalBinary(getKeyHash(keySpec.keyHash), 1));
+  if (keySpec.delegate) {
+    forConcat.push(stringMarshalBinary(keySpec.delegate.toString(), 2));
+  }
+
+  return Buffer.concat(forConcat);
+}
+
 function marshalBinaryAddRemoveKeyOperation(
   operation: AddKeyOperation | RemoveKeyOperation
 ): Buffer {
@@ -91,9 +108,7 @@ function marshalBinaryAddRemoveKeyOperation(
 
   forConcat.push(uvarintMarshalBinary(operation.type, 1));
 
-  const keyHash = getKeyHash(operation.keyHash);
-  const entryMarshalBinary = bytesMarshalBinary(keyHash, 1);
-  forConcat.push(bytesMarshalBinary(entryMarshalBinary, 2));
+  forConcat.push(bytesMarshalBinary(marshalBinaryKeySpec(operation.key), 2));
 
   return Buffer.concat(forConcat);
 }
@@ -103,13 +118,8 @@ function marshalBinaryUpdateKeyOperation(operation: UpdateKeyOperation): Buffer 
 
   forConcat.push(uvarintMarshalBinary(operation.type, 1));
 
-  const oldKeyHash = getKeyHash(operation.oldKeyHash);
-  const newKeyHash = getKeyHash(operation.newKeyHash);
-
-  const oldEntryMarshalBinary = bytesMarshalBinary(oldKeyHash, 1);
-  forConcat.push(bytesMarshalBinary(oldEntryMarshalBinary, 2));
-  const newEntryMarshalBinary = bytesMarshalBinary(newKeyHash, 1);
-  forConcat.push(bytesMarshalBinary(newEntryMarshalBinary, 3));
+  forConcat.push(bytesMarshalBinary(marshalBinaryKeySpec(operation.oldKey), 2));
+  forConcat.push(bytesMarshalBinary(marshalBinaryKeySpec(operation.newKey), 3));
 
   return Buffer.concat(forConcat);
 }

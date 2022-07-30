@@ -6,6 +6,7 @@ export type QueryPagination = {
 export type QueryOptions = {
   expand?: boolean;
   height?: number;
+  scratch?: boolean;
   prove?: boolean;
 };
 
@@ -14,9 +15,18 @@ export type TxQueryOptions = {
   ignorePending?: boolean;
 } & QueryOptions;
 
+export type TxHistoryQueryOptions = {
+  scratch?: boolean;
+};
+
 export type MinorBlocksQueryOptions = {
-  txFetchMode?: number;
-  filterSynthAnchorsOnlyBlocks?: boolean;
+  txFetchMode?: string;
+  blockFilterMode?: string;
+};
+
+export type SyntheticTxQueryOptions = {
+  sequenceNumber?: number;
+  anchor?: boolean;
 };
 
 /**

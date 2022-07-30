@@ -3,7 +3,7 @@ import { TransactionType } from "../tx-types";
 import { BasePayload } from "./base-payload";
 
 export type UpdateKeyArg = {
-  newKeyHash: Uint8Array;
+  newKeyHash: string | Uint8Array;
 };
 
 export class UpdateKey extends BasePayload {
@@ -11,7 +11,8 @@ export class UpdateKey extends BasePayload {
 
   constructor(arg: UpdateKeyArg) {
     super();
-    this._newKeyHash = arg.newKeyHash;
+    this._newKeyHash =
+      arg.newKeyHash instanceof Uint8Array ? arg.newKeyHash : Buffer.from(arg.newKeyHash, "hex");
   }
 
   protected _marshalBinary(): Buffer {
