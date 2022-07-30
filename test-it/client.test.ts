@@ -138,7 +138,7 @@ describe("Test Accumulate client", () => {
     const newKey = Ed25519KeypairSigner.generate();
     const addKeyToPage: KeyPageOperation = {
       type: KeyPageOperationType.Add,
-      keyHash: newKey.publicKeyHash,
+      key: { keyHash: newKey.publicKeyHash },
     };
 
     res = await client.updateKeyPage(page1Url, addKeyToPage, keyPage1TxSigner);
@@ -153,8 +153,8 @@ describe("Test Accumulate client", () => {
     const newNewKey = Ed25519KeypairSigner.generate();
     const updateKeyPage: KeyPageOperation = {
       type: KeyPageOperationType.Update,
-      oldKeyHash: newKey.publicKeyHash,
-      newKeyHash: newNewKey.publicKeyHash,
+      oldKey: { keyHash: newKey.publicKeyHash },
+      newKey: { keyHash: newNewKey.publicKeyHash },
     };
     res = await client.updateKeyPage(page1Url, updateKeyPage, keyPage1TxSigner);
     await client.waitOnTx(res.txid);
@@ -183,7 +183,7 @@ describe("Test Accumulate client", () => {
     keyPage1TxSigner = TxSigner.withNewVersion(keyPage1TxSigner, version);
     const removeKeyPage: KeyPageOperation = {
       type: KeyPageOperationType.Remove,
-      keyHash: newNewKey.publicKeyHash,
+      key: { keyHash: newNewKey.publicKeyHash },
     };
     res = await client.updateKeyPage(page1Url, removeKeyPage, keyPage1TxSigner);
     await client.waitOnTx(res.txid);
@@ -427,6 +427,23 @@ describe("Test Accumulate client", () => {
   xtest("should get metrics", async () => {
     const res = await client.metrics("tps", 60);
     expect(res.type).toStrictEqual("metrics");
+  });
+
+  test("should query major blocks", async () => {
+    const res = await client.queryMajorBlocks(identityUrl, { count: 1, start: 0 });
+    expect(res).toBeTruthy();
+  });
+
+  test("should query minor blocks", async () => {
+    const res = await client.queryMinorBlocks(
+      identityUrl,
+      { count: 1, start: 0 },
+      {
+        txFetchMode: "ids",
+        blockFilterMode: "excludenone",
+      }
+    );
+    expect(res).toBeTruthy();
   });
 
   test("should reject unknown method", async () => {

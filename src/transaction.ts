@@ -190,12 +190,12 @@ export type TxRequest = {
   isEnvelope?: boolean;
   origin: string;
   signer: {
-    url: string;
-    version: number;
     publicKey: string;
     timestamp: number;
+    url: string;
+    version?: number;
     signatureType?: string;
-    useSimpleHash: boolean;
+    useSimpleHash?: boolean;
   };
   signature: string;
   txHash?: string;
