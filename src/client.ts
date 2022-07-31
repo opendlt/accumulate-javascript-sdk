@@ -3,7 +3,6 @@ import {
   MinorBlocksQueryOptions,
   QueryOptions,
   QueryPagination,
-  SyntheticTxQueryOptions,
   TxError,
   TxHistoryQueryOptions,
   TxQueryOptions,
@@ -149,18 +148,6 @@ export class Client {
     return this.call("query-minor-blocks", {
       url: url.toString(),
       ...pagination,
-      ...options,
-    });
-  }
-
-  querySyntheticTx(
-    source: string | AccURL,
-    destination: string | AccURL,
-    options?: SyntheticTxQueryOptions
-  ): Promise<any> {
-    return this.call("query-synth", {
-      source: source.toString(),
-      destination: destination.toString(),
       ...options,
     });
   }

@@ -24,11 +24,6 @@ export type MinorBlocksQueryOptions = {
   blockFilterMode?: string;
 };
 
-export type SyntheticTxQueryOptions = {
-  sequenceNumber?: number;
-  anchor?: boolean;
-};
-
 /**
  * Options for waiting on transaction delivering.
  */
