@@ -456,16 +456,4 @@ describe("Test Accumulate client", () => {
     throw "should have thrown";
   });
 
-  test("should reject invalid path", async () => {
-    try {
-      const cli = new Client(
-        (process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2") + "_unknown"
-      );
-      await cli.version();
-    } catch (e: any) {
-      expect(e.response.status).toStrictEqual(404);
-      return;
-    }
-    throw "should have thrown";
-  });
 });
