@@ -455,5 +455,4 @@ describe("Test Accumulate client", () => {
     }
     throw "should have thrown";
   });
-
 });
