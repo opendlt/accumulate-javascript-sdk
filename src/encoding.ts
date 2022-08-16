@@ -30,6 +30,18 @@ export function uvarintMarshalBinary(val: number | BN, field?: number): Buffer {
   return field ? fieldMarshalBinary(field, data) : data;
 }
 
+export function varintMarshalBinary(val: number | BN, field?: number): Buffer {
+  const x = new BN(val);
+
+  let ux = x.toTwos(64).shln(1);
+
+  if (x.isNeg()) {
+    ux = ux.notn(64);
+  }
+
+  return uvarintMarshalBinary(ux, field);
+}
+
 export function bigNumberMarshalBinary(bn: BN, field?: number): Buffer {
   const data = bytesMarshalBinary(bn.toArrayLike(Buffer, "be"));
   return withFieldNumber(data, field);
