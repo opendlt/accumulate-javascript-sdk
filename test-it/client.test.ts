@@ -4,14 +4,19 @@ import {
   ACME_TOKEN_URL,
   BN,
   Client,
+  CreateToken,
   Ed25519KeypairSigner,
+  Header,
   KeyPageOperation,
   KeyPageOperationType,
   LiteIdentity,
   RpcError,
+  Transaction,
   TransactionType,
   TxSigner,
 } from "../src";
+import { sha256 } from "../src/crypto";
+import { combineReceipts, Receipt } from "../src/receipt";
 import { addCredits, randomBuffer, randomLiteIdentity, randomString } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
@@ -93,7 +98,7 @@ describe("Test Accumulate client", () => {
     expect(new BN(res.data.balance)).toStrictEqual(originalBalance.sub(amount));
   });
 
-  test("should create token account", async () => {
+  test("should create an ACME token account", async () => {
     // Create token account
     const tokenAccountUrl = identityUrl + "/ACME";
     const createTokenAccount = {
@@ -302,7 +307,7 @@ describe("Test Accumulate client", () => {
     expect(res.data.entry.data[0]).toStrictEqual(data[0].toString("hex"));
   });
 
-  test("should create token", async () => {
+  test("should create token and token account for it", async () => {
     const tokenUrl = identityUrl + "/TEST";
     const createToken = {
       url: tokenUrl,
@@ -311,7 +316,8 @@ describe("Test Accumulate client", () => {
     };
 
     let res = await client.createToken(identityUrl, createToken, identityKeyPageTxSigner);
-    await client.waitOnTx(res.txid);
+    const createTokenTxId = res.txid;
+    await client.waitOnTx(createTokenTxId);
 
     const recipient = new LiteIdentity(Ed25519KeypairSigner.generate()).url.append(tokenUrl);
     const amount = new BN(123);
@@ -324,6 +330,54 @@ describe("Test Accumulate client", () => {
 
     const { data } = await client.queryUrl(recipient);
     expect(new BN(data.balance)).toStrictEqual(amount);
+
+    // Create a token account for the TEST token
+    const { receipts, transaction } = await client.queryUrl(createTokenTxId, { prove: true });
+    const proof2 = receipts[0].proof;
+
+    const header = new Header(transaction.header.principal, {
+      initiator: Buffer.from(transaction.header.initiator, "hex"),
+      memo: transaction.header.memo,
+      metadata: transaction.header.metadata
+        ? Buffer.from(transaction.header.metadata, "hex")
+        : undefined,
+    });
+    expect(transaction.body.type).toStrictEqual("createToken");
+    const body = new CreateToken(transaction.body);
+    const txn = new Transaction(body, header);
+
+    const proof1: Receipt = {
+      start: body.hash(),
+      startIndex: 0,
+      end: body.hash(),
+      endIndex: 0,
+      anchor: txn.hash(),
+      entries: [
+        {
+          hash: sha256(header.marshalBinary()),
+          right: false,
+        },
+      ],
+    };
+
+    const anchorRes = await client.queryAnchor(proof2.anchor);
+    const proof3 = anchorRes.receipt.proof;
+
+    const tokenAccountUrl = identityUrl + "/TEST2";
+    const createTokenAccount = {
+      url: tokenAccountUrl,
+      tokenUrl,
+      proof: {
+        transaction: createToken,
+        receipt: combineReceipts(combineReceipts(proof1, proof2), proof3),
+      },
+    };
+    res = await client.createTokenAccount(identityUrl, createTokenAccount, identityKeyPageTxSigner);
+
+    await client.waitOnTx(res.txid, { timeout: 10_000 });
+
+    res = await client.queryUrl(tokenAccountUrl);
+    expect(res.type).toStrictEqual("tokenAccount");
   });
 
   test("should update keypage key", async () => {
