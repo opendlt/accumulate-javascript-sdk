@@ -14,6 +14,7 @@ export type HeaderOptions = {
   timestamp?: number;
   memo?: string;
   metadata?: Uint8Array;
+  initiator?: Uint8Array;
 };
 
 /**
@@ -37,6 +38,7 @@ export class Header {
   constructor(principal: string | AccURL, options?: HeaderOptions) {
     this._principal = AccURL.toAccURL(principal);
     this._timestamp = options?.timestamp ?? Date.now();
+    this._initiator = options?.initiator && Buffer.from(options.initiator);
     this._memo = options?.memo;
     this._metadata = options?.metadata ? Buffer.from(options.metadata) : undefined;
   }

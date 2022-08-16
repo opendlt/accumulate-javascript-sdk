@@ -1,5 +1,4 @@
-import { AccURL } from "./acc-url";
-import { ACME_TOKEN_URL } from "./acme";
+import { AccURL, ACME_TOKEN_URL } from "./acc-url";
 import { sha256 } from "./crypto";
 import { Signer } from "./signer";
 import { TxSigner } from "./tx-signer";
