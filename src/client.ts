@@ -1,4 +1,4 @@
-import { AccURL } from "./acc-url";
+import { AccURL, ANCHORS_URL } from "./acc-url";
 import {
   MinorBlocksQueryOptions,
   QueryOptions,
@@ -56,6 +56,10 @@ export class Client {
 
   queryAcmeOracle(): Promise<number> {
     return this.describe().then((d) => d.values.oracle.price);
+  }
+
+  queryAnchor(anchor: string): Promise<any> {
+    return this.queryUrl(ANCHORS_URL.append(`#anchor/${anchor}`));
   }
 
   queryUrl(url: string | AccURL, options?: QueryOptions): Promise<any> {

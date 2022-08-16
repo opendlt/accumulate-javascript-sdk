@@ -7,9 +7,10 @@ import {
   hashMarshalBinary,
   stringMarshalBinary,
   uvarintMarshalBinary,
+  varintMarshalBinary,
 } from "../src/encoding";
 
-test("should varint marshal binary BN numbers", () => {
+test("should uvarint marshal binary BN numbers", () => {
   expect(uvarintMarshalBinary(0)).toStrictEqual(Buffer.from([0]));
   expect(uvarintMarshalBinary(0, 7)).toStrictEqual(Buffer.from([7, 0]));
   expect(uvarintMarshalBinary(1)).toStrictEqual(Buffer.from([1]));
@@ -73,4 +74,12 @@ test("should marshal binary hash", () => {
 test("should marshal field", () => {
   expect(fieldMarshalBinary(1, booleanMarshalBinary(true))).toStrictEqual(Buffer.from([1, 1]));
   expect(fieldMarshalBinary(2, booleanMarshalBinary(false))).toStrictEqual(Buffer.from([2, 0]));
+});
+
+test("should varint marshal binary BN numbers", () => {
+  expect(varintMarshalBinary(0)).toStrictEqual(Buffer.from([0]));
+  expect(varintMarshalBinary(1)).toStrictEqual(Buffer.from([2]));
+  expect(varintMarshalBinary(-1)).toStrictEqual(Buffer.from([1]));
+  expect(varintMarshalBinary(128)).toStrictEqual(Buffer.from([128, 2]));
+  expect(varintMarshalBinary(-64)).toStrictEqual(Buffer.from([127]));
 });

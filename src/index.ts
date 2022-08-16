@@ -1,6 +1,5 @@
 export { BN } from "bn.js";
 export * from "./acc-url";
-export * from "./acme";
 export * from "./api-types";
 export * from "./client";
 export * from "./encoding";
@@ -24,6 +23,7 @@ export * from "./payload/update-key";
 export * from "./payload/update-key-page";
 export * from "./payload/update-validator-key";
 export * from "./payload/write-data";
+export * from "./receipt";
 export { RpcError } from "./rpc-client";
 export * from "./signer";
 export * from "./signing/ed25519-keypair";
