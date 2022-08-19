@@ -32,3 +32,4 @@ export * from "./signing/rcd1-keypair-signer";
 export * from "./transaction";
 export * from "./tx-signer";
 export { TransactionType } from "./tx-types";
+export { constructIssuerProof } from "./util";
