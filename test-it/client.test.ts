@@ -4,19 +4,15 @@ import {
   ACME_TOKEN_URL,
   BN,
   Client,
-  CreateToken,
   Ed25519KeypairSigner,
-  Header,
   KeyPageOperation,
   KeyPageOperationType,
   LiteIdentity,
   RpcError,
-  Transaction,
   TransactionType,
   TxSigner,
 } from "../src";
-import { sha256 } from "../src/crypto";
-import { combineReceipts, Receipt } from "../src/receipt";
+import { constructIssuerProof } from "../src/util";
 import { addCredits, randomBuffer, randomLiteIdentity, randomString } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
@@ -332,45 +328,11 @@ describe("Test Accumulate client", () => {
     expect(new BN(data.balance)).toStrictEqual(amount);
 
     // Create a token account for the TEST token
-    const { receipts, transaction } = await client.queryUrl(createTokenTxId, { prove: true });
-    const proof2 = receipts[0].proof;
-
-    const header = new Header(transaction.header.principal, {
-      initiator: Buffer.from(transaction.header.initiator, "hex"),
-      memo: transaction.header.memo,
-      metadata: transaction.header.metadata
-        ? Buffer.from(transaction.header.metadata, "hex")
-        : undefined,
-    });
-    expect(transaction.body.type).toStrictEqual("createToken");
-    const body = new CreateToken(transaction.body);
-    const txn = new Transaction(body, header);
-
-    const proof1: Receipt = {
-      start: body.hash(),
-      startIndex: 0,
-      end: body.hash(),
-      endIndex: 0,
-      anchor: txn.hash(),
-      entries: [
-        {
-          hash: sha256(header.marshalBinary()),
-          right: false,
-        },
-      ],
-    };
-
-    const anchorRes = await client.queryAnchor(proof2.anchor);
-    const proof3 = anchorRes.receipt.proof;
-
     const tokenAccountUrl = identityUrl + "/TEST2";
     const createTokenAccount = {
       url: tokenAccountUrl,
       tokenUrl,
-      proof: {
-        transaction: createToken,
-        receipt: combineReceipts(combineReceipts(proof1, proof2), proof3),
-      },
+      proof: await constructIssuerProof(client, tokenUrl),
     };
     res = await client.createTokenAccount(identityUrl, createTokenAccount, identityKeyPageTxSigner);
 
