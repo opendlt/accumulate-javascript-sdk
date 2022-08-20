@@ -75,7 +75,12 @@ describe("Test Accumulate client", () => {
     const { data } = await client.queryUrl(recipient);
     expect(new BN(data.balance)).toStrictEqual(amount);
 
-    const res = await client.queryTx(txid);
+    let res = await client.queryTx(txid);
+    expect(res.type).toStrictEqual("sendTokens");
+    expect(res.txid).toStrictEqual(txid);
+
+    // test query with just hash
+    res = await client.queryTx(txid.slice(6).split("@")[0]);
     expect(res.type).toStrictEqual("sendTokens");
     expect(res.txid).toStrictEqual(txid);
   });

@@ -71,14 +71,12 @@ export class Client {
     });
   }
 
-  queryTx(txId: string, options?: TxQueryOptions): Promise<any> {
-    // TODO: remove after https://gitlab.com/accumulatenetwork/accumulate/-/issues/43
-    if (txId.startsWith("acc://")) {
-      txId = txId.slice(6).split("@")[0];
-    }
+  queryTx(txId: string | AccURL, options?: TxQueryOptions): Promise<any> {
+    const txIdStr = txId.toString();
+    const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 
     return this.call("query-tx", {
-      txid: txId,
+      [paramName]: txIdStr,
       ...options,
     });
   }
