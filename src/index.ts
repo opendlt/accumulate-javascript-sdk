@@ -1,4 +1,4 @@
-export { BN } from "bn.js";
+import BN from "bn.js";
 export * from "./acc-url";
 export * from "./api-types";
 export * from "./client";
@@ -33,3 +33,4 @@ export * from "./transaction";
 export * from "./tx-signer";
 export { TransactionType } from "./tx-types";
 export { constructIssuerProof } from "./util";
+export { BN };
