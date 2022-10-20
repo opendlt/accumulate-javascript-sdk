@@ -1,7 +1,5 @@
 # Accumulate JavaScript SDK
 
-**The TS/JS SDK is currently under active development and is not deemed stable.**
-
 This is the Accumulate JavaScript SDK built on the Accumulate JSON RPC API.
 
 ## Installation
