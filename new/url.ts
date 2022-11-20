@@ -1,4 +1,4 @@
-import { URL as _URL } from 'url';
+import { URL as _URL } from "url";
 
 /**
  * An Accumulate URL (e.g: 'acc://my-identity/mydata')
@@ -7,31 +7,31 @@ export class URL {
   private readonly url: _URL;
 
   constructor(input: _URL | string) {
-    if (typeof input === 'string') {
-      if (input.indexOf('acc://') != 0) {
-        input = 'acc://' + input;
+    if (typeof input === "string") {
+      if (input.indexOf("acc://") != 0) {
+        input = "acc://" + input;
       }
       input = new _URL(input);
     }
-    if (input.protocol !== 'acc:') {
+    if (input.protocol !== "acc:") {
       throw new Error(`Invalid protocol: ${input.protocol}`);
     }
     if (!input.hostname) {
-      throw new Error('Missing authority');
+      throw new Error("Missing authority");
     }
     this.url = input;
   }
 
   asTxID() {
     if (!this.username) {
-      throw new Error('URL is not a transaction ID: username is empty');
+      throw new Error("URL is not a transaction ID: username is empty");
     }
     return this.withTxID(this.username);
   }
 
   withTxID(hash: Uint8Array | string) {
     const copy = new _URL(this.toString());
-    copy.username = '';
+    copy.username = "";
     return new TxID(copy, hash);
   }
 
@@ -45,9 +45,9 @@ export class URL {
     for (const elem of path) {
       const pathStr = elem.toString();
       if (pathStr.length > 0) {
-        if (pathStr.startsWith('acc://')) {
+        if (pathStr.startsWith("acc://")) {
           url += pathStr.slice(5);
-        } else if (pathStr[0] === '/') {
+        } else if (pathStr[0] === "/") {
           url += pathStr;
         } else {
           url += `/${pathStr}`;
@@ -89,14 +89,14 @@ export class TxID {
 
   constructor(input: URL | _URL | string, hash?: Uint8Array | string) {
     if (hash) {
-      if (typeof hash === 'string') {
-        hash = Buffer.from(hash, 'hex');
+      if (typeof hash === "string") {
+        hash = Buffer.from(hash, "hex");
       }
       if (!(input instanceof URL)) {
         input = new URL(input);
       }
       if (input.username) {
-        throw new Error('Username is not empty');
+        throw new Error("Username is not empty");
       }
       this.hash = hash;
       this.account = input;
@@ -109,17 +109,17 @@ export class TxID {
       input = new _URL(input);
     }
     if (!input.username) {
-      throw new Error('URL is not a transaction ID: username is empty');
+      throw new Error("URL is not a transaction ID: username is empty");
     }
 
-    this.hash = Buffer.from(input.username, 'hex');
-    input.username = '';
+    this.hash = Buffer.from(input.username, "hex");
+    input.username = "";
     this.account = new URL(input);
   }
 
   asUrl() {
     const copy = new _URL(this.account.toString());
-    copy.username = Buffer.from(this.hash).toString('hex');
+    copy.username = Buffer.from(this.hash).toString("hex");
     return new URL(copy);
   }
 }
