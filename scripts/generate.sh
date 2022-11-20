@@ -29,4 +29,4 @@ import { AccountAuthOperationType, AccountType, AllowedTransactions, AnchorBody,
 
 # Change directory to REPO/, format everything
 cd $SCRIPT_DIR/..
-yarn prettier --config .prettierrc --write new/**/*.ts
+yarn prettier --config .prettierrc --write new{,/**}/*.ts
