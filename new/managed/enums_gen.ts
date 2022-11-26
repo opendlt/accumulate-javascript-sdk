@@ -14,6 +14,13 @@ export enum ChainType {
 }
 
 export namespace ChainType {
+  export type Args = ChainType | string;
+
+  export function fromObject(obj: Args): ChainType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): ChainType {
     switch (name) {
       case "unknown":

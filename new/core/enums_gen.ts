@@ -16,6 +16,13 @@ export enum AccountAuthOperationType {
 }
 
 export namespace AccountAuthOperationType {
+  export type Args = AccountAuthOperationType | string;
+
+  export function fromObject(obj: Args): AccountAuthOperationType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): AccountAuthOperationType {
     switch (name) {
       case "unknown":
@@ -68,6 +75,13 @@ export enum AccountType {
 }
 
 export namespace AccountType {
+  export type Args = AccountType | string;
+
+  export function fromObject(obj: Args): AccountType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): AccountType {
     switch (name) {
       case "unknown":
@@ -116,6 +130,13 @@ export enum AllowedTransactionBit {
 }
 
 export namespace AllowedTransactionBit {
+  export type Args = AllowedTransactionBit | string;
+
+  export function fromObject(obj: Args): AllowedTransactionBit {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): AllowedTransactionBit {
     switch (name) {
       case "updatekeypage":
@@ -138,6 +159,13 @@ export enum BookType {
 }
 
 export namespace BookType {
+  export type Args = BookType | string;
+
+  export function fromObject(obj: Args): BookType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): BookType {
     switch (name) {
       case "normal":
@@ -162,6 +190,13 @@ export enum DataEntryType {
 }
 
 export namespace DataEntryType {
+  export type Args = DataEntryType | string;
+
+  export function fromObject(obj: Args): DataEntryType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): DataEntryType {
     switch (name) {
       case "unknown":
@@ -192,6 +227,13 @@ export enum KeyPageOperationType {
 }
 
 export namespace KeyPageOperationType {
+  export type Args = KeyPageOperationType | string;
+
+  export function fromObject(obj: Args): KeyPageOperationType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): KeyPageOperationType {
     switch (name) {
       case "unknown":
@@ -222,6 +264,13 @@ export enum ObjectType {
 }
 
 export namespace ObjectType {
+  export type Args = ObjectType | string;
+
+  export function fromObject(obj: Args): ObjectType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): ObjectType {
     switch (name) {
       case "unknown":
@@ -244,6 +293,13 @@ export enum PartitionType {
 }
 
 export namespace PartitionType {
+  export type Args = PartitionType | string;
+
+  export function fromObject(obj: Args): PartitionType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): PartitionType {
     switch (name) {
       case "directory":
@@ -288,6 +344,13 @@ export enum SignatureType {
 }
 
 export namespace SignatureType {
+  export type Args = SignatureType | string;
+
+  export function fromObject(obj: Args): SignatureType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): SignatureType {
     switch (name) {
       case "unknown":
@@ -334,6 +397,13 @@ export enum TransactionMax {
 }
 
 export namespace TransactionMax {
+  export type Args = TransactionMax | string;
+
+  export function fromObject(obj: Args): TransactionMax {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): TransactionMax {
     switch (name) {
       case "user":
@@ -412,6 +482,13 @@ export enum TransactionType {
 }
 
 export namespace TransactionType {
+  export type Args = TransactionType | string;
+
+  export function fromObject(obj: Args): TransactionType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): TransactionType {
     switch (name) {
       case "unknown":
@@ -494,6 +571,13 @@ export enum VoteType {
 }
 
 export namespace VoteType {
+  export type Args = VoteType | string;
+
+  export function fromObject(obj: Args): VoteType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): VoteType {
     switch (name) {
       case "accept":

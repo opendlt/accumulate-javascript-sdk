@@ -52,6 +52,13 @@ export enum Status {
 }
 
 export namespace Status {
+  export type Args = Status | string;
+
+  export function fromObject(obj: Args): Status {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
   export function byName(name: string): Status {
     switch (name) {
       case "ok":
