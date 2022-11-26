@@ -54,38 +54,7 @@ export namespace Account {
     | types.UnknownSigner
     | types.UnknownSigner.ArgsWithType;
 
-  export function fromObject(obj: Args): Account;
-  export function fromObject(obj: types.ADI): types.ADI;
-  export function fromObject(obj: types.ADI.ArgsWithType): types.ADI;
-  export function fromObject(obj: types.AnchorLedger): types.AnchorLedger;
-  export function fromObject(obj: types.AnchorLedger.ArgsWithType): types.AnchorLedger;
-  export function fromObject(obj: types.BlockLedger): types.BlockLedger;
-  export function fromObject(obj: types.BlockLedger.ArgsWithType): types.BlockLedger;
-  export function fromObject(obj: types.DataAccount): types.DataAccount;
-  export function fromObject(obj: types.DataAccount.ArgsWithType): types.DataAccount;
-  export function fromObject(obj: types.KeyBook): types.KeyBook;
-  export function fromObject(obj: types.KeyBook.ArgsWithType): types.KeyBook;
-  export function fromObject(obj: types.KeyPage): types.KeyPage;
-  export function fromObject(obj: types.KeyPage.ArgsWithType): types.KeyPage;
-  export function fromObject(obj: types.LiteDataAccount): types.LiteDataAccount;
-  export function fromObject(obj: types.LiteDataAccount.ArgsWithType): types.LiteDataAccount;
-  export function fromObject(obj: types.LiteIdentity): types.LiteIdentity;
-  export function fromObject(obj: types.LiteIdentity.ArgsWithType): types.LiteIdentity;
-  export function fromObject(obj: types.LiteTokenAccount): types.LiteTokenAccount;
-  export function fromObject(obj: types.LiteTokenAccount.ArgsWithType): types.LiteTokenAccount;
-  export function fromObject(obj: types.SyntheticLedger): types.SyntheticLedger;
-  export function fromObject(obj: types.SyntheticLedger.ArgsWithType): types.SyntheticLedger;
-  export function fromObject(obj: types.SystemLedger): types.SystemLedger;
-  export function fromObject(obj: types.SystemLedger.ArgsWithType): types.SystemLedger;
-  export function fromObject(obj: types.TokenAccount): types.TokenAccount;
-  export function fromObject(obj: types.TokenAccount.ArgsWithType): types.TokenAccount;
-  export function fromObject(obj: types.TokenIssuer): types.TokenIssuer;
-  export function fromObject(obj: types.TokenIssuer.ArgsWithType): types.TokenIssuer;
-  export function fromObject(obj: types.UnknownAccount): types.UnknownAccount;
-  export function fromObject(obj: types.UnknownAccount.ArgsWithType): types.UnknownAccount;
-  export function fromObject(obj: types.UnknownSigner): types.UnknownSigner;
-  export function fromObject(obj: types.UnknownSigner.ArgsWithType): types.UnknownSigner;
-  export function fromObject(obj) {
+  export function fromObject(obj: Args): Account {
     if (obj instanceof types.ADI) return obj;
     if (obj instanceof types.AnchorLedger) return obj;
     if (obj instanceof types.BlockLedger) return obj;
@@ -148,16 +117,7 @@ export namespace DataEntry {
     | types.FactomDataEntryWrapper
     | types.FactomDataEntryWrapper.ArgsWithType;
 
-  export function fromObject(obj: Args): DataEntry;
-  export function fromObject(obj: types.AccumulateDataEntry): types.AccumulateDataEntry;
-  export function fromObject(
-    obj: types.AccumulateDataEntry.ArgsWithType
-  ): types.AccumulateDataEntry;
-  export function fromObject(obj: types.FactomDataEntryWrapper): types.FactomDataEntryWrapper;
-  export function fromObject(
-    obj: types.FactomDataEntryWrapper.ArgsWithType
-  ): types.FactomDataEntryWrapper;
-  export function fromObject(obj) {
+  export function fromObject(obj: Args): DataEntry {
     if (obj instanceof types.AccumulateDataEntry) return obj;
     if (obj instanceof types.FactomDataEntryWrapper) return obj;
 
@@ -264,82 +224,7 @@ export namespace TransactionBody {
     | types.WriteDataTo
     | types.WriteDataTo.ArgsWithType;
 
-  export function fromObject(obj: Args): TransactionBody;
-  export function fromObject(obj: types.AcmeFaucet): types.AcmeFaucet;
-  export function fromObject(obj: types.AcmeFaucet.ArgsWithType): types.AcmeFaucet;
-  export function fromObject(obj: types.AddCredits): types.AddCredits;
-  export function fromObject(obj: types.AddCredits.ArgsWithType): types.AddCredits;
-  export function fromObject(obj: types.BlockValidatorAnchor): types.BlockValidatorAnchor;
-  export function fromObject(
-    obj: types.BlockValidatorAnchor.ArgsWithType
-  ): types.BlockValidatorAnchor;
-  export function fromObject(obj: types.BurnTokens): types.BurnTokens;
-  export function fromObject(obj: types.BurnTokens.ArgsWithType): types.BurnTokens;
-  export function fromObject(obj: types.CreateDataAccount): types.CreateDataAccount;
-  export function fromObject(obj: types.CreateDataAccount.ArgsWithType): types.CreateDataAccount;
-  export function fromObject(obj: types.CreateIdentity): types.CreateIdentity;
-  export function fromObject(obj: types.CreateIdentity.ArgsWithType): types.CreateIdentity;
-  export function fromObject(obj: types.CreateKeyBook): types.CreateKeyBook;
-  export function fromObject(obj: types.CreateKeyBook.ArgsWithType): types.CreateKeyBook;
-  export function fromObject(obj: types.CreateKeyPage): types.CreateKeyPage;
-  export function fromObject(obj: types.CreateKeyPage.ArgsWithType): types.CreateKeyPage;
-  export function fromObject(obj: types.CreateLiteTokenAccount): types.CreateLiteTokenAccount;
-  export function fromObject(
-    obj: types.CreateLiteTokenAccount.ArgsWithType
-  ): types.CreateLiteTokenAccount;
-  export function fromObject(obj: types.CreateToken): types.CreateToken;
-  export function fromObject(obj: types.CreateToken.ArgsWithType): types.CreateToken;
-  export function fromObject(obj: types.CreateTokenAccount): types.CreateTokenAccount;
-  export function fromObject(obj: types.CreateTokenAccount.ArgsWithType): types.CreateTokenAccount;
-  export function fromObject(obj: types.DirectoryAnchor): types.DirectoryAnchor;
-  export function fromObject(obj: types.DirectoryAnchor.ArgsWithType): types.DirectoryAnchor;
-  export function fromObject(obj: types.IssueTokens): types.IssueTokens;
-  export function fromObject(obj: types.IssueTokens.ArgsWithType): types.IssueTokens;
-  export function fromObject(obj: types.LockAccount): types.LockAccount;
-  export function fromObject(obj: types.LockAccount.ArgsWithType): types.LockAccount;
-  export function fromObject(obj: types.RemoteTransaction): types.RemoteTransaction;
-  export function fromObject(obj: types.RemoteTransaction.ArgsWithType): types.RemoteTransaction;
-  export function fromObject(obj: types.SendTokens): types.SendTokens;
-  export function fromObject(obj: types.SendTokens.ArgsWithType): types.SendTokens;
-  export function fromObject(obj: types.SyntheticBurnTokens): types.SyntheticBurnTokens;
-  export function fromObject(
-    obj: types.SyntheticBurnTokens.ArgsWithType
-  ): types.SyntheticBurnTokens;
-  export function fromObject(obj: types.SyntheticCreateIdentity): types.SyntheticCreateIdentity;
-  export function fromObject(
-    obj: types.SyntheticCreateIdentity.ArgsWithType
-  ): types.SyntheticCreateIdentity;
-  export function fromObject(obj: types.SyntheticDepositCredits): types.SyntheticDepositCredits;
-  export function fromObject(
-    obj: types.SyntheticDepositCredits.ArgsWithType
-  ): types.SyntheticDepositCredits;
-  export function fromObject(obj: types.SyntheticDepositTokens): types.SyntheticDepositTokens;
-  export function fromObject(
-    obj: types.SyntheticDepositTokens.ArgsWithType
-  ): types.SyntheticDepositTokens;
-  export function fromObject(
-    obj: types.SyntheticForwardTransaction
-  ): types.SyntheticForwardTransaction;
-  export function fromObject(
-    obj: types.SyntheticForwardTransaction.ArgsWithType
-  ): types.SyntheticForwardTransaction;
-  export function fromObject(obj: types.SyntheticWriteData): types.SyntheticWriteData;
-  export function fromObject(obj: types.SyntheticWriteData.ArgsWithType): types.SyntheticWriteData;
-  export function fromObject(obj: types.SystemGenesis): types.SystemGenesis;
-  export function fromObject(obj: types.SystemGenesis.ArgsWithType): types.SystemGenesis;
-  export function fromObject(obj: types.SystemWriteData): types.SystemWriteData;
-  export function fromObject(obj: types.SystemWriteData.ArgsWithType): types.SystemWriteData;
-  export function fromObject(obj: types.UpdateAccountAuth): types.UpdateAccountAuth;
-  export function fromObject(obj: types.UpdateAccountAuth.ArgsWithType): types.UpdateAccountAuth;
-  export function fromObject(obj: types.UpdateKey): types.UpdateKey;
-  export function fromObject(obj: types.UpdateKey.ArgsWithType): types.UpdateKey;
-  export function fromObject(obj: types.UpdateKeyPage): types.UpdateKeyPage;
-  export function fromObject(obj: types.UpdateKeyPage.ArgsWithType): types.UpdateKeyPage;
-  export function fromObject(obj: types.WriteData): types.WriteData;
-  export function fromObject(obj: types.WriteData.ArgsWithType): types.WriteData;
-  export function fromObject(obj: types.WriteDataTo): types.WriteDataTo;
-  export function fromObject(obj: types.WriteDataTo.ArgsWithType): types.WriteDataTo;
-  export function fromObject(obj) {
+  export function fromObject(obj: Args): TransactionBody {
     if (obj instanceof types.AcmeFaucet) return obj;
     if (obj instanceof types.AddCredits) return obj;
     if (obj instanceof types.BlockValidatorAnchor) return obj;
@@ -452,32 +337,7 @@ export namespace AccountAuthOperation {
     | types.RemoveAccountAuthorityOperation
     | types.RemoveAccountAuthorityOperation.ArgsWithType;
 
-  export function fromObject(obj: Args): AccountAuthOperation;
-  export function fromObject(
-    obj: types.AddAccountAuthorityOperation
-  ): types.AddAccountAuthorityOperation;
-  export function fromObject(
-    obj: types.AddAccountAuthorityOperation.ArgsWithType
-  ): types.AddAccountAuthorityOperation;
-  export function fromObject(
-    obj: types.DisableAccountAuthOperation
-  ): types.DisableAccountAuthOperation;
-  export function fromObject(
-    obj: types.DisableAccountAuthOperation.ArgsWithType
-  ): types.DisableAccountAuthOperation;
-  export function fromObject(
-    obj: types.EnableAccountAuthOperation
-  ): types.EnableAccountAuthOperation;
-  export function fromObject(
-    obj: types.EnableAccountAuthOperation.ArgsWithType
-  ): types.EnableAccountAuthOperation;
-  export function fromObject(
-    obj: types.RemoveAccountAuthorityOperation
-  ): types.RemoveAccountAuthorityOperation;
-  export function fromObject(
-    obj: types.RemoveAccountAuthorityOperation.ArgsWithType
-  ): types.RemoveAccountAuthorityOperation;
-  export function fromObject(obj) {
+  export function fromObject(obj: Args): AccountAuthOperation {
     if (obj instanceof types.AddAccountAuthorityOperation) return obj;
     if (obj instanceof types.DisableAccountAuthOperation) return obj;
     if (obj instanceof types.EnableAccountAuthOperation) return obj;
@@ -518,26 +378,7 @@ export namespace KeyPageOperation {
     | types.UpdateKeyOperation
     | types.UpdateKeyOperation.ArgsWithType;
 
-  export function fromObject(obj: Args): KeyPageOperation;
-  export function fromObject(obj: types.AddKeyOperation): types.AddKeyOperation;
-  export function fromObject(obj: types.AddKeyOperation.ArgsWithType): types.AddKeyOperation;
-  export function fromObject(obj: types.RemoveKeyOperation): types.RemoveKeyOperation;
-  export function fromObject(obj: types.RemoveKeyOperation.ArgsWithType): types.RemoveKeyOperation;
-  export function fromObject(
-    obj: types.SetThresholdKeyPageOperation
-  ): types.SetThresholdKeyPageOperation;
-  export function fromObject(
-    obj: types.SetThresholdKeyPageOperation.ArgsWithType
-  ): types.SetThresholdKeyPageOperation;
-  export function fromObject(
-    obj: types.UpdateAllowedKeyPageOperation
-  ): types.UpdateAllowedKeyPageOperation;
-  export function fromObject(
-    obj: types.UpdateAllowedKeyPageOperation.ArgsWithType
-  ): types.UpdateAllowedKeyPageOperation;
-  export function fromObject(obj: types.UpdateKeyOperation): types.UpdateKeyOperation;
-  export function fromObject(obj: types.UpdateKeyOperation.ArgsWithType): types.UpdateKeyOperation;
-  export function fromObject(obj) {
+  export function fromObject(obj: Args): KeyPageOperation {
     if (obj instanceof types.AddKeyOperation) return obj;
     if (obj instanceof types.RemoveKeyOperation) return obj;
     if (obj instanceof types.SetThresholdKeyPageOperation) return obj;
@@ -602,34 +443,7 @@ export namespace Signature {
     | types.SignatureSet
     | types.SignatureSet.ArgsWithType;
 
-  export function fromObject(obj: Args): Signature;
-  export function fromObject(obj: types.BTCLegacySignature): types.BTCLegacySignature;
-  export function fromObject(obj: types.BTCLegacySignature.ArgsWithType): types.BTCLegacySignature;
-  export function fromObject(obj: types.BTCSignature): types.BTCSignature;
-  export function fromObject(obj: types.BTCSignature.ArgsWithType): types.BTCSignature;
-  export function fromObject(obj: types.DelegatedSignature): types.DelegatedSignature;
-  export function fromObject(obj: types.DelegatedSignature.ArgsWithType): types.DelegatedSignature;
-  export function fromObject(obj: types.ED25519Signature): types.ED25519Signature;
-  export function fromObject(obj: types.ED25519Signature.ArgsWithType): types.ED25519Signature;
-  export function fromObject(obj: types.ETHSignature): types.ETHSignature;
-  export function fromObject(obj: types.ETHSignature.ArgsWithType): types.ETHSignature;
-  export function fromObject(obj: types.InternalSignature): types.InternalSignature;
-  export function fromObject(obj: types.InternalSignature.ArgsWithType): types.InternalSignature;
-  export function fromObject(obj: types.LegacyED25519Signature): types.LegacyED25519Signature;
-  export function fromObject(
-    obj: types.LegacyED25519Signature.ArgsWithType
-  ): types.LegacyED25519Signature;
-  export function fromObject(obj: types.PartitionSignature): types.PartitionSignature;
-  export function fromObject(obj: types.PartitionSignature.ArgsWithType): types.PartitionSignature;
-  export function fromObject(obj: types.RCD1Signature): types.RCD1Signature;
-  export function fromObject(obj: types.RCD1Signature.ArgsWithType): types.RCD1Signature;
-  export function fromObject(obj: types.ReceiptSignature): types.ReceiptSignature;
-  export function fromObject(obj: types.ReceiptSignature.ArgsWithType): types.ReceiptSignature;
-  export function fromObject(obj: types.RemoteSignature): types.RemoteSignature;
-  export function fromObject(obj: types.RemoteSignature.ArgsWithType): types.RemoteSignature;
-  export function fromObject(obj: types.SignatureSet): types.SignatureSet;
-  export function fromObject(obj: types.SignatureSet.ArgsWithType): types.SignatureSet;
-  export function fromObject(obj) {
+  export function fromObject(obj: Args): Signature {
     if (obj instanceof types.BTCLegacySignature) return obj;
     if (obj instanceof types.BTCSignature) return obj;
     if (obj instanceof types.DelegatedSignature) return obj;
