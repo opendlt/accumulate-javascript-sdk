@@ -134,8 +134,10 @@ export namespace DataEntry {
 
 export type TransactionBody =
   | types.AcmeFaucet
+  | types.ActivateProtocolVersion
   | types.AddCredits
   | types.BlockValidatorAnchor
+  | types.BurnCredits
   | types.BurnTokens
   | types.CreateDataAccount
   | types.CreateIdentity
@@ -157,6 +159,7 @@ export type TransactionBody =
   | types.SyntheticWriteData
   | types.SystemGenesis
   | types.SystemWriteData
+  | types.TransferCredits
   | types.UpdateAccountAuth
   | types.UpdateKey
   | types.UpdateKeyPage
@@ -167,10 +170,14 @@ export namespace TransactionBody {
   export type Args =
     | types.AcmeFaucet
     | types.AcmeFaucet.ArgsWithType
+    | types.ActivateProtocolVersion
+    | types.ActivateProtocolVersion.ArgsWithType
     | types.AddCredits
     | types.AddCredits.ArgsWithType
     | types.BlockValidatorAnchor
     | types.BlockValidatorAnchor.ArgsWithType
+    | types.BurnCredits
+    | types.BurnCredits.ArgsWithType
     | types.BurnTokens
     | types.BurnTokens.ArgsWithType
     | types.CreateDataAccount
@@ -213,6 +220,8 @@ export namespace TransactionBody {
     | types.SystemGenesis.ArgsWithType
     | types.SystemWriteData
     | types.SystemWriteData.ArgsWithType
+    | types.TransferCredits
+    | types.TransferCredits.ArgsWithType
     | types.UpdateAccountAuth
     | types.UpdateAccountAuth.ArgsWithType
     | types.UpdateKey
@@ -226,8 +235,10 @@ export namespace TransactionBody {
 
   export function fromObject(obj: Args): TransactionBody {
     if (obj instanceof types.AcmeFaucet) return obj;
+    if (obj instanceof types.ActivateProtocolVersion) return obj;
     if (obj instanceof types.AddCredits) return obj;
     if (obj instanceof types.BlockValidatorAnchor) return obj;
+    if (obj instanceof types.BurnCredits) return obj;
     if (obj instanceof types.BurnTokens) return obj;
     if (obj instanceof types.CreateDataAccount) return obj;
     if (obj instanceof types.CreateIdentity) return obj;
@@ -249,6 +260,7 @@ export namespace TransactionBody {
     if (obj instanceof types.SyntheticWriteData) return obj;
     if (obj instanceof types.SystemGenesis) return obj;
     if (obj instanceof types.SystemWriteData) return obj;
+    if (obj instanceof types.TransferCredits) return obj;
     if (obj instanceof types.UpdateAccountAuth) return obj;
     if (obj instanceof types.UpdateKey) return obj;
     if (obj instanceof types.UpdateKeyPage) return obj;
@@ -258,10 +270,14 @@ export namespace TransactionBody {
     switch (obj.type) {
       case (types.TransactionType.AcmeFaucet, "acmeFaucet"):
         return new types.AcmeFaucet(obj);
+      case (types.TransactionType.ActivateProtocolVersion, "activateProtocolVersion"):
+        return new types.ActivateProtocolVersion(obj);
       case (types.TransactionType.AddCredits, "addCredits"):
         return new types.AddCredits(obj);
       case (types.TransactionType.BlockValidatorAnchor, "blockValidatorAnchor"):
         return new types.BlockValidatorAnchor(obj);
+      case (types.TransactionType.BurnCredits, "burnCredits"):
+        return new types.BurnCredits(obj);
       case (types.TransactionType.BurnTokens, "burnTokens"):
         return new types.BurnTokens(obj);
       case (types.TransactionType.CreateDataAccount, "createDataAccount"):
@@ -304,6 +320,8 @@ export namespace TransactionBody {
         return new types.SystemGenesis(obj);
       case (types.TransactionType.SystemWriteData, "systemWriteData"):
         return new types.SystemWriteData(obj);
+      case (types.TransactionType.TransferCredits, "transferCredits"):
+        return new types.TransferCredits(obj);
       case (types.TransactionType.UpdateAccountAuth, "updateAccountAuth"):
         return new types.UpdateAccountAuth(obj);
       case (types.TransactionType.UpdateKey, "updateKey"):
@@ -403,6 +421,7 @@ export namespace KeyPageOperation {
 }
 
 export type Signature =
+  | types.AuthoritySignature
   | types.BTCLegacySignature
   | types.BTCSignature
   | types.DelegatedSignature
@@ -418,6 +437,8 @@ export type Signature =
 
 export namespace Signature {
   export type Args =
+    | types.AuthoritySignature
+    | types.AuthoritySignature.ArgsWithType
     | types.BTCLegacySignature
     | types.BTCLegacySignature.ArgsWithType
     | types.BTCSignature
@@ -444,6 +465,7 @@ export namespace Signature {
     | types.SignatureSet.ArgsWithType;
 
   export function fromObject(obj: Args): Signature {
+    if (obj instanceof types.AuthoritySignature) return obj;
     if (obj instanceof types.BTCLegacySignature) return obj;
     if (obj instanceof types.BTCSignature) return obj;
     if (obj instanceof types.DelegatedSignature) return obj;
@@ -458,6 +480,8 @@ export namespace Signature {
     if (obj instanceof types.SignatureSet) return obj;
 
     switch (obj.type) {
+      case (types.SignatureType.Authority, "authority"):
+        return new types.AuthoritySignature(obj);
       case (types.SignatureType.BTCLegacy, "btclegacy"):
         return new types.BTCLegacySignature(obj);
       case (types.SignatureType.BTC, "btc"):

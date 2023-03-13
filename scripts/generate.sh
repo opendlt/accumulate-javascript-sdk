@@ -11,8 +11,8 @@ go run ./tools/cmd/gen-types -l typescript -o ../new/errors/types_gen.ts pkg/err
 import { Status } from ".";
 '
 
-go run ./tools/cmd/gen-enum -l typescript -o ../new/managed/enums_gen.ts internal/database/smt/managed/enums.yml
-go run ./tools/cmd/gen-types -l typescript -o ../new/managed/types_gen.ts internal/database/smt/managed/types.yml ../new/managed/types.yml --header='
+go run ./tools/cmd/gen-enum -l typescript -o ../new/merkle/enums_gen.ts pkg/types/merkle/enums.yml
+go run ./tools/cmd/gen-types -l typescript -o ../new/merkle/types_gen.ts pkg/types/merkle/types.yml --header='
 import { ChainType } from ".";
 '
 
@@ -22,33 +22,34 @@ go run ./tools/cmd/gen-types -l typescript-union -o ../new/core/unions_gen.ts \
 
 go run ./tools/cmd/gen-types -l typescript -o ../new/core/types_gen.ts \
     protocol/{accounts,account_auth_operations,general,key_page_operations,signatures,synthetic_transactions,system,transaction,transaction_results,user_transactions}.yml \
-    -x Object,AnchorMetadata,ChainMetadata \
+    -x Object,AnnotatedReceipt,AnchorMetadata,ChainMetadata \
     --header='
 import * as errors2 from "../errors";
-import * as managed from "../managed";
+import * as merkle from "../merkle";
 import { URL, TxID } from "../url";
 import { TransactionBase } from "./base";
 import {
-  Account
-  AccountAuthOperation
-  AccountAuthOperationType
-  AccountType
-  AllowedTransactions
-  AnchorBody
-  BookType
-  DataEntry
-  DataEntryType
-  Fee
-  KeyPageOperation
-  KeyPageOperationType
-  PartitionType
-  Signature
-  SignatureType
-  Signer
-  TransactionBody
-  TransactionResult
-  TransactionType
-  VoteType
+  Account,
+  AccountAuthOperation,
+  AccountAuthOperationType,
+  AccountType,
+  AllowedTransactions,
+  AnchorBody,
+  BookType,
+  DataEntry,
+  DataEntryType,
+  ExecutorVersion,
+  Fee,
+  KeyPageOperation,
+  KeyPageOperationType,
+  PartitionType,
+  Signature,
+  SignatureType,
+  Signer,
+  TransactionBody,
+  TransactionResult,
+  TransactionType,
+  VoteType,
 } from ".";
 '
 

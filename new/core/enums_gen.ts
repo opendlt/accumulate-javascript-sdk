@@ -211,6 +211,45 @@ export namespace DataEntryType {
   }
 }
 
+export enum ExecutorVersion {
+  /** V1 is the first version of the executor system. */
+  V1 = 1,
+  /** V1SignatureAnchoring introduces anchoring of signature chains into the root chain. */
+  V1SignatureAnchoring = 2,
+  /** V1ActivationFix fixes a problem that prevented v1-signatureAnchoring from being activated correctly. */
+  V1ActivationFix = 3,
+  /** V1Halt halts transaction processing in preparation for v2. */
+  V1Halt = 4,
+  /** V2 is the second version of the execute system. */
+  V2 = 5,
+}
+
+export namespace ExecutorVersion {
+  export type Args = ExecutorVersion | string;
+
+  export function fromObject(obj: Args): ExecutorVersion {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
+  export function byName(name: string): ExecutorVersion {
+    switch (name) {
+      case "v1":
+        return ExecutorVersion.V1;
+      case "v1signatureanchoring":
+        return ExecutorVersion.V1SignatureAnchoring;
+      case "v1activationfix":
+        return ExecutorVersion.V1ActivationFix;
+      case "v1halt":
+        return ExecutorVersion.V1Halt;
+      case "v2":
+        return ExecutorVersion.V2;
+      default:
+        throw new Error(`Unknown ExecutorVersion '${name}'`);
+    }
+  }
+}
+
 export enum KeyPageOperationType {
   /** Unknown is used when the key page operation is not known. */
   Unknown = 0,
@@ -341,6 +380,8 @@ export enum SignatureType {
   Delegated = 11,
   /** Internal is used for internally produced transactions. */
   Internal = 12,
+  /** Authority is a signature produced by an authority. */
+  Authority = 13,
 }
 
 export namespace SignatureType {
@@ -381,6 +422,8 @@ export namespace SignatureType {
         return SignatureType.Delegated;
       case "internal":
         return SignatureType.Internal;
+      case "authority":
+        return SignatureType.Authority;
       default:
         throw new Error(`Unknown SignatureType '${name}'`);
     }
@@ -453,10 +496,16 @@ export enum TransactionType {
   UpdateKeyPage = 15,
   /** LockAccount sets a major block height that prevents tokens from being transferred out of a lite token account until that height has been reached. */
   LockAccount = 16,
+  /** BurnCredits burns credits from a credit account. */
+  BurnCredits = 17,
+  /** TransferCredits transfers credits between credit accounts within the same domain. */
+  TransferCredits = 18,
   /** UpdateAccountAuth updates authorization for an account. */
   UpdateAccountAuth = 21,
   /** UpdateKey update key for existing keys. */
   UpdateKey = 22,
+  /** ActivateProtocolVersion activates a new version of the protocol. */
+  ActivateProtocolVersion = 47,
   /** Remote is used to sign a remote transaction. */
   Remote = 48,
   /** SyntheticCreateIdentity creates an identity. */
@@ -525,10 +574,16 @@ export namespace TransactionType {
         return TransactionType.UpdateKeyPage;
       case "lockaccount":
         return TransactionType.LockAccount;
+      case "burncredits":
+        return TransactionType.BurnCredits;
+      case "transfercredits":
+        return TransactionType.TransferCredits;
       case "updateaccountauth":
         return TransactionType.UpdateAccountAuth;
       case "updatekey":
         return TransactionType.UpdateKey;
+      case "activateprotocolversion":
+        return TransactionType.ActivateProtocolVersion;
       case "remote":
         return TransactionType.Remote;
       case "signPending":
