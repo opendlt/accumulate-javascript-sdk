@@ -1,4 +1,5 @@
-import { CreateToken } from ".";
+import { CreateToken } from "../new/core";
+import { hashBody } from "../new/core/base";
 import { AccURL } from "./acc-url";
 import { Client } from "./client";
 import { sha256 } from "./crypto";
@@ -41,9 +42,9 @@ export async function constructIssuerProof(
 
   // Prove that the body is part of the transaction
   const proof1: Receipt = {
-    start: body.hash(),
+    start: hashBody(body),
     startIndex: 0,
-    end: body.hash(),
+    end: hashBody(body),
     endIndex: 0,
     anchor: txn.hash(),
     entries: [
