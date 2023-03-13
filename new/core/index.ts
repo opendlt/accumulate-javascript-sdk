@@ -22,9 +22,10 @@ export type Fee = number;
 export type AllowedTransactions = TransactionType[];
 
 export namespace Fee {
-  export type Args = Fee;
+  export type Args = Fee | string;
 
   export function fromObject(obj: Args): Fee {
+    if (typeof obj === "string") return Number(obj);
     return obj;
   }
 }

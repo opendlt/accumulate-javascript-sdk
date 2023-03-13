@@ -7,19 +7,24 @@ export class URL {
   private readonly url: _URL;
 
   constructor(input: _URL | string) {
-    if (typeof input === "string") {
-      if (input.indexOf("acc://") != 0) {
-        input = "acc://" + input;
+    // eslint-disable-next-line no-useless-catch
+    try {
+      if (typeof input === "string") {
+        if (input.indexOf("acc://") != 0) {
+          input = "acc://" + input;
+        }
+        input = new _URL(input);
       }
-      input = new _URL(input);
+      if (input.protocol !== "acc:") {
+        throw new Error(`Invalid protocol: ${input.protocol}`);
+      }
+      if (!input.hostname) {
+        throw new Error("Missing authority");
+      }
+      this.url = input;
+    } catch (error) {
+      throw error;
     }
-    if (input.protocol !== "acc:") {
-      throw new Error(`Invalid protocol: ${input.protocol}`);
-    }
-    if (!input.hostname) {
-      throw new Error("Missing authority");
-    }
-    this.url = input;
   }
 
   asTxID() {
@@ -121,5 +126,9 @@ export class TxID {
     const copy = new _URL(this.account.toString());
     copy.username = Buffer.from(this.hash).toString("hex");
     return new URL(copy);
+  }
+
+  toString() {
+    return this.asUrl().toString();
   }
 }

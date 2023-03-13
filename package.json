@@ -36,6 +36,7 @@
     "@types/bn.js": "^5.1.1",
     "@types/jest": "^27.5.0",
     "@types/node": "^18.7.18",
+    "@types/reflect-metadata": "^0.1.0",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "eslint": "^8.23.1",
@@ -50,6 +51,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "bn.js": "^5.2.1",
+    "reflect-metadata": "^0.1.13",
     "tweetnacl": "^1.0.3"
   }
 }

@@ -66,7 +66,7 @@ export function bytesMarshalBinary(val: Uint8Array, field?: number): Buffer {
 export function hashMarshalBinary(val: Uint8Array, field?: number): Buffer {
   if (val.length != 32) {
     throw new Error(`Invalid length, value is not a hash`);
-  }
+}
   const data = Buffer.from(val);
   return withFieldNumber(data, field);
 }

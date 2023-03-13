@@ -21,6 +21,7 @@ import {
   TransactionType,
   VoteType,
 } from ".";
+import { encodeAs } from "../encoding";
 import * as errors2 from "../errors";
 import * as managed from "../managed";
 import { TxID, URL } from "../url";
@@ -30,168 +31,206 @@ import { TxID, URL } from "../url";
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-types */
 
 export namespace ADI {
   export type Args = {
-    url: URL | string;
-    authorities: (AuthorityEntry | AuthorityEntry.Args)[];
+    url?: URL | string;
+    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
   };
   export type ArgsWithType = Args & { type: AccountType.Identity | "identity" };
 }
 export class ADI {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.Identity;
-  public url: URL;
-  public authorities: AuthorityEntry[];
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3, 1).repeatable.reference
+  public authorities?: AuthorityEntry[];
 
   constructor(args: ADI.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.authorities = args.authorities.map((v) =>
-      v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
-    );
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof AuthorityEntry ? v : new AuthorityEntry(v)));
   }
 
-  asObject() {
+  asObject(): ADI.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      authorities: this.authorities?.map((v) => v.asObject()),
+      url: this.url && this.url.toString(),
+      authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace AccountAuth {
   export type Args = {
-    authorities: (AuthorityEntry | AuthorityEntry.Args)[];
+    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
   };
 }
 export class AccountAuth {
-  public authorities: AuthorityEntry[];
+  @encodeAs.field(1).repeatable.reference
+  public authorities?: AuthorityEntry[];
 
   constructor(args: AccountAuth.Args) {
-    this.authorities = args.authorities.map((v) =>
-      v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
-    );
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof AuthorityEntry ? v : new AuthorityEntry(v)));
   }
 
-  asObject() {
+  asObject(): AccountAuth.Args {
     return {
-      authorities: this.authorities?.map((v) => v.asObject()),
+      authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace AccumulateDataEntry {
   export type Args = {
-    data: (Uint8Array | string)[];
+    data?: (Uint8Array | string)[];
   };
   export type ArgsWithType = Args & { type: DataEntryType.Accumulate | "accumulate" };
 }
 export class AccumulateDataEntry {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = DataEntryType.Accumulate;
-  public data: Uint8Array[];
+  @encodeAs.field(2).repeatable.bytes
+  public data?: Uint8Array[];
 
   constructor(args: AccumulateDataEntry.Args) {
-    this.data = args.data.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
   }
 
-  asObject() {
+  asObject(): AccumulateDataEntry.ArgsWithType {
     return {
       type: this.type,
-      data: this.data?.map((v) => Buffer.from(v).toString("hex")),
+      data: this.data && this.data?.map((v) => Buffer.from(v).toString("hex")),
     };
   }
 }
 
 export namespace AcmeFaucet {
   export type Args = {
-    url: URL | string;
+    url?: URL | string;
   };
   export type ArgsWithType = Args & { type: TransactionType.AcmeFaucet | "acmeFaucet" };
 }
 export class AcmeFaucet {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.AcmeFaucet;
-  public url: URL;
+  @encodeAs.field(2).url
+  public url?: URL;
 
   constructor(args: AcmeFaucet.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
   }
 
-  asObject() {
+  asObject(): AcmeFaucet.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
+      url: this.url && this.url.toString(),
     };
   }
 }
 
 export namespace AcmeOracle {
   export type Args = {
-    price: number;
+    price?: number;
   };
 }
 export class AcmeOracle {
-  public price: number;
+  @encodeAs.field(1).uint
+  public price?: number;
 
   constructor(args: AcmeOracle.Args) {
-    this.price = args.price;
+    this.price = args.price == undefined ? undefined : args.price;
   }
 
-  asObject() {
+  asObject(): AcmeOracle.Args {
     return {
-      price: this.price,
+      price: this.price && this.price,
     };
   }
 }
 
 export namespace AddAccountAuthorityOperation {
   export type Args = {
-    authority: URL | string;
+    authority?: URL | string;
   };
   export type ArgsWithType = Args & {
     type: AccountAuthOperationType.AddAuthority | "addAuthority";
   };
 }
 export class AddAccountAuthorityOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountAuthOperationType.AddAuthority;
-  public authority: URL;
+  @encodeAs.field(2).url
+  public authority?: URL;
 
   constructor(args: AddAccountAuthorityOperation.Args) {
-    this.authority = args.authority instanceof URL ? args.authority : new URL(args.authority);
+    this.authority =
+      args.authority == undefined
+        ? undefined
+        : args.authority instanceof URL
+        ? args.authority
+        : new URL(args.authority);
   }
 
-  asObject() {
+  asObject(): AddAccountAuthorityOperation.ArgsWithType {
     return {
       type: this.type,
-      authority: this.authority.toString(),
+      authority: this.authority && this.authority.toString(),
     };
   }
 }
 
 export namespace AddCredits {
   export type Args = {
-    recipient: URL | string;
-    amount: BN | string;
-    oracle: number;
+    recipient?: URL | string;
+    amount?: BN | string;
+    oracle?: number;
   };
   export type ArgsWithType = Args & { type: TransactionType.AddCredits | "addCredits" };
 }
 export class AddCredits {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.AddCredits;
-  public recipient: URL;
-  public amount: BN;
+  @encodeAs.field(2).url
+  public recipient?: URL;
+  @encodeAs.field(3).bigInt
+  public amount?: BN;
+  @encodeAs.field(4).uint
   public oracle?: number;
 
   constructor(args: AddCredits.Args) {
-    this.recipient = args.recipient instanceof URL ? args.recipient : new URL(args.recipient);
-    this.amount = args.amount instanceof BN ? args.amount : new BN(args.amount);
-    this.oracle = args.oracle;
+    this.recipient =
+      args.recipient == undefined
+        ? undefined
+        : args.recipient instanceof URL
+        ? args.recipient
+        : new URL(args.recipient);
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : args.amount instanceof BN
+        ? args.amount
+        : new BN(args.amount);
+    this.oracle = args.oracle == undefined ? undefined : args.oracle;
   }
 
-  asObject() {
+  asObject(): AddCredits.ArgsWithType {
     return {
       type: this.type,
-      recipient: this.recipient.toString(),
-      amount: this.amount.toString(),
+      recipient: this.recipient && this.recipient.toString(),
+      amount: this.amount && this.amount.toString(),
       oracle: this.oracle && this.oracle,
     };
   }
@@ -199,170 +238,230 @@ export class AddCredits {
 
 export namespace AddCreditsResult {
   export type Args = {
-    amount: BN | string;
-    credits: number;
-    oracle: number;
+    amount?: BN | string;
+    credits?: number;
+    oracle?: number;
   };
   export type ArgsWithType = Args & { type: TransactionType.AddCredits | "addCredits" };
 }
 export class AddCreditsResult {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.AddCredits;
-  public amount: BN;
-  public credits: number;
-  public oracle: number;
+  @encodeAs.field(2).bigInt
+  public amount?: BN;
+  @encodeAs.field(3).uint
+  public credits?: number;
+  @encodeAs.field(4).uint
+  public oracle?: number;
 
   constructor(args: AddCreditsResult.Args) {
-    this.amount = args.amount instanceof BN ? args.amount : new BN(args.amount);
-    this.credits = args.credits;
-    this.oracle = args.oracle;
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : args.amount instanceof BN
+        ? args.amount
+        : new BN(args.amount);
+    this.credits = args.credits == undefined ? undefined : args.credits;
+    this.oracle = args.oracle == undefined ? undefined : args.oracle;
   }
 
-  asObject() {
+  asObject(): AddCreditsResult.ArgsWithType {
     return {
       type: this.type,
-      amount: this.amount.toString(),
-      credits: this.credits,
-      oracle: this.oracle,
+      amount: this.amount && this.amount.toString(),
+      credits: this.credits && this.credits,
+      oracle: this.oracle && this.oracle,
     };
   }
 }
 
 export namespace AddKeyOperation {
   export type Args = {
-    entry: KeySpecParams | KeySpecParams.Args;
+    entry?: KeySpecParams | KeySpecParams.Args;
   };
   export type ArgsWithType = Args & { type: KeyPageOperationType.Add | "add" };
 }
 export class AddKeyOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.Add;
-  public entry: KeySpecParams;
+  @encodeAs.field(2).reference
+  public entry?: KeySpecParams;
 
   constructor(args: AddKeyOperation.Args) {
-    this.entry = args.entry instanceof KeySpecParams ? args.entry : new KeySpecParams(args.entry);
+    this.entry =
+      args.entry == undefined
+        ? undefined
+        : args.entry instanceof KeySpecParams
+        ? args.entry
+        : new KeySpecParams(args.entry);
   }
 
-  asObject() {
+  asObject(): AddKeyOperation.ArgsWithType {
     return {
       type: this.type,
-      entry: this.entry.asObject(),
+      entry: this.entry && this.entry.asObject(),
     };
   }
 }
 
 export namespace AnchorLedger {
   export type Args = {
-    url: URL | string;
-    minorBlockSequenceNumber: number;
-    majorBlockIndex: number;
-    majorBlockTime: Date | string;
-    pendingMajorBlockAnchors: (URL | string)[];
-    sequence: (PartitionSyntheticLedger | PartitionSyntheticLedger.Args)[];
+    url?: URL | string;
+    minorBlockSequenceNumber?: number;
+    majorBlockIndex?: number;
+    majorBlockTime?: Date | string;
+    pendingMajorBlockAnchors?: (URL | string)[];
+    sequence?: (PartitionSyntheticLedger | PartitionSyntheticLedger.Args)[];
   };
   export type ArgsWithType = Args & { type: AccountType.AnchorLedger | "anchorLedger" };
 }
 export class AnchorLedger {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.AnchorLedger;
-  public url: URL;
-  public minorBlockSequenceNumber: number;
-  public majorBlockIndex: number;
-  public majorBlockTime: Date;
-  public pendingMajorBlockAnchors: URL[];
-  public sequence: PartitionSyntheticLedger[];
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).uint
+  public minorBlockSequenceNumber?: number;
+  @encodeAs.field(4).uint
+  public majorBlockIndex?: number;
+  @encodeAs.field(5).time
+  public majorBlockTime?: Date;
+  @encodeAs.field(6).repeatable.url
+  public pendingMajorBlockAnchors?: URL[];
+  @encodeAs.field(7).repeatable.reference
+  public sequence?: PartitionSyntheticLedger[];
 
   constructor(args: AnchorLedger.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.minorBlockSequenceNumber = args.minorBlockSequenceNumber;
-    this.majorBlockIndex = args.majorBlockIndex;
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.minorBlockSequenceNumber =
+      args.minorBlockSequenceNumber == undefined ? undefined : args.minorBlockSequenceNumber;
+    this.majorBlockIndex = args.majorBlockIndex == undefined ? undefined : args.majorBlockIndex;
     this.majorBlockTime =
-      args.majorBlockTime instanceof Date ? args.majorBlockTime : new Date(args.majorBlockTime);
-    this.pendingMajorBlockAnchors = args.pendingMajorBlockAnchors.map((v) =>
-      v instanceof URL ? v : new URL(v)
-    );
-    this.sequence = args.sequence.map((v) =>
-      v instanceof PartitionSyntheticLedger ? v : new PartitionSyntheticLedger(v)
-    );
+      args.majorBlockTime == undefined
+        ? undefined
+        : args.majorBlockTime instanceof Date
+        ? args.majorBlockTime
+        : new Date(args.majorBlockTime);
+    this.pendingMajorBlockAnchors =
+      args.pendingMajorBlockAnchors == undefined
+        ? undefined
+        : args.pendingMajorBlockAnchors.map((v) => (v instanceof URL ? v : new URL(v)));
+    this.sequence =
+      args.sequence == undefined
+        ? undefined
+        : args.sequence.map((v) =>
+            v instanceof PartitionSyntheticLedger ? v : new PartitionSyntheticLedger(v)
+          );
   }
 
-  asObject() {
+  asObject(): AnchorLedger.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      minorBlockSequenceNumber: this.minorBlockSequenceNumber,
-      majorBlockIndex: this.majorBlockIndex,
-      majorBlockTime: this.majorBlockTime,
-      pendingMajorBlockAnchors: this.pendingMajorBlockAnchors?.map((v) => v.toString()),
-      sequence: this.sequence?.map((v) => v.asObject()),
+      url: this.url && this.url.toString(),
+      minorBlockSequenceNumber: this.minorBlockSequenceNumber && this.minorBlockSequenceNumber,
+      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
+      majorBlockTime: this.majorBlockTime && this.majorBlockTime,
+      pendingMajorBlockAnchors:
+        this.pendingMajorBlockAnchors && this.pendingMajorBlockAnchors?.map((v) => v.toString()),
+      sequence: this.sequence && this.sequence?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace AuthorityEntry {
   export type Args = {
-    url: URL | string;
-    disabled: boolean;
+    url?: URL | string;
+    disabled?: boolean;
   };
 }
 export class AuthorityEntry {
-  public url: URL;
-  public disabled: boolean;
+  @encodeAs.field(1).url
+  public url?: URL;
+  @encodeAs.field(2).bool
+  public disabled?: boolean;
 
   constructor(args: AuthorityEntry.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.disabled = args.disabled;
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.disabled = args.disabled == undefined ? undefined : args.disabled;
   }
 
-  asObject() {
+  asObject(): AuthorityEntry.Args {
     return {
-      url: this.url.toString(),
-      disabled: this.disabled,
+      url: this.url && this.url.toString(),
+      disabled: this.disabled && this.disabled,
     };
   }
 }
 
 export namespace BTCLegacySignature {
   export type Args = {
-    publicKey: Uint8Array | string;
-    signature: Uint8Array | string;
-    signer: URL | string;
-    signerVersion: number;
-    timestamp: number;
-    vote: VoteType.Args;
-    transactionHash: Uint8Array | string;
+    publicKey?: Uint8Array | string;
+    signature?: Uint8Array | string;
+    signer?: URL | string;
+    signerVersion?: number;
+    timestamp?: number;
+    vote?: VoteType.Args;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.BTCLegacy | "btclegacy" };
 }
 export class BTCLegacySignature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.BTCLegacy;
-  public publicKey: Uint8Array;
-  public signature: Uint8Array;
-  public signer: URL;
-  public signerVersion: number;
+  @encodeAs.field(2).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(3).bytes
+  public signature?: Uint8Array;
+  @encodeAs.field(4).url
+  public signer?: URL;
+  @encodeAs.field(5).uint
+  public signerVersion?: number;
+  @encodeAs.field(6).uint
   public timestamp?: number;
+  @encodeAs.field(7).enum
   public vote?: VoteType;
+  @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
   constructor(args: BTCLegacySignature.Args) {
     this.publicKey =
-      args.publicKey instanceof Uint8Array ? args.publicKey : Buffer.from(args.publicKey, "hex");
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
     this.signature =
-      args.signature instanceof Uint8Array ? args.signature : Buffer.from(args.signature, "hex");
-    this.signer = args.signer instanceof URL ? args.signer : new URL(args.signer);
-    this.signerVersion = args.signerVersion;
-    this.timestamp = args.timestamp;
-    this.vote = VoteType.fromObject(args.vote);
+      args.signature == undefined
+        ? undefined
+        : args.signature instanceof Uint8Array
+        ? args.signature
+        : Buffer.from(args.signature, "hex");
+    this.signer =
+      args.signer == undefined
+        ? undefined
+        : args.signer instanceof URL
+        ? args.signer
+        : new URL(args.signer);
+    this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
+    this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): BTCLegacySignature.ArgsWithType {
     return {
       type: this.type,
-      publicKey: Buffer.from(this.publicKey).toString("hex"),
-      signature: Buffer.from(this.signature).toString("hex"),
-      signer: this.signer.toString(),
-      signerVersion: this.signerVersion,
+      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer && this.signer.toString(),
+      signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && this.vote.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
@@ -372,48 +471,71 @@ export class BTCLegacySignature {
 
 export namespace BTCSignature {
   export type Args = {
-    publicKey: Uint8Array | string;
-    signature: Uint8Array | string;
-    signer: URL | string;
-    signerVersion: number;
-    timestamp: number;
-    vote: VoteType.Args;
-    transactionHash: Uint8Array | string;
+    publicKey?: Uint8Array | string;
+    signature?: Uint8Array | string;
+    signer?: URL | string;
+    signerVersion?: number;
+    timestamp?: number;
+    vote?: VoteType.Args;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.BTC | "btc" };
 }
 export class BTCSignature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.BTC;
-  public publicKey: Uint8Array;
-  public signature: Uint8Array;
-  public signer: URL;
-  public signerVersion: number;
+  @encodeAs.field(2).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(3).bytes
+  public signature?: Uint8Array;
+  @encodeAs.field(4).url
+  public signer?: URL;
+  @encodeAs.field(5).uint
+  public signerVersion?: number;
+  @encodeAs.field(6).uint
   public timestamp?: number;
+  @encodeAs.field(7).enum
   public vote?: VoteType;
+  @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
   constructor(args: BTCSignature.Args) {
     this.publicKey =
-      args.publicKey instanceof Uint8Array ? args.publicKey : Buffer.from(args.publicKey, "hex");
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
     this.signature =
-      args.signature instanceof Uint8Array ? args.signature : Buffer.from(args.signature, "hex");
-    this.signer = args.signer instanceof URL ? args.signer : new URL(args.signer);
-    this.signerVersion = args.signerVersion;
-    this.timestamp = args.timestamp;
-    this.vote = VoteType.fromObject(args.vote);
+      args.signature == undefined
+        ? undefined
+        : args.signature instanceof Uint8Array
+        ? args.signature
+        : Buffer.from(args.signature, "hex");
+    this.signer =
+      args.signer == undefined
+        ? undefined
+        : args.signer instanceof URL
+        ? args.signer
+        : new URL(args.signer);
+    this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
+    this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): BTCSignature.ArgsWithType {
     return {
       type: this.type,
-      publicKey: Buffer.from(this.publicKey).toString("hex"),
-      signature: Buffer.from(this.signature).toString("hex"),
-      signer: this.signer.toString(),
-      signerVersion: this.signerVersion,
+      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer && this.signer.toString(),
+      signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && this.vote.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
@@ -423,294 +545,393 @@ export class BTCSignature {
 
 export namespace BlockEntry {
   export type Args = {
-    account: URL | string;
-    chain: string;
-    index: number;
+    account?: URL | string;
+    chain?: string;
+    index?: number;
   };
 }
 export class BlockEntry {
-  public account: URL;
-  public chain: string;
-  public index: number;
+  @encodeAs.field(1).url
+  public account?: URL;
+  @encodeAs.field(2).string
+  public chain?: string;
+  @encodeAs.field(3).keepEmpty.uint
+  public index?: number;
 
   constructor(args: BlockEntry.Args) {
-    this.account = args.account instanceof URL ? args.account : new URL(args.account);
-    this.chain = args.chain;
-    this.index = args.index;
+    this.account =
+      args.account == undefined
+        ? undefined
+        : args.account instanceof URL
+        ? args.account
+        : new URL(args.account);
+    this.chain = args.chain == undefined ? undefined : args.chain;
+    this.index = args.index == undefined ? undefined : args.index;
   }
 
-  asObject() {
+  asObject(): BlockEntry.Args {
     return {
-      account: this.account.toString(),
-      chain: this.chain,
-      index: this.index,
+      account: this.account && this.account.toString(),
+      chain: this.chain && this.chain,
+      index: this.index && this.index,
     };
   }
 }
 
 export namespace BlockLedger {
   export type Args = {
-    url: URL | string;
-    index: number;
-    time: Date | string;
-    entries: (BlockEntry | BlockEntry.Args)[];
+    url?: URL | string;
+    index?: number;
+    time?: Date | string;
+    entries?: (BlockEntry | BlockEntry.Args)[];
   };
   export type ArgsWithType = Args & { type: AccountType.BlockLedger | "blockLedger" };
 }
 export class BlockLedger {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.BlockLedger;
-  public url: URL;
-  public index: number;
-  public time: Date;
-  public entries: BlockEntry[];
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).uint
+  public index?: number;
+  @encodeAs.field(4).time
+  public time?: Date;
+  @encodeAs.field(5).repeatable.reference
+  public entries?: BlockEntry[];
 
   constructor(args: BlockLedger.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.index = args.index;
-    this.time = args.time instanceof Date ? args.time : new Date(args.time);
-    this.entries = args.entries.map((v) => (v instanceof BlockEntry ? v : new BlockEntry(v)));
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.index = args.index == undefined ? undefined : args.index;
+    this.time =
+      args.time == undefined
+        ? undefined
+        : args.time instanceof Date
+        ? args.time
+        : new Date(args.time);
+    this.entries =
+      args.entries == undefined
+        ? undefined
+        : args.entries.map((v) => (v instanceof BlockEntry ? v : new BlockEntry(v)));
   }
 
-  asObject() {
+  asObject(): BlockLedger.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      index: this.index,
-      time: this.time,
-      entries: this.entries?.map((v) => v.asObject()),
+      url: this.url && this.url.toString(),
+      index: this.index && this.index,
+      time: this.time && this.time,
+      entries: this.entries && this.entries?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace BlockValidatorAnchor {
   export type Args = {
-    source: URL | string;
-    majorBlockIndex: number;
-    minorBlockIndex: number;
-    rootChainIndex: number;
-    rootChainAnchor: Uint8Array | string;
-    stateTreeAnchor: Uint8Array | string;
-    acmeBurnt: BN | string;
+    source?: URL | string;
+    majorBlockIndex?: number;
+    minorBlockIndex?: number;
+    rootChainIndex?: number;
+    rootChainAnchor?: Uint8Array | string;
+    stateTreeAnchor?: Uint8Array | string;
+    acmeBurnt?: BN | string;
   };
   export type ArgsWithType = Args & {
     type: TransactionType.BlockValidatorAnchor | "blockValidatorAnchor";
   };
 }
 export class BlockValidatorAnchor {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.BlockValidatorAnchor;
-  public source: URL;
-  public majorBlockIndex: number;
-  public minorBlockIndex: number;
-  public rootChainIndex: number;
-  public rootChainAnchor: Uint8Array;
-  public stateTreeAnchor: Uint8Array;
-  public acmeBurnt: BN;
+  @encodeAs.field(2, 1).url
+  public source?: URL;
+  @encodeAs.field(2, 2).uint
+  public majorBlockIndex?: number;
+  @encodeAs.field(2, 3).uint
+  public minorBlockIndex?: number;
+  @encodeAs.field(2, 4).uint
+  public rootChainIndex?: number;
+  @encodeAs.field(2, 5).hash
+  public rootChainAnchor?: Uint8Array;
+  @encodeAs.field(2, 6).hash
+  public stateTreeAnchor?: Uint8Array;
+  @encodeAs.field(3).bigInt
+  public acmeBurnt?: BN;
 
   constructor(args: BlockValidatorAnchor.Args) {
-    this.source = args.source instanceof URL ? args.source : new URL(args.source);
-    this.majorBlockIndex = args.majorBlockIndex;
-    this.minorBlockIndex = args.minorBlockIndex;
-    this.rootChainIndex = args.rootChainIndex;
+    this.source =
+      args.source == undefined
+        ? undefined
+        : args.source instanceof URL
+        ? args.source
+        : new URL(args.source);
+    this.majorBlockIndex = args.majorBlockIndex == undefined ? undefined : args.majorBlockIndex;
+    this.minorBlockIndex = args.minorBlockIndex == undefined ? undefined : args.minorBlockIndex;
+    this.rootChainIndex = args.rootChainIndex == undefined ? undefined : args.rootChainIndex;
     this.rootChainAnchor =
-      args.rootChainAnchor instanceof Uint8Array
+      args.rootChainAnchor == undefined
+        ? undefined
+        : args.rootChainAnchor instanceof Uint8Array
         ? args.rootChainAnchor
         : Buffer.from(args.rootChainAnchor, "hex");
     this.stateTreeAnchor =
-      args.stateTreeAnchor instanceof Uint8Array
+      args.stateTreeAnchor == undefined
+        ? undefined
+        : args.stateTreeAnchor instanceof Uint8Array
         ? args.stateTreeAnchor
         : Buffer.from(args.stateTreeAnchor, "hex");
-    this.acmeBurnt = args.acmeBurnt instanceof BN ? args.acmeBurnt : new BN(args.acmeBurnt);
+    this.acmeBurnt =
+      args.acmeBurnt == undefined
+        ? undefined
+        : args.acmeBurnt instanceof BN
+        ? args.acmeBurnt
+        : new BN(args.acmeBurnt);
   }
 
-  asObject() {
+  asObject(): BlockValidatorAnchor.ArgsWithType {
     return {
       type: this.type,
-      source: this.source.toString(),
-      majorBlockIndex: this.majorBlockIndex,
-      minorBlockIndex: this.minorBlockIndex,
-      rootChainIndex: this.rootChainIndex,
-      rootChainAnchor: Buffer.from(this.rootChainAnchor).toString("hex"),
-      stateTreeAnchor: Buffer.from(this.stateTreeAnchor).toString("hex"),
-      acmeBurnt: this.acmeBurnt.toString(),
+      source: this.source && this.source.toString(),
+      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
+      minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
+      rootChainIndex: this.rootChainIndex && this.rootChainIndex,
+      rootChainAnchor: this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
+      stateTreeAnchor: this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
+      acmeBurnt: this.acmeBurnt && this.acmeBurnt.toString(),
     };
   }
 }
 
 export namespace BurnTokens {
   export type Args = {
-    amount: BN | string;
+    amount?: BN | string;
   };
   export type ArgsWithType = Args & { type: TransactionType.BurnTokens | "burnTokens" };
 }
 export class BurnTokens {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.BurnTokens;
-  public amount: BN;
+  @encodeAs.field(2).bigInt
+  public amount?: BN;
 
   constructor(args: BurnTokens.Args) {
-    this.amount = args.amount instanceof BN ? args.amount : new BN(args.amount);
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : args.amount instanceof BN
+        ? args.amount
+        : new BN(args.amount);
   }
 
-  asObject() {
+  asObject(): BurnTokens.ArgsWithType {
     return {
       type: this.type,
-      amount: this.amount.toString(),
+      amount: this.amount && this.amount.toString(),
     };
   }
 }
 
 export namespace ChainParams {
   export type Args = {
-    data: Uint8Array | string;
-    isUpdate: boolean;
+    data?: Uint8Array | string;
+    isUpdate?: boolean;
   };
 }
 export class ChainParams {
-  public data: Uint8Array;
-  public isUpdate: boolean;
+  @encodeAs.field(1).bytes
+  public data?: Uint8Array;
+  @encodeAs.field(2).bool
+  public isUpdate?: boolean;
 
   constructor(args: ChainParams.Args) {
-    this.data = args.data instanceof Uint8Array ? args.data : Buffer.from(args.data, "hex");
-    this.isUpdate = args.isUpdate;
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
+    this.isUpdate = args.isUpdate == undefined ? undefined : args.isUpdate;
   }
 
-  asObject() {
+  asObject(): ChainParams.Args {
     return {
-      data: Buffer.from(this.data).toString("hex"),
-      isUpdate: this.isUpdate,
+      data: this.data && Buffer.from(this.data).toString("hex"),
+      isUpdate: this.isUpdate && this.isUpdate,
     };
   }
 }
 
 export namespace CreateDataAccount {
   export type Args = {
-    url: URL | string;
-    authorities: (URL | string)[];
+    url?: URL | string;
+    authorities?: (URL | string)[];
   };
   export type ArgsWithType = Args & {
     type: TransactionType.CreateDataAccount | "createDataAccount";
   };
 }
 export class CreateDataAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateDataAccount;
-  public url: URL;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).repeatable.url
   public authorities?: URL[];
 
   constructor(args: CreateDataAccount.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.authorities = args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
   }
 
-  asObject() {
+  asObject(): CreateDataAccount.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      authorities: this.authorities?.map((v) => v.toString()),
+      url: this.url && this.url.toString(),
+      authorities: this.authorities && this.authorities?.map((v) => v.toString()),
     };
   }
 }
 
 export namespace CreateIdentity {
   export type Args = {
-    url: URL | string;
-    keyHash: Uint8Array | string;
-    keyBookUrl: URL | string;
-    authorities: (URL | string)[];
+    url?: URL | string;
+    keyHash?: Uint8Array | string;
+    keyBookUrl?: URL | string;
+    authorities?: (URL | string)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.CreateIdentity | "createIdentity" };
 }
 export class CreateIdentity {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateIdentity;
-  public url: URL;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).bytes
   public keyHash?: Uint8Array;
+  @encodeAs.field(4).url
   public keyBookUrl?: URL;
+  @encodeAs.field(6).repeatable.url
   public authorities?: URL[];
 
   constructor(args: CreateIdentity.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.keyHash =
-      args.keyHash instanceof Uint8Array ? args.keyHash : Buffer.from(args.keyHash, "hex");
-    this.keyBookUrl = args.keyBookUrl instanceof URL ? args.keyBookUrl : new URL(args.keyBookUrl);
-    this.authorities = args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
+      args.keyHash == undefined
+        ? undefined
+        : args.keyHash instanceof Uint8Array
+        ? args.keyHash
+        : Buffer.from(args.keyHash, "hex");
+    this.keyBookUrl =
+      args.keyBookUrl == undefined
+        ? undefined
+        : args.keyBookUrl instanceof URL
+        ? args.keyBookUrl
+        : new URL(args.keyBookUrl);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
   }
 
-  asObject() {
+  asObject(): CreateIdentity.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
+      url: this.url && this.url.toString(),
       keyHash: this.keyHash && Buffer.from(this.keyHash).toString("hex"),
       keyBookUrl: this.keyBookUrl && this.keyBookUrl.toString(),
-      authorities: this.authorities?.map((v) => v.toString()),
+      authorities: this.authorities && this.authorities?.map((v) => v.toString()),
     };
   }
 }
 
 export namespace CreateKeyBook {
   export type Args = {
-    url: URL | string;
-    publicKeyHash: Uint8Array | string;
-    authorities: (URL | string)[];
+    url?: URL | string;
+    publicKeyHash?: Uint8Array | string;
+    authorities?: (URL | string)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.CreateKeyBook | "createKeyBook" };
 }
 export class CreateKeyBook {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateKeyBook;
-  public url: URL;
-  public publicKeyHash: Uint8Array;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).bytes
+  public publicKeyHash?: Uint8Array;
+  @encodeAs.field(5).repeatable.url
   public authorities?: URL[];
 
   constructor(args: CreateKeyBook.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.publicKeyHash =
-      args.publicKeyHash instanceof Uint8Array
+      args.publicKeyHash == undefined
+        ? undefined
+        : args.publicKeyHash instanceof Uint8Array
         ? args.publicKeyHash
         : Buffer.from(args.publicKeyHash, "hex");
-    this.authorities = args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
   }
 
-  asObject() {
+  asObject(): CreateKeyBook.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      publicKeyHash: Buffer.from(this.publicKeyHash).toString("hex"),
-      authorities: this.authorities?.map((v) => v.toString()),
+      url: this.url && this.url.toString(),
+      publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      authorities: this.authorities && this.authorities?.map((v) => v.toString()),
     };
   }
 }
 
 export namespace CreateKeyPage {
   export type Args = {
-    keys: (KeySpecParams | KeySpecParams.Args)[];
+    keys?: (KeySpecParams | KeySpecParams.Args)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.CreateKeyPage | "createKeyPage" };
 }
 export class CreateKeyPage {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateKeyPage;
-  public keys: KeySpecParams[];
+  @encodeAs.field(2).repeatable.reference
+  public keys?: KeySpecParams[];
 
   constructor(args: CreateKeyPage.Args) {
-    this.keys = args.keys.map((v) => (v instanceof KeySpecParams ? v : new KeySpecParams(v)));
+    this.keys =
+      args.keys == undefined
+        ? undefined
+        : args.keys.map((v) => (v instanceof KeySpecParams ? v : new KeySpecParams(v)));
   }
 
-  asObject() {
+  asObject(): CreateKeyPage.ArgsWithType {
     return {
       type: this.type,
-      keys: this.keys?.map((v) => v.asObject()),
+      keys: this.keys && this.keys?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace CreateLiteTokenAccount {
-  export type Args = Record<string, never>;
-  export type ArgsWithType = Args & {
+  export type Args = {};
+  export type ArgsWithType = {
     type: TransactionType.CreateLiteTokenAccount | "createLiteTokenAccount";
   };
 }
 export class CreateLiteTokenAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateLiteTokenAccount;
 
   constructor(_: CreateLiteTokenAccount.Args) {}
 
-  asObject() {
+  asObject(): CreateLiteTokenAccount.ArgsWithType {
     return {
       type: this.type,
     };
@@ -719,78 +940,117 @@ export class CreateLiteTokenAccount {
 
 export namespace CreateToken {
   export type Args = {
-    url: URL | string;
-    symbol: string;
-    precision: number;
-    properties: URL | string;
-    supplyLimit: BN | string;
-    authorities: (URL | string)[];
+    url?: URL | string;
+    symbol?: string;
+    precision?: number;
+    properties?: URL | string;
+    supplyLimit?: BN | string;
+    authorities?: (URL | string)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.CreateToken | "createToken" };
 }
 export class CreateToken {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateToken;
-  public url: URL;
-  public symbol: string;
-  public precision: number;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(4).string
+  public symbol?: string;
+  @encodeAs.field(5).uint
+  public precision?: number;
+  @encodeAs.field(6).url
   public properties?: URL;
+  @encodeAs.field(7).bigInt
   public supplyLimit?: BN;
+  @encodeAs.field(9).repeatable.url
   public authorities?: URL[];
 
   constructor(args: CreateToken.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.symbol = args.symbol;
-    this.precision = args.precision;
-    this.properties = args.properties instanceof URL ? args.properties : new URL(args.properties);
-    this.supplyLimit = args.supplyLimit instanceof BN ? args.supplyLimit : new BN(args.supplyLimit);
-    this.authorities = args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.symbol = args.symbol == undefined ? undefined : args.symbol;
+    this.precision = args.precision == undefined ? undefined : args.precision;
+    this.properties =
+      args.properties == undefined
+        ? undefined
+        : args.properties instanceof URL
+        ? args.properties
+        : new URL(args.properties);
+    this.supplyLimit =
+      args.supplyLimit == undefined
+        ? undefined
+        : args.supplyLimit instanceof BN
+        ? args.supplyLimit
+        : new BN(args.supplyLimit);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
   }
 
-  asObject() {
+  asObject(): CreateToken.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      symbol: this.symbol,
-      precision: this.precision,
+      url: this.url && this.url.toString(),
+      symbol: this.symbol && this.symbol,
+      precision: this.precision && this.precision,
       properties: this.properties && this.properties.toString(),
       supplyLimit: this.supplyLimit && this.supplyLimit.toString(),
-      authorities: this.authorities?.map((v) => v.toString()),
+      authorities: this.authorities && this.authorities?.map((v) => v.toString()),
     };
   }
 }
 
 export namespace CreateTokenAccount {
   export type Args = {
-    url: URL | string;
-    tokenUrl: URL | string;
-    authorities: (URL | string)[];
-    proof: TokenIssuerProof | TokenIssuerProof.Args;
+    url?: URL | string;
+    tokenUrl?: URL | string;
+    authorities?: (URL | string)[];
+    proof?: TokenIssuerProof | TokenIssuerProof.Args;
   };
   export type ArgsWithType = Args & {
     type: TransactionType.CreateTokenAccount | "createTokenAccount";
   };
 }
 export class CreateTokenAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateTokenAccount;
-  public url: URL;
-  public tokenUrl: URL;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).url
+  public tokenUrl?: URL;
+  @encodeAs.field(7).repeatable.url
   public authorities?: URL[];
+  @encodeAs.field(8).reference
   public proof?: TokenIssuerProof;
 
   constructor(args: CreateTokenAccount.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.tokenUrl = args.tokenUrl instanceof URL ? args.tokenUrl : new URL(args.tokenUrl);
-    this.authorities = args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.tokenUrl =
+      args.tokenUrl == undefined
+        ? undefined
+        : args.tokenUrl instanceof URL
+        ? args.tokenUrl
+        : new URL(args.tokenUrl);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof URL ? v : new URL(v)));
     this.proof =
-      args.proof instanceof TokenIssuerProof ? args.proof : new TokenIssuerProof(args.proof);
+      args.proof == undefined
+        ? undefined
+        : args.proof instanceof TokenIssuerProof
+        ? args.proof
+        : new TokenIssuerProof(args.proof);
   }
 
-  asObject() {
+  asObject(): CreateTokenAccount.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      tokenUrl: this.tokenUrl.toString(),
-      authorities: this.authorities?.map((v) => v.toString()),
+      url: this.url && this.url.toString(),
+      tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
+      authorities: this.authorities && this.authorities?.map((v) => v.toString()),
       proof: this.proof && this.proof.asObject(),
     };
   }
@@ -798,31 +1058,37 @@ export class CreateTokenAccount {
 
 export namespace DataAccount {
   export type Args = {
-    url: URL | string;
-    authorities: (AuthorityEntry | AuthorityEntry.Args)[];
-    entry: DataEntry.Args;
+    url?: URL | string;
+    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
+    entry?: DataEntry | DataEntry.Args;
   };
   export type ArgsWithType = Args & { type: AccountType.DataAccount | "dataAccount" };
 }
 export class DataAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.DataAccount;
-  public url: URL;
-  public authorities: AuthorityEntry[];
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3, 1).repeatable.reference
+  public authorities?: AuthorityEntry[];
+  @encodeAs.field(4).union
   public entry?: DataEntry;
 
   constructor(args: DataAccount.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.authorities = args.authorities.map((v) =>
-      v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
-    );
-    this.entry = DataEntry.fromObject(args.entry);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof AuthorityEntry ? v : new AuthorityEntry(v)));
+    this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
   }
 
-  asObject() {
+  asObject(): DataAccount.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      authorities: this.authorities?.map((v) => v.asObject()),
+      url: this.url && this.url.toString(),
+      authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
       entry: this.entry && this.entry.asObject(),
     };
   }
@@ -830,167 +1096,233 @@ export class DataAccount {
 
 export namespace DelegatedSignature {
   export type Args = {
-    signature: Signature.Args;
-    delegator: URL | string;
+    signature?: Signature | Signature.Args;
+    delegator?: URL | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.Delegated | "delegated" };
 }
 export class DelegatedSignature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Delegated;
-  public signature: Signature;
-  public delegator: URL;
+  @encodeAs.field(2).union
+  public signature?: Signature;
+  @encodeAs.field(3).url
+  public delegator?: URL;
 
   constructor(args: DelegatedSignature.Args) {
-    this.signature = Signature.fromObject(args.signature);
-    this.delegator = args.delegator instanceof URL ? args.delegator : new URL(args.delegator);
+    this.signature = args.signature == undefined ? undefined : Signature.fromObject(args.signature);
+    this.delegator =
+      args.delegator == undefined
+        ? undefined
+        : args.delegator instanceof URL
+        ? args.delegator
+        : new URL(args.delegator);
   }
 
-  asObject() {
+  asObject(): DelegatedSignature.ArgsWithType {
     return {
       type: this.type,
-      signature: this.signature.asObject(),
-      delegator: this.delegator.toString(),
+      signature: this.signature && this.signature.asObject(),
+      delegator: this.delegator && this.delegator.toString(),
     };
   }
 }
 
 export namespace DirectoryAnchor {
   export type Args = {
-    source: URL | string;
-    majorBlockIndex: number;
-    minorBlockIndex: number;
-    rootChainIndex: number;
-    rootChainAnchor: Uint8Array | string;
-    stateTreeAnchor: Uint8Array | string;
-    updates: (NetworkAccountUpdate | NetworkAccountUpdate.Args)[];
-    receipts: (PartitionAnchorReceipt | PartitionAnchorReceipt.Args)[];
-    makeMajorBlock: number;
-    makeMajorBlockTime: Date | string;
+    source?: URL | string;
+    majorBlockIndex?: number;
+    minorBlockIndex?: number;
+    rootChainIndex?: number;
+    rootChainAnchor?: Uint8Array | string;
+    stateTreeAnchor?: Uint8Array | string;
+    updates?: (NetworkAccountUpdate | NetworkAccountUpdate.Args)[];
+    receipts?: (PartitionAnchorReceipt | PartitionAnchorReceipt.Args)[];
+    makeMajorBlock?: number;
+    makeMajorBlockTime?: Date | string;
   };
   export type ArgsWithType = Args & { type: TransactionType.DirectoryAnchor | "directoryAnchor" };
 }
 export class DirectoryAnchor {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.DirectoryAnchor;
-  public source: URL;
-  public majorBlockIndex: number;
-  public minorBlockIndex: number;
-  public rootChainIndex: number;
-  public rootChainAnchor: Uint8Array;
-  public stateTreeAnchor: Uint8Array;
-  public updates: NetworkAccountUpdate[];
-  public receipts: PartitionAnchorReceipt[];
-  public makeMajorBlock: number;
-  public makeMajorBlockTime: Date;
+  @encodeAs.field(2, 1).url
+  public source?: URL;
+  @encodeAs.field(2, 2).uint
+  public majorBlockIndex?: number;
+  @encodeAs.field(2, 3).uint
+  public minorBlockIndex?: number;
+  @encodeAs.field(2, 4).uint
+  public rootChainIndex?: number;
+  @encodeAs.field(2, 5).hash
+  public rootChainAnchor?: Uint8Array;
+  @encodeAs.field(2, 6).hash
+  public stateTreeAnchor?: Uint8Array;
+  @encodeAs.field(3).repeatable.reference
+  public updates?: NetworkAccountUpdate[];
+  @encodeAs.field(4).repeatable.reference
+  public receipts?: PartitionAnchorReceipt[];
+  @encodeAs.field(5).uint
+  public makeMajorBlock?: number;
+  @encodeAs.field(6).time
+  public makeMajorBlockTime?: Date;
 
   constructor(args: DirectoryAnchor.Args) {
-    this.source = args.source instanceof URL ? args.source : new URL(args.source);
-    this.majorBlockIndex = args.majorBlockIndex;
-    this.minorBlockIndex = args.minorBlockIndex;
-    this.rootChainIndex = args.rootChainIndex;
+    this.source =
+      args.source == undefined
+        ? undefined
+        : args.source instanceof URL
+        ? args.source
+        : new URL(args.source);
+    this.majorBlockIndex = args.majorBlockIndex == undefined ? undefined : args.majorBlockIndex;
+    this.minorBlockIndex = args.minorBlockIndex == undefined ? undefined : args.minorBlockIndex;
+    this.rootChainIndex = args.rootChainIndex == undefined ? undefined : args.rootChainIndex;
     this.rootChainAnchor =
-      args.rootChainAnchor instanceof Uint8Array
+      args.rootChainAnchor == undefined
+        ? undefined
+        : args.rootChainAnchor instanceof Uint8Array
         ? args.rootChainAnchor
         : Buffer.from(args.rootChainAnchor, "hex");
     this.stateTreeAnchor =
-      args.stateTreeAnchor instanceof Uint8Array
+      args.stateTreeAnchor == undefined
+        ? undefined
+        : args.stateTreeAnchor instanceof Uint8Array
         ? args.stateTreeAnchor
         : Buffer.from(args.stateTreeAnchor, "hex");
-    this.updates = args.updates.map((v) =>
-      v instanceof NetworkAccountUpdate ? v : new NetworkAccountUpdate(v)
-    );
-    this.receipts = args.receipts.map((v) =>
-      v instanceof PartitionAnchorReceipt ? v : new PartitionAnchorReceipt(v)
-    );
-    this.makeMajorBlock = args.makeMajorBlock;
+    this.updates =
+      args.updates == undefined
+        ? undefined
+        : args.updates.map((v) =>
+            v instanceof NetworkAccountUpdate ? v : new NetworkAccountUpdate(v)
+          );
+    this.receipts =
+      args.receipts == undefined
+        ? undefined
+        : args.receipts.map((v) =>
+            v instanceof PartitionAnchorReceipt ? v : new PartitionAnchorReceipt(v)
+          );
+    this.makeMajorBlock = args.makeMajorBlock == undefined ? undefined : args.makeMajorBlock;
     this.makeMajorBlockTime =
-      args.makeMajorBlockTime instanceof Date
+      args.makeMajorBlockTime == undefined
+        ? undefined
+        : args.makeMajorBlockTime instanceof Date
         ? args.makeMajorBlockTime
         : new Date(args.makeMajorBlockTime);
   }
 
-  asObject() {
+  asObject(): DirectoryAnchor.ArgsWithType {
     return {
       type: this.type,
-      source: this.source.toString(),
-      majorBlockIndex: this.majorBlockIndex,
-      minorBlockIndex: this.minorBlockIndex,
-      rootChainIndex: this.rootChainIndex,
-      rootChainAnchor: Buffer.from(this.rootChainAnchor).toString("hex"),
-      stateTreeAnchor: Buffer.from(this.stateTreeAnchor).toString("hex"),
-      updates: this.updates?.map((v) => v.asObject()),
-      receipts: this.receipts?.map((v) => v.asObject()),
-      makeMajorBlock: this.makeMajorBlock,
-      makeMajorBlockTime: this.makeMajorBlockTime,
+      source: this.source && this.source.toString(),
+      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
+      minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
+      rootChainIndex: this.rootChainIndex && this.rootChainIndex,
+      rootChainAnchor: this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
+      stateTreeAnchor: this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
+      updates: this.updates && this.updates?.map((v) => v.asObject()),
+      receipts: this.receipts && this.receipts?.map((v) => v.asObject()),
+      makeMajorBlock: this.makeMajorBlock && this.makeMajorBlock,
+      makeMajorBlockTime: this.makeMajorBlockTime && this.makeMajorBlockTime,
     };
   }
 }
 
 export namespace DisableAccountAuthOperation {
   export type Args = {
-    authority: URL | string;
+    authority?: URL | string;
   };
   export type ArgsWithType = Args & { type: AccountAuthOperationType.Disable | "disable" };
 }
 export class DisableAccountAuthOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountAuthOperationType.Disable;
-  public authority: URL;
+  @encodeAs.field(2).url
+  public authority?: URL;
 
   constructor(args: DisableAccountAuthOperation.Args) {
-    this.authority = args.authority instanceof URL ? args.authority : new URL(args.authority);
+    this.authority =
+      args.authority == undefined
+        ? undefined
+        : args.authority instanceof URL
+        ? args.authority
+        : new URL(args.authority);
   }
 
-  asObject() {
+  asObject(): DisableAccountAuthOperation.ArgsWithType {
     return {
       type: this.type,
-      authority: this.authority.toString(),
+      authority: this.authority && this.authority.toString(),
     };
   }
 }
 
 export namespace ED25519Signature {
   export type Args = {
-    publicKey: Uint8Array | string;
-    signature: Uint8Array | string;
-    signer: URL | string;
-    signerVersion: number;
-    timestamp: number;
-    vote: VoteType.Args;
-    transactionHash: Uint8Array | string;
+    publicKey?: Uint8Array | string;
+    signature?: Uint8Array | string;
+    signer?: URL | string;
+    signerVersion?: number;
+    timestamp?: number;
+    vote?: VoteType.Args;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.ED25519 | "ed25519" };
 }
 export class ED25519Signature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.ED25519;
-  public publicKey: Uint8Array;
-  public signature: Uint8Array;
-  public signer: URL;
-  public signerVersion: number;
+  @encodeAs.field(2).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(3).bytes
+  public signature?: Uint8Array;
+  @encodeAs.field(4).url
+  public signer?: URL;
+  @encodeAs.field(5).uint
+  public signerVersion?: number;
+  @encodeAs.field(6).uint
   public timestamp?: number;
+  @encodeAs.field(7).enum
   public vote?: VoteType;
+  @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
   constructor(args: ED25519Signature.Args) {
     this.publicKey =
-      args.publicKey instanceof Uint8Array ? args.publicKey : Buffer.from(args.publicKey, "hex");
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
     this.signature =
-      args.signature instanceof Uint8Array ? args.signature : Buffer.from(args.signature, "hex");
-    this.signer = args.signer instanceof URL ? args.signer : new URL(args.signer);
-    this.signerVersion = args.signerVersion;
-    this.timestamp = args.timestamp;
-    this.vote = VoteType.fromObject(args.vote);
+      args.signature == undefined
+        ? undefined
+        : args.signature instanceof Uint8Array
+        ? args.signature
+        : Buffer.from(args.signature, "hex");
+    this.signer =
+      args.signer == undefined
+        ? undefined
+        : args.signer instanceof URL
+        ? args.signer
+        : new URL(args.signer);
+    this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
+    this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): ED25519Signature.ArgsWithType {
     return {
       type: this.type,
-      publicKey: Buffer.from(this.publicKey).toString("hex"),
-      signature: Buffer.from(this.signature).toString("hex"),
-      signer: this.signer.toString(),
-      signerVersion: this.signerVersion,
+      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer && this.signer.toString(),
+      signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && this.vote.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
@@ -1000,48 +1332,71 @@ export class ED25519Signature {
 
 export namespace ETHSignature {
   export type Args = {
-    publicKey: Uint8Array | string;
-    signature: Uint8Array | string;
-    signer: URL | string;
-    signerVersion: number;
-    timestamp: number;
-    vote: VoteType.Args;
-    transactionHash: Uint8Array | string;
+    publicKey?: Uint8Array | string;
+    signature?: Uint8Array | string;
+    signer?: URL | string;
+    signerVersion?: number;
+    timestamp?: number;
+    vote?: VoteType.Args;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.ETH | "eth" };
 }
 export class ETHSignature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.ETH;
-  public publicKey: Uint8Array;
-  public signature: Uint8Array;
-  public signer: URL;
-  public signerVersion: number;
+  @encodeAs.field(2).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(3).bytes
+  public signature?: Uint8Array;
+  @encodeAs.field(4).url
+  public signer?: URL;
+  @encodeAs.field(5).uint
+  public signerVersion?: number;
+  @encodeAs.field(6).uint
   public timestamp?: number;
+  @encodeAs.field(7).enum
   public vote?: VoteType;
+  @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
   constructor(args: ETHSignature.Args) {
     this.publicKey =
-      args.publicKey instanceof Uint8Array ? args.publicKey : Buffer.from(args.publicKey, "hex");
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
     this.signature =
-      args.signature instanceof Uint8Array ? args.signature : Buffer.from(args.signature, "hex");
-    this.signer = args.signer instanceof URL ? args.signer : new URL(args.signer);
-    this.signerVersion = args.signerVersion;
-    this.timestamp = args.timestamp;
-    this.vote = VoteType.fromObject(args.vote);
+      args.signature == undefined
+        ? undefined
+        : args.signature instanceof Uint8Array
+        ? args.signature
+        : Buffer.from(args.signature, "hex");
+    this.signer =
+      args.signer == undefined
+        ? undefined
+        : args.signer instanceof URL
+        ? args.signer
+        : new URL(args.signer);
+    this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
+    this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): ETHSignature.ArgsWithType {
     return {
       type: this.type,
-      publicKey: Buffer.from(this.publicKey).toString("hex"),
-      signature: Buffer.from(this.signature).toString("hex"),
-      signer: this.signer.toString(),
-      signerVersion: this.signerVersion,
+      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer && this.signer.toString(),
+      signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && this.vote.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
@@ -1050,15 +1405,16 @@ export class ETHSignature {
 }
 
 export namespace EmptyResult {
-  export type Args = Record<string, never>;
-  export type ArgsWithType = Args & { type: TransactionType.Unknown | "unknown" };
+  export type Args = {};
+  export type ArgsWithType = { type: TransactionType.Unknown | "unknown" };
 }
 export class EmptyResult {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.Unknown;
 
   constructor(_: EmptyResult.Args) {}
 
-  asObject() {
+  asObject(): EmptyResult.ArgsWithType {
     return {
       type: this.type,
     };
@@ -1067,366 +1423,505 @@ export class EmptyResult {
 
 export namespace EnableAccountAuthOperation {
   export type Args = {
-    authority: URL | string;
+    authority?: URL | string;
   };
   export type ArgsWithType = Args & { type: AccountAuthOperationType.Enable | "enable" };
 }
 export class EnableAccountAuthOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountAuthOperationType.Enable;
-  public authority: URL;
+  @encodeAs.field(2).url
+  public authority?: URL;
 
   constructor(args: EnableAccountAuthOperation.Args) {
-    this.authority = args.authority instanceof URL ? args.authority : new URL(args.authority);
+    this.authority =
+      args.authority == undefined
+        ? undefined
+        : args.authority instanceof URL
+        ? args.authority
+        : new URL(args.authority);
   }
 
-  asObject() {
+  asObject(): EnableAccountAuthOperation.ArgsWithType {
     return {
       type: this.type,
-      authority: this.authority.toString(),
+      authority: this.authority && this.authority.toString(),
     };
   }
 }
 
 export namespace Envelope {
   export type Args = {
-    signatures: Signature.Args[];
-    txHash: Uint8Array | string;
-    transaction: (Transaction | Transaction.Args)[];
+    signatures?: (Signature | Signature.Args)[];
+    txHash?: Uint8Array | string;
+    transaction?: (Transaction | Transaction.Args)[];
   };
 }
 export class Envelope {
-  public signatures: Signature[];
+  @encodeAs.field(1).repeatable.union
+  public signatures?: Signature[];
+  @encodeAs.field(2).bytes
   public txHash?: Uint8Array;
+  @encodeAs.field(3).repeatable.reference
   public transaction?: Transaction[];
 
   constructor(args: Envelope.Args) {
-    this.signatures = args.signatures.map((v) => Signature.fromObject(v));
-    this.txHash = args.txHash instanceof Uint8Array ? args.txHash : Buffer.from(args.txHash, "hex");
-    this.transaction = args.transaction.map((v) =>
-      v instanceof Transaction ? v : new Transaction(v)
-    );
+    this.signatures =
+      args.signatures == undefined
+        ? undefined
+        : args.signatures.map((v) => Signature.fromObject(v));
+    this.txHash =
+      args.txHash == undefined
+        ? undefined
+        : args.txHash instanceof Uint8Array
+        ? args.txHash
+        : Buffer.from(args.txHash, "hex");
+    this.transaction =
+      args.transaction == undefined
+        ? undefined
+        : args.transaction.map((v) => (v instanceof Transaction ? v : new Transaction(v)));
   }
 
-  asObject() {
+  asObject(): Envelope.Args {
     return {
-      signatures: this.signatures?.map((v) => v.asObject()),
+      signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
       txHash: this.txHash && Buffer.from(this.txHash).toString("hex"),
-      transaction: this.transaction?.map((v) => v.asObject()),
+      transaction: this.transaction && this.transaction?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace FactomDataEntry {
   export type Args = {
-    accountId: Uint8Array | string;
-    data: Uint8Array | string;
-    extIds: (Uint8Array | string)[];
+    accountId?: Uint8Array | string;
+    data?: Uint8Array | string;
+    extIds?: (Uint8Array | string)[];
   };
 }
 export class FactomDataEntry {
-  public accountId: Uint8Array;
-  public data: Uint8Array;
-  public extIds: Uint8Array[];
+  @encodeAs.field(1).hash
+  public accountId?: Uint8Array;
+  @encodeAs.field(2).bytes
+  public data?: Uint8Array;
+  @encodeAs.field(3).repeatable.bytes
+  public extIds?: Uint8Array[];
 
   constructor(args: FactomDataEntry.Args) {
     this.accountId =
-      args.accountId instanceof Uint8Array ? args.accountId : Buffer.from(args.accountId, "hex");
-    this.data = args.data instanceof Uint8Array ? args.data : Buffer.from(args.data, "hex");
-    this.extIds = args.extIds.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+      args.accountId == undefined
+        ? undefined
+        : args.accountId instanceof Uint8Array
+        ? args.accountId
+        : Buffer.from(args.accountId, "hex");
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
+    this.extIds =
+      args.extIds == undefined
+        ? undefined
+        : args.extIds.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
   }
 
-  asObject() {
+  asObject(): FactomDataEntry.Args {
     return {
-      accountId: Buffer.from(this.accountId).toString("hex"),
-      data: Buffer.from(this.data).toString("hex"),
-      extIds: this.extIds?.map((v) => Buffer.from(v).toString("hex")),
+      accountId: this.accountId && Buffer.from(this.accountId).toString("hex"),
+      data: this.data && Buffer.from(this.data).toString("hex"),
+      extIds: this.extIds && this.extIds?.map((v) => Buffer.from(v).toString("hex")),
     };
   }
 }
 
 export namespace FactomDataEntryWrapper {
   export type Args = {
-    accountId: Uint8Array | string;
-    data: Uint8Array | string;
-    extIds: (Uint8Array | string)[];
+    accountId?: Uint8Array | string;
+    data?: Uint8Array | string;
+    extIds?: (Uint8Array | string)[];
   };
   export type ArgsWithType = Args & { type: DataEntryType.Factom | "factom" };
 }
 export class FactomDataEntryWrapper {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = DataEntryType.Factom;
-  public accountId: Uint8Array;
-  public data: Uint8Array;
-  public extIds: Uint8Array[];
+  @encodeAs.field(2, 1).hash
+  public accountId?: Uint8Array;
+  @encodeAs.field(2, 2).bytes
+  public data?: Uint8Array;
+  @encodeAs.field(2, 3).repeatable.bytes
+  public extIds?: Uint8Array[];
 
   constructor(args: FactomDataEntryWrapper.Args) {
     this.accountId =
-      args.accountId instanceof Uint8Array ? args.accountId : Buffer.from(args.accountId, "hex");
-    this.data = args.data instanceof Uint8Array ? args.data : Buffer.from(args.data, "hex");
-    this.extIds = args.extIds.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+      args.accountId == undefined
+        ? undefined
+        : args.accountId instanceof Uint8Array
+        ? args.accountId
+        : Buffer.from(args.accountId, "hex");
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
+    this.extIds =
+      args.extIds == undefined
+        ? undefined
+        : args.extIds.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
   }
 
-  asObject() {
+  asObject(): FactomDataEntryWrapper.ArgsWithType {
     return {
       type: this.type,
-      accountId: Buffer.from(this.accountId).toString("hex"),
-      data: Buffer.from(this.data).toString("hex"),
-      extIds: this.extIds?.map((v) => Buffer.from(v).toString("hex")),
+      accountId: this.accountId && Buffer.from(this.accountId).toString("hex"),
+      data: this.data && Buffer.from(this.data).toString("hex"),
+      extIds: this.extIds && this.extIds?.map((v) => Buffer.from(v).toString("hex")),
     };
   }
 }
 
 export namespace FeeSchedule {
   export type Args = {
-    createIdentitySliding: Fee.Args[];
+    createIdentitySliding?: Fee.Args[];
   };
 }
 export class FeeSchedule {
-  public createIdentitySliding: Fee[];
+  @encodeAs.field(1).repeatable.enum
+  public createIdentitySliding?: Fee[];
 
   constructor(args: FeeSchedule.Args) {
-    this.createIdentitySliding = args.createIdentitySliding.map((v) => Fee.fromObject(v));
+    this.createIdentitySliding =
+      args.createIdentitySliding == undefined
+        ? undefined
+        : args.createIdentitySliding.map((v) => Fee.fromObject(v));
   }
 
-  asObject() {
+  asObject(): FeeSchedule.Args {
     return {
-      createIdentitySliding: this.createIdentitySliding?.map((v) => v.toString()),
+      createIdentitySliding:
+        this.createIdentitySliding && this.createIdentitySliding?.map((v) => v.toString()),
     };
   }
 }
 
 export namespace IndexEntry {
   export type Args = {
-    source: number;
-    anchor: number;
-    blockIndex: number;
-    blockTime: Date | string;
-    rootIndexIndex: number;
+    source?: number;
+    anchor?: number;
+    blockIndex?: number;
+    blockTime?: Date | string;
+    rootIndexIndex?: number;
   };
 }
 export class IndexEntry {
-  public source: number;
-  public anchor: number;
-  public blockIndex: number;
-  public blockTime: Date;
-  public rootIndexIndex: number;
+  @encodeAs.field(1).uint
+  public source?: number;
+  @encodeAs.field(2).uint
+  public anchor?: number;
+  @encodeAs.field(3).uint
+  public blockIndex?: number;
+  @encodeAs.field(4).time
+  public blockTime?: Date;
+  @encodeAs.field(5).uint
+  public rootIndexIndex?: number;
 
   constructor(args: IndexEntry.Args) {
-    this.source = args.source;
-    this.anchor = args.anchor;
-    this.blockIndex = args.blockIndex;
-    this.blockTime = args.blockTime instanceof Date ? args.blockTime : new Date(args.blockTime);
-    this.rootIndexIndex = args.rootIndexIndex;
+    this.source = args.source == undefined ? undefined : args.source;
+    this.anchor = args.anchor == undefined ? undefined : args.anchor;
+    this.blockIndex = args.blockIndex == undefined ? undefined : args.blockIndex;
+    this.blockTime =
+      args.blockTime == undefined
+        ? undefined
+        : args.blockTime instanceof Date
+        ? args.blockTime
+        : new Date(args.blockTime);
+    this.rootIndexIndex = args.rootIndexIndex == undefined ? undefined : args.rootIndexIndex;
   }
 
-  asObject() {
+  asObject(): IndexEntry.Args {
     return {
-      source: this.source,
-      anchor: this.anchor,
-      blockIndex: this.blockIndex,
-      blockTime: this.blockTime,
-      rootIndexIndex: this.rootIndexIndex,
+      source: this.source && this.source,
+      anchor: this.anchor && this.anchor,
+      blockIndex: this.blockIndex && this.blockIndex,
+      blockTime: this.blockTime && this.blockTime,
+      rootIndexIndex: this.rootIndexIndex && this.rootIndexIndex,
     };
   }
 }
 
 export namespace InternalSignature {
   export type Args = {
-    cause: Uint8Array | string;
-    transactionHash: Uint8Array | string;
+    cause?: Uint8Array | string;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.Internal | "internal" };
 }
 export class InternalSignature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Internal;
-  public cause: Uint8Array;
-  public transactionHash: Uint8Array;
+  @encodeAs.field(2).hash
+  public cause?: Uint8Array;
+  @encodeAs.field(3).hash
+  public transactionHash?: Uint8Array;
 
   constructor(args: InternalSignature.Args) {
-    this.cause = args.cause instanceof Uint8Array ? args.cause : Buffer.from(args.cause, "hex");
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause instanceof Uint8Array
+        ? args.cause
+        : Buffer.from(args.cause, "hex");
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): InternalSignature.ArgsWithType {
     return {
       type: this.type,
-      cause: Buffer.from(this.cause).toString("hex"),
-      transactionHash: Buffer.from(this.transactionHash).toString("hex"),
+      cause: this.cause && Buffer.from(this.cause).toString("hex"),
+      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
 
 export namespace IssueTokens {
   export type Args = {
-    recipient: URL | string;
-    amount: BN | string;
-    to: (TokenRecipient | TokenRecipient.Args)[];
+    recipient?: URL | string;
+    amount?: BN | string;
+    to?: (TokenRecipient | TokenRecipient.Args)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.IssueTokens | "issueTokens" };
 }
 export class IssueTokens {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.IssueTokens;
-  public recipient: URL;
-  public amount: BN;
-  public to: TokenRecipient[];
+  @encodeAs.field(2).url
+  public recipient?: URL;
+  @encodeAs.field(3).bigInt
+  public amount?: BN;
+  @encodeAs.field(4).repeatable.reference
+  public to?: TokenRecipient[];
 
   constructor(args: IssueTokens.Args) {
-    this.recipient = args.recipient instanceof URL ? args.recipient : new URL(args.recipient);
-    this.amount = args.amount instanceof BN ? args.amount : new BN(args.amount);
-    this.to = args.to.map((v) => (v instanceof TokenRecipient ? v : new TokenRecipient(v)));
+    this.recipient =
+      args.recipient == undefined
+        ? undefined
+        : args.recipient instanceof URL
+        ? args.recipient
+        : new URL(args.recipient);
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : args.amount instanceof BN
+        ? args.amount
+        : new BN(args.amount);
+    this.to =
+      args.to == undefined
+        ? undefined
+        : args.to.map((v) => (v instanceof TokenRecipient ? v : new TokenRecipient(v)));
   }
 
-  asObject() {
+  asObject(): IssueTokens.ArgsWithType {
     return {
       type: this.type,
-      recipient: this.recipient.toString(),
-      amount: this.amount.toString(),
-      to: this.to?.map((v) => v.asObject()),
+      recipient: this.recipient && this.recipient.toString(),
+      amount: this.amount && this.amount.toString(),
+      to: this.to && this.to?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace KeyBook {
   export type Args = {
-    url: URL | string;
-    bookType: BookType.Args;
-    authorities: (AuthorityEntry | AuthorityEntry.Args)[];
-    pageCount: number;
+    url?: URL | string;
+    bookType?: BookType.Args;
+    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
+    pageCount?: number;
   };
   export type ArgsWithType = Args & { type: AccountType.KeyBook | "keyBook" };
 }
 export class KeyBook {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.KeyBook;
-  public url: URL;
-  public bookType: BookType;
-  public authorities: AuthorityEntry[];
-  public pageCount: number;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).enum
+  public bookType?: BookType;
+  @encodeAs.field(4, 1).repeatable.reference
+  public authorities?: AuthorityEntry[];
+  @encodeAs.field(5).uint
+  public pageCount?: number;
 
   constructor(args: KeyBook.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.bookType = BookType.fromObject(args.bookType);
-    this.authorities = args.authorities.map((v) =>
-      v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
-    );
-    this.pageCount = args.pageCount;
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.bookType = args.bookType == undefined ? undefined : BookType.fromObject(args.bookType);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof AuthorityEntry ? v : new AuthorityEntry(v)));
+    this.pageCount = args.pageCount == undefined ? undefined : args.pageCount;
   }
 
-  asObject() {
+  asObject(): KeyBook.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      bookType: this.bookType.toString(),
-      authorities: this.authorities?.map((v) => v.asObject()),
-      pageCount: this.pageCount,
+      url: this.url && this.url.toString(),
+      bookType: this.bookType && this.bookType.toString(),
+      authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
+      pageCount: this.pageCount && this.pageCount,
     };
   }
 }
 
 export namespace KeyPage {
   export type Args = {
-    url: URL | string;
-    creditBalance: number;
-    acceptThreshold: number;
-    rejectThreshold: number;
-    responseThreshold: number;
-    blockThreshold: number;
-    version: number;
-    keys: (KeySpec | KeySpec.Args)[];
-    transactionBlacklist: AllowedTransactions.Args;
+    url?: URL | string;
+    creditBalance?: number;
+    acceptThreshold?: number;
+    rejectThreshold?: number;
+    responseThreshold?: number;
+    blockThreshold?: number;
+    version?: number;
+    keys?: (KeySpec | KeySpec.Args)[];
+    transactionBlacklist?: AllowedTransactions.Args;
   };
   export type ArgsWithType = Args & { type: AccountType.KeyPage | "keyPage" };
 }
 export class KeyPage {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.KeyPage;
-  public url: URL;
-  public creditBalance: number;
-  public acceptThreshold: number;
-  public rejectThreshold: number;
-  public responseThreshold: number;
-  public blockThreshold: number;
-  public version: number;
-  public keys: KeySpec[];
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).uint
+  public creditBalance?: number;
+  @encodeAs.field(4).uint
+  public acceptThreshold?: number;
+  @encodeAs.field(5).uint
+  public rejectThreshold?: number;
+  @encodeAs.field(6).uint
+  public responseThreshold?: number;
+  @encodeAs.field(7).uint
+  public blockThreshold?: number;
+  @encodeAs.field(8).uint
+  public version?: number;
+  @encodeAs.field(9).repeatable.reference
+  public keys?: KeySpec[];
+  @encodeAs.field(10).enum
   public transactionBlacklist?: AllowedTransactions;
 
   constructor(args: KeyPage.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.creditBalance = args.creditBalance;
-    this.acceptThreshold = args.acceptThreshold;
-    this.rejectThreshold = args.rejectThreshold;
-    this.responseThreshold = args.responseThreshold;
-    this.blockThreshold = args.blockThreshold;
-    this.version = args.version;
-    this.keys = args.keys.map((v) => (v instanceof KeySpec ? v : new KeySpec(v)));
-    this.transactionBlacklist = AllowedTransactions.fromObject(args.transactionBlacklist);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.creditBalance = args.creditBalance == undefined ? undefined : args.creditBalance;
+    this.acceptThreshold = args.acceptThreshold == undefined ? undefined : args.acceptThreshold;
+    this.rejectThreshold = args.rejectThreshold == undefined ? undefined : args.rejectThreshold;
+    this.responseThreshold =
+      args.responseThreshold == undefined ? undefined : args.responseThreshold;
+    this.blockThreshold = args.blockThreshold == undefined ? undefined : args.blockThreshold;
+    this.version = args.version == undefined ? undefined : args.version;
+    this.keys =
+      args.keys == undefined
+        ? undefined
+        : args.keys.map((v) => (v instanceof KeySpec ? v : new KeySpec(v)));
+    this.transactionBlacklist =
+      args.transactionBlacklist == undefined
+        ? undefined
+        : AllowedTransactions.fromObject(args.transactionBlacklist);
   }
 
-  asObject() {
+  asObject(): KeyPage.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      creditBalance: this.creditBalance,
-      acceptThreshold: this.acceptThreshold,
-      rejectThreshold: this.rejectThreshold,
-      responseThreshold: this.responseThreshold,
-      blockThreshold: this.blockThreshold,
-      version: this.version,
-      keys: this.keys?.map((v) => v.asObject()),
-      transactionBlacklist: this.transactionBlacklist && this.transactionBlacklist.toString(),
+      url: this.url && this.url.toString(),
+      creditBalance: this.creditBalance && this.creditBalance,
+      acceptThreshold: this.acceptThreshold && this.acceptThreshold,
+      rejectThreshold: this.rejectThreshold && this.rejectThreshold,
+      responseThreshold: this.responseThreshold && this.responseThreshold,
+      blockThreshold: this.blockThreshold && this.blockThreshold,
+      version: this.version && this.version,
+      keys: this.keys && this.keys?.map((v) => v.asObject()),
+      transactionBlacklist:
+        this.transactionBlacklist && this.transactionBlacklist.map((v) => v.toString()),
     };
   }
 }
 
 export namespace KeySpec {
   export type Args = {
-    publicKeyHash: Uint8Array | string;
-    lastUsedOn: number;
-    delegate: URL | string;
+    publicKeyHash?: Uint8Array | string;
+    lastUsedOn?: number;
+    delegate?: URL | string;
   };
 }
 export class KeySpec {
-  public publicKeyHash: Uint8Array;
-  public lastUsedOn: number;
-  public delegate: URL;
+  @encodeAs.field(1).bytes
+  public publicKeyHash?: Uint8Array;
+  @encodeAs.field(2).uint
+  public lastUsedOn?: number;
+  @encodeAs.field(3).url
+  public delegate?: URL;
 
   constructor(args: KeySpec.Args) {
     this.publicKeyHash =
-      args.publicKeyHash instanceof Uint8Array
+      args.publicKeyHash == undefined
+        ? undefined
+        : args.publicKeyHash instanceof Uint8Array
         ? args.publicKeyHash
         : Buffer.from(args.publicKeyHash, "hex");
-    this.lastUsedOn = args.lastUsedOn;
-    this.delegate = args.delegate instanceof URL ? args.delegate : new URL(args.delegate);
+    this.lastUsedOn = args.lastUsedOn == undefined ? undefined : args.lastUsedOn;
+    this.delegate =
+      args.delegate == undefined
+        ? undefined
+        : args.delegate instanceof URL
+        ? args.delegate
+        : new URL(args.delegate);
   }
 
-  asObject() {
+  asObject(): KeySpec.Args {
     return {
-      publicKeyHash: Buffer.from(this.publicKeyHash).toString("hex"),
-      lastUsedOn: this.lastUsedOn,
-      delegate: this.delegate.toString(),
+      publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      lastUsedOn: this.lastUsedOn && this.lastUsedOn,
+      delegate: this.delegate && this.delegate.toString(),
     };
   }
 }
 
 export namespace KeySpecParams {
   export type Args = {
-    keyHash: Uint8Array | string;
-    delegate: URL | string;
+    keyHash?: Uint8Array | string;
+    delegate?: URL | string;
   };
 }
 export class KeySpecParams {
-  public keyHash: Uint8Array;
+  @encodeAs.field(1).bytes
+  public keyHash?: Uint8Array;
+  @encodeAs.field(2).url
   public delegate?: URL;
 
   constructor(args: KeySpecParams.Args) {
     this.keyHash =
-      args.keyHash instanceof Uint8Array ? args.keyHash : Buffer.from(args.keyHash, "hex");
-    this.delegate = args.delegate instanceof URL ? args.delegate : new URL(args.delegate);
+      args.keyHash == undefined
+        ? undefined
+        : args.keyHash instanceof Uint8Array
+        ? args.keyHash
+        : Buffer.from(args.keyHash, "hex");
+    this.delegate =
+      args.delegate == undefined
+        ? undefined
+        : args.delegate instanceof URL
+        ? args.delegate
+        : new URL(args.delegate);
   }
 
-  asObject() {
+  asObject(): KeySpecParams.Args {
     return {
-      keyHash: Buffer.from(this.keyHash).toString("hex"),
+      keyHash: this.keyHash && Buffer.from(this.keyHash).toString("hex"),
       delegate: this.delegate && this.delegate.toString(),
     };
   }
@@ -1434,49 +1929,72 @@ export class KeySpecParams {
 
 export namespace LegacyED25519Signature {
   export type Args = {
-    timestamp: number;
-    publicKey: Uint8Array | string;
-    signature: Uint8Array | string;
-    signer: URL | string;
-    signerVersion: number;
-    vote: VoteType.Args;
-    transactionHash: Uint8Array | string;
+    timestamp?: number;
+    publicKey?: Uint8Array | string;
+    signature?: Uint8Array | string;
+    signer?: URL | string;
+    signerVersion?: number;
+    vote?: VoteType.Args;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.LegacyED25519 | "legacyED25519" };
 }
 export class LegacyED25519Signature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.LegacyED25519;
-  public timestamp: number;
-  public publicKey: Uint8Array;
-  public signature: Uint8Array;
-  public signer: URL;
-  public signerVersion: number;
+  @encodeAs.field(2).uint
+  public timestamp?: number;
+  @encodeAs.field(3).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(4).bytes
+  public signature?: Uint8Array;
+  @encodeAs.field(5).url
+  public signer?: URL;
+  @encodeAs.field(6).uint
+  public signerVersion?: number;
+  @encodeAs.field(7).enum
   public vote?: VoteType;
+  @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
   constructor(args: LegacyED25519Signature.Args) {
-    this.timestamp = args.timestamp;
+    this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
     this.publicKey =
-      args.publicKey instanceof Uint8Array ? args.publicKey : Buffer.from(args.publicKey, "hex");
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
     this.signature =
-      args.signature instanceof Uint8Array ? args.signature : Buffer.from(args.signature, "hex");
-    this.signer = args.signer instanceof URL ? args.signer : new URL(args.signer);
-    this.signerVersion = args.signerVersion;
-    this.vote = VoteType.fromObject(args.vote);
+      args.signature == undefined
+        ? undefined
+        : args.signature instanceof Uint8Array
+        ? args.signature
+        : Buffer.from(args.signature, "hex");
+    this.signer =
+      args.signer == undefined
+        ? undefined
+        : args.signer instanceof URL
+        ? args.signer
+        : new URL(args.signer);
+    this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): LegacyED25519Signature.ArgsWithType {
     return {
       type: this.type,
-      timestamp: this.timestamp,
-      publicKey: Buffer.from(this.publicKey).toString("hex"),
-      signature: Buffer.from(this.signature).toString("hex"),
-      signer: this.signer.toString(),
-      signerVersion: this.signerVersion,
+      timestamp: this.timestamp && this.timestamp,
+      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer && this.signer.toString(),
+      signerVersion: this.signerVersion && this.signerVersion,
       vote: this.vote && this.vote.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
@@ -1485,385 +2003,483 @@ export class LegacyED25519Signature {
 
 export namespace LiteDataAccount {
   export type Args = {
-    url: URL | string;
+    url?: URL | string;
   };
   export type ArgsWithType = Args & { type: AccountType.LiteDataAccount | "liteDataAccount" };
 }
 export class LiteDataAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.LiteDataAccount;
-  public url: URL;
+  @encodeAs.field(2).url
+  public url?: URL;
 
   constructor(args: LiteDataAccount.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
   }
 
-  asObject() {
+  asObject(): LiteDataAccount.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
+      url: this.url && this.url.toString(),
     };
   }
 }
 
 export namespace LiteIdentity {
   export type Args = {
-    url: URL | string;
-    creditBalance: number;
-    lastUsedOn: number;
+    url?: URL | string;
+    creditBalance?: number;
+    lastUsedOn?: number;
   };
   export type ArgsWithType = Args & { type: AccountType.LiteIdentity | "liteIdentity" };
 }
 export class LiteIdentity {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.LiteIdentity;
-  public url: URL;
-  public creditBalance: number;
-  public lastUsedOn: number;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).uint
+  public creditBalance?: number;
+  @encodeAs.field(4).uint
+  public lastUsedOn?: number;
 
   constructor(args: LiteIdentity.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.creditBalance = args.creditBalance;
-    this.lastUsedOn = args.lastUsedOn;
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.creditBalance = args.creditBalance == undefined ? undefined : args.creditBalance;
+    this.lastUsedOn = args.lastUsedOn == undefined ? undefined : args.lastUsedOn;
   }
 
-  asObject() {
+  asObject(): LiteIdentity.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      creditBalance: this.creditBalance,
-      lastUsedOn: this.lastUsedOn,
+      url: this.url && this.url.toString(),
+      creditBalance: this.creditBalance && this.creditBalance,
+      lastUsedOn: this.lastUsedOn && this.lastUsedOn,
     };
   }
 }
 
 export namespace LiteTokenAccount {
   export type Args = {
-    url: URL | string;
-    tokenUrl: URL | string;
-    balance: BN | string;
-    lockHeight: number;
+    url?: URL | string;
+    tokenUrl?: URL | string;
+    balance?: BN | string;
+    lockHeight?: number;
   };
   export type ArgsWithType = Args & { type: AccountType.LiteTokenAccount | "liteTokenAccount" };
 }
 export class LiteTokenAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.LiteTokenAccount;
-  public url: URL;
-  public tokenUrl: URL;
-  public balance: BN;
-  public lockHeight: number;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).url
+  public tokenUrl?: URL;
+  @encodeAs.field(4).bigInt
+  public balance?: BN;
+  @encodeAs.field(5).uint
+  public lockHeight?: number;
 
   constructor(args: LiteTokenAccount.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.tokenUrl = args.tokenUrl instanceof URL ? args.tokenUrl : new URL(args.tokenUrl);
-    this.balance = args.balance instanceof BN ? args.balance : new BN(args.balance);
-    this.lockHeight = args.lockHeight;
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.tokenUrl =
+      args.tokenUrl == undefined
+        ? undefined
+        : args.tokenUrl instanceof URL
+        ? args.tokenUrl
+        : new URL(args.tokenUrl);
+    this.balance =
+      args.balance == undefined
+        ? undefined
+        : args.balance instanceof BN
+        ? args.balance
+        : new BN(args.balance);
+    this.lockHeight = args.lockHeight == undefined ? undefined : args.lockHeight;
   }
 
-  asObject() {
+  asObject(): LiteTokenAccount.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      tokenUrl: this.tokenUrl.toString(),
-      balance: this.balance.toString(),
-      lockHeight: this.lockHeight,
+      url: this.url && this.url.toString(),
+      tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
+      balance: this.balance && this.balance.toString(),
+      lockHeight: this.lockHeight && this.lockHeight,
     };
   }
 }
 
 export namespace LockAccount {
   export type Args = {
-    height: number;
+    height?: number;
   };
   export type ArgsWithType = Args & { type: TransactionType.LockAccount | "lockAccount" };
 }
 export class LockAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.LockAccount;
-  public height: number;
+  @encodeAs.field(2).uint
+  public height?: number;
 
   constructor(args: LockAccount.Args) {
-    this.height = args.height;
+    this.height = args.height == undefined ? undefined : args.height;
   }
 
-  asObject() {
+  asObject(): LockAccount.ArgsWithType {
     return {
       type: this.type,
-      height: this.height,
+      height: this.height && this.height,
     };
   }
 }
 
 export namespace NetworkAccountUpdate {
   export type Args = {
-    name: string;
-    body: TransactionBody.Args;
+    name?: string;
+    body?: TransactionBody | TransactionBody.Args;
   };
 }
 export class NetworkAccountUpdate {
-  public name: string;
-  public body: TransactionBody;
+  @encodeAs.field(1).string
+  public name?: string;
+  @encodeAs.field(2).union
+  public body?: TransactionBody;
 
   constructor(args: NetworkAccountUpdate.Args) {
-    this.name = args.name;
-    this.body = TransactionBody.fromObject(args.body);
+    this.name = args.name == undefined ? undefined : args.name;
+    this.body = args.body == undefined ? undefined : TransactionBody.fromObject(args.body);
   }
 
-  asObject() {
+  asObject(): NetworkAccountUpdate.Args {
     return {
-      name: this.name,
-      body: this.body.asObject(),
+      name: this.name && this.name,
+      body: this.body && this.body.asObject(),
     };
   }
 }
 
 export namespace NetworkDefinition {
   export type Args = {
-    networkName: string;
-    version: number;
-    partitions: (PartitionInfo | PartitionInfo.Args)[];
-    validators: (ValidatorInfo | ValidatorInfo.Args)[];
+    networkName?: string;
+    version?: number;
+    partitions?: (PartitionInfo | PartitionInfo.Args)[];
+    validators?: (ValidatorInfo | ValidatorInfo.Args)[];
   };
 }
 export class NetworkDefinition {
-  public networkName: string;
-  public version: number;
-  public partitions: PartitionInfo[];
-  public validators: ValidatorInfo[];
+  @encodeAs.field(1).string
+  public networkName?: string;
+  @encodeAs.field(2).uint
+  public version?: number;
+  @encodeAs.field(3).repeatable.reference
+  public partitions?: PartitionInfo[];
+  @encodeAs.field(4).repeatable.reference
+  public validators?: ValidatorInfo[];
 
   constructor(args: NetworkDefinition.Args) {
-    this.networkName = args.networkName;
-    this.version = args.version;
-    this.partitions = args.partitions.map((v) =>
-      v instanceof PartitionInfo ? v : new PartitionInfo(v)
-    );
-    this.validators = args.validators.map((v) =>
-      v instanceof ValidatorInfo ? v : new ValidatorInfo(v)
-    );
+    this.networkName = args.networkName == undefined ? undefined : args.networkName;
+    this.version = args.version == undefined ? undefined : args.version;
+    this.partitions =
+      args.partitions == undefined
+        ? undefined
+        : args.partitions.map((v) => (v instanceof PartitionInfo ? v : new PartitionInfo(v)));
+    this.validators =
+      args.validators == undefined
+        ? undefined
+        : args.validators.map((v) => (v instanceof ValidatorInfo ? v : new ValidatorInfo(v)));
   }
 
-  asObject() {
+  asObject(): NetworkDefinition.Args {
     return {
-      networkName: this.networkName,
-      version: this.version,
-      partitions: this.partitions?.map((v) => v.asObject()),
-      validators: this.validators?.map((v) => v.asObject()),
+      networkName: this.networkName && this.networkName,
+      version: this.version && this.version,
+      partitions: this.partitions && this.partitions?.map((v) => v.asObject()),
+      validators: this.validators && this.validators?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace NetworkGlobals {
   export type Args = {
-    operatorAcceptThreshold: Rational | Rational.Args;
-    validatorAcceptThreshold: Rational | Rational.Args;
-    majorBlockSchedule: string;
-    anchorEmptyBlocks: boolean;
-    feeSchedule: FeeSchedule | FeeSchedule.Args;
-    limits: NetworkLimits | NetworkLimits.Args;
+    operatorAcceptThreshold?: Rational | Rational.Args;
+    validatorAcceptThreshold?: Rational | Rational.Args;
+    majorBlockSchedule?: string;
+    anchorEmptyBlocks?: boolean;
+    feeSchedule?: FeeSchedule | FeeSchedule.Args;
+    limits?: NetworkLimits | NetworkLimits.Args;
   };
 }
 export class NetworkGlobals {
-  public operatorAcceptThreshold: Rational;
-  public validatorAcceptThreshold: Rational;
-  public majorBlockSchedule: string;
-  public anchorEmptyBlocks: boolean;
-  public feeSchedule: FeeSchedule;
-  public limits: NetworkLimits;
+  @encodeAs.field(1).reference
+  public operatorAcceptThreshold?: Rational;
+  @encodeAs.field(2).reference
+  public validatorAcceptThreshold?: Rational;
+  @encodeAs.field(3).string
+  public majorBlockSchedule?: string;
+  @encodeAs.field(4).bool
+  public anchorEmptyBlocks?: boolean;
+  @encodeAs.field(5).reference
+  public feeSchedule?: FeeSchedule;
+  @encodeAs.field(6).reference
+  public limits?: NetworkLimits;
 
   constructor(args: NetworkGlobals.Args) {
     this.operatorAcceptThreshold =
-      args.operatorAcceptThreshold instanceof Rational
+      args.operatorAcceptThreshold == undefined
+        ? undefined
+        : args.operatorAcceptThreshold instanceof Rational
         ? args.operatorAcceptThreshold
         : new Rational(args.operatorAcceptThreshold);
     this.validatorAcceptThreshold =
-      args.validatorAcceptThreshold instanceof Rational
+      args.validatorAcceptThreshold == undefined
+        ? undefined
+        : args.validatorAcceptThreshold instanceof Rational
         ? args.validatorAcceptThreshold
         : new Rational(args.validatorAcceptThreshold);
-    this.majorBlockSchedule = args.majorBlockSchedule;
-    this.anchorEmptyBlocks = args.anchorEmptyBlocks;
+    this.majorBlockSchedule =
+      args.majorBlockSchedule == undefined ? undefined : args.majorBlockSchedule;
+    this.anchorEmptyBlocks =
+      args.anchorEmptyBlocks == undefined ? undefined : args.anchorEmptyBlocks;
     this.feeSchedule =
-      args.feeSchedule instanceof FeeSchedule
+      args.feeSchedule == undefined
+        ? undefined
+        : args.feeSchedule instanceof FeeSchedule
         ? args.feeSchedule
         : new FeeSchedule(args.feeSchedule);
     this.limits =
-      args.limits instanceof NetworkLimits ? args.limits : new NetworkLimits(args.limits);
+      args.limits == undefined
+        ? undefined
+        : args.limits instanceof NetworkLimits
+        ? args.limits
+        : new NetworkLimits(args.limits);
   }
 
-  asObject() {
+  asObject(): NetworkGlobals.Args {
     return {
-      operatorAcceptThreshold: this.operatorAcceptThreshold.asObject(),
-      validatorAcceptThreshold: this.validatorAcceptThreshold.asObject(),
-      majorBlockSchedule: this.majorBlockSchedule,
-      anchorEmptyBlocks: this.anchorEmptyBlocks,
-      feeSchedule: this.feeSchedule.asObject(),
-      limits: this.limits.asObject(),
+      operatorAcceptThreshold:
+        this.operatorAcceptThreshold && this.operatorAcceptThreshold.asObject(),
+      validatorAcceptThreshold:
+        this.validatorAcceptThreshold && this.validatorAcceptThreshold.asObject(),
+      majorBlockSchedule: this.majorBlockSchedule && this.majorBlockSchedule,
+      anchorEmptyBlocks: this.anchorEmptyBlocks && this.anchorEmptyBlocks,
+      feeSchedule: this.feeSchedule && this.feeSchedule.asObject(),
+      limits: this.limits && this.limits.asObject(),
     };
   }
 }
 
 export namespace NetworkLimits {
   export type Args = {
-    dataEntryParts: number;
-    accountAuthorities: number;
-    bookPages: number;
-    pageEntries: number;
-    identityAccounts: number;
+    dataEntryParts?: number;
+    accountAuthorities?: number;
+    bookPages?: number;
+    pageEntries?: number;
+    identityAccounts?: number;
   };
 }
 export class NetworkLimits {
-  public dataEntryParts: number;
-  public accountAuthorities: number;
-  public bookPages: number;
-  public pageEntries: number;
-  public identityAccounts: number;
+  @encodeAs.field(1).uint
+  public dataEntryParts?: number;
+  @encodeAs.field(2).uint
+  public accountAuthorities?: number;
+  @encodeAs.field(3).uint
+  public bookPages?: number;
+  @encodeAs.field(4).uint
+  public pageEntries?: number;
+  @encodeAs.field(5).uint
+  public identityAccounts?: number;
 
   constructor(args: NetworkLimits.Args) {
-    this.dataEntryParts = args.dataEntryParts;
-    this.accountAuthorities = args.accountAuthorities;
-    this.bookPages = args.bookPages;
-    this.pageEntries = args.pageEntries;
-    this.identityAccounts = args.identityAccounts;
+    this.dataEntryParts = args.dataEntryParts == undefined ? undefined : args.dataEntryParts;
+    this.accountAuthorities =
+      args.accountAuthorities == undefined ? undefined : args.accountAuthorities;
+    this.bookPages = args.bookPages == undefined ? undefined : args.bookPages;
+    this.pageEntries = args.pageEntries == undefined ? undefined : args.pageEntries;
+    this.identityAccounts = args.identityAccounts == undefined ? undefined : args.identityAccounts;
   }
 
-  asObject() {
+  asObject(): NetworkLimits.Args {
     return {
-      dataEntryParts: this.dataEntryParts,
-      accountAuthorities: this.accountAuthorities,
-      bookPages: this.bookPages,
-      pageEntries: this.pageEntries,
-      identityAccounts: this.identityAccounts,
+      dataEntryParts: this.dataEntryParts && this.dataEntryParts,
+      accountAuthorities: this.accountAuthorities && this.accountAuthorities,
+      bookPages: this.bookPages && this.bookPages,
+      pageEntries: this.pageEntries && this.pageEntries,
+      identityAccounts: this.identityAccounts && this.identityAccounts,
     };
   }
 }
 
 export namespace PartitionAnchor {
   export type Args = {
-    source: URL | string;
-    majorBlockIndex: number;
-    minorBlockIndex: number;
-    rootChainIndex: number;
-    rootChainAnchor: Uint8Array | string;
-    stateTreeAnchor: Uint8Array | string;
+    source?: URL | string;
+    majorBlockIndex?: number;
+    minorBlockIndex?: number;
+    rootChainIndex?: number;
+    rootChainAnchor?: Uint8Array | string;
+    stateTreeAnchor?: Uint8Array | string;
   };
 }
 export class PartitionAnchor {
-  public source: URL;
-  public majorBlockIndex: number;
-  public minorBlockIndex: number;
-  public rootChainIndex: number;
-  public rootChainAnchor: Uint8Array;
-  public stateTreeAnchor: Uint8Array;
+  @encodeAs.field(1).url
+  public source?: URL;
+  @encodeAs.field(2).uint
+  public majorBlockIndex?: number;
+  @encodeAs.field(3).uint
+  public minorBlockIndex?: number;
+  @encodeAs.field(4).uint
+  public rootChainIndex?: number;
+  @encodeAs.field(5).hash
+  public rootChainAnchor?: Uint8Array;
+  @encodeAs.field(6).hash
+  public stateTreeAnchor?: Uint8Array;
 
   constructor(args: PartitionAnchor.Args) {
-    this.source = args.source instanceof URL ? args.source : new URL(args.source);
-    this.majorBlockIndex = args.majorBlockIndex;
-    this.minorBlockIndex = args.minorBlockIndex;
-    this.rootChainIndex = args.rootChainIndex;
+    this.source =
+      args.source == undefined
+        ? undefined
+        : args.source instanceof URL
+        ? args.source
+        : new URL(args.source);
+    this.majorBlockIndex = args.majorBlockIndex == undefined ? undefined : args.majorBlockIndex;
+    this.minorBlockIndex = args.minorBlockIndex == undefined ? undefined : args.minorBlockIndex;
+    this.rootChainIndex = args.rootChainIndex == undefined ? undefined : args.rootChainIndex;
     this.rootChainAnchor =
-      args.rootChainAnchor instanceof Uint8Array
+      args.rootChainAnchor == undefined
+        ? undefined
+        : args.rootChainAnchor instanceof Uint8Array
         ? args.rootChainAnchor
         : Buffer.from(args.rootChainAnchor, "hex");
     this.stateTreeAnchor =
-      args.stateTreeAnchor instanceof Uint8Array
+      args.stateTreeAnchor == undefined
+        ? undefined
+        : args.stateTreeAnchor instanceof Uint8Array
         ? args.stateTreeAnchor
         : Buffer.from(args.stateTreeAnchor, "hex");
   }
 
-  asObject() {
+  asObject(): PartitionAnchor.Args {
     return {
-      source: this.source.toString(),
-      majorBlockIndex: this.majorBlockIndex,
-      minorBlockIndex: this.minorBlockIndex,
-      rootChainIndex: this.rootChainIndex,
-      rootChainAnchor: Buffer.from(this.rootChainAnchor).toString("hex"),
-      stateTreeAnchor: Buffer.from(this.stateTreeAnchor).toString("hex"),
+      source: this.source && this.source.toString(),
+      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
+      minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
+      rootChainIndex: this.rootChainIndex && this.rootChainIndex,
+      rootChainAnchor: this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
+      stateTreeAnchor: this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
     };
   }
 }
 
 export namespace PartitionAnchorReceipt {
   export type Args = {
-    anchor: PartitionAnchor | PartitionAnchor.Args;
-    rootChainReceipt: managed.Receipt | managed.Receipt.Args;
+    anchor?: PartitionAnchor | PartitionAnchor.Args;
+    rootChainReceipt?: managed.Receipt | managed.Receipt.Args;
   };
 }
 export class PartitionAnchorReceipt {
-  public anchor: PartitionAnchor;
-  public rootChainReceipt: managed.Receipt;
+  @encodeAs.field(1).reference
+  public anchor?: PartitionAnchor;
+  @encodeAs.field(2).reference
+  public rootChainReceipt?: managed.Receipt;
 
   constructor(args: PartitionAnchorReceipt.Args) {
     this.anchor =
-      args.anchor instanceof PartitionAnchor ? args.anchor : new PartitionAnchor(args.anchor);
+      args.anchor == undefined
+        ? undefined
+        : args.anchor instanceof PartitionAnchor
+        ? args.anchor
+        : new PartitionAnchor(args.anchor);
     this.rootChainReceipt =
-      args.rootChainReceipt instanceof managed.Receipt
+      args.rootChainReceipt == undefined
+        ? undefined
+        : args.rootChainReceipt instanceof managed.Receipt
         ? args.rootChainReceipt
         : new managed.Receipt(args.rootChainReceipt);
   }
 
-  asObject() {
+  asObject(): PartitionAnchorReceipt.Args {
     return {
-      anchor: this.anchor.asObject(),
-      rootChainReceipt: this.rootChainReceipt.asObject(),
+      anchor: this.anchor && this.anchor.asObject(),
+      rootChainReceipt: this.rootChainReceipt && this.rootChainReceipt.asObject(),
     };
   }
 }
 
 export namespace PartitionInfo {
   export type Args = {
-    id: string;
-    type: PartitionType.Args;
+    id?: string;
+    type?: PartitionType.Args;
   };
 }
 export class PartitionInfo {
-  public id: string;
-  public type: PartitionType;
+  @encodeAs.field(1).string
+  public id?: string;
+  @encodeAs.field(2).enum
+  public type?: PartitionType;
 
   constructor(args: PartitionInfo.Args) {
-    this.id = args.id;
-    this.type = PartitionType.fromObject(args.type);
+    this.id = args.id == undefined ? undefined : args.id;
+    this.type = args.type == undefined ? undefined : PartitionType.fromObject(args.type);
   }
 
-  asObject() {
+  asObject(): PartitionInfo.Args {
     return {
-      id: this.id,
-      type: this.type.toString(),
+      id: this.id && this.id,
+      type: this.type && this.type.toString(),
     };
   }
 }
 
 export namespace PartitionSignature {
   export type Args = {
-    sourceNetwork: URL | string;
-    destinationNetwork: URL | string;
-    sequenceNumber: number;
-    transactionHash: Uint8Array | string;
+    sourceNetwork?: URL | string;
+    destinationNetwork?: URL | string;
+    sequenceNumber?: number;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.Partition | "partition" };
 }
 export class PartitionSignature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Partition;
-  public sourceNetwork: URL;
-  public destinationNetwork: URL;
-  public sequenceNumber: number;
+  @encodeAs.field(2).url
+  public sourceNetwork?: URL;
+  @encodeAs.field(3).url
+  public destinationNetwork?: URL;
+  @encodeAs.field(4).uint
+  public sequenceNumber?: number;
+  @encodeAs.field(5).hash
   public transactionHash?: Uint8Array;
 
   constructor(args: PartitionSignature.Args) {
     this.sourceNetwork =
-      args.sourceNetwork instanceof URL ? args.sourceNetwork : new URL(args.sourceNetwork);
+      args.sourceNetwork == undefined
+        ? undefined
+        : args.sourceNetwork instanceof URL
+        ? args.sourceNetwork
+        : new URL(args.sourceNetwork);
     this.destinationNetwork =
-      args.destinationNetwork instanceof URL
+      args.destinationNetwork == undefined
+        ? undefined
+        : args.destinationNetwork instanceof URL
         ? args.destinationNetwork
         : new URL(args.destinationNetwork);
-    this.sequenceNumber = args.sequenceNumber;
+    this.sequenceNumber = args.sequenceNumber == undefined ? undefined : args.sequenceNumber;
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): PartitionSignature.ArgsWithType {
     return {
       type: this.type,
-      sourceNetwork: this.sourceNetwork.toString(),
-      destinationNetwork: this.destinationNetwork.toString(),
-      sequenceNumber: this.sequenceNumber,
+      sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
+      destinationNetwork: this.destinationNetwork && this.destinationNetwork.toString(),
+      sequenceNumber: this.sequenceNumber && this.sequenceNumber,
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
@@ -1871,83 +2487,115 @@ export class PartitionSignature {
 
 export namespace PartitionSyntheticLedger {
   export type Args = {
-    url: URL | string;
-    produced: number;
-    received: number;
-    delivered: number;
-    pending: (TxID | string)[];
+    url?: URL | string;
+    produced?: number;
+    received?: number;
+    delivered?: number;
+    pending?: (TxID | string)[];
   };
 }
 export class PartitionSyntheticLedger {
-  public url: URL;
-  public produced: number;
-  public received: number;
-  public delivered: number;
-  public pending: TxID[];
+  @encodeAs.field(1).url
+  public url?: URL;
+  @encodeAs.field(2).uint
+  public produced?: number;
+  @encodeAs.field(3).uint
+  public received?: number;
+  @encodeAs.field(4).uint
+  public delivered?: number;
+  @encodeAs.field(5).repeatable.txid
+  public pending?: TxID[];
 
   constructor(args: PartitionSyntheticLedger.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.produced = args.produced;
-    this.received = args.received;
-    this.delivered = args.delivered;
-    this.pending = args.pending.map((v) => (v instanceof TxID ? v : new TxID(v)));
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.produced = args.produced == undefined ? undefined : args.produced;
+    this.received = args.received == undefined ? undefined : args.received;
+    this.delivered = args.delivered == undefined ? undefined : args.delivered;
+    this.pending =
+      args.pending == undefined
+        ? undefined
+        : args.pending.map((v) => (v instanceof TxID ? v : new TxID(v)));
   }
 
-  asObject() {
+  asObject(): PartitionSyntheticLedger.Args {
     return {
-      url: this.url.toString(),
-      produced: this.produced,
-      received: this.received,
-      delivered: this.delivered,
-      pending: this.pending?.map((v) => v.toString()),
+      url: this.url && this.url.toString(),
+      produced: this.produced && this.produced,
+      received: this.received && this.received,
+      delivered: this.delivered && this.delivered,
+      pending: this.pending && this.pending?.map((v) => v.toString()),
     };
   }
 }
 
 export namespace RCD1Signature {
   export type Args = {
-    publicKey: Uint8Array | string;
-    signature: Uint8Array | string;
-    signer: URL | string;
-    signerVersion: number;
-    timestamp: number;
-    vote: VoteType.Args;
-    transactionHash: Uint8Array | string;
+    publicKey?: Uint8Array | string;
+    signature?: Uint8Array | string;
+    signer?: URL | string;
+    signerVersion?: number;
+    timestamp?: number;
+    vote?: VoteType.Args;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.RCD1 | "rcd1" };
 }
 export class RCD1Signature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.RCD1;
-  public publicKey: Uint8Array;
-  public signature: Uint8Array;
-  public signer: URL;
-  public signerVersion: number;
+  @encodeAs.field(2).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(3).bytes
+  public signature?: Uint8Array;
+  @encodeAs.field(4).url
+  public signer?: URL;
+  @encodeAs.field(5).uint
+  public signerVersion?: number;
+  @encodeAs.field(6).uint
   public timestamp?: number;
+  @encodeAs.field(7).enum
   public vote?: VoteType;
+  @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
   constructor(args: RCD1Signature.Args) {
     this.publicKey =
-      args.publicKey instanceof Uint8Array ? args.publicKey : Buffer.from(args.publicKey, "hex");
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
     this.signature =
-      args.signature instanceof Uint8Array ? args.signature : Buffer.from(args.signature, "hex");
-    this.signer = args.signer instanceof URL ? args.signer : new URL(args.signer);
-    this.signerVersion = args.signerVersion;
-    this.timestamp = args.timestamp;
-    this.vote = VoteType.fromObject(args.vote);
+      args.signature == undefined
+        ? undefined
+        : args.signature instanceof Uint8Array
+        ? args.signature
+        : Buffer.from(args.signature, "hex");
+    this.signer =
+      args.signer == undefined
+        ? undefined
+        : args.signer instanceof URL
+        ? args.signer
+        : new URL(args.signer);
+    this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
+    this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): RCD1Signature.ArgsWithType {
     return {
       type: this.type,
-      publicKey: Buffer.from(this.publicKey).toString("hex"),
-      signature: Buffer.from(this.signature).toString("hex"),
-      signer: this.signer.toString(),
-      signerVersion: this.signerVersion,
+      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer && this.signer.toString(),
+      signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && this.vote.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
@@ -1957,57 +2605,73 @@ export class RCD1Signature {
 
 export namespace Rational {
   export type Args = {
-    numerator: number;
-    denominator: number;
+    numerator?: number;
+    denominator?: number;
   };
 }
 export class Rational {
-  public numerator: number;
-  public denominator: number;
+  @encodeAs.field(1).uint
+  public numerator?: number;
+  @encodeAs.field(2).uint
+  public denominator?: number;
 
   constructor(args: Rational.Args) {
-    this.numerator = args.numerator;
-    this.denominator = args.denominator;
+    this.numerator = args.numerator == undefined ? undefined : args.numerator;
+    this.denominator = args.denominator == undefined ? undefined : args.denominator;
   }
 
-  asObject() {
+  asObject(): Rational.Args {
     return {
-      numerator: this.numerator,
-      denominator: this.denominator,
+      numerator: this.numerator && this.numerator,
+      denominator: this.denominator && this.denominator,
     };
   }
 }
 
 export namespace ReceiptSignature {
   export type Args = {
-    sourceNetwork: URL | string;
-    proof: managed.Receipt | managed.Receipt.Args;
-    transactionHash: Uint8Array | string;
+    sourceNetwork?: URL | string;
+    proof?: managed.Receipt | managed.Receipt.Args;
+    transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.Receipt | "receipt" };
 }
 export class ReceiptSignature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Receipt;
-  public sourceNetwork: URL;
-  public proof: managed.Receipt;
+  @encodeAs.field(2).url
+  public sourceNetwork?: URL;
+  @encodeAs.field(3).reference
+  public proof?: managed.Receipt;
+  @encodeAs.field(4).hash
   public transactionHash?: Uint8Array;
 
   constructor(args: ReceiptSignature.Args) {
     this.sourceNetwork =
-      args.sourceNetwork instanceof URL ? args.sourceNetwork : new URL(args.sourceNetwork);
+      args.sourceNetwork == undefined
+        ? undefined
+        : args.sourceNetwork instanceof URL
+        ? args.sourceNetwork
+        : new URL(args.sourceNetwork);
     this.proof =
-      args.proof instanceof managed.Receipt ? args.proof : new managed.Receipt(args.proof);
+      args.proof == undefined
+        ? undefined
+        : args.proof instanceof managed.Receipt
+        ? args.proof
+        : new managed.Receipt(args.proof);
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
   }
 
-  asObject() {
+  asObject(): ReceiptSignature.ArgsWithType {
     return {
       type: this.type,
-      sourceNetwork: this.sourceNetwork.toString(),
-      proof: this.proof.asObject(),
+      sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
+      proof: this.proof && this.proof.asObject(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
@@ -2015,50 +2679,68 @@ export class ReceiptSignature {
 
 export namespace RemoteSignature {
   export type Args = {
-    destination: URL | string;
-    signature: Signature.Args;
-    cause: (Uint8Array | string)[];
+    destination?: URL | string;
+    signature?: Signature | Signature.Args;
+    cause?: (Uint8Array | string)[];
   };
   export type ArgsWithType = Args & { type: SignatureType.Remote | "remote" };
 }
 export class RemoteSignature {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Remote;
-  public destination: URL;
-  public signature: Signature;
-  public cause: Uint8Array[];
+  @encodeAs.field(2).url
+  public destination?: URL;
+  @encodeAs.field(3).union
+  public signature?: Signature;
+  @encodeAs.field(4).repeatable.hash
+  public cause?: Uint8Array[];
 
   constructor(args: RemoteSignature.Args) {
     this.destination =
-      args.destination instanceof URL ? args.destination : new URL(args.destination);
-    this.signature = Signature.fromObject(args.signature);
-    this.cause = args.cause.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+      args.destination == undefined
+        ? undefined
+        : args.destination instanceof URL
+        ? args.destination
+        : new URL(args.destination);
+    this.signature = args.signature == undefined ? undefined : Signature.fromObject(args.signature);
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
   }
 
-  asObject() {
+  asObject(): RemoteSignature.ArgsWithType {
     return {
       type: this.type,
-      destination: this.destination.toString(),
-      signature: this.signature.asObject(),
-      cause: this.cause?.map((v) => Buffer.from(v).toString("hex")),
+      destination: this.destination && this.destination.toString(),
+      signature: this.signature && this.signature.asObject(),
+      cause: this.cause && this.cause?.map((v) => Buffer.from(v).toString("hex")),
     };
   }
 }
 
 export namespace RemoteTransaction {
   export type Args = {
-    hash: Uint8Array | string;
+    hash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: TransactionType.Remote | "remote" };
 }
 export class RemoteTransaction {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.Remote;
+  @encodeAs.field(2).hash
   public hash?: Uint8Array;
 
   constructor(args: RemoteTransaction.Args) {
-    this.hash = args.hash instanceof Uint8Array ? args.hash : Buffer.from(args.hash, "hex");
+    this.hash =
+      args.hash == undefined
+        ? undefined
+        : args.hash instanceof Uint8Array
+        ? args.hash
+        : Buffer.from(args.hash, "hex");
   }
 
-  asObject() {
+  asObject(): RemoteTransaction.ArgsWithType {
     return {
       type: this.type,
       hash: this.hash && Buffer.from(this.hash).toString("hex"),
@@ -2068,431 +2750,608 @@ export class RemoteTransaction {
 
 export namespace RemoveAccountAuthorityOperation {
   export type Args = {
-    authority: URL | string;
+    authority?: URL | string;
   };
   export type ArgsWithType = Args & {
     type: AccountAuthOperationType.RemoveAuthority | "removeAuthority";
   };
 }
 export class RemoveAccountAuthorityOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountAuthOperationType.RemoveAuthority;
-  public authority: URL;
+  @encodeAs.field(2).url
+  public authority?: URL;
 
   constructor(args: RemoveAccountAuthorityOperation.Args) {
-    this.authority = args.authority instanceof URL ? args.authority : new URL(args.authority);
+    this.authority =
+      args.authority == undefined
+        ? undefined
+        : args.authority instanceof URL
+        ? args.authority
+        : new URL(args.authority);
   }
 
-  asObject() {
+  asObject(): RemoveAccountAuthorityOperation.ArgsWithType {
     return {
       type: this.type,
-      authority: this.authority.toString(),
+      authority: this.authority && this.authority.toString(),
     };
   }
 }
 
 export namespace RemoveKeyOperation {
   export type Args = {
-    entry: KeySpecParams | KeySpecParams.Args;
+    entry?: KeySpecParams | KeySpecParams.Args;
   };
   export type ArgsWithType = Args & { type: KeyPageOperationType.Remove | "remove" };
 }
 export class RemoveKeyOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.Remove;
-  public entry: KeySpecParams;
+  @encodeAs.field(2).reference
+  public entry?: KeySpecParams;
 
   constructor(args: RemoveKeyOperation.Args) {
-    this.entry = args.entry instanceof KeySpecParams ? args.entry : new KeySpecParams(args.entry);
+    this.entry =
+      args.entry == undefined
+        ? undefined
+        : args.entry instanceof KeySpecParams
+        ? args.entry
+        : new KeySpecParams(args.entry);
   }
 
-  asObject() {
+  asObject(): RemoveKeyOperation.ArgsWithType {
     return {
       type: this.type,
-      entry: this.entry.asObject(),
+      entry: this.entry && this.entry.asObject(),
     };
   }
 }
 
 export namespace Route {
   export type Args = {
-    length: number;
-    value: number;
-    partition: string;
+    length?: number;
+    value?: number;
+    partition?: string;
   };
 }
 export class Route {
-  public length: number;
-  public value: number;
-  public partition: string;
+  @encodeAs.field(1).uint
+  public length?: number;
+  @encodeAs.field(2).uint
+  public value?: number;
+  @encodeAs.field(3).string
+  public partition?: string;
 
   constructor(args: Route.Args) {
-    this.length = args.length;
-    this.value = args.value;
-    this.partition = args.partition;
+    this.length = args.length == undefined ? undefined : args.length;
+    this.value = args.value == undefined ? undefined : args.value;
+    this.partition = args.partition == undefined ? undefined : args.partition;
   }
 
-  asObject() {
+  asObject(): Route.Args {
     return {
-      length: this.length,
-      value: this.value,
-      partition: this.partition,
+      length: this.length && this.length,
+      value: this.value && this.value,
+      partition: this.partition && this.partition,
     };
   }
 }
 
 export namespace RouteOverride {
   export type Args = {
-    account: URL | string;
-    partition: string;
+    account?: URL | string;
+    partition?: string;
   };
 }
 export class RouteOverride {
-  public account: URL;
-  public partition: string;
+  @encodeAs.field(1).url
+  public account?: URL;
+  @encodeAs.field(2).string
+  public partition?: string;
 
   constructor(args: RouteOverride.Args) {
-    this.account = args.account instanceof URL ? args.account : new URL(args.account);
-    this.partition = args.partition;
+    this.account =
+      args.account == undefined
+        ? undefined
+        : args.account instanceof URL
+        ? args.account
+        : new URL(args.account);
+    this.partition = args.partition == undefined ? undefined : args.partition;
   }
 
-  asObject() {
+  asObject(): RouteOverride.Args {
     return {
-      account: this.account.toString(),
-      partition: this.partition,
+      account: this.account && this.account.toString(),
+      partition: this.partition && this.partition,
     };
   }
 }
 
 export namespace RoutingTable {
   export type Args = {
-    overrides: (RouteOverride | RouteOverride.Args)[];
-    routes: (Route | Route.Args)[];
+    overrides?: (RouteOverride | RouteOverride.Args)[];
+    routes?: (Route | Route.Args)[];
   };
 }
 export class RoutingTable {
-  public overrides: RouteOverride[];
-  public routes: Route[];
+  @encodeAs.field(1).repeatable.reference
+  public overrides?: RouteOverride[];
+  @encodeAs.field(2).repeatable.reference
+  public routes?: Route[];
 
   constructor(args: RoutingTable.Args) {
-    this.overrides = args.overrides.map((v) =>
-      v instanceof RouteOverride ? v : new RouteOverride(v)
-    );
-    this.routes = args.routes.map((v) => (v instanceof Route ? v : new Route(v)));
+    this.overrides =
+      args.overrides == undefined
+        ? undefined
+        : args.overrides.map((v) => (v instanceof RouteOverride ? v : new RouteOverride(v)));
+    this.routes =
+      args.routes == undefined
+        ? undefined
+        : args.routes.map((v) => (v instanceof Route ? v : new Route(v)));
   }
 
-  asObject() {
+  asObject(): RoutingTable.Args {
     return {
-      overrides: this.overrides?.map((v) => v.asObject()),
-      routes: this.routes?.map((v) => v.asObject()),
+      overrides: this.overrides && this.overrides?.map((v) => v.asObject()),
+      routes: this.routes && this.routes?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace SendTokens {
   export type Args = {
-    hash: Uint8Array | string;
-    meta: unknown;
-    to: (TokenRecipient | TokenRecipient.Args)[];
+    hash?: Uint8Array | string;
+    meta?: unknown;
+    to?: (TokenRecipient | TokenRecipient.Args)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.SendTokens | "sendTokens" };
 }
 export class SendTokens {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SendTokens;
+  @encodeAs.field(2).hash
   public hash?: Uint8Array;
+  @encodeAs.field(3).rawJson
   public meta?: unknown;
-  public to: TokenRecipient[];
+  @encodeAs.field(4).repeatable.reference
+  public to?: TokenRecipient[];
 
   constructor(args: SendTokens.Args) {
-    this.hash = args.hash instanceof Uint8Array ? args.hash : Buffer.from(args.hash, "hex");
-    this.meta = args.meta;
-    this.to = args.to.map((v) => (v instanceof TokenRecipient ? v : new TokenRecipient(v)));
+    this.hash =
+      args.hash == undefined
+        ? undefined
+        : args.hash instanceof Uint8Array
+        ? args.hash
+        : Buffer.from(args.hash, "hex");
+    this.meta = args.meta == undefined ? undefined : args.meta;
+    this.to =
+      args.to == undefined
+        ? undefined
+        : args.to.map((v) => (v instanceof TokenRecipient ? v : new TokenRecipient(v)));
   }
 
-  asObject() {
+  asObject(): SendTokens.ArgsWithType {
     return {
       type: this.type,
       hash: this.hash && Buffer.from(this.hash).toString("hex"),
       meta: this.meta && this.meta,
-      to: this.to?.map((v) => v.asObject()),
+      to: this.to && this.to?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace SetThresholdKeyPageOperation {
   export type Args = {
-    threshold: number;
+    threshold?: number;
   };
   export type ArgsWithType = Args & { type: KeyPageOperationType.SetThreshold | "setThreshold" };
 }
 export class SetThresholdKeyPageOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.SetThreshold;
-  public threshold: number;
+  @encodeAs.field(2).uint
+  public threshold?: number;
 
   constructor(args: SetThresholdKeyPageOperation.Args) {
-    this.threshold = args.threshold;
+    this.threshold = args.threshold == undefined ? undefined : args.threshold;
   }
 
-  asObject() {
+  asObject(): SetThresholdKeyPageOperation.ArgsWithType {
     return {
       type: this.type,
-      threshold: this.threshold,
+      threshold: this.threshold && this.threshold,
     };
   }
 }
 
 export namespace SignatureSet {
   export type Args = {
-    vote: VoteType.Args;
-    signer: URL | string;
-    authority: URL | string;
-    transactionHash: Uint8Array | string;
-    signatures: Signature.Args[];
+    vote?: VoteType.Args;
+    signer?: URL | string;
+    authority?: URL | string;
+    transactionHash?: Uint8Array | string;
+    signatures?: (Signature | Signature.Args)[];
   };
   export type ArgsWithType = Args & { type: SignatureType.Set | "set" };
 }
 export class SignatureSet {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Set;
+  @encodeAs.field(2).enum
   public vote?: VoteType;
-  public signer: URL;
-  public authority: URL;
+  @encodeAs.field(3).url
+  public signer?: URL;
+  @encodeAs.field(4).url
+  public authority?: URL;
+  @encodeAs.field(5).hash
   public transactionHash?: Uint8Array;
-  public signatures: Signature[];
+  @encodeAs.field(6).repeatable.union
+  public signatures?: Signature[];
 
   constructor(args: SignatureSet.Args) {
-    this.vote = VoteType.fromObject(args.vote);
-    this.signer = args.signer instanceof URL ? args.signer : new URL(args.signer);
-    this.authority = args.authority instanceof URL ? args.authority : new URL(args.authority);
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
+    this.signer =
+      args.signer == undefined
+        ? undefined
+        : args.signer instanceof URL
+        ? args.signer
+        : new URL(args.signer);
+    this.authority =
+      args.authority == undefined
+        ? undefined
+        : args.authority instanceof URL
+        ? args.authority
+        : new URL(args.authority);
     this.transactionHash =
-      args.transactionHash instanceof Uint8Array
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
-    this.signatures = args.signatures.map((v) => Signature.fromObject(v));
+    this.signatures =
+      args.signatures == undefined
+        ? undefined
+        : args.signatures.map((v) => Signature.fromObject(v));
   }
 
-  asObject() {
+  asObject(): SignatureSet.ArgsWithType {
     return {
       type: this.type,
       vote: this.vote && this.vote.toString(),
-      signer: this.signer.toString(),
-      authority: this.authority.toString(),
+      signer: this.signer && this.signer.toString(),
+      authority: this.authority && this.authority.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
-      signatures: this.signatures?.map((v) => v.asObject()),
+      signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace SyntheticBurnTokens {
   export type Args = {
-    cause: TxID | string;
-    source: URL | string;
-    initiator: URL | string;
-    feeRefund: number;
-    amount: BN | string;
-    isRefund: boolean;
+    cause?: TxID | string;
+    source?: URL | string;
+    initiator?: URL | string;
+    feeRefund?: number;
+    amount?: BN | string;
+    isRefund?: boolean;
   };
   export type ArgsWithType = Args & {
     type: TransactionType.SyntheticBurnTokens | "syntheticBurnTokens";
   };
 }
 export class SyntheticBurnTokens {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticBurnTokens;
-  public cause: TxID;
-  public source: URL;
-  public initiator: URL;
-  public feeRefund: number;
-  public amount: BN;
-  public isRefund: boolean;
+  @encodeAs.field(2, 1).txid
+  public cause?: TxID;
+  public source?: URL;
+  @encodeAs.field(2, 3).url
+  public initiator?: URL;
+  @encodeAs.field(2, 4).uint
+  public feeRefund?: number;
+  @encodeAs.field(3).bigInt
+  public amount?: BN;
+  @encodeAs.field(4).bool
+  public isRefund?: boolean;
 
   constructor(args: SyntheticBurnTokens.Args) {
-    this.cause = args.cause instanceof TxID ? args.cause : new TxID(args.cause);
-    this.source = args.source instanceof URL ? args.source : new URL(args.source);
-    this.initiator = args.initiator instanceof URL ? args.initiator : new URL(args.initiator);
-    this.feeRefund = args.feeRefund;
-    this.amount = args.amount instanceof BN ? args.amount : new BN(args.amount);
-    this.isRefund = args.isRefund;
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause instanceof TxID
+        ? args.cause
+        : new TxID(args.cause);
+    this.source =
+      args.source == undefined
+        ? undefined
+        : args.source instanceof URL
+        ? args.source
+        : new URL(args.source);
+    this.initiator =
+      args.initiator == undefined
+        ? undefined
+        : args.initiator instanceof URL
+        ? args.initiator
+        : new URL(args.initiator);
+    this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : args.amount instanceof BN
+        ? args.amount
+        : new BN(args.amount);
+    this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
 
-  asObject() {
+  asObject(): SyntheticBurnTokens.ArgsWithType {
     return {
       type: this.type,
-      cause: this.cause.toString(),
-      source: this.source.toString(),
-      initiator: this.initiator.toString(),
-      feeRefund: this.feeRefund,
-      amount: this.amount.toString(),
-      isRefund: this.isRefund,
+      cause: this.cause && this.cause.toString(),
+      source: this.source && this.source.toString(),
+      initiator: this.initiator && this.initiator.toString(),
+      feeRefund: this.feeRefund && this.feeRefund,
+      amount: this.amount && this.amount.toString(),
+      isRefund: this.isRefund && this.isRefund,
     };
   }
 }
 
 export namespace SyntheticCreateIdentity {
   export type Args = {
-    cause: TxID | string;
-    source: URL | string;
-    initiator: URL | string;
-    feeRefund: number;
-    accounts: Account.Args[];
+    cause?: TxID | string;
+    source?: URL | string;
+    initiator?: URL | string;
+    feeRefund?: number;
+    accounts?: (Account | Account.Args)[];
   };
   export type ArgsWithType = Args & {
     type: TransactionType.SyntheticCreateIdentity | "syntheticCreateIdentity";
   };
 }
 export class SyntheticCreateIdentity {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticCreateIdentity;
-  public cause: TxID;
-  public source: URL;
-  public initiator: URL;
-  public feeRefund: number;
-  public accounts: Account[];
+  @encodeAs.field(2, 1).txid
+  public cause?: TxID;
+  public source?: URL;
+  @encodeAs.field(2, 3).url
+  public initiator?: URL;
+  @encodeAs.field(2, 4).uint
+  public feeRefund?: number;
+  @encodeAs.field(3).repeatable.union
+  public accounts?: Account[];
 
   constructor(args: SyntheticCreateIdentity.Args) {
-    this.cause = args.cause instanceof TxID ? args.cause : new TxID(args.cause);
-    this.source = args.source instanceof URL ? args.source : new URL(args.source);
-    this.initiator = args.initiator instanceof URL ? args.initiator : new URL(args.initiator);
-    this.feeRefund = args.feeRefund;
-    this.accounts = args.accounts.map((v) => Account.fromObject(v));
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause instanceof TxID
+        ? args.cause
+        : new TxID(args.cause);
+    this.source =
+      args.source == undefined
+        ? undefined
+        : args.source instanceof URL
+        ? args.source
+        : new URL(args.source);
+    this.initiator =
+      args.initiator == undefined
+        ? undefined
+        : args.initiator instanceof URL
+        ? args.initiator
+        : new URL(args.initiator);
+    this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.accounts =
+      args.accounts == undefined ? undefined : args.accounts.map((v) => Account.fromObject(v));
   }
 
-  asObject() {
+  asObject(): SyntheticCreateIdentity.ArgsWithType {
     return {
       type: this.type,
-      cause: this.cause.toString(),
-      source: this.source.toString(),
-      initiator: this.initiator.toString(),
-      feeRefund: this.feeRefund,
-      accounts: this.accounts?.map((v) => v.asObject()),
+      cause: this.cause && this.cause.toString(),
+      source: this.source && this.source.toString(),
+      initiator: this.initiator && this.initiator.toString(),
+      feeRefund: this.feeRefund && this.feeRefund,
+      accounts: this.accounts && this.accounts?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace SyntheticDepositCredits {
   export type Args = {
-    cause: TxID | string;
-    source: URL | string;
-    initiator: URL | string;
-    feeRefund: number;
-    amount: number;
-    acmeRefundAmount: BN | string;
-    isRefund: boolean;
+    cause?: TxID | string;
+    source?: URL | string;
+    initiator?: URL | string;
+    feeRefund?: number;
+    amount?: number;
+    acmeRefundAmount?: BN | string;
+    isRefund?: boolean;
   };
   export type ArgsWithType = Args & {
     type: TransactionType.SyntheticDepositCredits | "syntheticDepositCredits";
   };
 }
 export class SyntheticDepositCredits {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticDepositCredits;
-  public cause: TxID;
-  public source: URL;
-  public initiator: URL;
-  public feeRefund: number;
-  public amount: number;
-  public acmeRefundAmount: BN;
-  public isRefund: boolean;
+  @encodeAs.field(2, 1).txid
+  public cause?: TxID;
+  public source?: URL;
+  @encodeAs.field(2, 3).url
+  public initiator?: URL;
+  @encodeAs.field(2, 4).uint
+  public feeRefund?: number;
+  @encodeAs.field(3).uint
+  public amount?: number;
+  @encodeAs.field(4).bigInt
+  public acmeRefundAmount?: BN;
+  @encodeAs.field(5).bool
+  public isRefund?: boolean;
 
   constructor(args: SyntheticDepositCredits.Args) {
-    this.cause = args.cause instanceof TxID ? args.cause : new TxID(args.cause);
-    this.source = args.source instanceof URL ? args.source : new URL(args.source);
-    this.initiator = args.initiator instanceof URL ? args.initiator : new URL(args.initiator);
-    this.feeRefund = args.feeRefund;
-    this.amount = args.amount;
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause instanceof TxID
+        ? args.cause
+        : new TxID(args.cause);
+    this.source =
+      args.source == undefined
+        ? undefined
+        : args.source instanceof URL
+        ? args.source
+        : new URL(args.source);
+    this.initiator =
+      args.initiator == undefined
+        ? undefined
+        : args.initiator instanceof URL
+        ? args.initiator
+        : new URL(args.initiator);
+    this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.amount = args.amount == undefined ? undefined : args.amount;
     this.acmeRefundAmount =
-      args.acmeRefundAmount instanceof BN ? args.acmeRefundAmount : new BN(args.acmeRefundAmount);
-    this.isRefund = args.isRefund;
+      args.acmeRefundAmount == undefined
+        ? undefined
+        : args.acmeRefundAmount instanceof BN
+        ? args.acmeRefundAmount
+        : new BN(args.acmeRefundAmount);
+    this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
 
-  asObject() {
+  asObject(): SyntheticDepositCredits.ArgsWithType {
     return {
       type: this.type,
-      cause: this.cause.toString(),
-      source: this.source.toString(),
-      initiator: this.initiator.toString(),
-      feeRefund: this.feeRefund,
-      amount: this.amount,
-      acmeRefundAmount: this.acmeRefundAmount.toString(),
-      isRefund: this.isRefund,
+      cause: this.cause && this.cause.toString(),
+      source: this.source && this.source.toString(),
+      initiator: this.initiator && this.initiator.toString(),
+      feeRefund: this.feeRefund && this.feeRefund,
+      amount: this.amount && this.amount,
+      acmeRefundAmount: this.acmeRefundAmount && this.acmeRefundAmount.toString(),
+      isRefund: this.isRefund && this.isRefund,
     };
   }
 }
 
 export namespace SyntheticDepositTokens {
   export type Args = {
-    cause: TxID | string;
-    source: URL | string;
-    initiator: URL | string;
-    feeRefund: number;
-    token: URL | string;
-    amount: BN | string;
-    isIssuer: boolean;
-    isRefund: boolean;
+    cause?: TxID | string;
+    source?: URL | string;
+    initiator?: URL | string;
+    feeRefund?: number;
+    token?: URL | string;
+    amount?: BN | string;
+    isIssuer?: boolean;
+    isRefund?: boolean;
   };
   export type ArgsWithType = Args & {
     type: TransactionType.SyntheticDepositTokens | "syntheticDepositTokens";
   };
 }
 export class SyntheticDepositTokens {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticDepositTokens;
-  public cause: TxID;
-  public source: URL;
-  public initiator: URL;
-  public feeRefund: number;
-  public token: URL;
-  public amount: BN;
-  public isIssuer: boolean;
-  public isRefund: boolean;
+  @encodeAs.field(2, 1).txid
+  public cause?: TxID;
+  public source?: URL;
+  @encodeAs.field(2, 3).url
+  public initiator?: URL;
+  @encodeAs.field(2, 4).uint
+  public feeRefund?: number;
+  @encodeAs.field(3).url
+  public token?: URL;
+  @encodeAs.field(4).bigInt
+  public amount?: BN;
+  @encodeAs.field(5).bool
+  public isIssuer?: boolean;
+  @encodeAs.field(6).bool
+  public isRefund?: boolean;
 
   constructor(args: SyntheticDepositTokens.Args) {
-    this.cause = args.cause instanceof TxID ? args.cause : new TxID(args.cause);
-    this.source = args.source instanceof URL ? args.source : new URL(args.source);
-    this.initiator = args.initiator instanceof URL ? args.initiator : new URL(args.initiator);
-    this.feeRefund = args.feeRefund;
-    this.token = args.token instanceof URL ? args.token : new URL(args.token);
-    this.amount = args.amount instanceof BN ? args.amount : new BN(args.amount);
-    this.isIssuer = args.isIssuer;
-    this.isRefund = args.isRefund;
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause instanceof TxID
+        ? args.cause
+        : new TxID(args.cause);
+    this.source =
+      args.source == undefined
+        ? undefined
+        : args.source instanceof URL
+        ? args.source
+        : new URL(args.source);
+    this.initiator =
+      args.initiator == undefined
+        ? undefined
+        : args.initiator instanceof URL
+        ? args.initiator
+        : new URL(args.initiator);
+    this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.token =
+      args.token == undefined
+        ? undefined
+        : args.token instanceof URL
+        ? args.token
+        : new URL(args.token);
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : args.amount instanceof BN
+        ? args.amount
+        : new BN(args.amount);
+    this.isIssuer = args.isIssuer == undefined ? undefined : args.isIssuer;
+    this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
 
-  asObject() {
+  asObject(): SyntheticDepositTokens.ArgsWithType {
     return {
       type: this.type,
-      cause: this.cause.toString(),
-      source: this.source.toString(),
-      initiator: this.initiator.toString(),
-      feeRefund: this.feeRefund,
-      token: this.token.toString(),
-      amount: this.amount.toString(),
-      isIssuer: this.isIssuer,
-      isRefund: this.isRefund,
+      cause: this.cause && this.cause.toString(),
+      source: this.source && this.source.toString(),
+      initiator: this.initiator && this.initiator.toString(),
+      feeRefund: this.feeRefund && this.feeRefund,
+      token: this.token && this.token.toString(),
+      amount: this.amount && this.amount.toString(),
+      isIssuer: this.isIssuer && this.isIssuer,
+      isRefund: this.isRefund && this.isRefund,
     };
   }
 }
 
 export namespace SyntheticForwardTransaction {
   export type Args = {
-    signatures: (RemoteSignature | RemoteSignature.Args)[];
-    transaction: Transaction | Transaction.Args;
+    signatures?: (RemoteSignature | RemoteSignature.Args)[];
+    transaction?: Transaction | Transaction.Args;
   };
   export type ArgsWithType = Args & {
     type: TransactionType.SyntheticForwardTransaction | "syntheticForwardTransaction";
   };
 }
 export class SyntheticForwardTransaction {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticForwardTransaction;
-  public signatures: RemoteSignature[];
+  @encodeAs.field(2).repeatable.reference
+  public signatures?: RemoteSignature[];
+  @encodeAs.field(3).reference
   public transaction?: Transaction;
 
   constructor(args: SyntheticForwardTransaction.Args) {
-    this.signatures = args.signatures.map((v) =>
-      v instanceof RemoteSignature ? v : new RemoteSignature(v)
-    );
+    this.signatures =
+      args.signatures == undefined
+        ? undefined
+        : args.signatures.map((v) => (v instanceof RemoteSignature ? v : new RemoteSignature(v)));
     this.transaction =
-      args.transaction instanceof Transaction
+      args.transaction == undefined
+        ? undefined
+        : args.transaction instanceof Transaction
         ? args.transaction
         : new Transaction(args.transaction);
   }
 
-  asObject() {
+  asObject(): SyntheticForwardTransaction.ArgsWithType {
     return {
       type: this.type,
-      signatures: this.signatures?.map((v) => v.asObject()),
+      signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
       transaction: this.transaction && this.transaction.asObject(),
     };
   }
@@ -2500,109 +3359,150 @@ export class SyntheticForwardTransaction {
 
 export namespace SyntheticLedger {
   export type Args = {
-    url: URL | string;
-    sequence: (PartitionSyntheticLedger | PartitionSyntheticLedger.Args)[];
+    url?: URL | string;
+    sequence?: (PartitionSyntheticLedger | PartitionSyntheticLedger.Args)[];
   };
   export type ArgsWithType = Args & { type: AccountType.SyntheticLedger | "syntheticLedger" };
 }
 export class SyntheticLedger {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.SyntheticLedger;
-  public url: URL;
-  public sequence: PartitionSyntheticLedger[];
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).repeatable.reference
+  public sequence?: PartitionSyntheticLedger[];
 
   constructor(args: SyntheticLedger.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.sequence = args.sequence.map((v) =>
-      v instanceof PartitionSyntheticLedger ? v : new PartitionSyntheticLedger(v)
-    );
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.sequence =
+      args.sequence == undefined
+        ? undefined
+        : args.sequence.map((v) =>
+            v instanceof PartitionSyntheticLedger ? v : new PartitionSyntheticLedger(v)
+          );
   }
 
-  asObject() {
+  asObject(): SyntheticLedger.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      sequence: this.sequence?.map((v) => v.asObject()),
+      url: this.url && this.url.toString(),
+      sequence: this.sequence && this.sequence?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace SyntheticOrigin {
   export type Args = {
-    cause: TxID | string;
-    initiator: URL | string;
-    feeRefund: number;
+    cause?: TxID | string;
+    initiator?: URL | string;
+    feeRefund?: number;
   };
 }
 export class SyntheticOrigin {
-  public cause: TxID;
-  public initiator: URL;
-  public feeRefund: number;
+  @encodeAs.field(1).txid
+  public cause?: TxID;
+  @encodeAs.field(3).url
+  public initiator?: URL;
+  @encodeAs.field(4).uint
+  public feeRefund?: number;
 
   constructor(args: SyntheticOrigin.Args) {
-    this.cause = args.cause instanceof TxID ? args.cause : new TxID(args.cause);
-    this.initiator = args.initiator instanceof URL ? args.initiator : new URL(args.initiator);
-    this.feeRefund = args.feeRefund;
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause instanceof TxID
+        ? args.cause
+        : new TxID(args.cause);
+    this.initiator =
+      args.initiator == undefined
+        ? undefined
+        : args.initiator instanceof URL
+        ? args.initiator
+        : new URL(args.initiator);
+    this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
   }
 
-  asObject() {
+  asObject(): SyntheticOrigin.Args {
     return {
-      cause: this.cause.toString(),
-      initiator: this.initiator.toString(),
-      feeRefund: this.feeRefund,
+      cause: this.cause && this.cause.toString(),
+      initiator: this.initiator && this.initiator.toString(),
+      feeRefund: this.feeRefund && this.feeRefund,
     };
   }
 }
 
 export namespace SyntheticWriteData {
   export type Args = {
-    cause: TxID | string;
-    source: URL | string;
-    initiator: URL | string;
-    feeRefund: number;
-    entry: DataEntry.Args;
+    cause?: TxID | string;
+    source?: URL | string;
+    initiator?: URL | string;
+    feeRefund?: number;
+    entry?: DataEntry | DataEntry.Args;
   };
   export type ArgsWithType = Args & {
     type: TransactionType.SyntheticWriteData | "syntheticWriteData";
   };
 }
 export class SyntheticWriteData {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticWriteData;
-  public cause: TxID;
-  public source: URL;
-  public initiator: URL;
-  public feeRefund: number;
-  public entry: DataEntry;
+  @encodeAs.field(2, 1).txid
+  public cause?: TxID;
+  public source?: URL;
+  @encodeAs.field(2, 3).url
+  public initiator?: URL;
+  @encodeAs.field(2, 4).uint
+  public feeRefund?: number;
+  @encodeAs.field(3).union
+  public entry?: DataEntry;
 
   constructor(args: SyntheticWriteData.Args) {
-    this.cause = args.cause instanceof TxID ? args.cause : new TxID(args.cause);
-    this.source = args.source instanceof URL ? args.source : new URL(args.source);
-    this.initiator = args.initiator instanceof URL ? args.initiator : new URL(args.initiator);
-    this.feeRefund = args.feeRefund;
-    this.entry = DataEntry.fromObject(args.entry);
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause instanceof TxID
+        ? args.cause
+        : new TxID(args.cause);
+    this.source =
+      args.source == undefined
+        ? undefined
+        : args.source instanceof URL
+        ? args.source
+        : new URL(args.source);
+    this.initiator =
+      args.initiator == undefined
+        ? undefined
+        : args.initiator instanceof URL
+        ? args.initiator
+        : new URL(args.initiator);
+    this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
   }
 
-  asObject() {
+  asObject(): SyntheticWriteData.ArgsWithType {
     return {
       type: this.type,
-      cause: this.cause.toString(),
-      source: this.source.toString(),
-      initiator: this.initiator.toString(),
-      feeRefund: this.feeRefund,
-      entry: this.entry.asObject(),
+      cause: this.cause && this.cause.toString(),
+      source: this.source && this.source.toString(),
+      initiator: this.initiator && this.initiator.toString(),
+      feeRefund: this.feeRefund && this.feeRefund,
+      entry: this.entry && this.entry.asObject(),
     };
   }
 }
 
 export namespace SystemGenesis {
-  export type Args = Record<string, never>;
-  export type ArgsWithType = Args & { type: TransactionType.SystemGenesis | "systemGenesis" };
+  export type Args = {};
+  export type ArgsWithType = { type: TransactionType.SystemGenesis | "systemGenesis" };
 }
 export class SystemGenesis {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SystemGenesis;
 
   constructor(_: SystemGenesis.Args) {}
 
-  asObject() {
+  asObject(): SystemGenesis.ArgsWithType {
     return {
       type: this.type,
     };
@@ -2611,69 +3511,93 @@ export class SystemGenesis {
 
 export namespace SystemLedger {
   export type Args = {
-    url: URL | string;
-    index: number;
-    timestamp: Date | string;
-    acmeBurnt: BN | string;
-    pendingUpdates: (NetworkAccountUpdate | NetworkAccountUpdate.Args)[];
-    anchor: AnchorBody.Args;
+    url?: URL | string;
+    index?: number;
+    timestamp?: Date | string;
+    acmeBurnt?: BN | string;
+    pendingUpdates?: (NetworkAccountUpdate | NetworkAccountUpdate.Args)[];
+    anchor?: AnchorBody | AnchorBody.Args;
   };
   export type ArgsWithType = Args & { type: AccountType.SystemLedger | "systemLedger" };
 }
 export class SystemLedger {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.SystemLedger;
-  public url: URL;
-  public index: number;
-  public timestamp: Date;
-  public acmeBurnt: BN;
-  public pendingUpdates: NetworkAccountUpdate[];
-  public anchor: AnchorBody;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).uint
+  public index?: number;
+  @encodeAs.field(4).time
+  public timestamp?: Date;
+  @encodeAs.field(5).bigInt
+  public acmeBurnt?: BN;
+  @encodeAs.field(6).repeatable.reference
+  public pendingUpdates?: NetworkAccountUpdate[];
+  @encodeAs.field(7).union
+  public anchor?: AnchorBody;
 
   constructor(args: SystemLedger.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.index = args.index;
-    this.timestamp = args.timestamp instanceof Date ? args.timestamp : new Date(args.timestamp);
-    this.acmeBurnt = args.acmeBurnt instanceof BN ? args.acmeBurnt : new BN(args.acmeBurnt);
-    this.pendingUpdates = args.pendingUpdates.map((v) =>
-      v instanceof NetworkAccountUpdate ? v : new NetworkAccountUpdate(v)
-    );
-    this.anchor = AnchorBody.fromObject(args.anchor);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.index = args.index == undefined ? undefined : args.index;
+    this.timestamp =
+      args.timestamp == undefined
+        ? undefined
+        : args.timestamp instanceof Date
+        ? args.timestamp
+        : new Date(args.timestamp);
+    this.acmeBurnt =
+      args.acmeBurnt == undefined
+        ? undefined
+        : args.acmeBurnt instanceof BN
+        ? args.acmeBurnt
+        : new BN(args.acmeBurnt);
+    this.pendingUpdates =
+      args.pendingUpdates == undefined
+        ? undefined
+        : args.pendingUpdates.map((v) =>
+            v instanceof NetworkAccountUpdate ? v : new NetworkAccountUpdate(v)
+          );
+    this.anchor = args.anchor == undefined ? undefined : AnchorBody.fromObject(args.anchor);
   }
 
-  asObject() {
+  asObject(): SystemLedger.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      index: this.index,
-      timestamp: this.timestamp,
-      acmeBurnt: this.acmeBurnt.toString(),
-      pendingUpdates: this.pendingUpdates?.map((v) => v.asObject()),
-      anchor: this.anchor.asObject(),
+      url: this.url && this.url.toString(),
+      index: this.index && this.index,
+      timestamp: this.timestamp && this.timestamp,
+      acmeBurnt: this.acmeBurnt && this.acmeBurnt.toString(),
+      pendingUpdates: this.pendingUpdates && this.pendingUpdates?.map((v) => v.asObject()),
+      anchor: this.anchor && this.anchor.asObject(),
     };
   }
 }
 
 export namespace SystemWriteData {
   export type Args = {
-    entry: DataEntry.Args;
-    writeToState: boolean;
+    entry?: DataEntry | DataEntry.Args;
+    writeToState?: boolean;
   };
   export type ArgsWithType = Args & { type: TransactionType.SystemWriteData | "systemWriteData" };
 }
 export class SystemWriteData {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SystemWriteData;
-  public entry: DataEntry;
+  @encodeAs.field(2).union
+  public entry?: DataEntry;
+  @encodeAs.field(3).bool
   public writeToState?: boolean;
 
   constructor(args: SystemWriteData.Args) {
-    this.entry = DataEntry.fromObject(args.entry);
-    this.writeToState = args.writeToState;
+    this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
+    this.writeToState = args.writeToState == undefined ? undefined : args.writeToState;
   }
 
-  asObject() {
+  asObject(): SystemWriteData.ArgsWithType {
     return {
       type: this.type,
-      entry: this.entry.asObject(),
+      entry: this.entry && this.entry.asObject(),
       writeToState: this.writeToState && this.writeToState,
     };
   }
@@ -2681,83 +3605,125 @@ export class SystemWriteData {
 
 export namespace TokenAccount {
   export type Args = {
-    url: URL | string;
-    authorities: (AuthorityEntry | AuthorityEntry.Args)[];
-    tokenUrl: URL | string;
-    balance: BN | string;
+    url?: URL | string;
+    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
+    tokenUrl?: URL | string;
+    balance?: BN | string;
   };
   export type ArgsWithType = Args & { type: AccountType.TokenAccount | "tokenAccount" };
 }
 export class TokenAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.TokenAccount;
-  public url: URL;
-  public authorities: AuthorityEntry[];
-  public tokenUrl: URL;
-  public balance: BN;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3, 1).repeatable.reference
+  public authorities?: AuthorityEntry[];
+  @encodeAs.field(4).url
+  public tokenUrl?: URL;
+  @encodeAs.field(5).bigInt
+  public balance?: BN;
 
   constructor(args: TokenAccount.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.authorities = args.authorities.map((v) =>
-      v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
-    );
-    this.tokenUrl = args.tokenUrl instanceof URL ? args.tokenUrl : new URL(args.tokenUrl);
-    this.balance = args.balance instanceof BN ? args.balance : new BN(args.balance);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof AuthorityEntry ? v : new AuthorityEntry(v)));
+    this.tokenUrl =
+      args.tokenUrl == undefined
+        ? undefined
+        : args.tokenUrl instanceof URL
+        ? args.tokenUrl
+        : new URL(args.tokenUrl);
+    this.balance =
+      args.balance == undefined
+        ? undefined
+        : args.balance instanceof BN
+        ? args.balance
+        : new BN(args.balance);
   }
 
-  asObject() {
+  asObject(): TokenAccount.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      authorities: this.authorities?.map((v) => v.asObject()),
-      tokenUrl: this.tokenUrl.toString(),
-      balance: this.balance.toString(),
+      url: this.url && this.url.toString(),
+      authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
+      tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
+      balance: this.balance && this.balance.toString(),
     };
   }
 }
 
 export namespace TokenIssuer {
   export type Args = {
-    url: URL | string;
-    authorities: (AuthorityEntry | AuthorityEntry.Args)[];
-    symbol: string;
-    precision: number;
-    properties: URL | string;
-    issued: BN | string;
-    supplyLimit: BN | string;
+    url?: URL | string;
+    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
+    symbol?: string;
+    precision?: number;
+    properties?: URL | string;
+    issued?: BN | string;
+    supplyLimit?: BN | string;
   };
   export type ArgsWithType = Args & { type: AccountType.TokenIssuer | "tokenIssuer" };
 }
 export class TokenIssuer {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.TokenIssuer;
-  public url: URL;
-  public authorities: AuthorityEntry[];
-  public symbol: string;
-  public precision: number;
-  public properties: URL;
-  public issued: BN;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3, 1).repeatable.reference
+  public authorities?: AuthorityEntry[];
+  @encodeAs.field(4).string
+  public symbol?: string;
+  @encodeAs.field(5).uint
+  public precision?: number;
+  @encodeAs.field(6).url
+  public properties?: URL;
+  @encodeAs.field(7).bigInt
+  public issued?: BN;
+  @encodeAs.field(8).bigInt
   public supplyLimit?: BN;
 
   constructor(args: TokenIssuer.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.authorities = args.authorities.map((v) =>
-      v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
-    );
-    this.symbol = args.symbol;
-    this.precision = args.precision;
-    this.properties = args.properties instanceof URL ? args.properties : new URL(args.properties);
-    this.issued = args.issued instanceof BN ? args.issued : new BN(args.issued);
-    this.supplyLimit = args.supplyLimit instanceof BN ? args.supplyLimit : new BN(args.supplyLimit);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.authorities =
+      args.authorities == undefined
+        ? undefined
+        : args.authorities.map((v) => (v instanceof AuthorityEntry ? v : new AuthorityEntry(v)));
+    this.symbol = args.symbol == undefined ? undefined : args.symbol;
+    this.precision = args.precision == undefined ? undefined : args.precision;
+    this.properties =
+      args.properties == undefined
+        ? undefined
+        : args.properties instanceof URL
+        ? args.properties
+        : new URL(args.properties);
+    this.issued =
+      args.issued == undefined
+        ? undefined
+        : args.issued instanceof BN
+        ? args.issued
+        : new BN(args.issued);
+    this.supplyLimit =
+      args.supplyLimit == undefined
+        ? undefined
+        : args.supplyLimit instanceof BN
+        ? args.supplyLimit
+        : new BN(args.supplyLimit);
   }
 
-  asObject() {
+  asObject(): TokenIssuer.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      authorities: this.authorities?.map((v) => v.asObject()),
-      symbol: this.symbol,
-      precision: this.precision,
-      properties: this.properties.toString(),
-      issued: this.issued.toString(),
+      url: this.url && this.url.toString(),
+      authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
+      symbol: this.symbol && this.symbol,
+      precision: this.precision && this.precision,
+      properties: this.properties && this.properties.toString(),
+      issued: this.issued && this.issued.toString(),
       supplyLimit: this.supplyLimit && this.supplyLimit.toString(),
     };
   }
@@ -2765,105 +3731,144 @@ export class TokenIssuer {
 
 export namespace TokenIssuerProof {
   export type Args = {
-    transaction: CreateToken | CreateToken.Args;
-    receipt: managed.Receipt | managed.Receipt.Args;
+    transaction?: CreateToken | CreateToken.Args;
+    receipt?: managed.Receipt | managed.Receipt.Args;
   };
 }
 export class TokenIssuerProof {
-  public transaction: CreateToken;
-  public receipt: managed.Receipt;
+  @encodeAs.field(1).reference
+  public transaction?: CreateToken;
+  @encodeAs.field(2).reference
+  public receipt?: managed.Receipt;
 
   constructor(args: TokenIssuerProof.Args) {
     this.transaction =
-      args.transaction instanceof CreateToken
+      args.transaction == undefined
+        ? undefined
+        : args.transaction instanceof CreateToken
         ? args.transaction
         : new CreateToken(args.transaction);
     this.receipt =
-      args.receipt instanceof managed.Receipt ? args.receipt : new managed.Receipt(args.receipt);
+      args.receipt == undefined
+        ? undefined
+        : args.receipt instanceof managed.Receipt
+        ? args.receipt
+        : new managed.Receipt(args.receipt);
   }
 
-  asObject() {
+  asObject(): TokenIssuerProof.Args {
     return {
-      transaction: this.transaction.asObject(),
-      receipt: this.receipt.asObject(),
+      transaction: this.transaction && this.transaction.asObject(),
+      receipt: this.receipt && this.receipt.asObject(),
     };
   }
 }
 
 export namespace TokenRecipient {
   export type Args = {
-    url: URL | string;
-    amount: BN | string;
+    url?: URL | string;
+    amount?: BN | string;
   };
 }
 export class TokenRecipient {
-  public url: URL;
-  public amount: BN;
+  @encodeAs.field(1).url
+  public url?: URL;
+  @encodeAs.field(2).bigInt
+  public amount?: BN;
 
   constructor(args: TokenRecipient.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.amount = args.amount instanceof BN ? args.amount : new BN(args.amount);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : args.amount instanceof BN
+        ? args.amount
+        : new BN(args.amount);
   }
 
-  asObject() {
+  asObject(): TokenRecipient.Args {
     return {
-      url: this.url.toString(),
-      amount: this.amount.toString(),
+      url: this.url && this.url.toString(),
+      amount: this.amount && this.amount.toString(),
     };
   }
 }
 
 export namespace Transaction {
   export type Args = {
-    header: TransactionHeader | TransactionHeader.Args;
-    body: TransactionBody.Args;
+    header?: TransactionHeader | TransactionHeader.Args;
+    body?: TransactionBody | TransactionBody.Args;
   };
 }
 export class Transaction {
-  public header: TransactionHeader;
-  public body: TransactionBody;
+  @encodeAs.field(1).reference
+  public header?: TransactionHeader;
+  @encodeAs.field(2).union
+  public body?: TransactionBody;
 
   constructor(args: Transaction.Args) {
     this.header =
-      args.header instanceof TransactionHeader ? args.header : new TransactionHeader(args.header);
-    this.body = TransactionBody.fromObject(args.body);
+      args.header == undefined
+        ? undefined
+        : args.header instanceof TransactionHeader
+        ? args.header
+        : new TransactionHeader(args.header);
+    this.body = args.body == undefined ? undefined : TransactionBody.fromObject(args.body);
   }
 
-  asObject() {
+  asObject(): Transaction.Args {
     return {
-      header: this.header.asObject(),
-      body: this.body.asObject(),
+      header: this.header && this.header.asObject(),
+      body: this.body && this.body.asObject(),
     };
   }
 }
 
 export namespace TransactionHeader {
   export type Args = {
-    principal: URL | string;
-    initiator: Uint8Array | string;
-    memo: string;
-    metadata: Uint8Array | string;
+    principal?: URL | string;
+    initiator?: Uint8Array | string;
+    memo?: string;
+    metadata?: Uint8Array | string;
   };
 }
 export class TransactionHeader {
-  public principal: URL;
-  public initiator: Uint8Array;
+  @encodeAs.field(1).url
+  public principal?: URL;
+  @encodeAs.field(2).hash
+  public initiator?: Uint8Array;
+  @encodeAs.field(3).string
   public memo?: string;
+  @encodeAs.field(4).bytes
   public metadata?: Uint8Array;
 
   constructor(args: TransactionHeader.Args) {
-    this.principal = args.principal instanceof URL ? args.principal : new URL(args.principal);
+    this.principal =
+      args.principal == undefined
+        ? undefined
+        : args.principal instanceof URL
+        ? args.principal
+        : new URL(args.principal);
     this.initiator =
-      args.initiator instanceof Uint8Array ? args.initiator : Buffer.from(args.initiator, "hex");
-    this.memo = args.memo;
+      args.initiator == undefined
+        ? undefined
+        : args.initiator instanceof Uint8Array
+        ? args.initiator
+        : Buffer.from(args.initiator, "hex");
+    this.memo = args.memo == undefined ? undefined : args.memo;
     this.metadata =
-      args.metadata instanceof Uint8Array ? args.metadata : Buffer.from(args.metadata, "hex");
+      args.metadata == undefined
+        ? undefined
+        : args.metadata instanceof Uint8Array
+        ? args.metadata
+        : Buffer.from(args.metadata, "hex");
   }
 
-  asObject() {
+  asObject(): TransactionHeader.Args {
     return {
-      principal: this.principal.toString(),
-      initiator: Buffer.from(this.initiator).toString("hex"),
+      principal: this.principal && this.principal.toString(),
+      initiator: this.initiator && Buffer.from(this.initiator).toString("hex"),
       memo: this.memo && this.memo,
       metadata: this.metadata && Buffer.from(this.metadata).toString("hex"),
     };
@@ -2872,352 +3877,461 @@ export class TransactionHeader {
 
 export namespace TransactionStatus {
   export type Args = {
-    txID: TxID | string;
-    code: errors2.Status.Args;
-    error: errors2.Error | errors2.Error.Args;
-    result: TransactionResult.Args;
-    received: number;
-    initiator: URL | string;
-    signers: Signer.Args[];
-    sourceNetwork: URL | string;
-    destinationNetwork: URL | string;
-    sequenceNumber: number;
-    gotDirectoryReceipt: boolean;
-    proof: managed.Receipt | managed.Receipt.Args;
-    anchorSigners: (Uint8Array | string)[];
+    txID?: TxID | string;
+    code?: errors2.Status.Args;
+    error?: errors2.Error | errors2.Error.Args;
+    result?: TransactionResult | TransactionResult.Args;
+    received?: number;
+    initiator?: URL | string;
+    signers?: (Signer | Signer.Args)[];
+    sourceNetwork?: URL | string;
+    destinationNetwork?: URL | string;
+    sequenceNumber?: number;
+    gotDirectoryReceipt?: boolean;
+    proof?: managed.Receipt | managed.Receipt.Args;
+    anchorSigners?: (Uint8Array | string)[];
   };
 }
 export class TransactionStatus {
-  public txID: TxID;
-  public code: errors2.Status;
-  public error: errors2.Error;
-  public result: TransactionResult;
-  public received: number;
-  public initiator: URL;
-  public signers: Signer[];
-  public sourceNetwork: URL;
-  public destinationNetwork: URL;
-  public sequenceNumber: number;
-  public gotDirectoryReceipt: boolean;
-  public proof: managed.Receipt;
-  public anchorSigners: Uint8Array[];
+  @encodeAs.field(1).txid
+  public txID?: TxID;
+  @encodeAs.field(2).enum
+  public code?: errors2.Status;
+  @encodeAs.field(3).reference
+  public error?: errors2.Error;
+  @encodeAs.field(4).union
+  public result?: TransactionResult;
+  @encodeAs.field(5).uint
+  public received?: number;
+  @encodeAs.field(6).url
+  public initiator?: URL;
+  @encodeAs.field(7).repeatable.union
+  public signers?: Signer[];
+  @encodeAs.field(8).url
+  public sourceNetwork?: URL;
+  @encodeAs.field(9).url
+  public destinationNetwork?: URL;
+  @encodeAs.field(10).uint
+  public sequenceNumber?: number;
+  @encodeAs.field(11).bool
+  public gotDirectoryReceipt?: boolean;
+  @encodeAs.field(12).reference
+  public proof?: managed.Receipt;
+  @encodeAs.field(13).repeatable.bytes
+  public anchorSigners?: Uint8Array[];
 
   constructor(args: TransactionStatus.Args) {
-    this.txID = args.txID instanceof TxID ? args.txID : new TxID(args.txID);
-    this.code = errors2.Status.fromObject(args.code);
-    this.error = args.error instanceof errors2.Error ? args.error : new errors2.Error(args.error);
-    this.result = TransactionResult.fromObject(args.result);
-    this.received = args.received;
-    this.initiator = args.initiator instanceof URL ? args.initiator : new URL(args.initiator);
-    this.signers = args.signers.map((v) => Signer.fromObject(v));
+    this.txID =
+      args.txID == undefined
+        ? undefined
+        : args.txID instanceof TxID
+        ? args.txID
+        : new TxID(args.txID);
+    this.code = args.code == undefined ? undefined : errors2.Status.fromObject(args.code);
+    this.error =
+      args.error == undefined
+        ? undefined
+        : args.error instanceof errors2.Error
+        ? args.error
+        : new errors2.Error(args.error);
+    this.result = args.result == undefined ? undefined : TransactionResult.fromObject(args.result);
+    this.received = args.received == undefined ? undefined : args.received;
+    this.initiator =
+      args.initiator == undefined
+        ? undefined
+        : args.initiator instanceof URL
+        ? args.initiator
+        : new URL(args.initiator);
+    this.signers =
+      args.signers == undefined ? undefined : args.signers.map((v) => Signer.fromObject(v));
     this.sourceNetwork =
-      args.sourceNetwork instanceof URL ? args.sourceNetwork : new URL(args.sourceNetwork);
+      args.sourceNetwork == undefined
+        ? undefined
+        : args.sourceNetwork instanceof URL
+        ? args.sourceNetwork
+        : new URL(args.sourceNetwork);
     this.destinationNetwork =
-      args.destinationNetwork instanceof URL
+      args.destinationNetwork == undefined
+        ? undefined
+        : args.destinationNetwork instanceof URL
         ? args.destinationNetwork
         : new URL(args.destinationNetwork);
-    this.sequenceNumber = args.sequenceNumber;
-    this.gotDirectoryReceipt = args.gotDirectoryReceipt;
+    this.sequenceNumber = args.sequenceNumber == undefined ? undefined : args.sequenceNumber;
+    this.gotDirectoryReceipt =
+      args.gotDirectoryReceipt == undefined ? undefined : args.gotDirectoryReceipt;
     this.proof =
-      args.proof instanceof managed.Receipt ? args.proof : new managed.Receipt(args.proof);
-    this.anchorSigners = args.anchorSigners.map((v) =>
-      v instanceof Uint8Array ? v : Buffer.from(v, "hex")
-    );
+      args.proof == undefined
+        ? undefined
+        : args.proof instanceof managed.Receipt
+        ? args.proof
+        : new managed.Receipt(args.proof);
+    this.anchorSigners =
+      args.anchorSigners == undefined
+        ? undefined
+        : args.anchorSigners.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
   }
 
-  asObject() {
+  asObject(): TransactionStatus.Args {
     return {
-      txID: this.txID.toString(),
-      code: this.code.toString(),
-      error: this.error.asObject(),
-      result: this.result.asObject(),
-      received: this.received,
-      initiator: this.initiator.toString(),
-      signers: this.signers?.map((v) => v.asObject()),
-      sourceNetwork: this.sourceNetwork.toString(),
-      destinationNetwork: this.destinationNetwork.toString(),
-      sequenceNumber: this.sequenceNumber,
-      gotDirectoryReceipt: this.gotDirectoryReceipt,
-      proof: this.proof.asObject(),
-      anchorSigners: this.anchorSigners?.map((v) => Buffer.from(v).toString("hex")),
+      txID: this.txID && this.txID.toString(),
+      code: this.code && this.code.toString(),
+      error: this.error && this.error.asObject(),
+      result: this.result && this.result.asObject(),
+      received: this.received && this.received,
+      initiator: this.initiator && this.initiator.toString(),
+      signers: this.signers && this.signers?.map((v) => v.asObject()),
+      sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
+      destinationNetwork: this.destinationNetwork && this.destinationNetwork.toString(),
+      sequenceNumber: this.sequenceNumber && this.sequenceNumber,
+      gotDirectoryReceipt: this.gotDirectoryReceipt && this.gotDirectoryReceipt,
+      proof: this.proof && this.proof.asObject(),
+      anchorSigners:
+        this.anchorSigners && this.anchorSigners?.map((v) => Buffer.from(v).toString("hex")),
     };
   }
 }
 
 export namespace TxIdSet {
   export type Args = {
-    entries: (TxID | string)[];
+    entries?: (TxID | string)[];
   };
 }
 export class TxIdSet {
-  public entries: TxID[];
+  @encodeAs.field(1).repeatable.txid
+  public entries?: TxID[];
 
   constructor(args: TxIdSet.Args) {
-    this.entries = args.entries.map((v) => (v instanceof TxID ? v : new TxID(v)));
+    this.entries =
+      args.entries == undefined
+        ? undefined
+        : args.entries.map((v) => (v instanceof TxID ? v : new TxID(v)));
   }
 
-  asObject() {
+  asObject(): TxIdSet.Args {
     return {
-      entries: this.entries?.map((v) => v.toString()),
+      entries: this.entries && this.entries?.map((v) => v.toString()),
     };
   }
 }
 
 export namespace UnknownAccount {
   export type Args = {
-    url: URL | string;
+    url?: URL | string;
   };
   export type ArgsWithType = Args & { type: AccountType.Unknown | "unknown" };
 }
 export class UnknownAccount {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.Unknown;
-  public url: URL;
+  @encodeAs.field(2).url
+  public url?: URL;
 
   constructor(args: UnknownAccount.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
   }
 
-  asObject() {
+  asObject(): UnknownAccount.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
+      url: this.url && this.url.toString(),
     };
   }
 }
 
 export namespace UnknownSigner {
   export type Args = {
-    url: URL | string;
-    version: number;
+    url?: URL | string;
+    version?: number;
   };
   export type ArgsWithType = Args & { type: AccountType.UnknownSigner | "unknownSigner" };
 }
 export class UnknownSigner {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.UnknownSigner;
-  public url: URL;
-  public version: number;
+  @encodeAs.field(2).url
+  public url?: URL;
+  @encodeAs.field(3).uint
+  public version?: number;
 
   constructor(args: UnknownSigner.Args) {
-    this.url = args.url instanceof URL ? args.url : new URL(args.url);
-    this.version = args.version;
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.version = args.version == undefined ? undefined : args.version;
   }
 
-  asObject() {
+  asObject(): UnknownSigner.ArgsWithType {
     return {
       type: this.type,
-      url: this.url.toString(),
-      version: this.version,
+      url: this.url && this.url.toString(),
+      version: this.version && this.version,
     };
   }
 }
 
 export namespace UpdateAccountAuth {
   export type Args = {
-    operations: AccountAuthOperation.Args[];
+    operations?: (AccountAuthOperation | AccountAuthOperation.Args)[];
   };
   export type ArgsWithType = Args & {
     type: TransactionType.UpdateAccountAuth | "updateAccountAuth";
   };
 }
 export class UpdateAccountAuth {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.UpdateAccountAuth;
-  public operations: AccountAuthOperation[];
+  @encodeAs.field(2).repeatable.union
+  public operations?: AccountAuthOperation[];
 
   constructor(args: UpdateAccountAuth.Args) {
-    this.operations = args.operations.map((v) => AccountAuthOperation.fromObject(v));
+    this.operations =
+      args.operations == undefined
+        ? undefined
+        : args.operations.map((v) => AccountAuthOperation.fromObject(v));
   }
 
-  asObject() {
+  asObject(): UpdateAccountAuth.ArgsWithType {
     return {
       type: this.type,
-      operations: this.operations?.map((v) => v.asObject()),
+      operations: this.operations && this.operations?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace UpdateAllowedKeyPageOperation {
   export type Args = {
-    allow: TransactionType.Args[];
-    deny: TransactionType.Args[];
+    allow?: TransactionType.Args[];
+    deny?: TransactionType.Args[];
   };
   export type ArgsWithType = Args & { type: KeyPageOperationType.UpdateAllowed | "updateAllowed" };
 }
 export class UpdateAllowedKeyPageOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.UpdateAllowed;
+  @encodeAs.field(2).repeatable.enum
   public allow?: TransactionType[];
+  @encodeAs.field(3).repeatable.enum
   public deny?: TransactionType[];
 
   constructor(args: UpdateAllowedKeyPageOperation.Args) {
-    this.allow = args.allow.map((v) => TransactionType.fromObject(v));
-    this.deny = args.deny.map((v) => TransactionType.fromObject(v));
+    this.allow =
+      args.allow == undefined ? undefined : args.allow.map((v) => TransactionType.fromObject(v));
+    this.deny =
+      args.deny == undefined ? undefined : args.deny.map((v) => TransactionType.fromObject(v));
   }
 
-  asObject() {
+  asObject(): UpdateAllowedKeyPageOperation.ArgsWithType {
     return {
       type: this.type,
-      allow: this.allow?.map((v) => v.toString()),
-      deny: this.deny?.map((v) => v.toString()),
+      allow: this.allow && this.allow?.map((v) => v.toString()),
+      deny: this.deny && this.deny?.map((v) => v.toString()),
     };
   }
 }
 
 export namespace UpdateKey {
   export type Args = {
-    newKeyHash: Uint8Array | string;
+    newKeyHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: TransactionType.UpdateKey | "updateKey" };
 }
 export class UpdateKey {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.UpdateKey;
-  public newKeyHash: Uint8Array;
+  @encodeAs.field(2).bytes
+  public newKeyHash?: Uint8Array;
 
   constructor(args: UpdateKey.Args) {
     this.newKeyHash =
-      args.newKeyHash instanceof Uint8Array ? args.newKeyHash : Buffer.from(args.newKeyHash, "hex");
+      args.newKeyHash == undefined
+        ? undefined
+        : args.newKeyHash instanceof Uint8Array
+        ? args.newKeyHash
+        : Buffer.from(args.newKeyHash, "hex");
   }
 
-  asObject() {
+  asObject(): UpdateKey.ArgsWithType {
     return {
       type: this.type,
-      newKeyHash: Buffer.from(this.newKeyHash).toString("hex"),
+      newKeyHash: this.newKeyHash && Buffer.from(this.newKeyHash).toString("hex"),
     };
   }
 }
 
 export namespace UpdateKeyOperation {
   export type Args = {
-    oldEntry: KeySpecParams | KeySpecParams.Args;
-    newEntry: KeySpecParams | KeySpecParams.Args;
+    oldEntry?: KeySpecParams | KeySpecParams.Args;
+    newEntry?: KeySpecParams | KeySpecParams.Args;
   };
   export type ArgsWithType = Args & { type: KeyPageOperationType.Update | "update" };
 }
 export class UpdateKeyOperation {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.Update;
-  public oldEntry: KeySpecParams;
-  public newEntry: KeySpecParams;
+  @encodeAs.field(2).reference
+  public oldEntry?: KeySpecParams;
+  @encodeAs.field(3).reference
+  public newEntry?: KeySpecParams;
 
   constructor(args: UpdateKeyOperation.Args) {
     this.oldEntry =
-      args.oldEntry instanceof KeySpecParams ? args.oldEntry : new KeySpecParams(args.oldEntry);
+      args.oldEntry == undefined
+        ? undefined
+        : args.oldEntry instanceof KeySpecParams
+        ? args.oldEntry
+        : new KeySpecParams(args.oldEntry);
     this.newEntry =
-      args.newEntry instanceof KeySpecParams ? args.newEntry : new KeySpecParams(args.newEntry);
+      args.newEntry == undefined
+        ? undefined
+        : args.newEntry instanceof KeySpecParams
+        ? args.newEntry
+        : new KeySpecParams(args.newEntry);
   }
 
-  asObject() {
+  asObject(): UpdateKeyOperation.ArgsWithType {
     return {
       type: this.type,
-      oldEntry: this.oldEntry.asObject(),
-      newEntry: this.newEntry.asObject(),
+      oldEntry: this.oldEntry && this.oldEntry.asObject(),
+      newEntry: this.newEntry && this.newEntry.asObject(),
     };
   }
 }
 
 export namespace UpdateKeyPage {
   export type Args = {
-    operation: KeyPageOperation.Args[];
+    operation?: (KeyPageOperation | KeyPageOperation.Args)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.UpdateKeyPage | "updateKeyPage" };
 }
 export class UpdateKeyPage {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.UpdateKeyPage;
-  public operation: KeyPageOperation[];
+  @encodeAs.field(2).repeatable.union
+  public operation?: KeyPageOperation[];
 
   constructor(args: UpdateKeyPage.Args) {
-    this.operation = args.operation.map((v) => KeyPageOperation.fromObject(v));
+    this.operation =
+      args.operation == undefined
+        ? undefined
+        : args.operation.map((v) => KeyPageOperation.fromObject(v));
   }
 
-  asObject() {
+  asObject(): UpdateKeyPage.ArgsWithType {
     return {
       type: this.type,
-      operation: this.operation?.map((v) => v.asObject()),
+      operation: this.operation && this.operation?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace ValidatorInfo {
   export type Args = {
-    publicKey: Uint8Array | string;
-    publicKeyHash: Uint8Array | string;
-    operator: URL | string;
-    partitions: (ValidatorPartitionInfo | ValidatorPartitionInfo.Args)[];
+    publicKey?: Uint8Array | string;
+    publicKeyHash?: Uint8Array | string;
+    operator?: URL | string;
+    partitions?: (ValidatorPartitionInfo | ValidatorPartitionInfo.Args)[];
   };
 }
 export class ValidatorInfo {
-  public publicKey: Uint8Array;
-  public publicKeyHash: Uint8Array;
-  public operator: URL;
-  public partitions: ValidatorPartitionInfo[];
+  @encodeAs.field(1).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(2).hash
+  public publicKeyHash?: Uint8Array;
+  @encodeAs.field(3).url
+  public operator?: URL;
+  @encodeAs.field(4).repeatable.reference
+  public partitions?: ValidatorPartitionInfo[];
 
   constructor(args: ValidatorInfo.Args) {
     this.publicKey =
-      args.publicKey instanceof Uint8Array ? args.publicKey : Buffer.from(args.publicKey, "hex");
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
     this.publicKeyHash =
-      args.publicKeyHash instanceof Uint8Array
+      args.publicKeyHash == undefined
+        ? undefined
+        : args.publicKeyHash instanceof Uint8Array
         ? args.publicKeyHash
         : Buffer.from(args.publicKeyHash, "hex");
-    this.operator = args.operator instanceof URL ? args.operator : new URL(args.operator);
-    this.partitions = args.partitions.map((v) =>
-      v instanceof ValidatorPartitionInfo ? v : new ValidatorPartitionInfo(v)
-    );
+    this.operator =
+      args.operator == undefined
+        ? undefined
+        : args.operator instanceof URL
+        ? args.operator
+        : new URL(args.operator);
+    this.partitions =
+      args.partitions == undefined
+        ? undefined
+        : args.partitions.map((v) =>
+            v instanceof ValidatorPartitionInfo ? v : new ValidatorPartitionInfo(v)
+          );
   }
 
-  asObject() {
+  asObject(): ValidatorInfo.Args {
     return {
-      publicKey: Buffer.from(this.publicKey).toString("hex"),
-      publicKeyHash: Buffer.from(this.publicKeyHash).toString("hex"),
-      operator: this.operator.toString(),
-      partitions: this.partitions?.map((v) => v.asObject()),
+      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      operator: this.operator && this.operator.toString(),
+      partitions: this.partitions && this.partitions?.map((v) => v.asObject()),
     };
   }
 }
 
 export namespace ValidatorPartitionInfo {
   export type Args = {
-    id: string;
-    active: boolean;
+    id?: string;
+    active?: boolean;
   };
 }
 export class ValidatorPartitionInfo {
-  public id: string;
-  public active: boolean;
+  @encodeAs.field(1).string
+  public id?: string;
+  @encodeAs.field(2).keepEmpty.bool
+  public active?: boolean;
 
   constructor(args: ValidatorPartitionInfo.Args) {
-    this.id = args.id;
-    this.active = args.active;
+    this.id = args.id == undefined ? undefined : args.id;
+    this.active = args.active == undefined ? undefined : args.active;
   }
 
-  asObject() {
+  asObject(): ValidatorPartitionInfo.Args {
     return {
-      id: this.id,
-      active: this.active,
+      id: this.id && this.id,
+      active: this.active && this.active,
     };
   }
 }
 
 export namespace WriteData {
   export type Args = {
-    entry: DataEntry.Args;
-    scratch: boolean;
-    writeToState: boolean;
+    entry?: DataEntry | DataEntry.Args;
+    scratch?: boolean;
+    writeToState?: boolean;
   };
   export type ArgsWithType = Args & { type: TransactionType.WriteData | "writeData" };
 }
 export class WriteData {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.WriteData;
-  public entry: DataEntry;
+  @encodeAs.field(2).union
+  public entry?: DataEntry;
+  @encodeAs.field(3).bool
   public scratch?: boolean;
+  @encodeAs.field(4).bool
   public writeToState?: boolean;
 
   constructor(args: WriteData.Args) {
-    this.entry = DataEntry.fromObject(args.entry);
-    this.scratch = args.scratch;
-    this.writeToState = args.writeToState;
+    this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
+    this.scratch = args.scratch == undefined ? undefined : args.scratch;
+    this.writeToState = args.writeToState == undefined ? undefined : args.writeToState;
   }
 
-  asObject() {
+  asObject(): WriteData.ArgsWithType {
     return {
       type: this.type,
-      entry: this.entry.asObject(),
+      entry: this.entry && this.entry.asObject(),
       scratch: this.scratch && this.scratch,
       writeToState: this.writeToState && this.writeToState,
     };
@@ -3226,58 +4340,83 @@ export class WriteData {
 
 export namespace WriteDataResult {
   export type Args = {
-    entryHash: Uint8Array | string;
-    accountUrl: URL | string;
-    accountID: Uint8Array | string;
+    entryHash?: Uint8Array | string;
+    accountUrl?: URL | string;
+    accountID?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: TransactionType.WriteData | "writeData" };
 }
 export class WriteDataResult {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.WriteData;
-  public entryHash: Uint8Array;
-  public accountUrl: URL;
-  public accountID: Uint8Array;
+  @encodeAs.field(2).hash
+  public entryHash?: Uint8Array;
+  @encodeAs.field(3).url
+  public accountUrl?: URL;
+  @encodeAs.field(4).bytes
+  public accountID?: Uint8Array;
 
   constructor(args: WriteDataResult.Args) {
     this.entryHash =
-      args.entryHash instanceof Uint8Array ? args.entryHash : Buffer.from(args.entryHash, "hex");
-    this.accountUrl = args.accountUrl instanceof URL ? args.accountUrl : new URL(args.accountUrl);
+      args.entryHash == undefined
+        ? undefined
+        : args.entryHash instanceof Uint8Array
+        ? args.entryHash
+        : Buffer.from(args.entryHash, "hex");
+    this.accountUrl =
+      args.accountUrl == undefined
+        ? undefined
+        : args.accountUrl instanceof URL
+        ? args.accountUrl
+        : new URL(args.accountUrl);
     this.accountID =
-      args.accountID instanceof Uint8Array ? args.accountID : Buffer.from(args.accountID, "hex");
+      args.accountID == undefined
+        ? undefined
+        : args.accountID instanceof Uint8Array
+        ? args.accountID
+        : Buffer.from(args.accountID, "hex");
   }
 
-  asObject() {
+  asObject(): WriteDataResult.ArgsWithType {
     return {
       type: this.type,
-      entryHash: Buffer.from(this.entryHash).toString("hex"),
-      accountUrl: this.accountUrl.toString(),
-      accountID: Buffer.from(this.accountID).toString("hex"),
+      entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      accountUrl: this.accountUrl && this.accountUrl.toString(),
+      accountID: this.accountID && Buffer.from(this.accountID).toString("hex"),
     };
   }
 }
 
 export namespace WriteDataTo {
   export type Args = {
-    recipient: URL | string;
-    entry: DataEntry.Args;
+    recipient?: URL | string;
+    entry?: DataEntry | DataEntry.Args;
   };
   export type ArgsWithType = Args & { type: TransactionType.WriteDataTo | "writeDataTo" };
 }
 export class WriteDataTo {
+  @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.WriteDataTo;
-  public recipient: URL;
-  public entry: DataEntry;
+  @encodeAs.field(2).url
+  public recipient?: URL;
+  @encodeAs.field(3).union
+  public entry?: DataEntry;
 
   constructor(args: WriteDataTo.Args) {
-    this.recipient = args.recipient instanceof URL ? args.recipient : new URL(args.recipient);
-    this.entry = DataEntry.fromObject(args.entry);
+    this.recipient =
+      args.recipient == undefined
+        ? undefined
+        : args.recipient instanceof URL
+        ? args.recipient
+        : new URL(args.recipient);
+    this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
   }
 
-  asObject() {
+  asObject(): WriteDataTo.ArgsWithType {
     return {
       type: this.type,
-      recipient: this.recipient.toString(),
-      entry: this.entry.asObject(),
+      recipient: this.recipient && this.recipient.toString(),
+      entry: this.entry && this.entry.asObject(),
     };
   }
 }
