@@ -49,6 +49,10 @@ export enum Status {
   NotReady = 504,
   /** WrongType means the record is not the expected type. */
   WrongType = 505,
+  /** NoPeer means the receiver cannot find a peer to satisfy the request. */
+  NoPeer = 506,
+  /** PeerMisbehaved means a peer behaved incorrectly. */
+  PeerMisbehaved = 507,
 }
 
 export namespace Status {
@@ -107,6 +111,10 @@ export namespace Status {
         return Status.NotReady;
       case "wrongtype":
         return Status.WrongType;
+      case "nopeer":
+        return Status.NoPeer;
+      case "peermisbehaved":
+        return Status.PeerMisbehaved;
       default:
         throw new Error(`Unknown Status '${name}'`);
     }

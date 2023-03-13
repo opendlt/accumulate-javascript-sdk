@@ -12,15 +12,10 @@ export abstract class TransactionBase {
   hash() {
     if (this._hash) return this._hash;
 
-    if (!this.header)
-      throw new Error(`invalid transaction: missing header`)
-    if (!this.body)
-      throw new Error(`invalid transaction: missing body`)
+    if (!this.header) throw new Error(`invalid transaction: missing header`);
+    if (!this.body) throw new Error(`invalid transaction: missing body`);
 
-    this._hash = sha256(Buffer.concat([
-      sha256(encode(this.header)),
-      hashBody(this.body),
-    ]));
+    this._hash = sha256(Buffer.concat([sha256(encode(this.header)), hashBody(this.body)]));
     return this._hash;
   }
 }
@@ -31,20 +26,17 @@ export function hashBody(body: TransactionBody) {
     case TransactionType.WriteDataTo:
     case TransactionType.SyntheticWriteData:
     case TransactionType.SystemWriteData: {
-      if (!body.entry)
-        throw new Error(`invalid ${body.type}: missing entry`)
+      if (!body.entry) throw new Error(`invalid ${body.type}: missing entry`);
       if (body.entry.type != DataEntryType.Accumulate)
-        throw new Error(`cannot hash ${body.type}: ${body.entry.type} entries are not supported`)
-      if (!body.entry.data)
-        throw new Error(`invalid ${body.type}: missing entry data`)
+        throw new Error(`cannot hash ${body.type}: ${body.entry.type} entries are not supported`);
+      if (!body.entry.data) throw new Error(`invalid ${body.type}: missing entry data`);
 
       const copy = body.copy();
       delete copy.entry;
 
-      return sha256(Buffer.concat([
-        sha256(encode(copy)),
-        hashTree(body.entry.data.map(x => sha256(x))),
-      ]));
+      return sha256(
+        Buffer.concat([sha256(encode(copy)), hashTree(body.entry.data.map((x) => sha256(x)))])
+      );
     }
 
     default:

@@ -9,6 +9,7 @@ import {
   BookType,
   DataEntry,
   DataEntryType,
+  ExecutorVersion,
   Fee,
   KeyPageOperation,
   KeyPageOperationType,
@@ -23,7 +24,7 @@ import {
 } from ".";
 import { encodeAs } from "../encoding";
 import * as errors2 from "../errors";
-import * as managed from "../managed";
+import * as merkle from "../merkle";
 import { TxID, URL } from "../url";
 import { TransactionBase } from "./base";
 
@@ -178,6 +179,36 @@ export class AcmeOracle {
   asObject(): AcmeOracle.Args {
     return {
       price: this.price && this.price,
+    };
+  }
+}
+
+export namespace ActivateProtocolVersion {
+  export type Args = {
+    version?: ExecutorVersion.Args;
+  };
+  export type ArgsWithType = Args & {
+    type: TransactionType.ActivateProtocolVersion | "activateProtocolVersion";
+  };
+}
+export class ActivateProtocolVersion {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = TransactionType.ActivateProtocolVersion;
+  @encodeAs.field(2).enum
+  public version?: ExecutorVersion;
+
+  constructor(args: ActivateProtocolVersion.Args) {
+    this.version = args.version == undefined ? undefined : ExecutorVersion.fromObject(args.version);
+  }
+
+  copy() {
+    return new ActivateProtocolVersion(this);
+  }
+
+  asObject(): ActivateProtocolVersion.ArgsWithType {
+    return {
+      type: this.type,
+      version: this.version && this.version.toString(),
     };
   }
 }
@@ -436,6 +467,72 @@ export class AuthorityEntry {
     return {
       url: this.url && this.url.toString(),
       disabled: this.disabled && this.disabled,
+    };
+  }
+}
+
+export namespace AuthoritySignature {
+  export type Args = {
+    origin?: URL | string;
+    authority?: URL | string;
+    vote?: VoteType.Args;
+    txID?: TxID | string;
+    delegator?: (URL | string)[];
+  };
+  export type ArgsWithType = Args & { type: SignatureType.Authority | "authority" };
+}
+export class AuthoritySignature {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = SignatureType.Authority;
+  @encodeAs.field(2).url
+  public origin?: URL;
+  @encodeAs.field(3).url
+  public authority?: URL;
+  @encodeAs.field(4).enum
+  public vote?: VoteType;
+  @encodeAs.field(5).txid
+  public txID?: TxID;
+  @encodeAs.field(6).repeatable.url
+  public delegator?: URL[];
+
+  constructor(args: AuthoritySignature.Args) {
+    this.origin =
+      args.origin == undefined
+        ? undefined
+        : args.origin instanceof URL
+        ? args.origin
+        : new URL(args.origin);
+    this.authority =
+      args.authority == undefined
+        ? undefined
+        : args.authority instanceof URL
+        ? args.authority
+        : new URL(args.authority);
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
+    this.txID =
+      args.txID == undefined
+        ? undefined
+        : args.txID instanceof TxID
+        ? args.txID
+        : new TxID(args.txID);
+    this.delegator =
+      args.delegator == undefined
+        ? undefined
+        : args.delegator.map((v) => (v instanceof URL ? v : new URL(v)));
+  }
+
+  copy() {
+    return new AuthoritySignature(this);
+  }
+
+  asObject(): AuthoritySignature.ArgsWithType {
+    return {
+      type: this.type,
+      origin: this.origin && this.origin.toString(),
+      authority: this.authority && this.authority.toString(),
+      vote: this.vote && this.vote.toString(),
+      txID: this.txID && this.txID.toString(),
+      delegator: this.delegator && this.delegator?.map((v) => v.toString()),
     };
   }
 }
@@ -763,6 +860,34 @@ export class BlockValidatorAnchor {
       rootChainAnchor: this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
       stateTreeAnchor: this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
       acmeBurnt: this.acmeBurnt && this.acmeBurnt.toString(),
+    };
+  }
+}
+
+export namespace BurnCredits {
+  export type Args = {
+    amount?: number;
+  };
+  export type ArgsWithType = Args & { type: TransactionType.BurnCredits | "burnCredits" };
+}
+export class BurnCredits {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = TransactionType.BurnCredits;
+  @encodeAs.field(2).uint
+  public amount?: number;
+
+  constructor(args: BurnCredits.Args) {
+    this.amount = args.amount == undefined ? undefined : args.amount;
+  }
+
+  copy() {
+    return new BurnCredits(this);
+  }
+
+  asObject(): BurnCredits.ArgsWithType {
+    return {
+      type: this.type,
+      amount: this.amount && this.amount,
     };
   }
 }
@@ -1153,6 +1278,36 @@ export class CreateTokenAccount {
       tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
       authorities: this.authorities && this.authorities?.map((v) => v.toString()),
       proof: this.proof && this.proof.asObject(),
+    };
+  }
+}
+
+export namespace CreditRecipient {
+  export type Args = {
+    url?: URL | string;
+    amount?: number;
+  };
+}
+export class CreditRecipient {
+  @encodeAs.field(1).url
+  public url?: URL;
+  @encodeAs.field(2).uint
+  public amount?: number;
+
+  constructor(args: CreditRecipient.Args) {
+    this.url =
+      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.amount = args.amount == undefined ? undefined : args.amount;
+  }
+
+  copy() {
+    return new CreditRecipient(this);
+  }
+
+  asObject(): CreditRecipient.Args {
+    return {
+      url: this.url && this.url.toString(),
+      amount: this.amount && this.amount,
     };
   }
 }
@@ -1579,51 +1734,6 @@ export class EnableAccountAuthOperation {
     return {
       type: this.type,
       authority: this.authority && this.authority.toString(),
-    };
-  }
-}
-
-export namespace Envelope {
-  export type Args = {
-    signatures?: (Signature | Signature.Args)[];
-    txHash?: Uint8Array | string;
-    transaction?: (Transaction | Transaction.Args)[];
-  };
-}
-export class Envelope {
-  @encodeAs.field(1).repeatable.union
-  public signatures?: Signature[];
-  @encodeAs.field(2).bytes
-  public txHash?: Uint8Array;
-  @encodeAs.field(3).repeatable.reference
-  public transaction?: Transaction[];
-
-  constructor(args: Envelope.Args) {
-    this.signatures =
-      args.signatures == undefined
-        ? undefined
-        : args.signatures.map((v) => Signature.fromObject(v));
-    this.txHash =
-      args.txHash == undefined
-        ? undefined
-        : args.txHash instanceof Uint8Array
-        ? args.txHash
-        : Buffer.from(args.txHash, "hex");
-    this.transaction =
-      args.transaction == undefined
-        ? undefined
-        : args.transaction.map((v) => (v instanceof Transaction ? v : new Transaction(v)));
-  }
-
-  copy() {
-    return new Envelope(this);
-  }
-
-  asObject(): Envelope.Args {
-    return {
-      signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
-      txHash: this.txHash && Buffer.from(this.txHash).toString("hex"),
-      transaction: this.transaction && this.transaction?.map((v) => v.asObject()),
     };
   }
 }
@@ -2591,14 +2701,14 @@ export class PartitionAnchor {
 export namespace PartitionAnchorReceipt {
   export type Args = {
     anchor?: PartitionAnchor | PartitionAnchor.Args;
-    rootChainReceipt?: managed.Receipt | managed.Receipt.Args;
+    rootChainReceipt?: merkle.Receipt | merkle.Receipt.Args;
   };
 }
 export class PartitionAnchorReceipt {
   @encodeAs.field(1).reference
   public anchor?: PartitionAnchor;
   @encodeAs.field(2).reference
-  public rootChainReceipt?: managed.Receipt;
+  public rootChainReceipt?: merkle.Receipt;
 
   constructor(args: PartitionAnchorReceipt.Args) {
     this.anchor =
@@ -2610,9 +2720,9 @@ export class PartitionAnchorReceipt {
     this.rootChainReceipt =
       args.rootChainReceipt == undefined
         ? undefined
-        : args.rootChainReceipt instanceof managed.Receipt
+        : args.rootChainReceipt instanceof merkle.Receipt
         ? args.rootChainReceipt
-        : new managed.Receipt(args.rootChainReceipt);
+        : new merkle.Receipt(args.rootChainReceipt);
   }
 
   copy() {
@@ -2872,7 +2982,7 @@ export class Rational {
 export namespace ReceiptSignature {
   export type Args = {
     sourceNetwork?: URL | string;
-    proof?: managed.Receipt | managed.Receipt.Args;
+    proof?: merkle.Receipt | merkle.Receipt.Args;
     transactionHash?: Uint8Array | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.Receipt | "receipt" };
@@ -2883,7 +2993,7 @@ export class ReceiptSignature {
   @encodeAs.field(2).url
   public sourceNetwork?: URL;
   @encodeAs.field(3).reference
-  public proof?: managed.Receipt;
+  public proof?: merkle.Receipt;
   @encodeAs.field(4).hash
   public transactionHash?: Uint8Array;
 
@@ -2897,9 +3007,9 @@ export class ReceiptSignature {
     this.proof =
       args.proof == undefined
         ? undefined
-        : args.proof instanceof managed.Receipt
+        : args.proof instanceof merkle.Receipt
         ? args.proof
-        : new managed.Receipt(args.proof);
+        : new merkle.Receipt(args.proof);
     this.transactionHash =
       args.transactionHash == undefined
         ? undefined
@@ -3250,9 +3360,9 @@ export namespace SignatureSet {
   export type Args = {
     vote?: VoteType.Args;
     signer?: URL | string;
-    authority?: URL | string;
     transactionHash?: Uint8Array | string;
     signatures?: (Signature | Signature.Args)[];
+    authority?: URL | string;
   };
   export type ArgsWithType = Args & { type: SignatureType.Set | "set" };
 }
@@ -3263,12 +3373,12 @@ export class SignatureSet {
   public vote?: VoteType;
   @encodeAs.field(3).url
   public signer?: URL;
-  @encodeAs.field(4).url
-  public authority?: URL;
-  @encodeAs.field(5).hash
+  @encodeAs.field(4).hash
   public transactionHash?: Uint8Array;
-  @encodeAs.field(6).repeatable.union
+  @encodeAs.field(5).repeatable.union
   public signatures?: Signature[];
+  @encodeAs.field(6).url
+  public authority?: URL;
 
   constructor(args: SignatureSet.Args) {
     this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
@@ -3278,12 +3388,6 @@ export class SignatureSet {
         : args.signer instanceof URL
         ? args.signer
         : new URL(args.signer);
-    this.authority =
-      args.authority == undefined
-        ? undefined
-        : args.authority instanceof URL
-        ? args.authority
-        : new URL(args.authority);
     this.transactionHash =
       args.transactionHash == undefined
         ? undefined
@@ -3294,6 +3398,12 @@ export class SignatureSet {
       args.signatures == undefined
         ? undefined
         : args.signatures.map((v) => Signature.fromObject(v));
+    this.authority =
+      args.authority == undefined
+        ? undefined
+        : args.authority instanceof URL
+        ? args.authority
+        : new URL(args.authority);
   }
 
   copy() {
@@ -3305,9 +3415,9 @@ export class SignatureSet {
       type: this.type,
       vote: this.vote && this.vote.toString(),
       signer: this.signer && this.signer.toString(),
-      authority: this.authority && this.authority.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
+      authority: this.authority && this.authority.toString(),
     };
   }
 }
@@ -3838,6 +3948,7 @@ export namespace SystemLedger {
     acmeBurnt?: BN | string;
     pendingUpdates?: (NetworkAccountUpdate | NetworkAccountUpdate.Args)[];
     anchor?: AnchorBody | AnchorBody.Args;
+    executorVersion?: ExecutorVersion.Args;
   };
   export type ArgsWithType = Args & { type: AccountType.SystemLedger | "systemLedger" };
 }
@@ -3856,6 +3967,8 @@ export class SystemLedger {
   public pendingUpdates?: NetworkAccountUpdate[];
   @encodeAs.field(7).union
   public anchor?: AnchorBody;
+  @encodeAs.field(8).enum
+  public executorVersion?: ExecutorVersion;
 
   constructor(args: SystemLedger.Args) {
     this.url =
@@ -3880,6 +3993,10 @@ export class SystemLedger {
             v instanceof NetworkAccountUpdate ? v : new NetworkAccountUpdate(v)
           );
     this.anchor = args.anchor == undefined ? undefined : AnchorBody.fromObject(args.anchor);
+    this.executorVersion =
+      args.executorVersion == undefined
+        ? undefined
+        : ExecutorVersion.fromObject(args.executorVersion);
   }
 
   copy() {
@@ -3895,6 +4012,7 @@ export class SystemLedger {
       acmeBurnt: this.acmeBurnt && this.acmeBurnt.toString(),
       pendingUpdates: this.pendingUpdates && this.pendingUpdates?.map((v) => v.asObject()),
       anchor: this.anchor && this.anchor.asObject(),
+      executorVersion: this.executorVersion && this.executorVersion.toString(),
     };
   }
 }
@@ -4069,14 +4187,14 @@ export class TokenIssuer {
 export namespace TokenIssuerProof {
   export type Args = {
     transaction?: CreateToken | CreateToken.Args;
-    receipt?: managed.Receipt | managed.Receipt.Args;
+    receipt?: merkle.Receipt | merkle.Receipt.Args;
   };
 }
 export class TokenIssuerProof {
   @encodeAs.field(1).reference
   public transaction?: CreateToken;
   @encodeAs.field(2).reference
-  public receipt?: managed.Receipt;
+  public receipt?: merkle.Receipt;
 
   constructor(args: TokenIssuerProof.Args) {
     this.transaction =
@@ -4088,9 +4206,9 @@ export class TokenIssuerProof {
     this.receipt =
       args.receipt == undefined
         ? undefined
-        : args.receipt instanceof managed.Receipt
+        : args.receipt instanceof merkle.Receipt
         ? args.receipt
-        : new managed.Receipt(args.receipt);
+        : new merkle.Receipt(args.receipt);
   }
 
   copy() {
@@ -4242,7 +4360,7 @@ export namespace TransactionStatus {
     destinationNetwork?: URL | string;
     sequenceNumber?: number;
     gotDirectoryReceipt?: boolean;
-    proof?: managed.Receipt | managed.Receipt.Args;
+    proof?: merkle.Receipt | merkle.Receipt.Args;
     anchorSigners?: (Uint8Array | string)[];
   };
 }
@@ -4270,7 +4388,7 @@ export class TransactionStatus {
   @encodeAs.field(11).bool
   public gotDirectoryReceipt?: boolean;
   @encodeAs.field(12).reference
-  public proof?: managed.Receipt;
+  public proof?: merkle.Receipt;
   @encodeAs.field(13).repeatable.bytes
   public anchorSigners?: Uint8Array[];
 
@@ -4316,9 +4434,9 @@ export class TransactionStatus {
     this.proof =
       args.proof == undefined
         ? undefined
-        : args.proof instanceof managed.Receipt
+        : args.proof instanceof merkle.Receipt
         ? args.proof
-        : new managed.Receipt(args.proof);
+        : new merkle.Receipt(args.proof);
     this.anchorSigners =
       args.anchorSigners == undefined
         ? undefined
@@ -4345,6 +4463,37 @@ export class TransactionStatus {
       proof: this.proof && this.proof.asObject(),
       anchorSigners:
         this.anchorSigners && this.anchorSigners?.map((v) => Buffer.from(v).toString("hex")),
+    };
+  }
+}
+
+export namespace TransferCredits {
+  export type Args = {
+    to?: (CreditRecipient | CreditRecipient.Args)[];
+  };
+  export type ArgsWithType = Args & { type: TransactionType.TransferCredits | "transferCredits" };
+}
+export class TransferCredits {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = TransactionType.TransferCredits;
+  @encodeAs.field(2).repeatable.reference
+  public to?: CreditRecipient[];
+
+  constructor(args: TransferCredits.Args) {
+    this.to =
+      args.to == undefined
+        ? undefined
+        : args.to.map((v) => (v instanceof CreditRecipient ? v : new CreditRecipient(v)));
+  }
+
+  copy() {
+    return new TransferCredits(this);
+  }
+
+  asObject(): TransferCredits.ArgsWithType {
+    return {
+      type: this.type,
+      to: this.to && this.to?.map((v) => v.asObject()),
     };
   }
 }
