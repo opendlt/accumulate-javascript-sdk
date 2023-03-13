@@ -29,6 +29,10 @@ export class CallSite {
     this.line = args.line == undefined ? undefined : args.line;
   }
 
+  copy() {
+    return new CallSite(this);
+  }
+
   asObject(): CallSite.Args {
     return {
       funcName: this.funcName && this.funcName,
@@ -69,6 +73,10 @@ export class Error {
       args.callStack == undefined
         ? undefined
         : args.callStack.map((v) => (v instanceof CallSite ? v : new CallSite(v)));
+  }
+
+  copy() {
+    return new Error(this);
   }
 
   asObject(): Error.Args {

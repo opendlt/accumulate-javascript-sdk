@@ -27,6 +27,7 @@ go run ./tools/cmd/gen-types -l typescript -o ../new/core/types_gen.ts \
 import * as errors2 from "../errors";
 import * as managed from "../managed";
 import { URL, TxID } from "../url";
+import { TransactionBase } from "./base";
 import {
   Account
   AccountAuthOperation

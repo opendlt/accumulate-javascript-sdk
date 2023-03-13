@@ -8,24 +8,25 @@ import {
   TxQueryOptions,
   WaitTxOptions,
 } from "./api-types";
-import { Payload } from "./payload";
-import { AddCredits, AddCreditsArg } from "./payload/add-credits";
-import { AddValidator, AddValidatorArg } from "./payload/add-validator";
-import { BurnTokens, BurnTokensArg } from "./payload/burn-tokens";
-import { CreateDataAccount, CreateDataAccountArg } from "./payload/create-data-account";
-import { CreateIdentity, CreateIdentityArg } from "./payload/create-identity";
-import { CreateKeyBook, CreateKeyBookArg } from "./payload/create-key-book";
-import { CreateKeyPage, CreateKeyPageArg } from "./payload/create-key-page";
-import { CreateToken, CreateTokenArg } from "./payload/create-token";
-import { CreateTokenAccount, CreateTokenAccountArg } from "./payload/create-token-account";
-import { IssueTokens, IssueTokensArg } from "./payload/issue-tokens";
-import { RemoveValidator, RemoveValidatorArg } from "./payload/remove-validator";
-import { SendTokens, SendTokensArg } from "./payload/send-tokens";
-import { AccountAuthOperation, UpdateAccountAuth } from "./payload/update-account-auth";
-import { UpdateKey, UpdateKeyArg } from "./payload/update-key";
-import { KeyPageOperation, UpdateKeyPage } from "./payload/update-key-page";
-import { UpdateValidatorKey, UpdateValidatorKeyArg } from "./payload/update-validator-key";
-import { WriteData, WriteDataArg } from "./payload/write-data";
+import {
+  AddCredits,
+  BurnTokens,
+  CreateDataAccount,
+  CreateIdentity,
+  CreateKeyBook,
+  CreateKeyPage,
+  CreateToken,
+  CreateTokenAccount,
+  IssueTokens,
+  SendTokens,
+  AccountAuthOperation,
+  UpdateKey,
+  UpdateKeyPage,
+  UpdateAccountAuth,
+  KeyPageOperation,
+  WriteData,
+  TransactionBody,
+} from "../new/core";
 import { RpcClient } from "./rpc-client";
 import { Header, Transaction } from "./transaction";
 import { TxSigner } from "./tx-signer";
@@ -245,23 +246,15 @@ export class Client {
 
   addCredits(
     principal: AccURL | string,
-    addCredits: AddCreditsArg,
+    addCredits: AddCredits.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new AddCredits(addCredits), signer);
   }
 
-  addValidator(
-    principal: AccURL | string,
-    addValidator: AddValidatorArg,
-    signer: TxSigner
-  ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new AddValidator(addValidator), signer);
-  }
-
   burnTokens(
     principal: AccURL | string,
-    burnTokens: BurnTokensArg,
+    burnTokens: BurnTokens.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new BurnTokens(burnTokens), signer);
@@ -269,7 +262,7 @@ export class Client {
 
   createDataAccount(
     principal: AccURL | string,
-    createDataAccount: CreateDataAccountArg,
+    createDataAccount: CreateDataAccount.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(
@@ -281,7 +274,7 @@ export class Client {
 
   createIdentity(
     principal: AccURL | string,
-    createIdentity: CreateIdentityArg,
+    createIdentity: CreateIdentity.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new CreateIdentity(createIdentity), signer);
@@ -289,7 +282,7 @@ export class Client {
 
   createKeyBook(
     principal: AccURL | string,
-    createKeyBook: CreateKeyBookArg,
+    createKeyBook: CreateKeyBook.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new CreateKeyBook(createKeyBook), signer);
@@ -297,7 +290,7 @@ export class Client {
 
   createKeyPage(
     principal: AccURL | string,
-    createKeyPage: CreateKeyPageArg,
+    createKeyPage: CreateKeyPage.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new CreateKeyPage(createKeyPage), signer);
@@ -305,7 +298,7 @@ export class Client {
 
   createToken(
     principal: AccURL | string,
-    createToken: CreateTokenArg,
+    createToken: CreateToken.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new CreateToken(createToken), signer);
@@ -313,7 +306,7 @@ export class Client {
 
   createTokenAccount(
     principal: AccURL | string,
-    createTokenAccount: CreateTokenAccountArg,
+    createTokenAccount: CreateTokenAccount.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(
@@ -329,23 +322,15 @@ export class Client {
 
   issueTokens(
     principal: AccURL | string,
-    issueTokens: IssueTokensArg,
+    issueTokens: IssueTokens.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new IssueTokens(issueTokens), signer);
   }
 
-  removeValidator(
-    principal: AccURL | string,
-    removeValidator: RemoveValidatorArg,
-    signer: TxSigner
-  ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new RemoveValidator(removeValidator), signer);
-  }
-
   sendTokens(
     principal: AccURL | string,
-    sendTokens: SendTokensArg,
+    sendTokens: SendTokens.Args,
     signer: TxSigner
   ): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new SendTokens(sendTokens), signer);
@@ -356,10 +341,11 @@ export class Client {
     operation: AccountAuthOperation | AccountAuthOperation[],
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new UpdateAccountAuth(operation), signer);
+    const operations = operation instanceof Array ? operation : [operation];
+    return this._execute(AccURL.toAccURL(principal), new UpdateAccountAuth({ operations }), signer);
   }
 
-  updateKey(principal: AccURL | string, updateKey: UpdateKeyArg, signer: TxSigner): Promise<any> {
+  updateKey(principal: AccURL | string, updateKey: UpdateKey.Args, signer: TxSigner): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new UpdateKey(updateKey), signer);
   }
 
@@ -368,26 +354,15 @@ export class Client {
     operation: KeyPageOperation | KeyPageOperation[],
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new UpdateKeyPage(operation), signer);
+    const operations = operation instanceof Array ? operation : [operation];
+    return this._execute(AccURL.toAccURL(principal), new UpdateKeyPage({ operation: operations }), signer);
   }
 
-  updateValidatorKey(
-    principal: AccURL | string,
-    updateValidatorKey: UpdateValidatorKeyArg,
-    signer: TxSigner
-  ): Promise<any> {
-    return this._execute(
-      AccURL.toAccURL(principal),
-      new UpdateValidatorKey(updateValidatorKey),
-      signer
-    );
-  }
-
-  writeData(principal: AccURL | string, writeData: WriteDataArg, signer: TxSigner): Promise<any> {
+  writeData(principal: AccURL | string, writeData: WriteData.Args, signer: TxSigner): Promise<any> {
     return this._execute(AccURL.toAccURL(principal), new WriteData(writeData), signer);
   }
 
-  private async _execute(principal: AccURL, payload: Payload, signer: TxSigner): Promise<any> {
+  private async _execute(principal: AccURL, payload: TransactionBody, signer: TxSigner): Promise<any> {
     const header = new Header(principal);
     const tx = new Transaction(payload, header);
     await tx.sign(signer);

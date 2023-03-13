@@ -1,3 +1,6 @@
+import { TransactionBody } from "../new/core";
+import { hashBody } from "../new/core/base";
+import { encode } from "../new/encoding";
 import { AccURL } from "./acc-url";
 import { sha256 } from "./crypto";
 import {
@@ -6,7 +9,6 @@ import {
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "./encoding";
-import { Payload } from "./payload";
 import { Signature, signatureTypeMarshalJSON, SignerInfo } from "./signer";
 import { TxSigner } from "./tx-signer";
 
@@ -103,11 +105,11 @@ export class Transaction {
   private _hash?: Buffer;
   private _bodyHash: Buffer;
 
-  constructor(payload: Payload, header: Header, signature?: Signature) {
-    this._payloadBinary = payload.marshalBinary();
+  constructor(payload: TransactionBody, header: Header, signature?: Signature) {
+    this._payloadBinary = encode(payload);
     this._header = header;
     this._signature = signature;
-    this._bodyHash = payload.hash();
+    this._bodyHash = hashBody(payload);
   }
 
   /**

@@ -35,6 +35,10 @@ export class MerkleState {
         : args.hashList.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
   }
 
+  copy() {
+    return new MerkleState(this);
+  }
+
   asObject(): MerkleState.Args {
     return {
       count: this.count && this.count,
@@ -95,6 +99,10 @@ export class Receipt {
         : args.entries.map((v) => (v instanceof ReceiptEntry ? v : new ReceiptEntry(v)));
   }
 
+  copy() {
+    return new Receipt(this);
+  }
+
   asObject(): Receipt.Args {
     return {
       start: this.start && Buffer.from(this.start).toString("hex"),
@@ -127,6 +135,10 @@ export class ReceiptEntry {
         : args.hash instanceof Uint8Array
         ? args.hash
         : Buffer.from(args.hash, "hex");
+  }
+
+  copy() {
+    return new ReceiptEntry(this);
   }
 
   asObject(): ReceiptEntry.Args {
@@ -180,6 +192,10 @@ export class ReceiptList {
         : new Receipt(args.continuedReceipt);
   }
 
+  copy() {
+    return new ReceiptList(this);
+  }
+
   asObject(): ReceiptList.Args {
     return {
       merkleState: this.merkleState && this.merkleState.asObject(),
@@ -225,6 +241,10 @@ export class Snapshot {
       args.markPoints == undefined
         ? undefined
         : args.markPoints.map((v) => (v instanceof MerkleState ? v : new MerkleState(v)));
+  }
+
+  copy() {
+    return new Snapshot(this);
   }
 
   asObject(): Snapshot.Args {
