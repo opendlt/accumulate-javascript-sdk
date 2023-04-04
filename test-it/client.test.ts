@@ -11,6 +11,7 @@ import {
   RpcError,
   TransactionType,
   TxSigner,
+  WriteDataArg,
 } from "../src";
 import { constructIssuerProof } from "../src/util";
 import { addCredits, randomBuffer, randomLiteIdentity, randomString } from "./util";
@@ -270,8 +271,9 @@ describe("Test Accumulate client", () => {
 
     // Write data
     const data = [randomBuffer(), randomBuffer(), randomBuffer()];
-    const writeData = {
+    const writeData: WriteDataArg = {
       data,
+      doubleHash: true,
     };
 
     res = await client.writeData(dataAccountUrl, writeData, identityKeyPageTxSigner);
@@ -289,8 +291,9 @@ describe("Test Accumulate client", () => {
     const firstEntryHash = res.data.entryHash;
 
     const data2 = [randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer()];
-    const writeData2 = {
+    const writeData2: WriteDataArg = {
       data: data2,
+      doubleHash: true
     };
     res = await client.writeData(dataAccountUrl, writeData2, identityKeyPageTxSigner);
     await client.waitOnTx(res.txid);
