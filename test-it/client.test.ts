@@ -293,7 +293,7 @@ describe("Test Accumulate client", () => {
     const data2 = [randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer()];
     const writeData2: WriteDataArg = {
       data: data2,
-      doubleHash: true
+      doubleHash: true,
     };
     res = await client.writeData(dataAccountUrl, writeData2, identityKeyPageTxSigner);
     await client.waitOnTx(res.txid);
