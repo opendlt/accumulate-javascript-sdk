@@ -12,12 +12,14 @@ export type WriteDataArg = {
   data: Uint8Array[];
   scratch?: boolean;
   writeToState?: boolean;
+  doubleHash?: boolean;
 };
 
 export class WriteData extends BasePayload {
   private readonly _data: Uint8Array[];
   private readonly _scratch: boolean;
   private readonly _writeToState: boolean;
+  private readonly _doubleHash: boolean;
   private _customHash?: Buffer;
 
   constructor(arg: WriteDataArg) {
@@ -25,6 +27,7 @@ export class WriteData extends BasePayload {
     this._data = arg.data;
     this._scratch = arg.scratch || false;
     this._writeToState = arg.writeToState || false;
+    this._doubleHash = arg.doubleHash || false;
   }
 
   protected _marshalBinary(withoutEntry = false): Buffer {
@@ -33,7 +36,7 @@ export class WriteData extends BasePayload {
     forConcat.push(uvarintMarshalBinary(TransactionType.WriteData, 1));
 
     if (!withoutEntry) {
-      forConcat.push(fieldMarshalBinary(2, marshalDataEntry(this._data)));
+      forConcat.push(fieldMarshalBinary(2, marshalDataEntry(this._data, this._doubleHash)));
     }
 
     if (this._scratch) {
@@ -53,7 +56,10 @@ export class WriteData extends BasePayload {
     }
 
     const bodyHash = sha256(this._marshalBinary(true));
-    const dataHash = hashTree(this._data);
+    let dataHash = hashTree(this._data);
+    if (this._doubleHash) {
+      dataHash = sha256(dataHash);
+    }
 
     this._customHash = sha256(Buffer.concat([bodyHash, dataHash]));
 
@@ -61,11 +67,16 @@ export class WriteData extends BasePayload {
   }
 }
 
-function marshalDataEntry(data: Uint8Array[]): Buffer {
+function marshalDataEntry(data: Uint8Array[], doubleHash: boolean): Buffer {
   const forConcat = [];
 
-  // AccumulateDataEntry DataEntryType 2
-  forConcat.push(uvarintMarshalBinary(2, 1));
+  if (doubleHash) {
+    // AccumulateDataEntry DataEntryType 3
+    forConcat.push(uvarintMarshalBinary(3, 1));
+  } else {
+    // DoubleHashDataEntry DataEntryType 2
+    forConcat.push(uvarintMarshalBinary(2, 1));
+  }
   // Data
   forConcat.push(Buffer.concat(data.map((d) => bytesMarshalBinary(d, 2))));
 
