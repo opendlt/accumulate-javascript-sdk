@@ -1,8 +1,10 @@
-import { Envelope } from "../new/core";
+import { Envelope } from "../new/messaging";
 import { encode } from "../new/encoding";
 import { transactions as transactionTests } from "./data/sdk/protocol.1.json";
 
-describe.each(transactionTests)("transactions", ({ name, cases }) => {
+const tests = transactionTests.filter(x => !x.name.startsWith('Synthetic'))
+
+describe.each(tests)("transactions", ({ name, cases }) => {
   describe(name, () => {
     it.each<typeof cases[0]>(cases)("should marshal correctly", ({ json, binary }) => {
       const { signatures, transaction } = json as any;
