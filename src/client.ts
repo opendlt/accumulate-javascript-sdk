@@ -60,7 +60,7 @@ export class Client {
   }
 
   queryAnchor(anchor: string): Promise<any> {
-    return this.queryUrl(ANCHORS_URL.append(`#anchor/${anchor}`));
+    return this.queryUrl(ANCHORS_URL.join(`#anchor/${anchor}`));
   }
 
   queryUrl(url: string | AccURL, options?: QueryOptions): Promise<any> {
@@ -249,7 +249,7 @@ export class Client {
     addCredits: AddCredits.Args,
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new AddCredits(addCredits), signer);
+    return this._execute(AccURL.parse(principal), new AddCredits(addCredits), signer);
   }
 
   burnTokens(
@@ -257,7 +257,7 @@ export class Client {
     burnTokens: BurnTokens.Args,
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new BurnTokens(burnTokens), signer);
+    return this._execute(AccURL.parse(principal), new BurnTokens(burnTokens), signer);
   }
 
   createDataAccount(
@@ -266,7 +266,7 @@ export class Client {
     signer: TxSigner
   ): Promise<any> {
     return this._execute(
-      AccURL.toAccURL(principal),
+      AccURL.parse(principal),
       new CreateDataAccount(createDataAccount),
       signer
     );
@@ -277,7 +277,7 @@ export class Client {
     createIdentity: CreateIdentity.Args,
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new CreateIdentity(createIdentity), signer);
+    return this._execute(AccURL.parse(principal), new CreateIdentity(createIdentity), signer);
   }
 
   createKeyBook(
@@ -285,7 +285,7 @@ export class Client {
     createKeyBook: CreateKeyBook.Args,
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new CreateKeyBook(createKeyBook), signer);
+    return this._execute(AccURL.parse(principal), new CreateKeyBook(createKeyBook), signer);
   }
 
   createKeyPage(
@@ -293,7 +293,7 @@ export class Client {
     createKeyPage: CreateKeyPage.Args,
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new CreateKeyPage(createKeyPage), signer);
+    return this._execute(AccURL.parse(principal), new CreateKeyPage(createKeyPage), signer);
   }
 
   createToken(
@@ -301,7 +301,7 @@ export class Client {
     createToken: CreateToken.Args,
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new CreateToken(createToken), signer);
+    return this._execute(AccURL.parse(principal), new CreateToken(createToken), signer);
   }
 
   createTokenAccount(
@@ -310,7 +310,7 @@ export class Client {
     signer: TxSigner
   ): Promise<any> {
     return this._execute(
-      AccURL.toAccURL(principal),
+      AccURL.parse(principal),
       new CreateTokenAccount(createTokenAccount),
       signer
     );
@@ -325,7 +325,7 @@ export class Client {
     issueTokens: IssueTokens.Args,
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new IssueTokens(issueTokens), signer);
+    return this._execute(AccURL.parse(principal), new IssueTokens(issueTokens), signer);
   }
 
   sendTokens(
@@ -333,7 +333,7 @@ export class Client {
     sendTokens: SendTokens.Args,
     signer: TxSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new SendTokens(sendTokens), signer);
+    return this._execute(AccURL.parse(principal), new SendTokens(sendTokens), signer);
   }
 
   updateAccountAuth(
@@ -342,11 +342,11 @@ export class Client {
     signer: TxSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
-    return this._execute(AccURL.toAccURL(principal), new UpdateAccountAuth({ operations }), signer);
+    return this._execute(AccURL.parse(principal), new UpdateAccountAuth({ operations }), signer);
   }
 
   updateKey(principal: AccURL | string, updateKey: UpdateKey.Args, signer: TxSigner): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new UpdateKey(updateKey), signer);
+    return this._execute(AccURL.parse(principal), new UpdateKey(updateKey), signer);
   }
 
   updateKeyPage(
@@ -355,11 +355,11 @@ export class Client {
     signer: TxSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
-    return this._execute(AccURL.toAccURL(principal), new UpdateKeyPage({ operation: operations }), signer);
+    return this._execute(AccURL.parse(principal), new UpdateKeyPage({ operation: operations }), signer);
   }
 
   writeData(principal: AccURL | string, writeData: WriteData.Args, signer: TxSigner): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new WriteData(writeData), signer);
+    return this._execute(AccURL.parse(principal), new WriteData(writeData), signer);
   }
 
   private async _execute(principal: AccURL, payload: TransactionBody, signer: TxSigner): Promise<any> {

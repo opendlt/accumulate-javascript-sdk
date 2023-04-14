@@ -19,7 +19,7 @@ export class LiteIdentity extends TxSigner {
    * Helper method to get the ACME token account controled by the LiteIdentity.
    */
   get acmeTokenAccount(): AccURL {
-    return this._url.append(ACME_TOKEN_URL);
+    return this._url.join(ACME_TOKEN_URL);
   }
 
   /**

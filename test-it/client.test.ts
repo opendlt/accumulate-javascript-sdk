@@ -320,7 +320,7 @@ describe("Test Accumulate client", () => {
     const createTokenTxId = res.txid;
     await client.waitOnTx(createTokenTxId);
 
-    const recipient = new LiteIdentity(Ed25519KeypairSigner.generate()).url.append(tokenUrl);
+    const recipient = new LiteIdentity(Ed25519KeypairSigner.generate()).url.join(tokenUrl);
     const amount = new BN(123);
     const issueToken = {
       to: [{ url: recipient, amount }],
