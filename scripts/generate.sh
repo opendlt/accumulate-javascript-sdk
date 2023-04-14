@@ -6,9 +6,33 @@ set -eu
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR/../accumulate
 
+go run ./tools/cmd/gen-enum -l typescript -o ../new/api_v2/enums_gen.ts internal/api/v2/enums.yml
+go run ./tools/cmd/gen-types -l typescript -o ../new/api_v2/types_gen.ts internal/api/v2/{responses,types}.yml --header='
+import { BlockFilterMode, TxFetchMode } from ".";
+import * as config from "./config";
+import * as protocol from "./protocol";
+import * as merkle from "../merkle";
+import * as messaging from "../messaging";
+import * as core from "../network";
+import * as errors2 from "../errors";
+import { URL, TxID } from "../url";
+'
+
+go run ./tools/cmd/gen-enum -l typescript -o ../new/api_v2/config_enums_gen.ts internal/node/config/enums.yml
+go run ./tools/cmd/gen-types -l typescript -o ../new/api_v2/config_types_gen.ts internal/node/config/types.yml \
+  -x P2P \
+  --header='
+import * as protocol from "./protocol";
+import { NodeType } from "./config";
+'
+
 go run ./tools/cmd/gen-enum -l typescript -o ../new/errors/enums_gen.ts pkg/errors/status.yml
 go run ./tools/cmd/gen-types -l typescript -o ../new/errors/types_gen.ts pkg/errors/error.yml --header='
 import { Status } from ".";
+'
+
+go run ./tools/cmd/gen-types -l typescript -o ../new/network/types_gen.ts pkg/types/network/types.yml --header='
+import * as protocol from "../core";
 '
 
 go run ./tools/cmd/gen-enum -l typescript -o ../new/merkle/enums_gen.ts pkg/types/merkle/enums.yml

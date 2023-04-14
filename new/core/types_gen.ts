@@ -1920,11 +1920,8 @@ export namespace FactomDataEntry {
   };
 }
 export class FactomDataEntry {
-  @encodeAs.field(1).hash
   public accountId?: Uint8Array;
-  @encodeAs.field(2).bytes
   public data?: Uint8Array;
-  @encodeAs.field(3).repeatable.bytes
   public extIds?: Uint8Array[];
 
   constructor(args: FactomDataEntry.Args) {
@@ -3614,6 +3611,7 @@ export class SyntheticBurnTokens {
   public readonly type = TransactionType.SyntheticBurnTokens;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
+  @encodeAs.field(2, 0).url
   public source?: URL;
   @encodeAs.field(2, 3).url
   public initiator?: URL;
@@ -3687,6 +3685,7 @@ export class SyntheticCreateIdentity {
   public readonly type = TransactionType.SyntheticCreateIdentity;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
+  @encodeAs.field(2, 0).url
   public source?: URL;
   @encodeAs.field(2, 3).url
   public initiator?: URL;
@@ -3754,6 +3753,7 @@ export class SyntheticDepositCredits {
   public readonly type = TransactionType.SyntheticDepositCredits;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
+  @encodeAs.field(2, 0).url
   public source?: URL;
   @encodeAs.field(2, 3).url
   public initiator?: URL;
@@ -3834,6 +3834,7 @@ export class SyntheticDepositTokens {
   public readonly type = TransactionType.SyntheticDepositTokens;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
+  @encodeAs.field(2, 0).url
   public source?: URL;
   @encodeAs.field(2, 3).url
   public initiator?: URL;
@@ -4046,6 +4047,7 @@ export class SyntheticWriteData {
   public readonly type = TransactionType.SyntheticWriteData;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
+  @encodeAs.field(2, 0).url
   public source?: URL;
   @encodeAs.field(2, 3).url
   public initiator?: URL;
