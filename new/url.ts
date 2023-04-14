@@ -27,6 +27,12 @@ export class URL {
     }
   }
 
+  static parse(input: _URL | string | URL) {
+    if (input instanceof URL)
+      return input;
+    return new this(input);
+  }
+
   asTxID() {
     if (!this.username) {
       throw new Error("URL is not a transaction ID: username is empty");

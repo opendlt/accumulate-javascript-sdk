@@ -16,9 +16,9 @@ test("should append path", () => {
   const u = AccURL.parse("acc://authority");
   const tokenURL = AccURL.parse("acc://105251bb367baa372c748930531ae63d6e143c9aa4470eff/my-token");
 
-  expect(u.append("next").toString()).toStrictEqual("acc://authority/next");
-  expect(u.append("/next").toString()).toStrictEqual("acc://authority/next");
-  expect(u.append(tokenURL).toString()).toStrictEqual(
+  expect(u.join("next").toString()).toStrictEqual("acc://authority/next");
+  expect(u.join("/next").toString()).toStrictEqual("acc://authority/next");
+  expect(u.join(tokenURL).toString()).toStrictEqual(
     "acc://authority/105251bb367baa372c748930531ae63d6e143c9aa4470eff/my-token"
   );
 });
