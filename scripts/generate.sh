@@ -16,16 +16,28 @@ go run ./tools/cmd/gen-types -l typescript -o ../new/merkle/types_gen.ts pkg/typ
 import { ChainType } from ".";
 '
 
+go run ./tools/cmd/gen-enum -l typescript -o ../new/messaging/enums_gen.ts pkg/types/messaging/enums.yml
+go run ./tools/cmd/gen-types -l typescript-union -o ../new/messaging/unions_gen.ts pkg/types/messaging/messages.yml \
+  -x BlockSummary
+go run ./tools/cmd/gen-types -l typescript -o ../new/messaging/types_gen.ts pkg/types/messaging/messages.yml \
+  -x BlockSummary,RecordUpdate,StateTreeUpdate \
+  --header='
+import { Message, MessageType } from ".";
+import * as protocol from "../core";
+import { TxID, URL } from "../url";
+'
+
 go run ./tools/cmd/gen-enum -l typescript -o ../new/core/enums_gen.ts protocol/enums.yml
 go run ./tools/cmd/gen-types -l typescript-union -o ../new/core/unions_gen.ts \
     protocol/{accounts,account_auth_operations,general,key_page_operations,signatures,synthetic_transactions,system,transaction,transaction_results,user_transactions}.yml
 
 go run ./tools/cmd/gen-types -l typescript -o ../new/core/types_gen.ts \
     protocol/{accounts,account_auth_operations,general,key_page_operations,signatures,synthetic_transactions,system,transaction,transaction_results,user_transactions}.yml \
-    -x Object,AnnotatedReceipt,AnchorMetadata,ChainMetadata \
+    -x Object \
     --header='
 import * as errors2 from "../errors";
 import * as merkle from "../merkle";
+import { ChainType } from "../merkle";
 import { URL, TxID } from "../url";
 import { TransactionBase } from "./base";
 import {
