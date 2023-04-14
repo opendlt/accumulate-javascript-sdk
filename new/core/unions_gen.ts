@@ -108,22 +108,30 @@ export namespace Account {
   }
 }
 
-export type DataEntry = types.AccumulateDataEntry | types.FactomDataEntryWrapper;
+export type DataEntry =
+  | types.AccumulateDataEntry
+  | types.DoubleHashDataEntry
+  | types.FactomDataEntryWrapper;
 
 export namespace DataEntry {
   export type Args =
     | types.AccumulateDataEntry
     | types.AccumulateDataEntry.ArgsWithType
+    | types.DoubleHashDataEntry
+    | types.DoubleHashDataEntry.ArgsWithType
     | types.FactomDataEntryWrapper
     | types.FactomDataEntryWrapper.ArgsWithType;
 
   export function fromObject(obj: Args): DataEntry {
     if (obj instanceof types.AccumulateDataEntry) return obj;
+    if (obj instanceof types.DoubleHashDataEntry) return obj;
     if (obj instanceof types.FactomDataEntryWrapper) return obj;
 
     switch (obj.type) {
       case (types.DataEntryType.Accumulate, "accumulate"):
         return new types.AccumulateDataEntry(obj);
+      case (types.DataEntryType.DoubleHash, "doubleHash"):
+        return new types.DoubleHashDataEntry(obj);
       case (types.DataEntryType.Factom, "factom"):
         return new types.FactomDataEntryWrapper(obj);
     }

@@ -187,6 +187,8 @@ export enum DataEntryType {
   Factom = 1,
   /** Accumulate . */
   Accumulate = 2,
+  /** DoubleHash . */
+  DoubleHash = 3,
 }
 
 export namespace DataEntryType {
@@ -205,6 +207,8 @@ export namespace DataEntryType {
         return DataEntryType.Factom;
       case "accumulate":
         return DataEntryType.Accumulate;
+      case "doublehash":
+        return DataEntryType.DoubleHash;
       default:
         throw new Error(`Unknown DataEntryType '${name}'`);
     }
@@ -216,11 +220,11 @@ export enum ExecutorVersion {
   V1 = 1,
   /** V1SignatureAnchoring introduces anchoring of signature chains into the root chain. */
   V1SignatureAnchoring = 2,
-  /** V1ActivationFix fixes a problem that prevented v1-signatureAnchoring from being activated correctly. */
-  V1ActivationFix = 3,
+  /** V1DoubleHashEntries fixes a problem that prevented v1-signatureAnchoring from being activated correctly and enables double-hashed data entries. */
+  V1DoubleHashEntries = 3,
   /** V1Halt halts transaction processing in preparation for v2. */
   V1Halt = 4,
-  /** V2 is the second version of the execute system. */
+  /** V2 is the second version of the executor system. */
   V2 = 5,
 }
 
@@ -238,8 +242,8 @@ export namespace ExecutorVersion {
         return ExecutorVersion.V1;
       case "v1signatureanchoring":
         return ExecutorVersion.V1SignatureAnchoring;
-      case "v1activationfix":
-        return ExecutorVersion.V1ActivationFix;
+      case "v1doublehashentries":
+        return ExecutorVersion.V1DoubleHashEntries;
       case "v1halt":
         return ExecutorVersion.V1Halt;
       case "v2":
@@ -329,6 +333,8 @@ export enum PartitionType {
   Directory = 1,
   /** BlockValidator . */
   BlockValidator = 2,
+  /** BlockSummary . */
+  BlockSummary = 3,
 }
 
 export namespace PartitionType {
@@ -347,6 +353,10 @@ export namespace PartitionType {
         return PartitionType.BlockValidator;
       case "block-validator":
         return PartitionType.BlockValidator;
+      case "blocksummary":
+        return PartitionType.BlockSummary;
+      case "block-summary":
+        return PartitionType.BlockSummary;
       default:
         throw new Error(`Unknown PartitionType '${name}'`);
     }

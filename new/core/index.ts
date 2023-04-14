@@ -1,3 +1,4 @@
+// export { ChainType } from "../merkle"; // Compatibility
 export * from "./enums_gen";
 export * from "./types_gen";
 export * from "./unions_gen";
@@ -17,6 +18,15 @@ import {
   UnknownSigner,
   WriteDataResult,
 } from ".";
+import {
+  BTCLegacySignature,
+  BTCSignature,
+  ED25519Signature,
+  ETHSignature,
+  LegacyED25519Signature,
+  RCD1Signature,
+} from "./types_gen";
+import { Signature } from "./unions_gen";
 
 export type Fee = number;
 export type AllowedTransactions = TransactionType[];
@@ -41,9 +51,6 @@ export namespace AllowedTransactions {
 }
 
 export type AnchorBody = DirectoryAnchor | BlockValidatorAnchor;
-export type Signer = LiteIdentity | KeyPage | UnknownSigner;
-export type TransactionResult = AddCreditsResult | EmptyResult | WriteDataResult;
-
 export namespace AnchorBody {
   export type Args =
     | DirectoryAnchor
@@ -56,6 +63,7 @@ export namespace AnchorBody {
   }
 }
 
+export type Signer = LiteIdentity | KeyPage | UnknownSigner;
 export namespace Signer {
   export type Args =
     | LiteIdentity
@@ -70,6 +78,7 @@ export namespace Signer {
   }
 }
 
+export type TransactionResult = AddCreditsResult | EmptyResult | WriteDataResult;
 export namespace TransactionResult {
   export type Args =
     | AddCreditsResult
@@ -94,5 +103,32 @@ export namespace TransactionResult {
     }
 
     throw new Error(`Unknown signature '${obj.type}'`);
+  }
+}
+
+export type KeySignature =
+  | BTCLegacySignature
+  | BTCSignature
+  | ED25519Signature
+  | ETHSignature
+  | LegacyED25519Signature
+  | RCD1Signature;
+export namespace KeySignature {
+  export type Args =
+    | BTCLegacySignature
+    | BTCSignature
+    | ED25519Signature
+    | ETHSignature
+    | LegacyED25519Signature
+    | RCD1Signature
+    | BTCLegacySignature.ArgsWithType
+    | BTCSignature.ArgsWithType
+    | ED25519Signature.ArgsWithType
+    | ETHSignature.ArgsWithType
+    | LegacyED25519Signature.ArgsWithType
+    | RCD1Signature.ArgsWithType;
+
+  export function fromObject(obj: Args): KeySignature {
+    return <KeySignature>Signature.fromObject(obj);
   }
 }

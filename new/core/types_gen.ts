@@ -25,6 +25,7 @@ import {
 import { encodeAs } from "../encoding";
 import * as errors2 from "../errors";
 import * as merkle from "../merkle";
+import { ChainType } from "../merkle";
 import { TxID, URL } from "../url";
 import { TransactionBase } from "./base";
 
@@ -441,6 +442,109 @@ export class AnchorLedger {
   }
 }
 
+export namespace AnchorMetadata {
+  export type Args = {
+    name?: string;
+    type?: ChainType.Args;
+    account?: URL | string;
+    index?: number;
+    sourceIndex?: number;
+    sourceBlock?: number;
+    entry?: Uint8Array | string;
+  };
+}
+export class AnchorMetadata {
+  @encodeAs.field(1, 1).string
+  public name?: string;
+  @encodeAs.field(1, 2).enum
+  public type?: ChainType;
+  @encodeAs.field(2).url
+  public account?: URL;
+  @encodeAs.field(3).uint
+  public index?: number;
+  @encodeAs.field(4).uint
+  public sourceIndex?: number;
+  @encodeAs.field(5).uint
+  public sourceBlock?: number;
+  @encodeAs.field(6).bytes
+  public entry?: Uint8Array;
+
+  constructor(args: AnchorMetadata.Args) {
+    this.name = args.name == undefined ? undefined : args.name;
+    this.type = args.type == undefined ? undefined : ChainType.fromObject(args.type);
+    this.account =
+      args.account == undefined
+        ? undefined
+        : args.account instanceof URL
+        ? args.account
+        : new URL(args.account);
+    this.index = args.index == undefined ? undefined : args.index;
+    this.sourceIndex = args.sourceIndex == undefined ? undefined : args.sourceIndex;
+    this.sourceBlock = args.sourceBlock == undefined ? undefined : args.sourceBlock;
+    this.entry =
+      args.entry == undefined
+        ? undefined
+        : args.entry instanceof Uint8Array
+        ? args.entry
+        : Buffer.from(args.entry, "hex");
+  }
+
+  copy() {
+    return new AnchorMetadata(this);
+  }
+
+  asObject(): AnchorMetadata.Args {
+    return {
+      name: this.name && this.name,
+      type: this.type && this.type.toString(),
+      account: this.account && this.account.toString(),
+      index: this.index && this.index,
+      sourceIndex: this.sourceIndex && this.sourceIndex,
+      sourceBlock: this.sourceBlock && this.sourceBlock,
+      entry: this.entry && Buffer.from(this.entry).toString("hex"),
+    };
+  }
+}
+
+export namespace AnnotatedReceipt {
+  export type Args = {
+    receipt?: merkle.Receipt | merkle.Receipt.Args;
+    anchor?: AnchorMetadata | AnchorMetadata.Args;
+  };
+}
+export class AnnotatedReceipt {
+  @encodeAs.field(1).reference
+  public receipt?: merkle.Receipt;
+  @encodeAs.field(2).reference
+  public anchor?: AnchorMetadata;
+
+  constructor(args: AnnotatedReceipt.Args) {
+    this.receipt =
+      args.receipt == undefined
+        ? undefined
+        : args.receipt instanceof merkle.Receipt
+        ? args.receipt
+        : new merkle.Receipt(args.receipt);
+    this.anchor =
+      args.anchor == undefined
+        ? undefined
+        : args.anchor instanceof AnchorMetadata
+        ? args.anchor
+        : new AnchorMetadata(args.anchor);
+  }
+
+  copy() {
+    return new AnnotatedReceipt(this);
+  }
+
+  asObject(): AnnotatedReceipt.Args {
+    return {
+      receipt: this.receipt && this.receipt.asObject(),
+      anchor: this.anchor && this.anchor.asObject(),
+    };
+  }
+}
+
 export namespace AuthorityEntry {
   export type Args = {
     url?: URL | string;
@@ -477,6 +581,7 @@ export namespace AuthoritySignature {
     authority?: URL | string;
     vote?: VoteType.Args;
     txID?: TxID | string;
+    cause?: TxID | string;
     delegator?: (URL | string)[];
   };
   export type ArgsWithType = Args & { type: SignatureType.Authority | "authority" };
@@ -492,7 +597,9 @@ export class AuthoritySignature {
   public vote?: VoteType;
   @encodeAs.field(5).txid
   public txID?: TxID;
-  @encodeAs.field(6).repeatable.url
+  @encodeAs.field(6).txid
+  public cause?: TxID;
+  @encodeAs.field(7).repeatable.url
   public delegator?: URL[];
 
   constructor(args: AuthoritySignature.Args) {
@@ -515,6 +622,12 @@ export class AuthoritySignature {
         : args.txID instanceof TxID
         ? args.txID
         : new TxID(args.txID);
+    this.cause =
+      args.cause == undefined
+        ? undefined
+        : args.cause instanceof TxID
+        ? args.cause
+        : new TxID(args.cause);
     this.delegator =
       args.delegator == undefined
         ? undefined
@@ -532,6 +645,7 @@ export class AuthoritySignature {
       authority: this.authority && this.authority.toString(),
       vote: this.vote && this.vote.toString(),
       txID: this.txID && this.txID.toString(),
+      cause: this.cause && this.cause.toString(),
       delegator: this.delegator && this.delegator?.map((v) => v.toString()),
     };
   }
@@ -921,6 +1035,35 @@ export class BurnTokens {
     return {
       type: this.type,
       amount: this.amount && this.amount.toString(),
+    };
+  }
+}
+
+export namespace ChainMetadata {
+  export type Args = {
+    name?: string;
+    type?: ChainType.Args;
+  };
+}
+export class ChainMetadata {
+  @encodeAs.field(1).string
+  public name?: string;
+  @encodeAs.field(2).enum
+  public type?: ChainType;
+
+  constructor(args: ChainMetadata.Args) {
+    this.name = args.name == undefined ? undefined : args.name;
+    this.type = args.type == undefined ? undefined : ChainType.fromObject(args.type);
+  }
+
+  copy() {
+    return new ChainMetadata(this);
+  }
+
+  asObject(): ChainMetadata.Args {
+    return {
+      name: this.name && this.name,
+      type: this.type && this.type.toString(),
     };
   }
 }
@@ -1524,6 +1667,37 @@ export class DisableAccountAuthOperation {
     return {
       type: this.type,
       authority: this.authority && this.authority.toString(),
+    };
+  }
+}
+
+export namespace DoubleHashDataEntry {
+  export type Args = {
+    data?: (Uint8Array | string)[];
+  };
+  export type ArgsWithType = Args & { type: DataEntryType.DoubleHash | "doubleHash" };
+}
+export class DoubleHashDataEntry {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = DataEntryType.DoubleHash;
+  @encodeAs.field(2).repeatable.bytes
+  public data?: Uint8Array[];
+
+  constructor(args: DoubleHashDataEntry.Args) {
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+  }
+
+  copy() {
+    return new DoubleHashDataEntry(this);
+  }
+
+  asObject(): DoubleHashDataEntry.ArgsWithType {
+    return {
+      type: this.type,
+      data: this.data && this.data?.map((v) => Buffer.from(v).toString("hex")),
     };
   }
 }
