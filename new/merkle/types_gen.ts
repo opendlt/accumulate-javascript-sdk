@@ -116,11 +116,8 @@ export namespace State {
   };
 }
 export class State {
-  @encodeAs.field(1).int
   public count?: number;
-  @encodeAs.field(2).repeatable.bytes
   public pending?: Uint8Array[];
-  @encodeAs.field(3).repeatable.bytes
   public hashList?: Uint8Array[];
 
   constructor(args: State.Args) {
