@@ -1,6 +1,6 @@
 import { CreateToken, Transaction, TransactionHeader } from "../new/core";
 import { hashBody } from "../new/core/base";
-import { AccURL } from "./acc-url";
+import { URL } from "../new/url";
 import { Client } from "./client";
 import { sha256 } from "./crypto";
 import { combineReceipts, Receipt } from "../new/merkle";
@@ -12,7 +12,7 @@ export async function sleep(millis: number) {
 
 export async function constructIssuerProof(
   client: Client,
-  issuer: string | AccURL
+  issuer: string | URL
 ): Promise<{ receipt: Receipt; transaction: CreateToken }> {
   // The first transaction of a token issuer must be the one that created it
   const txn0url = `${issuer}#txn/0`;
