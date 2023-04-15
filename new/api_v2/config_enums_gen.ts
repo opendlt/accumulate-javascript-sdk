@@ -27,6 +27,17 @@ export namespace NodeType {
         throw new Error(`Unknown NodeType '${name}'`);
     }
   }
+
+  export function getName(v: NodeType): string {
+    switch (v) {
+      case NodeType.Validator:
+        return "validator";
+      case NodeType.Follower:
+        return "follower";
+      default:
+        throw new Error(`Unknown NodeType ${v}`);
+    }
+  }
 }
 
 export enum PortOffset {
@@ -64,6 +75,23 @@ export namespace PortOffset {
         return PortOffset.AccumulateApi;
       default:
         throw new Error(`Unknown PortOffset '${name}'`);
+    }
+  }
+
+  export function getName(v: PortOffset): string {
+    switch (v) {
+      case PortOffset.TendermintP2P:
+        return "tendermintP2P";
+      case PortOffset.TendermintRpc:
+        return "tendermintRpc";
+      case PortOffset.AccumulateP2P:
+        return "accumulateP2P";
+      case PortOffset.Prometheus:
+        return "prometheus";
+      case PortOffset.AccumulateApi:
+        return "accumulateApi";
+      default:
+        throw new Error(`Unknown PortOffset ${v}`);
     }
   }
 }

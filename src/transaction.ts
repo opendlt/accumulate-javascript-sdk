@@ -1,5 +1,5 @@
 import { TxRequest } from "../new/api_v2";
-import { TransactionBody } from "../new/core";
+import { SignatureType, TransactionBody } from "../new/core";
 import { hashBody } from "../new/core/base";
 import { encode } from "../new/encoding";
 import { AccURL } from "./acc-url";
@@ -10,7 +10,7 @@ import {
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "./encoding";
-import { Signature, signatureTypeMarshalJSON, SignerInfo } from "./signer";
+import { Signature, SignerInfo } from "./signer";
 import { TxSigner } from "./tx-signer";
 
 export type HeaderOptions = {
@@ -178,7 +178,7 @@ export class Transaction {
         publicKey: Buffer.from(signerInfo.publicKey).toString("hex"),
         version: signerInfo.version,
         timestamp: this._header.timestamp,
-        signatureType: signatureTypeMarshalJSON(signerInfo.type),
+        signatureType: SignatureType.getName(signerInfo.type),
         useSimpleHash: true,
       },
       signature: Buffer.from(this._signature.signature).toString("hex"),

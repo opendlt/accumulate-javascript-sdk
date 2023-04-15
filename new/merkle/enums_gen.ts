@@ -35,4 +35,19 @@ export namespace ChainType {
         throw new Error(`Unknown ChainType '${name}'`);
     }
   }
+
+  export function getName(v: ChainType): string {
+    switch (v) {
+      case ChainType.Unknown:
+        return "unknown";
+      case ChainType.Transaction:
+        return "transaction";
+      case ChainType.Anchor:
+        return "anchor";
+      case ChainType.Index:
+        return "index";
+      default:
+        throw new Error(`Unknown ChainType ${v}`);
+    }
+  }
 }

@@ -119,4 +119,61 @@ export namespace Status {
         throw new Error(`Unknown Status '${name}'`);
     }
   }
+
+  export function getName(v: Status): string {
+    switch (v) {
+      case Status.OK:
+        return "ok";
+      case Status.Delivered:
+        return "delivered";
+      case Status.Pending:
+        return "pending";
+      case Status.Remote:
+        return "remote";
+      case Status.WrongPartition:
+        return "wrongPartition";
+      case Status.BadRequest:
+        return "badRequest";
+      case Status.Unauthenticated:
+        return "unauthenticated";
+      case Status.InsufficientCredits:
+        return "insufficientCredits";
+      case Status.Unauthorized:
+        return "unauthorized";
+      case Status.NotFound:
+        return "notFound";
+      case Status.NotAllowed:
+        return "notAllowed";
+      case Status.Conflict:
+        return "conflict";
+      case Status.BadSignerVersion:
+        return "badSignerVersion";
+      case Status.BadTimestamp:
+        return "badTimestamp";
+      case Status.BadUrlLength:
+        return "badUrlLength";
+      case Status.IncompleteChain:
+        return "incompleteChain";
+      case Status.InsufficientBalance:
+        return "insufficientBalance";
+      case Status.InternalError:
+        return "internalError";
+      case Status.UnknownError:
+        return "unknownError";
+      case Status.EncodingError:
+        return "encodingError";
+      case Status.FatalError:
+        return "fatalError";
+      case Status.NotReady:
+        return "notReady";
+      case Status.WrongType:
+        return "wrongType";
+      case Status.NoPeer:
+        return "noPeer";
+      case Status.PeerMisbehaved:
+        return "peerMisbehaved";
+      default:
+        throw new Error(`Unknown Status ${v}`);
+    }
+  }
 }

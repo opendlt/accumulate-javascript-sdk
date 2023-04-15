@@ -51,4 +51,27 @@ export namespace MessageType {
         throw new Error(`Unknown MessageType '${name}'`);
     }
   }
+
+  export function getName(v: MessageType): string {
+    switch (v) {
+      case MessageType.Transaction:
+        return "transaction";
+      case MessageType.Signature:
+        return "signature";
+      case MessageType.Synthetic:
+        return "synthetic";
+      case MessageType.BlockAnchor:
+        return "blockAnchor";
+      case MessageType.Sequenced:
+        return "sequenced";
+      case MessageType.SignatureRequest:
+        return "signatureRequest";
+      case MessageType.CreditPayment:
+        return "creditPayment";
+      case MessageType.BlockSummary:
+        return "blockSummary";
+      default:
+        throw new Error(`Unknown MessageType ${v}`);
+    }
+  }
 }

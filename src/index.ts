@@ -4,7 +4,6 @@ export * from "./client";
 export * from "./encoding";
 export * from "./lite-identity";
 // export * from "../new/core";
-export * from "./receipt";
 export { RpcError } from "./rpc-client";
 export * from "./signer";
 export * from "./signing/ed25519-keypair";
