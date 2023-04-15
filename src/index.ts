@@ -1,6 +1,5 @@
 import BN from "bn.js";
 export * from "./acc-url";
-export * from "./api-types";
 export * from "./client";
 export * from "./encoding";
 export * from "./lite-identity";
