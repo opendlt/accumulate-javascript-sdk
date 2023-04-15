@@ -3,7 +3,7 @@ import { CreateToken, Transaction, TransactionHeader } from "./core";
 import { hashBody } from "./core/base";
 import { sha256 } from "./crypto";
 import { encode } from "./encoding";
-import { combineReceipts, Receipt } from "./merkle";
+import { combineReceipts, Receipt, ReceiptArgs } from "./merkle";
 import { URL } from "./url";
 
 export async function sleep(millis: number) {
@@ -42,7 +42,7 @@ export async function constructIssuerProof(
   const txn = new Transaction({ body, header });
 
   // Prove that the body is part of the transaction
-  const proof1: Receipt.Args = {
+  const proof1: ReceiptArgs = {
     start: hashBody(body),
     startIndex: 0,
     end: hashBody(body),

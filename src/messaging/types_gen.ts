@@ -1,4 +1,4 @@
-import { Message, MessageType } from ".";
+import { Message, MessageArgs, MessageType } from ".";
 import * as protocol from "../core";
 import { encodeAs } from "../encoding";
 import { TxID, URL } from "../url";
@@ -10,13 +10,13 @@ import { TxID, URL } from "../url";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 
-export namespace BlockAnchor {
-  export type Args = {
-    signature?: protocol.KeySignature | protocol.KeySignature.Args;
-    anchor?: Message | Message.Args;
-  };
-  export type ArgsWithType = Args & { type: MessageType.BlockAnchor | "blockAnchor" };
-}
+export type BlockAnchorArgs = {
+  signature?: protocol.KeySignature | protocol.KeySignatureArgs;
+  anchor?: Message | MessageArgs;
+};
+export type BlockAnchorArgsWithType = BlockAnchorArgs & {
+  type: MessageType.BlockAnchor | "blockAnchor";
+};
 export class BlockAnchor {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.BlockAnchor;
@@ -25,7 +25,7 @@ export class BlockAnchor {
   @encodeAs.field(3).union
   public anchor?: Message;
 
-  constructor(args: BlockAnchor.Args) {
+  constructor(args: BlockAnchorArgs) {
     this.signature =
       args.signature == undefined ? undefined : protocol.KeySignature.fromObject(args.signature);
     this.anchor = args.anchor == undefined ? undefined : Message.fromObject(args.anchor);
@@ -35,7 +35,7 @@ export class BlockAnchor {
     return new BlockAnchor(this.asObject());
   }
 
-  asObject(): BlockAnchor.ArgsWithType {
+  asObject(): BlockAnchorArgsWithType {
     return {
       type: "blockAnchor",
       signature: this.signature && this.signature.asObject(),
@@ -44,16 +44,16 @@ export class BlockAnchor {
   }
 }
 
-export namespace CreditPayment {
-  export type Args = {
-    paid?: protocol.Fee.Args;
-    payer?: URL | string;
-    initiator?: boolean;
-    txID?: TxID | string;
-    cause?: TxID | string;
-  };
-  export type ArgsWithType = Args & { type: MessageType.CreditPayment | "creditPayment" };
-}
+export type CreditPaymentArgs = {
+  paid?: protocol.FeeArgs;
+  payer?: URL | string;
+  initiator?: boolean;
+  txID?: TxID | string;
+  cause?: TxID | string;
+};
+export type CreditPaymentArgsWithType = CreditPaymentArgs & {
+  type: MessageType.CreditPayment | "creditPayment";
+};
 export class CreditPayment {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.CreditPayment;
@@ -68,7 +68,7 @@ export class CreditPayment {
   @encodeAs.field(6).txid
   public cause?: TxID;
 
-  constructor(args: CreditPayment.Args) {
+  constructor(args: CreditPaymentArgs) {
     this.paid = args.paid == undefined ? undefined : protocol.Fee.fromObject(args.paid);
     this.payer =
       args.payer == undefined
@@ -95,7 +95,7 @@ export class CreditPayment {
     return new CreditPayment(this.asObject());
   }
 
-  asObject(): CreditPayment.ArgsWithType {
+  asObject(): CreditPaymentArgsWithType {
     return {
       type: "creditPayment",
       paid: this.paid && protocol.Fee.getName(this.paid),
@@ -107,14 +107,12 @@ export class CreditPayment {
   }
 }
 
-export namespace Envelope {
-  export type Args = {
-    signatures?: (protocol.Signature | protocol.Signature.Args)[];
-    txHash?: Uint8Array | string;
-    transaction?: (protocol.Transaction | protocol.Transaction.Args)[];
-    messages?: (Message | Message.Args)[];
-  };
-}
+export type EnvelopeArgs = {
+  signatures?: (protocol.Signature | protocol.SignatureArgs)[];
+  txHash?: Uint8Array | string;
+  transaction?: (protocol.Transaction | protocol.TransactionArgs)[];
+  messages?: (Message | MessageArgs)[];
+};
 export class Envelope {
   @encodeAs.field(1).repeatable.union
   public signatures?: protocol.Signature[];
@@ -125,7 +123,7 @@ export class Envelope {
   @encodeAs.field(4).repeatable.union
   public messages?: Message[];
 
-  constructor(args: Envelope.Args) {
+  constructor(args: EnvelopeArgs) {
     this.signatures =
       args.signatures == undefined
         ? undefined
@@ -150,7 +148,7 @@ export class Envelope {
     return new Envelope(this.asObject());
   }
 
-  asObject(): Envelope.Args {
+  asObject(): EnvelopeArgs {
     return {
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
       txHash: this.txHash && Buffer.from(this.txHash).toString("hex"),
@@ -160,15 +158,15 @@ export class Envelope {
   }
 }
 
-export namespace SequencedMessage {
-  export type Args = {
-    message?: Message | Message.Args;
-    source?: URL | string;
-    destination?: URL | string;
-    number?: number;
-  };
-  export type ArgsWithType = Args & { type: MessageType.Sequenced | "sequenced" };
-}
+export type SequencedMessageArgs = {
+  message?: Message | MessageArgs;
+  source?: URL | string;
+  destination?: URL | string;
+  number?: number;
+};
+export type SequencedMessageArgsWithType = SequencedMessageArgs & {
+  type: MessageType.Sequenced | "sequenced";
+};
 export class SequencedMessage {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.Sequenced;
@@ -181,7 +179,7 @@ export class SequencedMessage {
   @encodeAs.field(5).uint
   public number?: number;
 
-  constructor(args: SequencedMessage.Args) {
+  constructor(args: SequencedMessageArgs) {
     this.message = args.message == undefined ? undefined : Message.fromObject(args.message);
     this.source =
       args.source == undefined
@@ -202,7 +200,7 @@ export class SequencedMessage {
     return new SequencedMessage(this.asObject());
   }
 
-  asObject(): SequencedMessage.ArgsWithType {
+  asObject(): SequencedMessageArgsWithType {
     return {
       type: "sequenced",
       message: this.message && this.message.asObject(),
@@ -213,13 +211,13 @@ export class SequencedMessage {
   }
 }
 
-export namespace SignatureMessage {
-  export type Args = {
-    signature?: protocol.Signature | protocol.Signature.Args;
-    txID?: TxID | string;
-  };
-  export type ArgsWithType = Args & { type: MessageType.Signature | "signature" };
-}
+export type SignatureMessageArgs = {
+  signature?: protocol.Signature | protocol.SignatureArgs;
+  txID?: TxID | string;
+};
+export type SignatureMessageArgsWithType = SignatureMessageArgs & {
+  type: MessageType.Signature | "signature";
+};
 export class SignatureMessage {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.Signature;
@@ -228,7 +226,7 @@ export class SignatureMessage {
   @encodeAs.field(3).txid
   public txID?: TxID;
 
-  constructor(args: SignatureMessage.Args) {
+  constructor(args: SignatureMessageArgs) {
     this.signature =
       args.signature == undefined ? undefined : protocol.Signature.fromObject(args.signature);
     this.txID =
@@ -243,7 +241,7 @@ export class SignatureMessage {
     return new SignatureMessage(this.asObject());
   }
 
-  asObject(): SignatureMessage.ArgsWithType {
+  asObject(): SignatureMessageArgsWithType {
     return {
       type: "signature",
       signature: this.signature && this.signature.asObject(),
@@ -252,14 +250,14 @@ export class SignatureMessage {
   }
 }
 
-export namespace SignatureRequest {
-  export type Args = {
-    authority?: URL | string;
-    txID?: TxID | string;
-    cause?: TxID | string;
-  };
-  export type ArgsWithType = Args & { type: MessageType.SignatureRequest | "signatureRequest" };
-}
+export type SignatureRequestArgs = {
+  authority?: URL | string;
+  txID?: TxID | string;
+  cause?: TxID | string;
+};
+export type SignatureRequestArgsWithType = SignatureRequestArgs & {
+  type: MessageType.SignatureRequest | "signatureRequest";
+};
 export class SignatureRequest {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.SignatureRequest;
@@ -270,7 +268,7 @@ export class SignatureRequest {
   @encodeAs.field(4).txid
   public cause?: TxID;
 
-  constructor(args: SignatureRequest.Args) {
+  constructor(args: SignatureRequestArgs) {
     this.authority =
       args.authority == undefined
         ? undefined
@@ -295,7 +293,7 @@ export class SignatureRequest {
     return new SignatureRequest(this.asObject());
   }
 
-  asObject(): SignatureRequest.ArgsWithType {
+  asObject(): SignatureRequestArgsWithType {
     return {
       type: "signatureRequest",
       authority: this.authority && this.authority.toString(),
@@ -305,14 +303,14 @@ export class SignatureRequest {
   }
 }
 
-export namespace SyntheticMessage {
-  export type Args = {
-    message?: Message | Message.Args;
-    signature?: protocol.KeySignature | protocol.KeySignature.Args;
-    proof?: protocol.AnnotatedReceipt | protocol.AnnotatedReceipt.Args;
-  };
-  export type ArgsWithType = Args & { type: MessageType.Synthetic | "synthetic" };
-}
+export type SyntheticMessageArgs = {
+  message?: Message | MessageArgs;
+  signature?: protocol.KeySignature | protocol.KeySignatureArgs;
+  proof?: protocol.AnnotatedReceipt | protocol.AnnotatedReceiptArgs;
+};
+export type SyntheticMessageArgsWithType = SyntheticMessageArgs & {
+  type: MessageType.Synthetic | "synthetic";
+};
 export class SyntheticMessage {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.Synthetic;
@@ -323,7 +321,7 @@ export class SyntheticMessage {
   @encodeAs.field(4).reference
   public proof?: protocol.AnnotatedReceipt;
 
-  constructor(args: SyntheticMessage.Args) {
+  constructor(args: SyntheticMessageArgs) {
     this.message = args.message == undefined ? undefined : Message.fromObject(args.message);
     this.signature =
       args.signature == undefined ? undefined : protocol.KeySignature.fromObject(args.signature);
@@ -339,7 +337,7 @@ export class SyntheticMessage {
     return new SyntheticMessage(this.asObject());
   }
 
-  asObject(): SyntheticMessage.ArgsWithType {
+  asObject(): SyntheticMessageArgsWithType {
     return {
       type: "synthetic",
       message: this.message && this.message.asObject(),
@@ -349,19 +347,19 @@ export class SyntheticMessage {
   }
 }
 
-export namespace TransactionMessage {
-  export type Args = {
-    transaction?: protocol.Transaction | protocol.Transaction.Args;
-  };
-  export type ArgsWithType = Args & { type: MessageType.Transaction | "transaction" };
-}
+export type TransactionMessageArgs = {
+  transaction?: protocol.Transaction | protocol.TransactionArgs;
+};
+export type TransactionMessageArgsWithType = TransactionMessageArgs & {
+  type: MessageType.Transaction | "transaction";
+};
 export class TransactionMessage {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.Transaction;
   @encodeAs.field(2).reference
   public transaction?: protocol.Transaction;
 
-  constructor(args: TransactionMessage.Args) {
+  constructor(args: TransactionMessageArgs) {
     this.transaction =
       args.transaction == undefined
         ? undefined
@@ -374,7 +372,7 @@ export class TransactionMessage {
     return new TransactionMessage(this.asObject());
   }
 
-  asObject(): TransactionMessage.ArgsWithType {
+  asObject(): TransactionMessageArgsWithType {
     return {
       type: "transaction",
       transaction: this.transaction && this.transaction.asObject(),

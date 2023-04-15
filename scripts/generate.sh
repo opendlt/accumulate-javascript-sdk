@@ -8,7 +8,7 @@ cd $SCRIPT_DIR/../accumulate
 
 go run ./tools/cmd/gen-enum -l typescript -o ../src/api_v2/enums_gen.ts internal/api/v2/enums.yml
 go run ./tools/cmd/gen-types -l typescript -o ../src/api_v2/types_gen.ts internal/api/v2/{responses,types}.yml --header='
-import { BlockFilterMode, TxFetchMode } from ".";
+import { BlockFilterMode, BlockFilterModeArgs, TxFetchMode, TxFetchModeArgs } from ".";
 import * as config from "./config";
 import * as protocol from "./protocol";
 import * as merkle from "../merkle";
@@ -23,12 +23,12 @@ go run ./tools/cmd/gen-types -l typescript -o ../src/api_v2/config_types_gen.ts 
   -x P2P \
   --header='
 import * as protocol from "./protocol";
-import { NodeType } from "./config";
+import { NodeType, NodeTypeArgs } from "./config";
 '
 
 go run ./tools/cmd/gen-enum -l typescript -o ../src/errors/enums_gen.ts pkg/errors/status.yml
 go run ./tools/cmd/gen-types -l typescript -o ../src/errors/types_gen.ts pkg/errors/error.yml --header='
-import { Status } from ".";
+import { Status, StatusArgs } from ".";
 '
 
 go run ./tools/cmd/gen-types -l typescript -o ../src/network/types_gen.ts pkg/types/network/types.yml --header='
@@ -46,7 +46,7 @@ go run ./tools/cmd/gen-types -l typescript-union -o ../src/messaging/unions_gen.
 go run ./tools/cmd/gen-types -l typescript -o ../src/messaging/types_gen.ts pkg/types/messaging/messages.yml \
   -x BlockSummary,RecordUpdate,StateTreeUpdate \
   --header='
-import { Message, MessageType } from ".";
+import { Message, MessageArgs, MessageType } from ".";
 import * as protocol from "../core";
 import { TxID, URL } from "../url";
 '
@@ -61,31 +61,47 @@ go run ./tools/cmd/gen-types -l typescript -o ../src/core/types_gen.ts \
     --header='
 import * as errors2 from "../errors";
 import * as merkle from "../merkle";
-import { ChainType } from "../merkle";
+import { ChainType, ChainTypeArgs } from "../merkle";
 import { URL, TxID } from "../url";
 import { TransactionBase } from "./base";
 import {
   Account,
+  AccountArgs,
   AccountAuthOperation,
+  AccountAuthOperationArgs,
   AccountAuthOperationType,
   AccountType,
   AllowedTransactions,
+  AllowedTransactionsArgs,
   AnchorBody,
+  AnchorBodyArgs,
   BookType,
+  BookTypeArgs,
   DataEntry,
+  DataEntryArgs,
   DataEntryType,
   ExecutorVersion,
+  ExecutorVersionArgs,
   Fee,
+  FeeArgs,
   KeyPageOperation,
+  KeyPageOperationArgs,
   KeyPageOperationType,
   PartitionType,
+  PartitionTypeArgs,
   Signature,
+  SignatureArgs,
   SignatureType,
   Signer,
+  SignerArgs,
   TransactionBody,
+  TransactionBodyArgs,
   TransactionResult,
+  TransactionResultArgs,
   TransactionType,
+  TransactionTypeArgs,
   VoteType,
+  VoteTypeArgs,
 } from ".";
 '
 

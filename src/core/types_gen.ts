@@ -1,31 +1,47 @@
 import BN from "bn.js";
 import {
   Account,
+  AccountArgs,
   AccountAuthOperation,
+  AccountAuthOperationArgs,
   AccountAuthOperationType,
   AccountType,
   AllowedTransactions,
+  AllowedTransactionsArgs,
   AnchorBody,
+  AnchorBodyArgs,
   BookType,
+  BookTypeArgs,
   DataEntry,
+  DataEntryArgs,
   DataEntryType,
   ExecutorVersion,
+  ExecutorVersionArgs,
   Fee,
+  FeeArgs,
   KeyPageOperation,
+  KeyPageOperationArgs,
   KeyPageOperationType,
   PartitionType,
+  PartitionTypeArgs,
   Signature,
+  SignatureArgs,
   SignatureType,
   Signer,
+  SignerArgs,
   TransactionBody,
+  TransactionBodyArgs,
   TransactionResult,
+  TransactionResultArgs,
   TransactionType,
+  TransactionTypeArgs,
   VoteType,
+  VoteTypeArgs,
 } from ".";
 import { encodeAs } from "../encoding";
 import * as errors2 from "../errors";
 import * as merkle from "../merkle";
-import { ChainType } from "../merkle";
+import { ChainType, ChainTypeArgs } from "../merkle";
 import { TxID, URL } from "../url";
 import { TransactionBase } from "./base";
 
@@ -36,13 +52,11 @@ import { TransactionBase } from "./base";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 
-export namespace ADI {
-  export type Args = {
-    url?: URL | string;
-    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
-  };
-  export type ArgsWithType = Args & { type: AccountType.Identity | "identity" };
-}
+export type ADIArgs = {
+  url?: URL | string;
+  authorities?: (AuthorityEntry | AuthorityEntryArgs)[];
+};
+export type ADIArgsWithType = ADIArgs & { type: AccountType.Identity | "identity" };
 export class ADI {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.Identity;
@@ -51,7 +65,7 @@ export class ADI {
   @encodeAs.field(3, 1).repeatable.reference
   public authorities?: AuthorityEntry[];
 
-  constructor(args: ADI.Args) {
+  constructor(args: ADIArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.authorities =
@@ -64,7 +78,7 @@ export class ADI {
     return new ADI(this.asObject());
   }
 
-  asObject(): ADI.ArgsWithType {
+  asObject(): ADIArgsWithType {
     return {
       type: "identity",
       url: this.url && this.url.toString(),
@@ -73,16 +87,14 @@ export class ADI {
   }
 }
 
-export namespace AccountAuth {
-  export type Args = {
-    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
-  };
-}
+export type AccountAuthArgs = {
+  authorities?: (AuthorityEntry | AuthorityEntryArgs)[];
+};
 export class AccountAuth {
   @encodeAs.field(1).repeatable.reference
   public authorities?: AuthorityEntry[];
 
-  constructor(args: AccountAuth.Args) {
+  constructor(args: AccountAuthArgs) {
     this.authorities =
       args.authorities == undefined
         ? undefined
@@ -93,26 +105,26 @@ export class AccountAuth {
     return new AccountAuth(this.asObject());
   }
 
-  asObject(): AccountAuth.Args {
+  asObject(): AccountAuthArgs {
     return {
       authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
     };
   }
 }
 
-export namespace AccumulateDataEntry {
-  export type Args = {
-    data?: (Uint8Array | string)[];
-  };
-  export type ArgsWithType = Args & { type: DataEntryType.Accumulate | "accumulate" };
-}
+export type AccumulateDataEntryArgs = {
+  data?: (Uint8Array | string)[];
+};
+export type AccumulateDataEntryArgsWithType = AccumulateDataEntryArgs & {
+  type: DataEntryType.Accumulate | "accumulate";
+};
 export class AccumulateDataEntry {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = DataEntryType.Accumulate;
   @encodeAs.field(2).repeatable.bytes
   public data?: Uint8Array[];
 
-  constructor(args: AccumulateDataEntry.Args) {
+  constructor(args: AccumulateDataEntryArgs) {
     this.data =
       args.data == undefined
         ? undefined
@@ -123,7 +135,7 @@ export class AccumulateDataEntry {
     return new AccumulateDataEntry(this.asObject());
   }
 
-  asObject(): AccumulateDataEntry.ArgsWithType {
+  asObject(): AccumulateDataEntryArgsWithType {
     return {
       type: "accumulate",
       data: this.data && this.data?.map((v) => Buffer.from(v).toString("hex")),
@@ -131,19 +143,19 @@ export class AccumulateDataEntry {
   }
 }
 
-export namespace AcmeFaucet {
-  export type Args = {
-    url?: URL | string;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.AcmeFaucet | "acmeFaucet" };
-}
+export type AcmeFaucetArgs = {
+  url?: URL | string;
+};
+export type AcmeFaucetArgsWithType = AcmeFaucetArgs & {
+  type: TransactionType.AcmeFaucet | "acmeFaucet";
+};
 export class AcmeFaucet {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.AcmeFaucet;
   @encodeAs.field(2).url
   public url?: URL;
 
-  constructor(args: AcmeFaucet.Args) {
+  constructor(args: AcmeFaucetArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
   }
@@ -152,7 +164,7 @@ export class AcmeFaucet {
     return new AcmeFaucet(this.asObject());
   }
 
-  asObject(): AcmeFaucet.ArgsWithType {
+  asObject(): AcmeFaucetArgsWithType {
     return {
       type: "acmeFaucet",
       url: this.url && this.url.toString(),
@@ -160,16 +172,14 @@ export class AcmeFaucet {
   }
 }
 
-export namespace AcmeOracle {
-  export type Args = {
-    price?: number;
-  };
-}
+export type AcmeOracleArgs = {
+  price?: number;
+};
 export class AcmeOracle {
   @encodeAs.field(1).uint
   public price?: number;
 
-  constructor(args: AcmeOracle.Args) {
+  constructor(args: AcmeOracleArgs) {
     this.price = args.price == undefined ? undefined : args.price;
   }
 
@@ -177,28 +187,26 @@ export class AcmeOracle {
     return new AcmeOracle(this.asObject());
   }
 
-  asObject(): AcmeOracle.Args {
+  asObject(): AcmeOracleArgs {
     return {
       price: this.price && this.price,
     };
   }
 }
 
-export namespace ActivateProtocolVersion {
-  export type Args = {
-    version?: ExecutorVersion.Args;
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.ActivateProtocolVersion | "activateProtocolVersion";
-  };
-}
+export type ActivateProtocolVersionArgs = {
+  version?: ExecutorVersionArgs;
+};
+export type ActivateProtocolVersionArgsWithType = ActivateProtocolVersionArgs & {
+  type: TransactionType.ActivateProtocolVersion | "activateProtocolVersion";
+};
 export class ActivateProtocolVersion {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.ActivateProtocolVersion;
   @encodeAs.field(2).enum
   public version?: ExecutorVersion;
 
-  constructor(args: ActivateProtocolVersion.Args) {
+  constructor(args: ActivateProtocolVersionArgs) {
     this.version = args.version == undefined ? undefined : ExecutorVersion.fromObject(args.version);
   }
 
@@ -206,7 +214,7 @@ export class ActivateProtocolVersion {
     return new ActivateProtocolVersion(this.asObject());
   }
 
-  asObject(): ActivateProtocolVersion.ArgsWithType {
+  asObject(): ActivateProtocolVersionArgsWithType {
     return {
       type: "activateProtocolVersion",
       version: this.version && ExecutorVersion.getName(this.version),
@@ -214,21 +222,19 @@ export class ActivateProtocolVersion {
   }
 }
 
-export namespace AddAccountAuthorityOperation {
-  export type Args = {
-    authority?: URL | string;
-  };
-  export type ArgsWithType = Args & {
-    type: AccountAuthOperationType.AddAuthority | "addAuthority";
-  };
-}
+export type AddAccountAuthorityOperationArgs = {
+  authority?: URL | string;
+};
+export type AddAccountAuthorityOperationArgsWithType = AddAccountAuthorityOperationArgs & {
+  type: AccountAuthOperationType.AddAuthority | "addAuthority";
+};
 export class AddAccountAuthorityOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountAuthOperationType.AddAuthority;
   @encodeAs.field(2).url
   public authority?: URL;
 
-  constructor(args: AddAccountAuthorityOperation.Args) {
+  constructor(args: AddAccountAuthorityOperationArgs) {
     this.authority =
       args.authority == undefined
         ? undefined
@@ -241,7 +247,7 @@ export class AddAccountAuthorityOperation {
     return new AddAccountAuthorityOperation(this.asObject());
   }
 
-  asObject(): AddAccountAuthorityOperation.ArgsWithType {
+  asObject(): AddAccountAuthorityOperationArgsWithType {
     return {
       type: "addAuthority",
       authority: this.authority && this.authority.toString(),
@@ -249,14 +255,14 @@ export class AddAccountAuthorityOperation {
   }
 }
 
-export namespace AddCredits {
-  export type Args = {
-    recipient?: URL | string;
-    amount?: BN | string | number;
-    oracle?: number;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.AddCredits | "addCredits" };
-}
+export type AddCreditsArgs = {
+  recipient?: URL | string;
+  amount?: BN | string | number;
+  oracle?: number;
+};
+export type AddCreditsArgsWithType = AddCreditsArgs & {
+  type: TransactionType.AddCredits | "addCredits";
+};
 export class AddCredits {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.AddCredits;
@@ -267,7 +273,7 @@ export class AddCredits {
   @encodeAs.field(4).uint
   public oracle?: number;
 
-  constructor(args: AddCredits.Args) {
+  constructor(args: AddCreditsArgs) {
     this.recipient =
       args.recipient == undefined
         ? undefined
@@ -287,7 +293,7 @@ export class AddCredits {
     return new AddCredits(this.asObject());
   }
 
-  asObject(): AddCredits.ArgsWithType {
+  asObject(): AddCreditsArgsWithType {
     return {
       type: "addCredits",
       recipient: this.recipient && this.recipient.toString(),
@@ -297,14 +303,14 @@ export class AddCredits {
   }
 }
 
-export namespace AddCreditsResult {
-  export type Args = {
-    amount?: BN | string | number;
-    credits?: number;
-    oracle?: number;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.AddCredits | "addCredits" };
-}
+export type AddCreditsResultArgs = {
+  amount?: BN | string | number;
+  credits?: number;
+  oracle?: number;
+};
+export type AddCreditsResultArgsWithType = AddCreditsResultArgs & {
+  type: TransactionType.AddCredits | "addCredits";
+};
 export class AddCreditsResult {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.AddCredits;
@@ -315,7 +321,7 @@ export class AddCreditsResult {
   @encodeAs.field(4).uint
   public oracle?: number;
 
-  constructor(args: AddCreditsResult.Args) {
+  constructor(args: AddCreditsResultArgs) {
     this.amount =
       args.amount == undefined
         ? undefined
@@ -330,7 +336,7 @@ export class AddCreditsResult {
     return new AddCreditsResult(this.asObject());
   }
 
-  asObject(): AddCreditsResult.ArgsWithType {
+  asObject(): AddCreditsResultArgsWithType {
     return {
       type: "addCredits",
       amount: this.amount && this.amount.toString(),
@@ -340,19 +346,19 @@ export class AddCreditsResult {
   }
 }
 
-export namespace AddKeyOperation {
-  export type Args = {
-    entry?: KeySpecParams | KeySpecParams.Args;
-  };
-  export type ArgsWithType = Args & { type: KeyPageOperationType.Add | "add" };
-}
+export type AddKeyOperationArgs = {
+  entry?: KeySpecParams | KeySpecParamsArgs;
+};
+export type AddKeyOperationArgsWithType = AddKeyOperationArgs & {
+  type: KeyPageOperationType.Add | "add";
+};
 export class AddKeyOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.Add;
   @encodeAs.field(2).reference
   public entry?: KeySpecParams;
 
-  constructor(args: AddKeyOperation.Args) {
+  constructor(args: AddKeyOperationArgs) {
     this.entry =
       args.entry == undefined
         ? undefined
@@ -365,7 +371,7 @@ export class AddKeyOperation {
     return new AddKeyOperation(this.asObject());
   }
 
-  asObject(): AddKeyOperation.ArgsWithType {
+  asObject(): AddKeyOperationArgsWithType {
     return {
       type: "add",
       entry: this.entry && this.entry.asObject(),
@@ -373,17 +379,17 @@ export class AddKeyOperation {
   }
 }
 
-export namespace AnchorLedger {
-  export type Args = {
-    url?: URL | string;
-    minorBlockSequenceNumber?: number;
-    majorBlockIndex?: number;
-    majorBlockTime?: Date | string;
-    pendingMajorBlockAnchors?: (URL | string)[];
-    sequence?: (PartitionSyntheticLedger | PartitionSyntheticLedger.Args)[];
-  };
-  export type ArgsWithType = Args & { type: AccountType.AnchorLedger | "anchorLedger" };
-}
+export type AnchorLedgerArgs = {
+  url?: URL | string;
+  minorBlockSequenceNumber?: number;
+  majorBlockIndex?: number;
+  majorBlockTime?: Date | string;
+  pendingMajorBlockAnchors?: (URL | string)[];
+  sequence?: (PartitionSyntheticLedger | PartitionSyntheticLedgerArgs)[];
+};
+export type AnchorLedgerArgsWithType = AnchorLedgerArgs & {
+  type: AccountType.AnchorLedger | "anchorLedger";
+};
 export class AnchorLedger {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.AnchorLedger;
@@ -400,7 +406,7 @@ export class AnchorLedger {
   @encodeAs.field(7).repeatable.reference
   public sequence?: PartitionSyntheticLedger[];
 
-  constructor(args: AnchorLedger.Args) {
+  constructor(args: AnchorLedgerArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.minorBlockSequenceNumber =
@@ -428,7 +434,7 @@ export class AnchorLedger {
     return new AnchorLedger(this.asObject());
   }
 
-  asObject(): AnchorLedger.ArgsWithType {
+  asObject(): AnchorLedgerArgsWithType {
     return {
       type: "anchorLedger",
       url: this.url && this.url.toString(),
@@ -442,17 +448,15 @@ export class AnchorLedger {
   }
 }
 
-export namespace AnchorMetadata {
-  export type Args = {
-    name?: string;
-    type?: ChainType.Args;
-    account?: URL | string;
-    index?: number;
-    sourceIndex?: number;
-    sourceBlock?: number;
-    entry?: Uint8Array | string;
-  };
-}
+export type AnchorMetadataArgs = {
+  name?: string;
+  type?: ChainTypeArgs;
+  account?: URL | string;
+  index?: number;
+  sourceIndex?: number;
+  sourceBlock?: number;
+  entry?: Uint8Array | string;
+};
 export class AnchorMetadata {
   @encodeAs.field(1, 1).string
   public name?: string;
@@ -469,7 +473,7 @@ export class AnchorMetadata {
   @encodeAs.field(6).bytes
   public entry?: Uint8Array;
 
-  constructor(args: AnchorMetadata.Args) {
+  constructor(args: AnchorMetadataArgs) {
     this.name = args.name == undefined ? undefined : args.name;
     this.type = args.type == undefined ? undefined : ChainType.fromObject(args.type);
     this.account =
@@ -493,7 +497,7 @@ export class AnchorMetadata {
     return new AnchorMetadata(this.asObject());
   }
 
-  asObject(): AnchorMetadata.Args {
+  asObject(): AnchorMetadataArgs {
     return {
       name: this.name && this.name,
       type: this.type && ChainType.getName(this.type),
@@ -506,19 +510,17 @@ export class AnchorMetadata {
   }
 }
 
-export namespace AnnotatedReceipt {
-  export type Args = {
-    receipt?: merkle.Receipt | merkle.Receipt.Args;
-    anchor?: AnchorMetadata | AnchorMetadata.Args;
-  };
-}
+export type AnnotatedReceiptArgs = {
+  receipt?: merkle.Receipt | merkle.ReceiptArgs;
+  anchor?: AnchorMetadata | AnchorMetadataArgs;
+};
 export class AnnotatedReceipt {
   @encodeAs.field(1).reference
   public receipt?: merkle.Receipt;
   @encodeAs.field(2).reference
   public anchor?: AnchorMetadata;
 
-  constructor(args: AnnotatedReceipt.Args) {
+  constructor(args: AnnotatedReceiptArgs) {
     this.receipt =
       args.receipt == undefined
         ? undefined
@@ -537,7 +539,7 @@ export class AnnotatedReceipt {
     return new AnnotatedReceipt(this.asObject());
   }
 
-  asObject(): AnnotatedReceipt.Args {
+  asObject(): AnnotatedReceiptArgs {
     return {
       receipt: this.receipt && this.receipt.asObject(),
       anchor: this.anchor && this.anchor.asObject(),
@@ -545,19 +547,17 @@ export class AnnotatedReceipt {
   }
 }
 
-export namespace AuthorityEntry {
-  export type Args = {
-    url?: URL | string;
-    disabled?: boolean;
-  };
-}
+export type AuthorityEntryArgs = {
+  url?: URL | string;
+  disabled?: boolean;
+};
 export class AuthorityEntry {
   @encodeAs.field(1).url
   public url?: URL;
   @encodeAs.field(2).bool
   public disabled?: boolean;
 
-  constructor(args: AuthorityEntry.Args) {
+  constructor(args: AuthorityEntryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.disabled = args.disabled == undefined ? undefined : args.disabled;
@@ -567,7 +567,7 @@ export class AuthorityEntry {
     return new AuthorityEntry(this.asObject());
   }
 
-  asObject(): AuthorityEntry.Args {
+  asObject(): AuthorityEntryArgs {
     return {
       url: this.url && this.url.toString(),
       disabled: this.disabled && this.disabled,
@@ -575,17 +575,17 @@ export class AuthorityEntry {
   }
 }
 
-export namespace AuthoritySignature {
-  export type Args = {
-    origin?: URL | string;
-    authority?: URL | string;
-    vote?: VoteType.Args;
-    txID?: TxID | string;
-    cause?: TxID | string;
-    delegator?: (URL | string)[];
-  };
-  export type ArgsWithType = Args & { type: SignatureType.Authority | "authority" };
-}
+export type AuthoritySignatureArgs = {
+  origin?: URL | string;
+  authority?: URL | string;
+  vote?: VoteTypeArgs;
+  txID?: TxID | string;
+  cause?: TxID | string;
+  delegator?: (URL | string)[];
+};
+export type AuthoritySignatureArgsWithType = AuthoritySignatureArgs & {
+  type: SignatureType.Authority | "authority";
+};
 export class AuthoritySignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Authority;
@@ -602,7 +602,7 @@ export class AuthoritySignature {
   @encodeAs.field(7).repeatable.url
   public delegator?: URL[];
 
-  constructor(args: AuthoritySignature.Args) {
+  constructor(args: AuthoritySignatureArgs) {
     this.origin =
       args.origin == undefined
         ? undefined
@@ -638,7 +638,7 @@ export class AuthoritySignature {
     return new AuthoritySignature(this.asObject());
   }
 
-  asObject(): AuthoritySignature.ArgsWithType {
+  asObject(): AuthoritySignatureArgsWithType {
     return {
       type: "authority",
       origin: this.origin && this.origin.toString(),
@@ -651,18 +651,18 @@ export class AuthoritySignature {
   }
 }
 
-export namespace BTCLegacySignature {
-  export type Args = {
-    publicKey?: Uint8Array | string;
-    signature?: Uint8Array | string;
-    signer?: URL | string;
-    signerVersion?: number;
-    timestamp?: number;
-    vote?: VoteType.Args;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.BTCLegacy | "btclegacy" };
-}
+export type BTCLegacySignatureArgs = {
+  publicKey?: Uint8Array | string;
+  signature?: Uint8Array | string;
+  signer?: URL | string;
+  signerVersion?: number;
+  timestamp?: number;
+  vote?: VoteTypeArgs;
+  transactionHash?: Uint8Array | string;
+};
+export type BTCLegacySignatureArgsWithType = BTCLegacySignatureArgs & {
+  type: SignatureType.BTCLegacy | "btclegacy";
+};
 export class BTCLegacySignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.BTCLegacy;
@@ -681,7 +681,7 @@ export class BTCLegacySignature {
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: BTCLegacySignature.Args) {
+  constructor(args: BTCLegacySignatureArgs) {
     this.publicKey =
       args.publicKey == undefined
         ? undefined
@@ -715,7 +715,7 @@ export class BTCLegacySignature {
     return new BTCLegacySignature(this.asObject());
   }
 
-  asObject(): BTCLegacySignature.ArgsWithType {
+  asObject(): BTCLegacySignatureArgsWithType {
     return {
       type: "btclegacy",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
@@ -729,18 +729,16 @@ export class BTCLegacySignature {
   }
 }
 
-export namespace BTCSignature {
-  export type Args = {
-    publicKey?: Uint8Array | string;
-    signature?: Uint8Array | string;
-    signer?: URL | string;
-    signerVersion?: number;
-    timestamp?: number;
-    vote?: VoteType.Args;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.BTC | "btc" };
-}
+export type BTCSignatureArgs = {
+  publicKey?: Uint8Array | string;
+  signature?: Uint8Array | string;
+  signer?: URL | string;
+  signerVersion?: number;
+  timestamp?: number;
+  vote?: VoteTypeArgs;
+  transactionHash?: Uint8Array | string;
+};
+export type BTCSignatureArgsWithType = BTCSignatureArgs & { type: SignatureType.BTC | "btc" };
 export class BTCSignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.BTC;
@@ -759,7 +757,7 @@ export class BTCSignature {
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: BTCSignature.Args) {
+  constructor(args: BTCSignatureArgs) {
     this.publicKey =
       args.publicKey == undefined
         ? undefined
@@ -793,7 +791,7 @@ export class BTCSignature {
     return new BTCSignature(this.asObject());
   }
 
-  asObject(): BTCSignature.ArgsWithType {
+  asObject(): BTCSignatureArgsWithType {
     return {
       type: "btc",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
@@ -807,13 +805,11 @@ export class BTCSignature {
   }
 }
 
-export namespace BlockEntry {
-  export type Args = {
-    account?: URL | string;
-    chain?: string;
-    index?: number;
-  };
-}
+export type BlockEntryArgs = {
+  account?: URL | string;
+  chain?: string;
+  index?: number;
+};
 export class BlockEntry {
   @encodeAs.field(1).url
   public account?: URL;
@@ -822,7 +818,7 @@ export class BlockEntry {
   @encodeAs.field(3).keepEmpty.uint
   public index?: number;
 
-  constructor(args: BlockEntry.Args) {
+  constructor(args: BlockEntryArgs) {
     this.account =
       args.account == undefined
         ? undefined
@@ -837,7 +833,7 @@ export class BlockEntry {
     return new BlockEntry(this.asObject());
   }
 
-  asObject(): BlockEntry.Args {
+  asObject(): BlockEntryArgs {
     return {
       account: this.account && this.account.toString(),
       chain: this.chain && this.chain,
@@ -846,15 +842,15 @@ export class BlockEntry {
   }
 }
 
-export namespace BlockLedger {
-  export type Args = {
-    url?: URL | string;
-    index?: number;
-    time?: Date | string;
-    entries?: (BlockEntry | BlockEntry.Args)[];
-  };
-  export type ArgsWithType = Args & { type: AccountType.BlockLedger | "blockLedger" };
-}
+export type BlockLedgerArgs = {
+  url?: URL | string;
+  index?: number;
+  time?: Date | string;
+  entries?: (BlockEntry | BlockEntryArgs)[];
+};
+export type BlockLedgerArgsWithType = BlockLedgerArgs & {
+  type: AccountType.BlockLedger | "blockLedger";
+};
 export class BlockLedger {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.BlockLedger;
@@ -867,7 +863,7 @@ export class BlockLedger {
   @encodeAs.field(5).repeatable.reference
   public entries?: BlockEntry[];
 
-  constructor(args: BlockLedger.Args) {
+  constructor(args: BlockLedgerArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.index = args.index == undefined ? undefined : args.index;
@@ -887,7 +883,7 @@ export class BlockLedger {
     return new BlockLedger(this.asObject());
   }
 
-  asObject(): BlockLedger.ArgsWithType {
+  asObject(): BlockLedgerArgsWithType {
     return {
       type: "blockLedger",
       url: this.url && this.url.toString(),
@@ -898,20 +894,18 @@ export class BlockLedger {
   }
 }
 
-export namespace BlockValidatorAnchor {
-  export type Args = {
-    source?: URL | string;
-    majorBlockIndex?: number;
-    minorBlockIndex?: number;
-    rootChainIndex?: number;
-    rootChainAnchor?: Uint8Array | string;
-    stateTreeAnchor?: Uint8Array | string;
-    acmeBurnt?: BN | string | number;
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.BlockValidatorAnchor | "blockValidatorAnchor";
-  };
-}
+export type BlockValidatorAnchorArgs = {
+  source?: URL | string;
+  majorBlockIndex?: number;
+  minorBlockIndex?: number;
+  rootChainIndex?: number;
+  rootChainAnchor?: Uint8Array | string;
+  stateTreeAnchor?: Uint8Array | string;
+  acmeBurnt?: BN | string | number;
+};
+export type BlockValidatorAnchorArgsWithType = BlockValidatorAnchorArgs & {
+  type: TransactionType.BlockValidatorAnchor | "blockValidatorAnchor";
+};
 export class BlockValidatorAnchor {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.BlockValidatorAnchor;
@@ -930,7 +924,7 @@ export class BlockValidatorAnchor {
   @encodeAs.field(3).bigInt
   public acmeBurnt?: BN;
 
-  constructor(args: BlockValidatorAnchor.Args) {
+  constructor(args: BlockValidatorAnchorArgs) {
     this.source =
       args.source == undefined
         ? undefined
@@ -964,7 +958,7 @@ export class BlockValidatorAnchor {
     return new BlockValidatorAnchor(this.asObject());
   }
 
-  asObject(): BlockValidatorAnchor.ArgsWithType {
+  asObject(): BlockValidatorAnchorArgsWithType {
     return {
       type: "blockValidatorAnchor",
       source: this.source && this.source.toString(),
@@ -978,19 +972,19 @@ export class BlockValidatorAnchor {
   }
 }
 
-export namespace BurnCredits {
-  export type Args = {
-    amount?: number;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.BurnCredits | "burnCredits" };
-}
+export type BurnCreditsArgs = {
+  amount?: number;
+};
+export type BurnCreditsArgsWithType = BurnCreditsArgs & {
+  type: TransactionType.BurnCredits | "burnCredits";
+};
 export class BurnCredits {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.BurnCredits;
   @encodeAs.field(2).uint
   public amount?: number;
 
-  constructor(args: BurnCredits.Args) {
+  constructor(args: BurnCreditsArgs) {
     this.amount = args.amount == undefined ? undefined : args.amount;
   }
 
@@ -998,7 +992,7 @@ export class BurnCredits {
     return new BurnCredits(this.asObject());
   }
 
-  asObject(): BurnCredits.ArgsWithType {
+  asObject(): BurnCreditsArgsWithType {
     return {
       type: "burnCredits",
       amount: this.amount && this.amount,
@@ -1006,19 +1000,19 @@ export class BurnCredits {
   }
 }
 
-export namespace BurnTokens {
-  export type Args = {
-    amount?: BN | string | number;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.BurnTokens | "burnTokens" };
-}
+export type BurnTokensArgs = {
+  amount?: BN | string | number;
+};
+export type BurnTokensArgsWithType = BurnTokensArgs & {
+  type: TransactionType.BurnTokens | "burnTokens";
+};
 export class BurnTokens {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.BurnTokens;
   @encodeAs.field(2).bigInt
   public amount?: BN;
 
-  constructor(args: BurnTokens.Args) {
+  constructor(args: BurnTokensArgs) {
     this.amount =
       args.amount == undefined
         ? undefined
@@ -1031,7 +1025,7 @@ export class BurnTokens {
     return new BurnTokens(this.asObject());
   }
 
-  asObject(): BurnTokens.ArgsWithType {
+  asObject(): BurnTokensArgsWithType {
     return {
       type: "burnTokens",
       amount: this.amount && this.amount.toString(),
@@ -1039,19 +1033,17 @@ export class BurnTokens {
   }
 }
 
-export namespace ChainMetadata {
-  export type Args = {
-    name?: string;
-    type?: ChainType.Args;
-  };
-}
+export type ChainMetadataArgs = {
+  name?: string;
+  type?: ChainTypeArgs;
+};
 export class ChainMetadata {
   @encodeAs.field(1).string
   public name?: string;
   @encodeAs.field(2).enum
   public type?: ChainType;
 
-  constructor(args: ChainMetadata.Args) {
+  constructor(args: ChainMetadataArgs) {
     this.name = args.name == undefined ? undefined : args.name;
     this.type = args.type == undefined ? undefined : ChainType.fromObject(args.type);
   }
@@ -1060,7 +1052,7 @@ export class ChainMetadata {
     return new ChainMetadata(this.asObject());
   }
 
-  asObject(): ChainMetadata.Args {
+  asObject(): ChainMetadataArgs {
     return {
       name: this.name && this.name,
       type: this.type && ChainType.getName(this.type),
@@ -1068,19 +1060,17 @@ export class ChainMetadata {
   }
 }
 
-export namespace ChainParams {
-  export type Args = {
-    data?: Uint8Array | string;
-    isUpdate?: boolean;
-  };
-}
+export type ChainParamsArgs = {
+  data?: Uint8Array | string;
+  isUpdate?: boolean;
+};
 export class ChainParams {
   @encodeAs.field(1).bytes
   public data?: Uint8Array;
   @encodeAs.field(2).bool
   public isUpdate?: boolean;
 
-  constructor(args: ChainParams.Args) {
+  constructor(args: ChainParamsArgs) {
     this.data =
       args.data == undefined
         ? undefined
@@ -1094,7 +1084,7 @@ export class ChainParams {
     return new ChainParams(this.asObject());
   }
 
-  asObject(): ChainParams.Args {
+  asObject(): ChainParamsArgs {
     return {
       data: this.data && Buffer.from(this.data).toString("hex"),
       isUpdate: this.isUpdate && this.isUpdate,
@@ -1102,15 +1092,13 @@ export class ChainParams {
   }
 }
 
-export namespace CreateDataAccount {
-  export type Args = {
-    url?: URL | string;
-    authorities?: (URL | string)[];
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.CreateDataAccount | "createDataAccount";
-  };
-}
+export type CreateDataAccountArgs = {
+  url?: URL | string;
+  authorities?: (URL | string)[];
+};
+export type CreateDataAccountArgsWithType = CreateDataAccountArgs & {
+  type: TransactionType.CreateDataAccount | "createDataAccount";
+};
 export class CreateDataAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateDataAccount;
@@ -1119,7 +1107,7 @@ export class CreateDataAccount {
   @encodeAs.field(3).repeatable.url
   public authorities?: URL[];
 
-  constructor(args: CreateDataAccount.Args) {
+  constructor(args: CreateDataAccountArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.authorities =
@@ -1132,7 +1120,7 @@ export class CreateDataAccount {
     return new CreateDataAccount(this.asObject());
   }
 
-  asObject(): CreateDataAccount.ArgsWithType {
+  asObject(): CreateDataAccountArgsWithType {
     return {
       type: "createDataAccount",
       url: this.url && this.url.toString(),
@@ -1141,15 +1129,15 @@ export class CreateDataAccount {
   }
 }
 
-export namespace CreateIdentity {
-  export type Args = {
-    url?: URL | string;
-    keyHash?: Uint8Array | string;
-    keyBookUrl?: URL | string;
-    authorities?: (URL | string)[];
-  };
-  export type ArgsWithType = Args & { type: TransactionType.CreateIdentity | "createIdentity" };
-}
+export type CreateIdentityArgs = {
+  url?: URL | string;
+  keyHash?: Uint8Array | string;
+  keyBookUrl?: URL | string;
+  authorities?: (URL | string)[];
+};
+export type CreateIdentityArgsWithType = CreateIdentityArgs & {
+  type: TransactionType.CreateIdentity | "createIdentity";
+};
 export class CreateIdentity {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateIdentity;
@@ -1162,7 +1150,7 @@ export class CreateIdentity {
   @encodeAs.field(6).repeatable.url
   public authorities?: URL[];
 
-  constructor(args: CreateIdentity.Args) {
+  constructor(args: CreateIdentityArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.keyHash =
@@ -1187,7 +1175,7 @@ export class CreateIdentity {
     return new CreateIdentity(this.asObject());
   }
 
-  asObject(): CreateIdentity.ArgsWithType {
+  asObject(): CreateIdentityArgsWithType {
     return {
       type: "createIdentity",
       url: this.url && this.url.toString(),
@@ -1198,14 +1186,14 @@ export class CreateIdentity {
   }
 }
 
-export namespace CreateKeyBook {
-  export type Args = {
-    url?: URL | string;
-    publicKeyHash?: Uint8Array | string;
-    authorities?: (URL | string)[];
-  };
-  export type ArgsWithType = Args & { type: TransactionType.CreateKeyBook | "createKeyBook" };
-}
+export type CreateKeyBookArgs = {
+  url?: URL | string;
+  publicKeyHash?: Uint8Array | string;
+  authorities?: (URL | string)[];
+};
+export type CreateKeyBookArgsWithType = CreateKeyBookArgs & {
+  type: TransactionType.CreateKeyBook | "createKeyBook";
+};
 export class CreateKeyBook {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateKeyBook;
@@ -1216,7 +1204,7 @@ export class CreateKeyBook {
   @encodeAs.field(5).repeatable.url
   public authorities?: URL[];
 
-  constructor(args: CreateKeyBook.Args) {
+  constructor(args: CreateKeyBookArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.publicKeyHash =
@@ -1235,7 +1223,7 @@ export class CreateKeyBook {
     return new CreateKeyBook(this.asObject());
   }
 
-  asObject(): CreateKeyBook.ArgsWithType {
+  asObject(): CreateKeyBookArgsWithType {
     return {
       type: "createKeyBook",
       url: this.url && this.url.toString(),
@@ -1245,19 +1233,19 @@ export class CreateKeyBook {
   }
 }
 
-export namespace CreateKeyPage {
-  export type Args = {
-    keys?: (KeySpecParams | KeySpecParams.Args)[];
-  };
-  export type ArgsWithType = Args & { type: TransactionType.CreateKeyPage | "createKeyPage" };
-}
+export type CreateKeyPageArgs = {
+  keys?: (KeySpecParams | KeySpecParamsArgs)[];
+};
+export type CreateKeyPageArgsWithType = CreateKeyPageArgs & {
+  type: TransactionType.CreateKeyPage | "createKeyPage";
+};
 export class CreateKeyPage {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateKeyPage;
   @encodeAs.field(2).repeatable.reference
   public keys?: KeySpecParams[];
 
-  constructor(args: CreateKeyPage.Args) {
+  constructor(args: CreateKeyPageArgs) {
     this.keys =
       args.keys == undefined
         ? undefined
@@ -1268,7 +1256,7 @@ export class CreateKeyPage {
     return new CreateKeyPage(this.asObject());
   }
 
-  asObject(): CreateKeyPage.ArgsWithType {
+  asObject(): CreateKeyPageArgsWithType {
     return {
       type: "createKeyPage",
       keys: this.keys && this.keys?.map((v) => v.asObject()),
@@ -1276,40 +1264,38 @@ export class CreateKeyPage {
   }
 }
 
-export namespace CreateLiteTokenAccount {
-  export type Args = {};
-  export type ArgsWithType = {
-    type: TransactionType.CreateLiteTokenAccount | "createLiteTokenAccount";
-  };
-}
+export type CreateLiteTokenAccountArgs = {};
+export type CreateLiteTokenAccountArgsWithType = {
+  type: TransactionType.CreateLiteTokenAccount | "createLiteTokenAccount";
+};
 export class CreateLiteTokenAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateLiteTokenAccount;
 
-  constructor(_: CreateLiteTokenAccount.Args) {}
+  constructor(_: CreateLiteTokenAccountArgs) {}
 
   copy() {
     return new CreateLiteTokenAccount(this.asObject());
   }
 
-  asObject(): CreateLiteTokenAccount.ArgsWithType {
+  asObject(): CreateLiteTokenAccountArgsWithType {
     return {
       type: "createLiteTokenAccount",
     };
   }
 }
 
-export namespace CreateToken {
-  export type Args = {
-    url?: URL | string;
-    symbol?: string;
-    precision?: number;
-    properties?: URL | string;
-    supplyLimit?: BN | string | number;
-    authorities?: (URL | string)[];
-  };
-  export type ArgsWithType = Args & { type: TransactionType.CreateToken | "createToken" };
-}
+export type CreateTokenArgs = {
+  url?: URL | string;
+  symbol?: string;
+  precision?: number;
+  properties?: URL | string;
+  supplyLimit?: BN | string | number;
+  authorities?: (URL | string)[];
+};
+export type CreateTokenArgsWithType = CreateTokenArgs & {
+  type: TransactionType.CreateToken | "createToken";
+};
 export class CreateToken {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateToken;
@@ -1326,7 +1312,7 @@ export class CreateToken {
   @encodeAs.field(9).repeatable.url
   public authorities?: URL[];
 
-  constructor(args: CreateToken.Args) {
+  constructor(args: CreateTokenArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.symbol = args.symbol == undefined ? undefined : args.symbol;
@@ -1353,7 +1339,7 @@ export class CreateToken {
     return new CreateToken(this.asObject());
   }
 
-  asObject(): CreateToken.ArgsWithType {
+  asObject(): CreateTokenArgsWithType {
     return {
       type: "createToken",
       url: this.url && this.url.toString(),
@@ -1366,17 +1352,15 @@ export class CreateToken {
   }
 }
 
-export namespace CreateTokenAccount {
-  export type Args = {
-    url?: URL | string;
-    tokenUrl?: URL | string;
-    authorities?: (URL | string)[];
-    proof?: TokenIssuerProof | TokenIssuerProof.Args;
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.CreateTokenAccount | "createTokenAccount";
-  };
-}
+export type CreateTokenAccountArgs = {
+  url?: URL | string;
+  tokenUrl?: URL | string;
+  authorities?: (URL | string)[];
+  proof?: TokenIssuerProof | TokenIssuerProofArgs;
+};
+export type CreateTokenAccountArgsWithType = CreateTokenAccountArgs & {
+  type: TransactionType.CreateTokenAccount | "createTokenAccount";
+};
 export class CreateTokenAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.CreateTokenAccount;
@@ -1389,7 +1373,7 @@ export class CreateTokenAccount {
   @encodeAs.field(8).reference
   public proof?: TokenIssuerProof;
 
-  constructor(args: CreateTokenAccount.Args) {
+  constructor(args: CreateTokenAccountArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.tokenUrl =
@@ -1414,7 +1398,7 @@ export class CreateTokenAccount {
     return new CreateTokenAccount(this.asObject());
   }
 
-  asObject(): CreateTokenAccount.ArgsWithType {
+  asObject(): CreateTokenAccountArgsWithType {
     return {
       type: "createTokenAccount",
       url: this.url && this.url.toString(),
@@ -1425,19 +1409,17 @@ export class CreateTokenAccount {
   }
 }
 
-export namespace CreditRecipient {
-  export type Args = {
-    url?: URL | string;
-    amount?: number;
-  };
-}
+export type CreditRecipientArgs = {
+  url?: URL | string;
+  amount?: number;
+};
 export class CreditRecipient {
   @encodeAs.field(1).url
   public url?: URL;
   @encodeAs.field(2).uint
   public amount?: number;
 
-  constructor(args: CreditRecipient.Args) {
+  constructor(args: CreditRecipientArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.amount = args.amount == undefined ? undefined : args.amount;
@@ -1447,7 +1429,7 @@ export class CreditRecipient {
     return new CreditRecipient(this.asObject());
   }
 
-  asObject(): CreditRecipient.Args {
+  asObject(): CreditRecipientArgs {
     return {
       url: this.url && this.url.toString(),
       amount: this.amount && this.amount,
@@ -1455,14 +1437,14 @@ export class CreditRecipient {
   }
 }
 
-export namespace DataAccount {
-  export type Args = {
-    url?: URL | string;
-    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
-    entry?: DataEntry | DataEntry.Args;
-  };
-  export type ArgsWithType = Args & { type: AccountType.DataAccount | "dataAccount" };
-}
+export type DataAccountArgs = {
+  url?: URL | string;
+  authorities?: (AuthorityEntry | AuthorityEntryArgs)[];
+  entry?: DataEntry | DataEntryArgs;
+};
+export type DataAccountArgsWithType = DataAccountArgs & {
+  type: AccountType.DataAccount | "dataAccount";
+};
 export class DataAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.DataAccount;
@@ -1473,7 +1455,7 @@ export class DataAccount {
   @encodeAs.field(4).union
   public entry?: DataEntry;
 
-  constructor(args: DataAccount.Args) {
+  constructor(args: DataAccountArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.authorities =
@@ -1487,7 +1469,7 @@ export class DataAccount {
     return new DataAccount(this.asObject());
   }
 
-  asObject(): DataAccount.ArgsWithType {
+  asObject(): DataAccountArgsWithType {
     return {
       type: "dataAccount",
       url: this.url && this.url.toString(),
@@ -1497,13 +1479,13 @@ export class DataAccount {
   }
 }
 
-export namespace DelegatedSignature {
-  export type Args = {
-    signature?: Signature | Signature.Args;
-    delegator?: URL | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.Delegated | "delegated" };
-}
+export type DelegatedSignatureArgs = {
+  signature?: Signature | SignatureArgs;
+  delegator?: URL | string;
+};
+export type DelegatedSignatureArgsWithType = DelegatedSignatureArgs & {
+  type: SignatureType.Delegated | "delegated";
+};
 export class DelegatedSignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Delegated;
@@ -1512,7 +1494,7 @@ export class DelegatedSignature {
   @encodeAs.field(3).url
   public delegator?: URL;
 
-  constructor(args: DelegatedSignature.Args) {
+  constructor(args: DelegatedSignatureArgs) {
     this.signature = args.signature == undefined ? undefined : Signature.fromObject(args.signature);
     this.delegator =
       args.delegator == undefined
@@ -1526,7 +1508,7 @@ export class DelegatedSignature {
     return new DelegatedSignature(this.asObject());
   }
 
-  asObject(): DelegatedSignature.ArgsWithType {
+  asObject(): DelegatedSignatureArgsWithType {
     return {
       type: "delegated",
       signature: this.signature && this.signature.asObject(),
@@ -1535,21 +1517,21 @@ export class DelegatedSignature {
   }
 }
 
-export namespace DirectoryAnchor {
-  export type Args = {
-    source?: URL | string;
-    majorBlockIndex?: number;
-    minorBlockIndex?: number;
-    rootChainIndex?: number;
-    rootChainAnchor?: Uint8Array | string;
-    stateTreeAnchor?: Uint8Array | string;
-    updates?: (NetworkAccountUpdate | NetworkAccountUpdate.Args)[];
-    receipts?: (PartitionAnchorReceipt | PartitionAnchorReceipt.Args)[];
-    makeMajorBlock?: number;
-    makeMajorBlockTime?: Date | string;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.DirectoryAnchor | "directoryAnchor" };
-}
+export type DirectoryAnchorArgs = {
+  source?: URL | string;
+  majorBlockIndex?: number;
+  minorBlockIndex?: number;
+  rootChainIndex?: number;
+  rootChainAnchor?: Uint8Array | string;
+  stateTreeAnchor?: Uint8Array | string;
+  updates?: (NetworkAccountUpdate | NetworkAccountUpdateArgs)[];
+  receipts?: (PartitionAnchorReceipt | PartitionAnchorReceiptArgs)[];
+  makeMajorBlock?: number;
+  makeMajorBlockTime?: Date | string;
+};
+export type DirectoryAnchorArgsWithType = DirectoryAnchorArgs & {
+  type: TransactionType.DirectoryAnchor | "directoryAnchor";
+};
 export class DirectoryAnchor {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.DirectoryAnchor;
@@ -1574,7 +1556,7 @@ export class DirectoryAnchor {
   @encodeAs.field(6).time
   public makeMajorBlockTime?: Date;
 
-  constructor(args: DirectoryAnchor.Args) {
+  constructor(args: DirectoryAnchorArgs) {
     this.source =
       args.source == undefined
         ? undefined
@@ -1621,7 +1603,7 @@ export class DirectoryAnchor {
     return new DirectoryAnchor(this.asObject());
   }
 
-  asObject(): DirectoryAnchor.ArgsWithType {
+  asObject(): DirectoryAnchorArgsWithType {
     return {
       type: "directoryAnchor",
       source: this.source && this.source.toString(),
@@ -1638,19 +1620,19 @@ export class DirectoryAnchor {
   }
 }
 
-export namespace DisableAccountAuthOperation {
-  export type Args = {
-    authority?: URL | string;
-  };
-  export type ArgsWithType = Args & { type: AccountAuthOperationType.Disable | "disable" };
-}
+export type DisableAccountAuthOperationArgs = {
+  authority?: URL | string;
+};
+export type DisableAccountAuthOperationArgsWithType = DisableAccountAuthOperationArgs & {
+  type: AccountAuthOperationType.Disable | "disable";
+};
 export class DisableAccountAuthOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountAuthOperationType.Disable;
   @encodeAs.field(2).url
   public authority?: URL;
 
-  constructor(args: DisableAccountAuthOperation.Args) {
+  constructor(args: DisableAccountAuthOperationArgs) {
     this.authority =
       args.authority == undefined
         ? undefined
@@ -1663,7 +1645,7 @@ export class DisableAccountAuthOperation {
     return new DisableAccountAuthOperation(this.asObject());
   }
 
-  asObject(): DisableAccountAuthOperation.ArgsWithType {
+  asObject(): DisableAccountAuthOperationArgsWithType {
     return {
       type: "disable",
       authority: this.authority && this.authority.toString(),
@@ -1671,19 +1653,19 @@ export class DisableAccountAuthOperation {
   }
 }
 
-export namespace DoubleHashDataEntry {
-  export type Args = {
-    data?: (Uint8Array | string)[];
-  };
-  export type ArgsWithType = Args & { type: DataEntryType.DoubleHash | "doubleHash" };
-}
+export type DoubleHashDataEntryArgs = {
+  data?: (Uint8Array | string)[];
+};
+export type DoubleHashDataEntryArgsWithType = DoubleHashDataEntryArgs & {
+  type: DataEntryType.DoubleHash | "doubleHash";
+};
 export class DoubleHashDataEntry {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = DataEntryType.DoubleHash;
   @encodeAs.field(2).repeatable.bytes
   public data?: Uint8Array[];
 
-  constructor(args: DoubleHashDataEntry.Args) {
+  constructor(args: DoubleHashDataEntryArgs) {
     this.data =
       args.data == undefined
         ? undefined
@@ -1694,7 +1676,7 @@ export class DoubleHashDataEntry {
     return new DoubleHashDataEntry(this.asObject());
   }
 
-  asObject(): DoubleHashDataEntry.ArgsWithType {
+  asObject(): DoubleHashDataEntryArgsWithType {
     return {
       type: "doubleHash",
       data: this.data && this.data?.map((v) => Buffer.from(v).toString("hex")),
@@ -1702,18 +1684,18 @@ export class DoubleHashDataEntry {
   }
 }
 
-export namespace ED25519Signature {
-  export type Args = {
-    publicKey?: Uint8Array | string;
-    signature?: Uint8Array | string;
-    signer?: URL | string;
-    signerVersion?: number;
-    timestamp?: number;
-    vote?: VoteType.Args;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.ED25519 | "ed25519" };
-}
+export type ED25519SignatureArgs = {
+  publicKey?: Uint8Array | string;
+  signature?: Uint8Array | string;
+  signer?: URL | string;
+  signerVersion?: number;
+  timestamp?: number;
+  vote?: VoteTypeArgs;
+  transactionHash?: Uint8Array | string;
+};
+export type ED25519SignatureArgsWithType = ED25519SignatureArgs & {
+  type: SignatureType.ED25519 | "ed25519";
+};
 export class ED25519Signature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.ED25519;
@@ -1732,7 +1714,7 @@ export class ED25519Signature {
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: ED25519Signature.Args) {
+  constructor(args: ED25519SignatureArgs) {
     this.publicKey =
       args.publicKey == undefined
         ? undefined
@@ -1766,7 +1748,7 @@ export class ED25519Signature {
     return new ED25519Signature(this.asObject());
   }
 
-  asObject(): ED25519Signature.ArgsWithType {
+  asObject(): ED25519SignatureArgsWithType {
     return {
       type: "ed25519",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
@@ -1780,18 +1762,16 @@ export class ED25519Signature {
   }
 }
 
-export namespace ETHSignature {
-  export type Args = {
-    publicKey?: Uint8Array | string;
-    signature?: Uint8Array | string;
-    signer?: URL | string;
-    signerVersion?: number;
-    timestamp?: number;
-    vote?: VoteType.Args;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.ETH | "eth" };
-}
+export type ETHSignatureArgs = {
+  publicKey?: Uint8Array | string;
+  signature?: Uint8Array | string;
+  signer?: URL | string;
+  signerVersion?: number;
+  timestamp?: number;
+  vote?: VoteTypeArgs;
+  transactionHash?: Uint8Array | string;
+};
+export type ETHSignatureArgsWithType = ETHSignatureArgs & { type: SignatureType.ETH | "eth" };
 export class ETHSignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.ETH;
@@ -1810,7 +1790,7 @@ export class ETHSignature {
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: ETHSignature.Args) {
+  constructor(args: ETHSignatureArgs) {
     this.publicKey =
       args.publicKey == undefined
         ? undefined
@@ -1844,7 +1824,7 @@ export class ETHSignature {
     return new ETHSignature(this.asObject());
   }
 
-  asObject(): ETHSignature.ArgsWithType {
+  asObject(): ETHSignatureArgsWithType {
     return {
       type: "eth",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
@@ -1858,40 +1838,38 @@ export class ETHSignature {
   }
 }
 
-export namespace EmptyResult {
-  export type Args = {};
-  export type ArgsWithType = { type: TransactionType.Unknown | "unknown" };
-}
+export type EmptyResultArgs = {};
+export type EmptyResultArgsWithType = { type: TransactionType.Unknown | "unknown" };
 export class EmptyResult {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.Unknown;
 
-  constructor(_: EmptyResult.Args) {}
+  constructor(_: EmptyResultArgs) {}
 
   copy() {
     return new EmptyResult(this.asObject());
   }
 
-  asObject(): EmptyResult.ArgsWithType {
+  asObject(): EmptyResultArgsWithType {
     return {
       type: "unknown",
     };
   }
 }
 
-export namespace EnableAccountAuthOperation {
-  export type Args = {
-    authority?: URL | string;
-  };
-  export type ArgsWithType = Args & { type: AccountAuthOperationType.Enable | "enable" };
-}
+export type EnableAccountAuthOperationArgs = {
+  authority?: URL | string;
+};
+export type EnableAccountAuthOperationArgsWithType = EnableAccountAuthOperationArgs & {
+  type: AccountAuthOperationType.Enable | "enable";
+};
 export class EnableAccountAuthOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountAuthOperationType.Enable;
   @encodeAs.field(2).url
   public authority?: URL;
 
-  constructor(args: EnableAccountAuthOperation.Args) {
+  constructor(args: EnableAccountAuthOperationArgs) {
     this.authority =
       args.authority == undefined
         ? undefined
@@ -1904,7 +1882,7 @@ export class EnableAccountAuthOperation {
     return new EnableAccountAuthOperation(this.asObject());
   }
 
-  asObject(): EnableAccountAuthOperation.ArgsWithType {
+  asObject(): EnableAccountAuthOperationArgsWithType {
     return {
       type: "enable",
       authority: this.authority && this.authority.toString(),
@@ -1912,19 +1890,17 @@ export class EnableAccountAuthOperation {
   }
 }
 
-export namespace FactomDataEntry {
-  export type Args = {
-    accountId?: Uint8Array | string;
-    data?: Uint8Array | string;
-    extIds?: (Uint8Array | string)[];
-  };
-}
+export type FactomDataEntryArgs = {
+  accountId?: Uint8Array | string;
+  data?: Uint8Array | string;
+  extIds?: (Uint8Array | string)[];
+};
 export class FactomDataEntry {
   public accountId?: Uint8Array;
   public data?: Uint8Array;
   public extIds?: Uint8Array[];
 
-  constructor(args: FactomDataEntry.Args) {
+  constructor(args: FactomDataEntryArgs) {
     this.accountId =
       args.accountId == undefined
         ? undefined
@@ -1947,7 +1923,7 @@ export class FactomDataEntry {
     return new FactomDataEntry(this.asObject());
   }
 
-  asObject(): FactomDataEntry.Args {
+  asObject(): FactomDataEntryArgs {
     return {
       accountId: this.accountId && Buffer.from(this.accountId).toString("hex"),
       data: this.data && Buffer.from(this.data).toString("hex"),
@@ -1956,14 +1932,14 @@ export class FactomDataEntry {
   }
 }
 
-export namespace FactomDataEntryWrapper {
-  export type Args = {
-    accountId?: Uint8Array | string;
-    data?: Uint8Array | string;
-    extIds?: (Uint8Array | string)[];
-  };
-  export type ArgsWithType = Args & { type: DataEntryType.Factom | "factom" };
-}
+export type FactomDataEntryWrapperArgs = {
+  accountId?: Uint8Array | string;
+  data?: Uint8Array | string;
+  extIds?: (Uint8Array | string)[];
+};
+export type FactomDataEntryWrapperArgsWithType = FactomDataEntryWrapperArgs & {
+  type: DataEntryType.Factom | "factom";
+};
 export class FactomDataEntryWrapper {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = DataEntryType.Factom;
@@ -1974,7 +1950,7 @@ export class FactomDataEntryWrapper {
   @encodeAs.field(2, 3).repeatable.bytes
   public extIds?: Uint8Array[];
 
-  constructor(args: FactomDataEntryWrapper.Args) {
+  constructor(args: FactomDataEntryWrapperArgs) {
     this.accountId =
       args.accountId == undefined
         ? undefined
@@ -1997,7 +1973,7 @@ export class FactomDataEntryWrapper {
     return new FactomDataEntryWrapper(this.asObject());
   }
 
-  asObject(): FactomDataEntryWrapper.ArgsWithType {
+  asObject(): FactomDataEntryWrapperArgsWithType {
     return {
       type: "factom",
       accountId: this.accountId && Buffer.from(this.accountId).toString("hex"),
@@ -2007,16 +1983,14 @@ export class FactomDataEntryWrapper {
   }
 }
 
-export namespace FeeSchedule {
-  export type Args = {
-    createIdentitySliding?: Fee.Args[];
-  };
-}
+export type FeeScheduleArgs = {
+  createIdentitySliding?: FeeArgs[];
+};
 export class FeeSchedule {
   @encodeAs.field(1).repeatable.enum
   public createIdentitySliding?: Fee[];
 
-  constructor(args: FeeSchedule.Args) {
+  constructor(args: FeeScheduleArgs) {
     this.createIdentitySliding =
       args.createIdentitySliding == undefined
         ? undefined
@@ -2027,7 +2001,7 @@ export class FeeSchedule {
     return new FeeSchedule(this.asObject());
   }
 
-  asObject(): FeeSchedule.Args {
+  asObject(): FeeScheduleArgs {
     return {
       createIdentitySliding:
         this.createIdentitySliding && this.createIdentitySliding?.map((v) => Fee.getName(v)),
@@ -2035,15 +2009,13 @@ export class FeeSchedule {
   }
 }
 
-export namespace IndexEntry {
-  export type Args = {
-    source?: number;
-    anchor?: number;
-    blockIndex?: number;
-    blockTime?: Date | string;
-    rootIndexIndex?: number;
-  };
-}
+export type IndexEntryArgs = {
+  source?: number;
+  anchor?: number;
+  blockIndex?: number;
+  blockTime?: Date | string;
+  rootIndexIndex?: number;
+};
 export class IndexEntry {
   @encodeAs.field(1).uint
   public source?: number;
@@ -2056,7 +2028,7 @@ export class IndexEntry {
   @encodeAs.field(5).uint
   public rootIndexIndex?: number;
 
-  constructor(args: IndexEntry.Args) {
+  constructor(args: IndexEntryArgs) {
     this.source = args.source == undefined ? undefined : args.source;
     this.anchor = args.anchor == undefined ? undefined : args.anchor;
     this.blockIndex = args.blockIndex == undefined ? undefined : args.blockIndex;
@@ -2073,7 +2045,7 @@ export class IndexEntry {
     return new IndexEntry(this.asObject());
   }
 
-  asObject(): IndexEntry.Args {
+  asObject(): IndexEntryArgs {
     return {
       source: this.source && this.source,
       anchor: this.anchor && this.anchor,
@@ -2084,13 +2056,13 @@ export class IndexEntry {
   }
 }
 
-export namespace InternalSignature {
-  export type Args = {
-    cause?: Uint8Array | string;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.Internal | "internal" };
-}
+export type InternalSignatureArgs = {
+  cause?: Uint8Array | string;
+  transactionHash?: Uint8Array | string;
+};
+export type InternalSignatureArgsWithType = InternalSignatureArgs & {
+  type: SignatureType.Internal | "internal";
+};
 export class InternalSignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Internal;
@@ -2099,7 +2071,7 @@ export class InternalSignature {
   @encodeAs.field(3).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: InternalSignature.Args) {
+  constructor(args: InternalSignatureArgs) {
     this.cause =
       args.cause == undefined
         ? undefined
@@ -2118,7 +2090,7 @@ export class InternalSignature {
     return new InternalSignature(this.asObject());
   }
 
-  asObject(): InternalSignature.ArgsWithType {
+  asObject(): InternalSignatureArgsWithType {
     return {
       type: "internal",
       cause: this.cause && Buffer.from(this.cause).toString("hex"),
@@ -2127,14 +2099,14 @@ export class InternalSignature {
   }
 }
 
-export namespace IssueTokens {
-  export type Args = {
-    recipient?: URL | string;
-    amount?: BN | string | number;
-    to?: (TokenRecipient | TokenRecipient.Args)[];
-  };
-  export type ArgsWithType = Args & { type: TransactionType.IssueTokens | "issueTokens" };
-}
+export type IssueTokensArgs = {
+  recipient?: URL | string;
+  amount?: BN | string | number;
+  to?: (TokenRecipient | TokenRecipientArgs)[];
+};
+export type IssueTokensArgsWithType = IssueTokensArgs & {
+  type: TransactionType.IssueTokens | "issueTokens";
+};
 export class IssueTokens {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.IssueTokens;
@@ -2145,7 +2117,7 @@ export class IssueTokens {
   @encodeAs.field(4).repeatable.reference
   public to?: TokenRecipient[];
 
-  constructor(args: IssueTokens.Args) {
+  constructor(args: IssueTokensArgs) {
     this.recipient =
       args.recipient == undefined
         ? undefined
@@ -2168,7 +2140,7 @@ export class IssueTokens {
     return new IssueTokens(this.asObject());
   }
 
-  asObject(): IssueTokens.ArgsWithType {
+  asObject(): IssueTokensArgsWithType {
     return {
       type: "issueTokens",
       recipient: this.recipient && this.recipient.toString(),
@@ -2178,15 +2150,13 @@ export class IssueTokens {
   }
 }
 
-export namespace KeyBook {
-  export type Args = {
-    url?: URL | string;
-    bookType?: BookType.Args;
-    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
-    pageCount?: number;
-  };
-  export type ArgsWithType = Args & { type: AccountType.KeyBook | "keyBook" };
-}
+export type KeyBookArgs = {
+  url?: URL | string;
+  bookType?: BookTypeArgs;
+  authorities?: (AuthorityEntry | AuthorityEntryArgs)[];
+  pageCount?: number;
+};
+export type KeyBookArgsWithType = KeyBookArgs & { type: AccountType.KeyBook | "keyBook" };
 export class KeyBook {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.KeyBook;
@@ -2199,7 +2169,7 @@ export class KeyBook {
   @encodeAs.field(5).uint
   public pageCount?: number;
 
-  constructor(args: KeyBook.Args) {
+  constructor(args: KeyBookArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.bookType = args.bookType == undefined ? undefined : BookType.fromObject(args.bookType);
@@ -2214,7 +2184,7 @@ export class KeyBook {
     return new KeyBook(this.asObject());
   }
 
-  asObject(): KeyBook.ArgsWithType {
+  asObject(): KeyBookArgsWithType {
     return {
       type: "keyBook",
       url: this.url && this.url.toString(),
@@ -2225,20 +2195,18 @@ export class KeyBook {
   }
 }
 
-export namespace KeyPage {
-  export type Args = {
-    url?: URL | string;
-    creditBalance?: number;
-    acceptThreshold?: number;
-    rejectThreshold?: number;
-    responseThreshold?: number;
-    blockThreshold?: number;
-    version?: number;
-    keys?: (KeySpec | KeySpec.Args)[];
-    transactionBlacklist?: AllowedTransactions.Args;
-  };
-  export type ArgsWithType = Args & { type: AccountType.KeyPage | "keyPage" };
-}
+export type KeyPageArgs = {
+  url?: URL | string;
+  creditBalance?: number;
+  acceptThreshold?: number;
+  rejectThreshold?: number;
+  responseThreshold?: number;
+  blockThreshold?: number;
+  version?: number;
+  keys?: (KeySpec | KeySpecArgs)[];
+  transactionBlacklist?: AllowedTransactionsArgs;
+};
+export type KeyPageArgsWithType = KeyPageArgs & { type: AccountType.KeyPage | "keyPage" };
 export class KeyPage {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.KeyPage;
@@ -2261,7 +2229,7 @@ export class KeyPage {
   @encodeAs.field(10).enum
   public transactionBlacklist?: AllowedTransactions;
 
-  constructor(args: KeyPage.Args) {
+  constructor(args: KeyPageArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.creditBalance = args.creditBalance == undefined ? undefined : args.creditBalance;
@@ -2285,7 +2253,7 @@ export class KeyPage {
     return new KeyPage(this.asObject());
   }
 
-  asObject(): KeyPage.ArgsWithType {
+  asObject(): KeyPageArgsWithType {
     return {
       type: "keyPage",
       url: this.url && this.url.toString(),
@@ -2303,13 +2271,11 @@ export class KeyPage {
   }
 }
 
-export namespace KeySpec {
-  export type Args = {
-    publicKeyHash?: Uint8Array | string;
-    lastUsedOn?: number;
-    delegate?: URL | string;
-  };
-}
+export type KeySpecArgs = {
+  publicKeyHash?: Uint8Array | string;
+  lastUsedOn?: number;
+  delegate?: URL | string;
+};
 export class KeySpec {
   @encodeAs.field(1).bytes
   public publicKeyHash?: Uint8Array;
@@ -2318,7 +2284,7 @@ export class KeySpec {
   @encodeAs.field(3).url
   public delegate?: URL;
 
-  constructor(args: KeySpec.Args) {
+  constructor(args: KeySpecArgs) {
     this.publicKeyHash =
       args.publicKeyHash == undefined
         ? undefined
@@ -2338,7 +2304,7 @@ export class KeySpec {
     return new KeySpec(this.asObject());
   }
 
-  asObject(): KeySpec.Args {
+  asObject(): KeySpecArgs {
     return {
       publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
       lastUsedOn: this.lastUsedOn && this.lastUsedOn,
@@ -2347,19 +2313,17 @@ export class KeySpec {
   }
 }
 
-export namespace KeySpecParams {
-  export type Args = {
-    keyHash?: Uint8Array | string;
-    delegate?: URL | string;
-  };
-}
+export type KeySpecParamsArgs = {
+  keyHash?: Uint8Array | string;
+  delegate?: URL | string;
+};
 export class KeySpecParams {
   @encodeAs.field(1).bytes
   public keyHash?: Uint8Array;
   @encodeAs.field(2).url
   public delegate?: URL;
 
-  constructor(args: KeySpecParams.Args) {
+  constructor(args: KeySpecParamsArgs) {
     this.keyHash =
       args.keyHash == undefined
         ? undefined
@@ -2378,7 +2342,7 @@ export class KeySpecParams {
     return new KeySpecParams(this.asObject());
   }
 
-  asObject(): KeySpecParams.Args {
+  asObject(): KeySpecParamsArgs {
     return {
       keyHash: this.keyHash && Buffer.from(this.keyHash).toString("hex"),
       delegate: this.delegate && this.delegate.toString(),
@@ -2386,18 +2350,18 @@ export class KeySpecParams {
   }
 }
 
-export namespace LegacyED25519Signature {
-  export type Args = {
-    timestamp?: number;
-    publicKey?: Uint8Array | string;
-    signature?: Uint8Array | string;
-    signer?: URL | string;
-    signerVersion?: number;
-    vote?: VoteType.Args;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.LegacyED25519 | "legacyED25519" };
-}
+export type LegacyED25519SignatureArgs = {
+  timestamp?: number;
+  publicKey?: Uint8Array | string;
+  signature?: Uint8Array | string;
+  signer?: URL | string;
+  signerVersion?: number;
+  vote?: VoteTypeArgs;
+  transactionHash?: Uint8Array | string;
+};
+export type LegacyED25519SignatureArgsWithType = LegacyED25519SignatureArgs & {
+  type: SignatureType.LegacyED25519 | "legacyED25519";
+};
 export class LegacyED25519Signature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.LegacyED25519;
@@ -2416,7 +2380,7 @@ export class LegacyED25519Signature {
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: LegacyED25519Signature.Args) {
+  constructor(args: LegacyED25519SignatureArgs) {
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
     this.publicKey =
       args.publicKey == undefined
@@ -2450,7 +2414,7 @@ export class LegacyED25519Signature {
     return new LegacyED25519Signature(this.asObject());
   }
 
-  asObject(): LegacyED25519Signature.ArgsWithType {
+  asObject(): LegacyED25519SignatureArgsWithType {
     return {
       type: "legacyED25519",
       timestamp: this.timestamp && this.timestamp,
@@ -2464,19 +2428,19 @@ export class LegacyED25519Signature {
   }
 }
 
-export namespace LiteDataAccount {
-  export type Args = {
-    url?: URL | string;
-  };
-  export type ArgsWithType = Args & { type: AccountType.LiteDataAccount | "liteDataAccount" };
-}
+export type LiteDataAccountArgs = {
+  url?: URL | string;
+};
+export type LiteDataAccountArgsWithType = LiteDataAccountArgs & {
+  type: AccountType.LiteDataAccount | "liteDataAccount";
+};
 export class LiteDataAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.LiteDataAccount;
   @encodeAs.field(2).url
   public url?: URL;
 
-  constructor(args: LiteDataAccount.Args) {
+  constructor(args: LiteDataAccountArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
   }
@@ -2485,7 +2449,7 @@ export class LiteDataAccount {
     return new LiteDataAccount(this.asObject());
   }
 
-  asObject(): LiteDataAccount.ArgsWithType {
+  asObject(): LiteDataAccountArgsWithType {
     return {
       type: "liteDataAccount",
       url: this.url && this.url.toString(),
@@ -2493,14 +2457,14 @@ export class LiteDataAccount {
   }
 }
 
-export namespace LiteIdentity {
-  export type Args = {
-    url?: URL | string;
-    creditBalance?: number;
-    lastUsedOn?: number;
-  };
-  export type ArgsWithType = Args & { type: AccountType.LiteIdentity | "liteIdentity" };
-}
+export type LiteIdentityArgs = {
+  url?: URL | string;
+  creditBalance?: number;
+  lastUsedOn?: number;
+};
+export type LiteIdentityArgsWithType = LiteIdentityArgs & {
+  type: AccountType.LiteIdentity | "liteIdentity";
+};
 export class LiteIdentity {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.LiteIdentity;
@@ -2511,7 +2475,7 @@ export class LiteIdentity {
   @encodeAs.field(4).uint
   public lastUsedOn?: number;
 
-  constructor(args: LiteIdentity.Args) {
+  constructor(args: LiteIdentityArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.creditBalance = args.creditBalance == undefined ? undefined : args.creditBalance;
@@ -2522,7 +2486,7 @@ export class LiteIdentity {
     return new LiteIdentity(this.asObject());
   }
 
-  asObject(): LiteIdentity.ArgsWithType {
+  asObject(): LiteIdentityArgsWithType {
     return {
       type: "liteIdentity",
       url: this.url && this.url.toString(),
@@ -2532,15 +2496,15 @@ export class LiteIdentity {
   }
 }
 
-export namespace LiteTokenAccount {
-  export type Args = {
-    url?: URL | string;
-    tokenUrl?: URL | string;
-    balance?: BN | string | number;
-    lockHeight?: number;
-  };
-  export type ArgsWithType = Args & { type: AccountType.LiteTokenAccount | "liteTokenAccount" };
-}
+export type LiteTokenAccountArgs = {
+  url?: URL | string;
+  tokenUrl?: URL | string;
+  balance?: BN | string | number;
+  lockHeight?: number;
+};
+export type LiteTokenAccountArgsWithType = LiteTokenAccountArgs & {
+  type: AccountType.LiteTokenAccount | "liteTokenAccount";
+};
 export class LiteTokenAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.LiteTokenAccount;
@@ -2553,7 +2517,7 @@ export class LiteTokenAccount {
   @encodeAs.field(5).uint
   public lockHeight?: number;
 
-  constructor(args: LiteTokenAccount.Args) {
+  constructor(args: LiteTokenAccountArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.tokenUrl =
@@ -2575,7 +2539,7 @@ export class LiteTokenAccount {
     return new LiteTokenAccount(this.asObject());
   }
 
-  asObject(): LiteTokenAccount.ArgsWithType {
+  asObject(): LiteTokenAccountArgsWithType {
     return {
       type: "liteTokenAccount",
       url: this.url && this.url.toString(),
@@ -2586,19 +2550,19 @@ export class LiteTokenAccount {
   }
 }
 
-export namespace LockAccount {
-  export type Args = {
-    height?: number;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.LockAccount | "lockAccount" };
-}
+export type LockAccountArgs = {
+  height?: number;
+};
+export type LockAccountArgsWithType = LockAccountArgs & {
+  type: TransactionType.LockAccount | "lockAccount";
+};
 export class LockAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.LockAccount;
   @encodeAs.field(2).uint
   public height?: number;
 
-  constructor(args: LockAccount.Args) {
+  constructor(args: LockAccountArgs) {
     this.height = args.height == undefined ? undefined : args.height;
   }
 
@@ -2606,7 +2570,7 @@ export class LockAccount {
     return new LockAccount(this.asObject());
   }
 
-  asObject(): LockAccount.ArgsWithType {
+  asObject(): LockAccountArgsWithType {
     return {
       type: "lockAccount",
       height: this.height && this.height,
@@ -2614,19 +2578,17 @@ export class LockAccount {
   }
 }
 
-export namespace NetworkAccountUpdate {
-  export type Args = {
-    name?: string;
-    body?: TransactionBody | TransactionBody.Args;
-  };
-}
+export type NetworkAccountUpdateArgs = {
+  name?: string;
+  body?: TransactionBody | TransactionBodyArgs;
+};
 export class NetworkAccountUpdate {
   @encodeAs.field(1).string
   public name?: string;
   @encodeAs.field(2).union
   public body?: TransactionBody;
 
-  constructor(args: NetworkAccountUpdate.Args) {
+  constructor(args: NetworkAccountUpdateArgs) {
     this.name = args.name == undefined ? undefined : args.name;
     this.body = args.body == undefined ? undefined : TransactionBody.fromObject(args.body);
   }
@@ -2635,7 +2597,7 @@ export class NetworkAccountUpdate {
     return new NetworkAccountUpdate(this.asObject());
   }
 
-  asObject(): NetworkAccountUpdate.Args {
+  asObject(): NetworkAccountUpdateArgs {
     return {
       name: this.name && this.name,
       body: this.body && this.body.asObject(),
@@ -2643,14 +2605,12 @@ export class NetworkAccountUpdate {
   }
 }
 
-export namespace NetworkDefinition {
-  export type Args = {
-    networkName?: string;
-    version?: number;
-    partitions?: (PartitionInfo | PartitionInfo.Args)[];
-    validators?: (ValidatorInfo | ValidatorInfo.Args)[];
-  };
-}
+export type NetworkDefinitionArgs = {
+  networkName?: string;
+  version?: number;
+  partitions?: (PartitionInfo | PartitionInfoArgs)[];
+  validators?: (ValidatorInfo | ValidatorInfoArgs)[];
+};
 export class NetworkDefinition {
   @encodeAs.field(1).string
   public networkName?: string;
@@ -2661,7 +2621,7 @@ export class NetworkDefinition {
   @encodeAs.field(4).repeatable.reference
   public validators?: ValidatorInfo[];
 
-  constructor(args: NetworkDefinition.Args) {
+  constructor(args: NetworkDefinitionArgs) {
     this.networkName = args.networkName == undefined ? undefined : args.networkName;
     this.version = args.version == undefined ? undefined : args.version;
     this.partitions =
@@ -2678,7 +2638,7 @@ export class NetworkDefinition {
     return new NetworkDefinition(this.asObject());
   }
 
-  asObject(): NetworkDefinition.Args {
+  asObject(): NetworkDefinitionArgs {
     return {
       networkName: this.networkName && this.networkName,
       version: this.version && this.version,
@@ -2688,16 +2648,14 @@ export class NetworkDefinition {
   }
 }
 
-export namespace NetworkGlobals {
-  export type Args = {
-    operatorAcceptThreshold?: Rational | Rational.Args;
-    validatorAcceptThreshold?: Rational | Rational.Args;
-    majorBlockSchedule?: string;
-    anchorEmptyBlocks?: boolean;
-    feeSchedule?: FeeSchedule | FeeSchedule.Args;
-    limits?: NetworkLimits | NetworkLimits.Args;
-  };
-}
+export type NetworkGlobalsArgs = {
+  operatorAcceptThreshold?: Rational | RationalArgs;
+  validatorAcceptThreshold?: Rational | RationalArgs;
+  majorBlockSchedule?: string;
+  anchorEmptyBlocks?: boolean;
+  feeSchedule?: FeeSchedule | FeeScheduleArgs;
+  limits?: NetworkLimits | NetworkLimitsArgs;
+};
 export class NetworkGlobals {
   @encodeAs.field(1).reference
   public operatorAcceptThreshold?: Rational;
@@ -2712,7 +2670,7 @@ export class NetworkGlobals {
   @encodeAs.field(6).reference
   public limits?: NetworkLimits;
 
-  constructor(args: NetworkGlobals.Args) {
+  constructor(args: NetworkGlobalsArgs) {
     this.operatorAcceptThreshold =
       args.operatorAcceptThreshold == undefined
         ? undefined
@@ -2747,7 +2705,7 @@ export class NetworkGlobals {
     return new NetworkGlobals(this.asObject());
   }
 
-  asObject(): NetworkGlobals.Args {
+  asObject(): NetworkGlobalsArgs {
     return {
       operatorAcceptThreshold:
         this.operatorAcceptThreshold && this.operatorAcceptThreshold.asObject(),
@@ -2761,15 +2719,13 @@ export class NetworkGlobals {
   }
 }
 
-export namespace NetworkLimits {
-  export type Args = {
-    dataEntryParts?: number;
-    accountAuthorities?: number;
-    bookPages?: number;
-    pageEntries?: number;
-    identityAccounts?: number;
-  };
-}
+export type NetworkLimitsArgs = {
+  dataEntryParts?: number;
+  accountAuthorities?: number;
+  bookPages?: number;
+  pageEntries?: number;
+  identityAccounts?: number;
+};
 export class NetworkLimits {
   @encodeAs.field(1).uint
   public dataEntryParts?: number;
@@ -2782,7 +2738,7 @@ export class NetworkLimits {
   @encodeAs.field(5).uint
   public identityAccounts?: number;
 
-  constructor(args: NetworkLimits.Args) {
+  constructor(args: NetworkLimitsArgs) {
     this.dataEntryParts = args.dataEntryParts == undefined ? undefined : args.dataEntryParts;
     this.accountAuthorities =
       args.accountAuthorities == undefined ? undefined : args.accountAuthorities;
@@ -2795,7 +2751,7 @@ export class NetworkLimits {
     return new NetworkLimits(this.asObject());
   }
 
-  asObject(): NetworkLimits.Args {
+  asObject(): NetworkLimitsArgs {
     return {
       dataEntryParts: this.dataEntryParts && this.dataEntryParts,
       accountAuthorities: this.accountAuthorities && this.accountAuthorities,
@@ -2806,16 +2762,14 @@ export class NetworkLimits {
   }
 }
 
-export namespace PartitionAnchor {
-  export type Args = {
-    source?: URL | string;
-    majorBlockIndex?: number;
-    minorBlockIndex?: number;
-    rootChainIndex?: number;
-    rootChainAnchor?: Uint8Array | string;
-    stateTreeAnchor?: Uint8Array | string;
-  };
-}
+export type PartitionAnchorArgs = {
+  source?: URL | string;
+  majorBlockIndex?: number;
+  minorBlockIndex?: number;
+  rootChainIndex?: number;
+  rootChainAnchor?: Uint8Array | string;
+  stateTreeAnchor?: Uint8Array | string;
+};
 export class PartitionAnchor {
   @encodeAs.field(1).url
   public source?: URL;
@@ -2830,7 +2784,7 @@ export class PartitionAnchor {
   @encodeAs.field(6).hash
   public stateTreeAnchor?: Uint8Array;
 
-  constructor(args: PartitionAnchor.Args) {
+  constructor(args: PartitionAnchorArgs) {
     this.source =
       args.source == undefined
         ? undefined
@@ -2858,7 +2812,7 @@ export class PartitionAnchor {
     return new PartitionAnchor(this.asObject());
   }
 
-  asObject(): PartitionAnchor.Args {
+  asObject(): PartitionAnchorArgs {
     return {
       source: this.source && this.source.toString(),
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
@@ -2870,19 +2824,17 @@ export class PartitionAnchor {
   }
 }
 
-export namespace PartitionAnchorReceipt {
-  export type Args = {
-    anchor?: PartitionAnchor | PartitionAnchor.Args;
-    rootChainReceipt?: merkle.Receipt | merkle.Receipt.Args;
-  };
-}
+export type PartitionAnchorReceiptArgs = {
+  anchor?: PartitionAnchor | PartitionAnchorArgs;
+  rootChainReceipt?: merkle.Receipt | merkle.ReceiptArgs;
+};
 export class PartitionAnchorReceipt {
   @encodeAs.field(1).reference
   public anchor?: PartitionAnchor;
   @encodeAs.field(2).reference
   public rootChainReceipt?: merkle.Receipt;
 
-  constructor(args: PartitionAnchorReceipt.Args) {
+  constructor(args: PartitionAnchorReceiptArgs) {
     this.anchor =
       args.anchor == undefined
         ? undefined
@@ -2901,7 +2853,7 @@ export class PartitionAnchorReceipt {
     return new PartitionAnchorReceipt(this.asObject());
   }
 
-  asObject(): PartitionAnchorReceipt.Args {
+  asObject(): PartitionAnchorReceiptArgs {
     return {
       anchor: this.anchor && this.anchor.asObject(),
       rootChainReceipt: this.rootChainReceipt && this.rootChainReceipt.asObject(),
@@ -2909,19 +2861,17 @@ export class PartitionAnchorReceipt {
   }
 }
 
-export namespace PartitionInfo {
-  export type Args = {
-    id?: string;
-    type?: PartitionType.Args;
-  };
-}
+export type PartitionInfoArgs = {
+  id?: string;
+  type?: PartitionTypeArgs;
+};
 export class PartitionInfo {
   @encodeAs.field(1).string
   public id?: string;
   @encodeAs.field(2).enum
   public type?: PartitionType;
 
-  constructor(args: PartitionInfo.Args) {
+  constructor(args: PartitionInfoArgs) {
     this.id = args.id == undefined ? undefined : args.id;
     this.type = args.type == undefined ? undefined : PartitionType.fromObject(args.type);
   }
@@ -2930,7 +2880,7 @@ export class PartitionInfo {
     return new PartitionInfo(this.asObject());
   }
 
-  asObject(): PartitionInfo.Args {
+  asObject(): PartitionInfoArgs {
     return {
       id: this.id && this.id,
       type: this.type && PartitionType.getName(this.type),
@@ -2938,15 +2888,15 @@ export class PartitionInfo {
   }
 }
 
-export namespace PartitionSignature {
-  export type Args = {
-    sourceNetwork?: URL | string;
-    destinationNetwork?: URL | string;
-    sequenceNumber?: number;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.Partition | "partition" };
-}
+export type PartitionSignatureArgs = {
+  sourceNetwork?: URL | string;
+  destinationNetwork?: URL | string;
+  sequenceNumber?: number;
+  transactionHash?: Uint8Array | string;
+};
+export type PartitionSignatureArgsWithType = PartitionSignatureArgs & {
+  type: SignatureType.Partition | "partition";
+};
 export class PartitionSignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Partition;
@@ -2959,7 +2909,7 @@ export class PartitionSignature {
   @encodeAs.field(5).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: PartitionSignature.Args) {
+  constructor(args: PartitionSignatureArgs) {
     this.sourceNetwork =
       args.sourceNetwork == undefined
         ? undefined
@@ -2985,7 +2935,7 @@ export class PartitionSignature {
     return new PartitionSignature(this.asObject());
   }
 
-  asObject(): PartitionSignature.ArgsWithType {
+  asObject(): PartitionSignatureArgsWithType {
     return {
       type: "partition",
       sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
@@ -2996,15 +2946,13 @@ export class PartitionSignature {
   }
 }
 
-export namespace PartitionSyntheticLedger {
-  export type Args = {
-    url?: URL | string;
-    produced?: number;
-    received?: number;
-    delivered?: number;
-    pending?: (TxID | string)[];
-  };
-}
+export type PartitionSyntheticLedgerArgs = {
+  url?: URL | string;
+  produced?: number;
+  received?: number;
+  delivered?: number;
+  pending?: (TxID | string)[];
+};
 export class PartitionSyntheticLedger {
   @encodeAs.field(1).url
   public url?: URL;
@@ -3017,7 +2965,7 @@ export class PartitionSyntheticLedger {
   @encodeAs.field(5).repeatable.txid
   public pending?: TxID[];
 
-  constructor(args: PartitionSyntheticLedger.Args) {
+  constructor(args: PartitionSyntheticLedgerArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.produced = args.produced == undefined ? undefined : args.produced;
@@ -3033,7 +2981,7 @@ export class PartitionSyntheticLedger {
     return new PartitionSyntheticLedger(this.asObject());
   }
 
-  asObject(): PartitionSyntheticLedger.Args {
+  asObject(): PartitionSyntheticLedgerArgs {
     return {
       url: this.url && this.url.toString(),
       produced: this.produced && this.produced,
@@ -3044,18 +2992,16 @@ export class PartitionSyntheticLedger {
   }
 }
 
-export namespace RCD1Signature {
-  export type Args = {
-    publicKey?: Uint8Array | string;
-    signature?: Uint8Array | string;
-    signer?: URL | string;
-    signerVersion?: number;
-    timestamp?: number;
-    vote?: VoteType.Args;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.RCD1 | "rcd1" };
-}
+export type RCD1SignatureArgs = {
+  publicKey?: Uint8Array | string;
+  signature?: Uint8Array | string;
+  signer?: URL | string;
+  signerVersion?: number;
+  timestamp?: number;
+  vote?: VoteTypeArgs;
+  transactionHash?: Uint8Array | string;
+};
+export type RCD1SignatureArgsWithType = RCD1SignatureArgs & { type: SignatureType.RCD1 | "rcd1" };
 export class RCD1Signature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.RCD1;
@@ -3074,7 +3020,7 @@ export class RCD1Signature {
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: RCD1Signature.Args) {
+  constructor(args: RCD1SignatureArgs) {
     this.publicKey =
       args.publicKey == undefined
         ? undefined
@@ -3108,7 +3054,7 @@ export class RCD1Signature {
     return new RCD1Signature(this.asObject());
   }
 
-  asObject(): RCD1Signature.ArgsWithType {
+  asObject(): RCD1SignatureArgsWithType {
     return {
       type: "rcd1",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
@@ -3122,19 +3068,17 @@ export class RCD1Signature {
   }
 }
 
-export namespace Rational {
-  export type Args = {
-    numerator?: number;
-    denominator?: number;
-  };
-}
+export type RationalArgs = {
+  numerator?: number;
+  denominator?: number;
+};
 export class Rational {
   @encodeAs.field(1).uint
   public numerator?: number;
   @encodeAs.field(2).uint
   public denominator?: number;
 
-  constructor(args: Rational.Args) {
+  constructor(args: RationalArgs) {
     this.numerator = args.numerator == undefined ? undefined : args.numerator;
     this.denominator = args.denominator == undefined ? undefined : args.denominator;
   }
@@ -3143,7 +3087,7 @@ export class Rational {
     return new Rational(this.asObject());
   }
 
-  asObject(): Rational.Args {
+  asObject(): RationalArgs {
     return {
       numerator: this.numerator && this.numerator,
       denominator: this.denominator && this.denominator,
@@ -3151,14 +3095,14 @@ export class Rational {
   }
 }
 
-export namespace ReceiptSignature {
-  export type Args = {
-    sourceNetwork?: URL | string;
-    proof?: merkle.Receipt | merkle.Receipt.Args;
-    transactionHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.Receipt | "receipt" };
-}
+export type ReceiptSignatureArgs = {
+  sourceNetwork?: URL | string;
+  proof?: merkle.Receipt | merkle.ReceiptArgs;
+  transactionHash?: Uint8Array | string;
+};
+export type ReceiptSignatureArgsWithType = ReceiptSignatureArgs & {
+  type: SignatureType.Receipt | "receipt";
+};
 export class ReceiptSignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Receipt;
@@ -3169,7 +3113,7 @@ export class ReceiptSignature {
   @encodeAs.field(4).hash
   public transactionHash?: Uint8Array;
 
-  constructor(args: ReceiptSignature.Args) {
+  constructor(args: ReceiptSignatureArgs) {
     this.sourceNetwork =
       args.sourceNetwork == undefined
         ? undefined
@@ -3194,7 +3138,7 @@ export class ReceiptSignature {
     return new ReceiptSignature(this.asObject());
   }
 
-  asObject(): ReceiptSignature.ArgsWithType {
+  asObject(): ReceiptSignatureArgsWithType {
     return {
       type: "receipt",
       sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
@@ -3204,14 +3148,14 @@ export class ReceiptSignature {
   }
 }
 
-export namespace RemoteSignature {
-  export type Args = {
-    destination?: URL | string;
-    signature?: Signature | Signature.Args;
-    cause?: (Uint8Array | string)[];
-  };
-  export type ArgsWithType = Args & { type: SignatureType.Remote | "remote" };
-}
+export type RemoteSignatureArgs = {
+  destination?: URL | string;
+  signature?: Signature | SignatureArgs;
+  cause?: (Uint8Array | string)[];
+};
+export type RemoteSignatureArgsWithType = RemoteSignatureArgs & {
+  type: SignatureType.Remote | "remote";
+};
 export class RemoteSignature {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Remote;
@@ -3222,7 +3166,7 @@ export class RemoteSignature {
   @encodeAs.field(4).repeatable.hash
   public cause?: Uint8Array[];
 
-  constructor(args: RemoteSignature.Args) {
+  constructor(args: RemoteSignatureArgs) {
     this.destination =
       args.destination == undefined
         ? undefined
@@ -3240,7 +3184,7 @@ export class RemoteSignature {
     return new RemoteSignature(this.asObject());
   }
 
-  asObject(): RemoteSignature.ArgsWithType {
+  asObject(): RemoteSignatureArgsWithType {
     return {
       type: "remote",
       destination: this.destination && this.destination.toString(),
@@ -3250,19 +3194,19 @@ export class RemoteSignature {
   }
 }
 
-export namespace RemoteTransaction {
-  export type Args = {
-    hash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.Remote | "remote" };
-}
+export type RemoteTransactionArgs = {
+  hash?: Uint8Array | string;
+};
+export type RemoteTransactionArgsWithType = RemoteTransactionArgs & {
+  type: TransactionType.Remote | "remote";
+};
 export class RemoteTransaction {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.Remote;
   @encodeAs.field(2).hash
   public hash?: Uint8Array;
 
-  constructor(args: RemoteTransaction.Args) {
+  constructor(args: RemoteTransactionArgs) {
     this.hash =
       args.hash == undefined
         ? undefined
@@ -3275,7 +3219,7 @@ export class RemoteTransaction {
     return new RemoteTransaction(this.asObject());
   }
 
-  asObject(): RemoteTransaction.ArgsWithType {
+  asObject(): RemoteTransactionArgsWithType {
     return {
       type: "remote",
       hash: this.hash && Buffer.from(this.hash).toString("hex"),
@@ -3283,21 +3227,19 @@ export class RemoteTransaction {
   }
 }
 
-export namespace RemoveAccountAuthorityOperation {
-  export type Args = {
-    authority?: URL | string;
-  };
-  export type ArgsWithType = Args & {
-    type: AccountAuthOperationType.RemoveAuthority | "removeAuthority";
-  };
-}
+export type RemoveAccountAuthorityOperationArgs = {
+  authority?: URL | string;
+};
+export type RemoveAccountAuthorityOperationArgsWithType = RemoveAccountAuthorityOperationArgs & {
+  type: AccountAuthOperationType.RemoveAuthority | "removeAuthority";
+};
 export class RemoveAccountAuthorityOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountAuthOperationType.RemoveAuthority;
   @encodeAs.field(2).url
   public authority?: URL;
 
-  constructor(args: RemoveAccountAuthorityOperation.Args) {
+  constructor(args: RemoveAccountAuthorityOperationArgs) {
     this.authority =
       args.authority == undefined
         ? undefined
@@ -3310,7 +3252,7 @@ export class RemoveAccountAuthorityOperation {
     return new RemoveAccountAuthorityOperation(this.asObject());
   }
 
-  asObject(): RemoveAccountAuthorityOperation.ArgsWithType {
+  asObject(): RemoveAccountAuthorityOperationArgsWithType {
     return {
       type: "removeAuthority",
       authority: this.authority && this.authority.toString(),
@@ -3318,19 +3260,19 @@ export class RemoveAccountAuthorityOperation {
   }
 }
 
-export namespace RemoveKeyOperation {
-  export type Args = {
-    entry?: KeySpecParams | KeySpecParams.Args;
-  };
-  export type ArgsWithType = Args & { type: KeyPageOperationType.Remove | "remove" };
-}
+export type RemoveKeyOperationArgs = {
+  entry?: KeySpecParams | KeySpecParamsArgs;
+};
+export type RemoveKeyOperationArgsWithType = RemoveKeyOperationArgs & {
+  type: KeyPageOperationType.Remove | "remove";
+};
 export class RemoveKeyOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.Remove;
   @encodeAs.field(2).reference
   public entry?: KeySpecParams;
 
-  constructor(args: RemoveKeyOperation.Args) {
+  constructor(args: RemoveKeyOperationArgs) {
     this.entry =
       args.entry == undefined
         ? undefined
@@ -3343,7 +3285,7 @@ export class RemoveKeyOperation {
     return new RemoveKeyOperation(this.asObject());
   }
 
-  asObject(): RemoveKeyOperation.ArgsWithType {
+  asObject(): RemoveKeyOperationArgsWithType {
     return {
       type: "remove",
       entry: this.entry && this.entry.asObject(),
@@ -3351,13 +3293,11 @@ export class RemoveKeyOperation {
   }
 }
 
-export namespace Route {
-  export type Args = {
-    length?: number;
-    value?: number;
-    partition?: string;
-  };
-}
+export type RouteArgs = {
+  length?: number;
+  value?: number;
+  partition?: string;
+};
 export class Route {
   @encodeAs.field(1).uint
   public length?: number;
@@ -3366,7 +3306,7 @@ export class Route {
   @encodeAs.field(3).string
   public partition?: string;
 
-  constructor(args: Route.Args) {
+  constructor(args: RouteArgs) {
     this.length = args.length == undefined ? undefined : args.length;
     this.value = args.value == undefined ? undefined : args.value;
     this.partition = args.partition == undefined ? undefined : args.partition;
@@ -3376,7 +3316,7 @@ export class Route {
     return new Route(this.asObject());
   }
 
-  asObject(): Route.Args {
+  asObject(): RouteArgs {
     return {
       length: this.length && this.length,
       value: this.value && this.value,
@@ -3385,19 +3325,17 @@ export class Route {
   }
 }
 
-export namespace RouteOverride {
-  export type Args = {
-    account?: URL | string;
-    partition?: string;
-  };
-}
+export type RouteOverrideArgs = {
+  account?: URL | string;
+  partition?: string;
+};
 export class RouteOverride {
   @encodeAs.field(1).url
   public account?: URL;
   @encodeAs.field(2).string
   public partition?: string;
 
-  constructor(args: RouteOverride.Args) {
+  constructor(args: RouteOverrideArgs) {
     this.account =
       args.account == undefined
         ? undefined
@@ -3411,7 +3349,7 @@ export class RouteOverride {
     return new RouteOverride(this.asObject());
   }
 
-  asObject(): RouteOverride.Args {
+  asObject(): RouteOverrideArgs {
     return {
       account: this.account && this.account.toString(),
       partition: this.partition && this.partition,
@@ -3419,19 +3357,17 @@ export class RouteOverride {
   }
 }
 
-export namespace RoutingTable {
-  export type Args = {
-    overrides?: (RouteOverride | RouteOverride.Args)[];
-    routes?: (Route | Route.Args)[];
-  };
-}
+export type RoutingTableArgs = {
+  overrides?: (RouteOverride | RouteOverrideArgs)[];
+  routes?: (Route | RouteArgs)[];
+};
 export class RoutingTable {
   @encodeAs.field(1).repeatable.reference
   public overrides?: RouteOverride[];
   @encodeAs.field(2).repeatable.reference
   public routes?: Route[];
 
-  constructor(args: RoutingTable.Args) {
+  constructor(args: RoutingTableArgs) {
     this.overrides =
       args.overrides == undefined
         ? undefined
@@ -3446,7 +3382,7 @@ export class RoutingTable {
     return new RoutingTable(this.asObject());
   }
 
-  asObject(): RoutingTable.Args {
+  asObject(): RoutingTableArgs {
     return {
       overrides: this.overrides && this.overrides?.map((v) => v.asObject()),
       routes: this.routes && this.routes?.map((v) => v.asObject()),
@@ -3454,14 +3390,14 @@ export class RoutingTable {
   }
 }
 
-export namespace SendTokens {
-  export type Args = {
-    hash?: Uint8Array | string;
-    meta?: unknown;
-    to?: (TokenRecipient | TokenRecipient.Args)[];
-  };
-  export type ArgsWithType = Args & { type: TransactionType.SendTokens | "sendTokens" };
-}
+export type SendTokensArgs = {
+  hash?: Uint8Array | string;
+  meta?: unknown;
+  to?: (TokenRecipient | TokenRecipientArgs)[];
+};
+export type SendTokensArgsWithType = SendTokensArgs & {
+  type: TransactionType.SendTokens | "sendTokens";
+};
 export class SendTokens {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SendTokens;
@@ -3472,7 +3408,7 @@ export class SendTokens {
   @encodeAs.field(4).repeatable.reference
   public to?: TokenRecipient[];
 
-  constructor(args: SendTokens.Args) {
+  constructor(args: SendTokensArgs) {
     this.hash =
       args.hash == undefined
         ? undefined
@@ -3490,7 +3426,7 @@ export class SendTokens {
     return new SendTokens(this.asObject());
   }
 
-  asObject(): SendTokens.ArgsWithType {
+  asObject(): SendTokensArgsWithType {
     return {
       type: "sendTokens",
       hash: this.hash && Buffer.from(this.hash).toString("hex"),
@@ -3500,19 +3436,19 @@ export class SendTokens {
   }
 }
 
-export namespace SetThresholdKeyPageOperation {
-  export type Args = {
-    threshold?: number;
-  };
-  export type ArgsWithType = Args & { type: KeyPageOperationType.SetThreshold | "setThreshold" };
-}
+export type SetThresholdKeyPageOperationArgs = {
+  threshold?: number;
+};
+export type SetThresholdKeyPageOperationArgsWithType = SetThresholdKeyPageOperationArgs & {
+  type: KeyPageOperationType.SetThreshold | "setThreshold";
+};
 export class SetThresholdKeyPageOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.SetThreshold;
   @encodeAs.field(2).uint
   public threshold?: number;
 
-  constructor(args: SetThresholdKeyPageOperation.Args) {
+  constructor(args: SetThresholdKeyPageOperationArgs) {
     this.threshold = args.threshold == undefined ? undefined : args.threshold;
   }
 
@@ -3520,7 +3456,7 @@ export class SetThresholdKeyPageOperation {
     return new SetThresholdKeyPageOperation(this.asObject());
   }
 
-  asObject(): SetThresholdKeyPageOperation.ArgsWithType {
+  asObject(): SetThresholdKeyPageOperationArgsWithType {
     return {
       type: "setThreshold",
       threshold: this.threshold && this.threshold,
@@ -3528,16 +3464,14 @@ export class SetThresholdKeyPageOperation {
   }
 }
 
-export namespace SignatureSet {
-  export type Args = {
-    vote?: VoteType.Args;
-    signer?: URL | string;
-    transactionHash?: Uint8Array | string;
-    signatures?: (Signature | Signature.Args)[];
-    authority?: URL | string;
-  };
-  export type ArgsWithType = Args & { type: SignatureType.Set | "set" };
-}
+export type SignatureSetArgs = {
+  vote?: VoteTypeArgs;
+  signer?: URL | string;
+  transactionHash?: Uint8Array | string;
+  signatures?: (Signature | SignatureArgs)[];
+  authority?: URL | string;
+};
+export type SignatureSetArgsWithType = SignatureSetArgs & { type: SignatureType.Set | "set" };
 export class SignatureSet {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = SignatureType.Set;
@@ -3552,7 +3486,7 @@ export class SignatureSet {
   @encodeAs.field(6).url
   public authority?: URL;
 
-  constructor(args: SignatureSet.Args) {
+  constructor(args: SignatureSetArgs) {
     this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
     this.signer =
       args.signer == undefined
@@ -3582,7 +3516,7 @@ export class SignatureSet {
     return new SignatureSet(this.asObject());
   }
 
-  asObject(): SignatureSet.ArgsWithType {
+  asObject(): SignatureSetArgsWithType {
     return {
       type: "set",
       vote: this.vote && VoteType.getName(this.vote),
@@ -3594,19 +3528,17 @@ export class SignatureSet {
   }
 }
 
-export namespace SyntheticBurnTokens {
-  export type Args = {
-    cause?: TxID | string;
-    source?: URL | string;
-    initiator?: URL | string;
-    feeRefund?: number;
-    amount?: BN | string | number;
-    isRefund?: boolean;
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.SyntheticBurnTokens | "syntheticBurnTokens";
-  };
-}
+export type SyntheticBurnTokensArgs = {
+  cause?: TxID | string;
+  source?: URL | string;
+  initiator?: URL | string;
+  feeRefund?: number;
+  amount?: BN | string | number;
+  isRefund?: boolean;
+};
+export type SyntheticBurnTokensArgsWithType = SyntheticBurnTokensArgs & {
+  type: TransactionType.SyntheticBurnTokens | "syntheticBurnTokens";
+};
 export class SyntheticBurnTokens {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticBurnTokens;
@@ -3623,7 +3555,7 @@ export class SyntheticBurnTokens {
   @encodeAs.field(4).bool
   public isRefund?: boolean;
 
-  constructor(args: SyntheticBurnTokens.Args) {
+  constructor(args: SyntheticBurnTokensArgs) {
     this.cause =
       args.cause == undefined
         ? undefined
@@ -3656,7 +3588,7 @@ export class SyntheticBurnTokens {
     return new SyntheticBurnTokens(this.asObject());
   }
 
-  asObject(): SyntheticBurnTokens.ArgsWithType {
+  asObject(): SyntheticBurnTokensArgsWithType {
     return {
       type: "syntheticBurnTokens",
       cause: this.cause && this.cause.toString(),
@@ -3669,18 +3601,16 @@ export class SyntheticBurnTokens {
   }
 }
 
-export namespace SyntheticCreateIdentity {
-  export type Args = {
-    cause?: TxID | string;
-    source?: URL | string;
-    initiator?: URL | string;
-    feeRefund?: number;
-    accounts?: (Account | Account.Args)[];
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.SyntheticCreateIdentity | "syntheticCreateIdentity";
-  };
-}
+export type SyntheticCreateIdentityArgs = {
+  cause?: TxID | string;
+  source?: URL | string;
+  initiator?: URL | string;
+  feeRefund?: number;
+  accounts?: (Account | AccountArgs)[];
+};
+export type SyntheticCreateIdentityArgsWithType = SyntheticCreateIdentityArgs & {
+  type: TransactionType.SyntheticCreateIdentity | "syntheticCreateIdentity";
+};
 export class SyntheticCreateIdentity {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticCreateIdentity;
@@ -3695,7 +3625,7 @@ export class SyntheticCreateIdentity {
   @encodeAs.field(3).repeatable.union
   public accounts?: Account[];
 
-  constructor(args: SyntheticCreateIdentity.Args) {
+  constructor(args: SyntheticCreateIdentityArgs) {
     this.cause =
       args.cause == undefined
         ? undefined
@@ -3723,7 +3653,7 @@ export class SyntheticCreateIdentity {
     return new SyntheticCreateIdentity(this.asObject());
   }
 
-  asObject(): SyntheticCreateIdentity.ArgsWithType {
+  asObject(): SyntheticCreateIdentityArgsWithType {
     return {
       type: "syntheticCreateIdentity",
       cause: this.cause && this.cause.toString(),
@@ -3735,20 +3665,18 @@ export class SyntheticCreateIdentity {
   }
 }
 
-export namespace SyntheticDepositCredits {
-  export type Args = {
-    cause?: TxID | string;
-    source?: URL | string;
-    initiator?: URL | string;
-    feeRefund?: number;
-    amount?: number;
-    acmeRefundAmount?: BN | string | number;
-    isRefund?: boolean;
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.SyntheticDepositCredits | "syntheticDepositCredits";
-  };
-}
+export type SyntheticDepositCreditsArgs = {
+  cause?: TxID | string;
+  source?: URL | string;
+  initiator?: URL | string;
+  feeRefund?: number;
+  amount?: number;
+  acmeRefundAmount?: BN | string | number;
+  isRefund?: boolean;
+};
+export type SyntheticDepositCreditsArgsWithType = SyntheticDepositCreditsArgs & {
+  type: TransactionType.SyntheticDepositCredits | "syntheticDepositCredits";
+};
 export class SyntheticDepositCredits {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticDepositCredits;
@@ -3767,7 +3695,7 @@ export class SyntheticDepositCredits {
   @encodeAs.field(5).bool
   public isRefund?: boolean;
 
-  constructor(args: SyntheticDepositCredits.Args) {
+  constructor(args: SyntheticDepositCreditsArgs) {
     this.cause =
       args.cause == undefined
         ? undefined
@@ -3801,7 +3729,7 @@ export class SyntheticDepositCredits {
     return new SyntheticDepositCredits(this.asObject());
   }
 
-  asObject(): SyntheticDepositCredits.ArgsWithType {
+  asObject(): SyntheticDepositCreditsArgsWithType {
     return {
       type: "syntheticDepositCredits",
       cause: this.cause && this.cause.toString(),
@@ -3815,21 +3743,19 @@ export class SyntheticDepositCredits {
   }
 }
 
-export namespace SyntheticDepositTokens {
-  export type Args = {
-    cause?: TxID | string;
-    source?: URL | string;
-    initiator?: URL | string;
-    feeRefund?: number;
-    token?: URL | string;
-    amount?: BN | string | number;
-    isIssuer?: boolean;
-    isRefund?: boolean;
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.SyntheticDepositTokens | "syntheticDepositTokens";
-  };
-}
+export type SyntheticDepositTokensArgs = {
+  cause?: TxID | string;
+  source?: URL | string;
+  initiator?: URL | string;
+  feeRefund?: number;
+  token?: URL | string;
+  amount?: BN | string | number;
+  isIssuer?: boolean;
+  isRefund?: boolean;
+};
+export type SyntheticDepositTokensArgsWithType = SyntheticDepositTokensArgs & {
+  type: TransactionType.SyntheticDepositTokens | "syntheticDepositTokens";
+};
 export class SyntheticDepositTokens {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticDepositTokens;
@@ -3850,7 +3776,7 @@ export class SyntheticDepositTokens {
   @encodeAs.field(6).bool
   public isRefund?: boolean;
 
-  constructor(args: SyntheticDepositTokens.Args) {
+  constructor(args: SyntheticDepositTokensArgs) {
     this.cause =
       args.cause == undefined
         ? undefined
@@ -3890,7 +3816,7 @@ export class SyntheticDepositTokens {
     return new SyntheticDepositTokens(this.asObject());
   }
 
-  asObject(): SyntheticDepositTokens.ArgsWithType {
+  asObject(): SyntheticDepositTokensArgsWithType {
     return {
       type: "syntheticDepositTokens",
       cause: this.cause && this.cause.toString(),
@@ -3905,15 +3831,13 @@ export class SyntheticDepositTokens {
   }
 }
 
-export namespace SyntheticForwardTransaction {
-  export type Args = {
-    signatures?: (RemoteSignature | RemoteSignature.Args)[];
-    transaction?: Transaction | Transaction.Args;
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.SyntheticForwardTransaction | "syntheticForwardTransaction";
-  };
-}
+export type SyntheticForwardTransactionArgs = {
+  signatures?: (RemoteSignature | RemoteSignatureArgs)[];
+  transaction?: Transaction | TransactionArgs;
+};
+export type SyntheticForwardTransactionArgsWithType = SyntheticForwardTransactionArgs & {
+  type: TransactionType.SyntheticForwardTransaction | "syntheticForwardTransaction";
+};
 export class SyntheticForwardTransaction {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticForwardTransaction;
@@ -3922,7 +3846,7 @@ export class SyntheticForwardTransaction {
   @encodeAs.field(3).reference
   public transaction?: Transaction;
 
-  constructor(args: SyntheticForwardTransaction.Args) {
+  constructor(args: SyntheticForwardTransactionArgs) {
     this.signatures =
       args.signatures == undefined
         ? undefined
@@ -3939,7 +3863,7 @@ export class SyntheticForwardTransaction {
     return new SyntheticForwardTransaction(this.asObject());
   }
 
-  asObject(): SyntheticForwardTransaction.ArgsWithType {
+  asObject(): SyntheticForwardTransactionArgsWithType {
     return {
       type: "syntheticForwardTransaction",
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
@@ -3948,13 +3872,13 @@ export class SyntheticForwardTransaction {
   }
 }
 
-export namespace SyntheticLedger {
-  export type Args = {
-    url?: URL | string;
-    sequence?: (PartitionSyntheticLedger | PartitionSyntheticLedger.Args)[];
-  };
-  export type ArgsWithType = Args & { type: AccountType.SyntheticLedger | "syntheticLedger" };
-}
+export type SyntheticLedgerArgs = {
+  url?: URL | string;
+  sequence?: (PartitionSyntheticLedger | PartitionSyntheticLedgerArgs)[];
+};
+export type SyntheticLedgerArgsWithType = SyntheticLedgerArgs & {
+  type: AccountType.SyntheticLedger | "syntheticLedger";
+};
 export class SyntheticLedger {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.SyntheticLedger;
@@ -3963,7 +3887,7 @@ export class SyntheticLedger {
   @encodeAs.field(3).repeatable.reference
   public sequence?: PartitionSyntheticLedger[];
 
-  constructor(args: SyntheticLedger.Args) {
+  constructor(args: SyntheticLedgerArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.sequence =
@@ -3978,7 +3902,7 @@ export class SyntheticLedger {
     return new SyntheticLedger(this.asObject());
   }
 
-  asObject(): SyntheticLedger.ArgsWithType {
+  asObject(): SyntheticLedgerArgsWithType {
     return {
       type: "syntheticLedger",
       url: this.url && this.url.toString(),
@@ -3987,13 +3911,11 @@ export class SyntheticLedger {
   }
 }
 
-export namespace SyntheticOrigin {
-  export type Args = {
-    cause?: TxID | string;
-    initiator?: URL | string;
-    feeRefund?: number;
-  };
-}
+export type SyntheticOriginArgs = {
+  cause?: TxID | string;
+  initiator?: URL | string;
+  feeRefund?: number;
+};
 export class SyntheticOrigin {
   @encodeAs.field(1).txid
   public cause?: TxID;
@@ -4002,7 +3924,7 @@ export class SyntheticOrigin {
   @encodeAs.field(4).uint
   public feeRefund?: number;
 
-  constructor(args: SyntheticOrigin.Args) {
+  constructor(args: SyntheticOriginArgs) {
     this.cause =
       args.cause == undefined
         ? undefined
@@ -4022,7 +3944,7 @@ export class SyntheticOrigin {
     return new SyntheticOrigin(this.asObject());
   }
 
-  asObject(): SyntheticOrigin.Args {
+  asObject(): SyntheticOriginArgs {
     return {
       cause: this.cause && this.cause.toString(),
       initiator: this.initiator && this.initiator.toString(),
@@ -4031,18 +3953,16 @@ export class SyntheticOrigin {
   }
 }
 
-export namespace SyntheticWriteData {
-  export type Args = {
-    cause?: TxID | string;
-    source?: URL | string;
-    initiator?: URL | string;
-    feeRefund?: number;
-    entry?: DataEntry | DataEntry.Args;
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.SyntheticWriteData | "syntheticWriteData";
-  };
-}
+export type SyntheticWriteDataArgs = {
+  cause?: TxID | string;
+  source?: URL | string;
+  initiator?: URL | string;
+  feeRefund?: number;
+  entry?: DataEntry | DataEntryArgs;
+};
+export type SyntheticWriteDataArgsWithType = SyntheticWriteDataArgs & {
+  type: TransactionType.SyntheticWriteData | "syntheticWriteData";
+};
 export class SyntheticWriteData {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SyntheticWriteData;
@@ -4057,7 +3977,7 @@ export class SyntheticWriteData {
   @encodeAs.field(3).union
   public entry?: DataEntry;
 
-  constructor(args: SyntheticWriteData.Args) {
+  constructor(args: SyntheticWriteDataArgs) {
     this.cause =
       args.cause == undefined
         ? undefined
@@ -4084,7 +4004,7 @@ export class SyntheticWriteData {
     return new SyntheticWriteData(this.asObject());
   }
 
-  asObject(): SyntheticWriteData.ArgsWithType {
+  asObject(): SyntheticWriteDataArgsWithType {
     return {
       type: "syntheticWriteData",
       cause: this.cause && this.cause.toString(),
@@ -4096,39 +4016,37 @@ export class SyntheticWriteData {
   }
 }
 
-export namespace SystemGenesis {
-  export type Args = {};
-  export type ArgsWithType = { type: TransactionType.SystemGenesis | "systemGenesis" };
-}
+export type SystemGenesisArgs = {};
+export type SystemGenesisArgsWithType = { type: TransactionType.SystemGenesis | "systemGenesis" };
 export class SystemGenesis {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SystemGenesis;
 
-  constructor(_: SystemGenesis.Args) {}
+  constructor(_: SystemGenesisArgs) {}
 
   copy() {
     return new SystemGenesis(this.asObject());
   }
 
-  asObject(): SystemGenesis.ArgsWithType {
+  asObject(): SystemGenesisArgsWithType {
     return {
       type: "systemGenesis",
     };
   }
 }
 
-export namespace SystemLedger {
-  export type Args = {
-    url?: URL | string;
-    index?: number;
-    timestamp?: Date | string;
-    acmeBurnt?: BN | string | number;
-    pendingUpdates?: (NetworkAccountUpdate | NetworkAccountUpdate.Args)[];
-    anchor?: AnchorBody | AnchorBody.Args;
-    executorVersion?: ExecutorVersion.Args;
-  };
-  export type ArgsWithType = Args & { type: AccountType.SystemLedger | "systemLedger" };
-}
+export type SystemLedgerArgs = {
+  url?: URL | string;
+  index?: number;
+  timestamp?: Date | string;
+  acmeBurnt?: BN | string | number;
+  pendingUpdates?: (NetworkAccountUpdate | NetworkAccountUpdateArgs)[];
+  anchor?: AnchorBody | AnchorBodyArgs;
+  executorVersion?: ExecutorVersionArgs;
+};
+export type SystemLedgerArgsWithType = SystemLedgerArgs & {
+  type: AccountType.SystemLedger | "systemLedger";
+};
 export class SystemLedger {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.SystemLedger;
@@ -4147,7 +4065,7 @@ export class SystemLedger {
   @encodeAs.field(8).enum
   public executorVersion?: ExecutorVersion;
 
-  constructor(args: SystemLedger.Args) {
+  constructor(args: SystemLedgerArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.index = args.index == undefined ? undefined : args.index;
@@ -4180,7 +4098,7 @@ export class SystemLedger {
     return new SystemLedger(this.asObject());
   }
 
-  asObject(): SystemLedger.ArgsWithType {
+  asObject(): SystemLedgerArgsWithType {
     return {
       type: "systemLedger",
       url: this.url && this.url.toString(),
@@ -4194,13 +4112,13 @@ export class SystemLedger {
   }
 }
 
-export namespace SystemWriteData {
-  export type Args = {
-    entry?: DataEntry | DataEntry.Args;
-    writeToState?: boolean;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.SystemWriteData | "systemWriteData" };
-}
+export type SystemWriteDataArgs = {
+  entry?: DataEntry | DataEntryArgs;
+  writeToState?: boolean;
+};
+export type SystemWriteDataArgsWithType = SystemWriteDataArgs & {
+  type: TransactionType.SystemWriteData | "systemWriteData";
+};
 export class SystemWriteData {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.SystemWriteData;
@@ -4209,7 +4127,7 @@ export class SystemWriteData {
   @encodeAs.field(3).bool
   public writeToState?: boolean;
 
-  constructor(args: SystemWriteData.Args) {
+  constructor(args: SystemWriteDataArgs) {
     this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
     this.writeToState = args.writeToState == undefined ? undefined : args.writeToState;
   }
@@ -4218,7 +4136,7 @@ export class SystemWriteData {
     return new SystemWriteData(this.asObject());
   }
 
-  asObject(): SystemWriteData.ArgsWithType {
+  asObject(): SystemWriteDataArgsWithType {
     return {
       type: "systemWriteData",
       entry: this.entry && this.entry.asObject(),
@@ -4227,15 +4145,15 @@ export class SystemWriteData {
   }
 }
 
-export namespace TokenAccount {
-  export type Args = {
-    url?: URL | string;
-    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
-    tokenUrl?: URL | string;
-    balance?: BN | string | number;
-  };
-  export type ArgsWithType = Args & { type: AccountType.TokenAccount | "tokenAccount" };
-}
+export type TokenAccountArgs = {
+  url?: URL | string;
+  authorities?: (AuthorityEntry | AuthorityEntryArgs)[];
+  tokenUrl?: URL | string;
+  balance?: BN | string | number;
+};
+export type TokenAccountArgsWithType = TokenAccountArgs & {
+  type: AccountType.TokenAccount | "tokenAccount";
+};
 export class TokenAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.TokenAccount;
@@ -4248,7 +4166,7 @@ export class TokenAccount {
   @encodeAs.field(5).bigInt
   public balance?: BN;
 
-  constructor(args: TokenAccount.Args) {
+  constructor(args: TokenAccountArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.authorities =
@@ -4273,7 +4191,7 @@ export class TokenAccount {
     return new TokenAccount(this.asObject());
   }
 
-  asObject(): TokenAccount.ArgsWithType {
+  asObject(): TokenAccountArgsWithType {
     return {
       type: "tokenAccount",
       url: this.url && this.url.toString(),
@@ -4284,18 +4202,18 @@ export class TokenAccount {
   }
 }
 
-export namespace TokenIssuer {
-  export type Args = {
-    url?: URL | string;
-    authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
-    symbol?: string;
-    precision?: number;
-    properties?: URL | string;
-    issued?: BN | string | number;
-    supplyLimit?: BN | string | number;
-  };
-  export type ArgsWithType = Args & { type: AccountType.TokenIssuer | "tokenIssuer" };
-}
+export type TokenIssuerArgs = {
+  url?: URL | string;
+  authorities?: (AuthorityEntry | AuthorityEntryArgs)[];
+  symbol?: string;
+  precision?: number;
+  properties?: URL | string;
+  issued?: BN | string | number;
+  supplyLimit?: BN | string | number;
+};
+export type TokenIssuerArgsWithType = TokenIssuerArgs & {
+  type: AccountType.TokenIssuer | "tokenIssuer";
+};
 export class TokenIssuer {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.TokenIssuer;
@@ -4314,7 +4232,7 @@ export class TokenIssuer {
   @encodeAs.field(8).bigInt
   public supplyLimit?: BN;
 
-  constructor(args: TokenIssuer.Args) {
+  constructor(args: TokenIssuerArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.authorities =
@@ -4347,7 +4265,7 @@ export class TokenIssuer {
     return new TokenIssuer(this.asObject());
   }
 
-  asObject(): TokenIssuer.ArgsWithType {
+  asObject(): TokenIssuerArgsWithType {
     return {
       type: "tokenIssuer",
       url: this.url && this.url.toString(),
@@ -4361,19 +4279,17 @@ export class TokenIssuer {
   }
 }
 
-export namespace TokenIssuerProof {
-  export type Args = {
-    transaction?: CreateToken | CreateToken.Args;
-    receipt?: merkle.Receipt | merkle.Receipt.Args;
-  };
-}
+export type TokenIssuerProofArgs = {
+  transaction?: CreateToken | CreateTokenArgs;
+  receipt?: merkle.Receipt | merkle.ReceiptArgs;
+};
 export class TokenIssuerProof {
   @encodeAs.field(1).reference
   public transaction?: CreateToken;
   @encodeAs.field(2).reference
   public receipt?: merkle.Receipt;
 
-  constructor(args: TokenIssuerProof.Args) {
+  constructor(args: TokenIssuerProofArgs) {
     this.transaction =
       args.transaction == undefined
         ? undefined
@@ -4392,7 +4308,7 @@ export class TokenIssuerProof {
     return new TokenIssuerProof(this.asObject());
   }
 
-  asObject(): TokenIssuerProof.Args {
+  asObject(): TokenIssuerProofArgs {
     return {
       transaction: this.transaction && this.transaction.asObject(),
       receipt: this.receipt && this.receipt.asObject(),
@@ -4400,19 +4316,17 @@ export class TokenIssuerProof {
   }
 }
 
-export namespace TokenRecipient {
-  export type Args = {
-    url?: URL | string;
-    amount?: BN | string | number;
-  };
-}
+export type TokenRecipientArgs = {
+  url?: URL | string;
+  amount?: BN | string | number;
+};
 export class TokenRecipient {
   @encodeAs.field(1).url
   public url?: URL;
   @encodeAs.field(2).bigInt
   public amount?: BN;
 
-  constructor(args: TokenRecipient.Args) {
+  constructor(args: TokenRecipientArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.amount =
@@ -4427,7 +4341,7 @@ export class TokenRecipient {
     return new TokenRecipient(this.asObject());
   }
 
-  asObject(): TokenRecipient.Args {
+  asObject(): TokenRecipientArgs {
     return {
       url: this.url && this.url.toString(),
       amount: this.amount && this.amount.toString(),
@@ -4435,19 +4349,17 @@ export class TokenRecipient {
   }
 }
 
-export namespace Transaction {
-  export type Args = {
-    header?: TransactionHeader | TransactionHeader.Args;
-    body?: TransactionBody | TransactionBody.Args;
-  };
-}
+export type TransactionArgs = {
+  header?: TransactionHeader | TransactionHeaderArgs;
+  body?: TransactionBody | TransactionBodyArgs;
+};
 export class Transaction extends TransactionBase {
   @encodeAs.field(1).reference
   public header?: TransactionHeader;
   @encodeAs.field(2).union
   public body?: TransactionBody;
 
-  constructor(args: Transaction.Args) {
+  constructor(args: TransactionArgs) {
     super();
     this.header =
       args.header == undefined
@@ -4462,7 +4374,7 @@ export class Transaction extends TransactionBase {
     return new Transaction(this.asObject());
   }
 
-  asObject(): Transaction.Args {
+  asObject(): TransactionArgs {
     return {
       header: this.header && this.header.asObject(),
       body: this.body && this.body.asObject(),
@@ -4470,14 +4382,12 @@ export class Transaction extends TransactionBase {
   }
 }
 
-export namespace TransactionHeader {
-  export type Args = {
-    principal?: URL | string;
-    initiator?: Uint8Array | string;
-    memo?: string;
-    metadata?: Uint8Array | string;
-  };
-}
+export type TransactionHeaderArgs = {
+  principal?: URL | string;
+  initiator?: Uint8Array | string;
+  memo?: string;
+  metadata?: Uint8Array | string;
+};
 export class TransactionHeader {
   @encodeAs.field(1).url
   public principal?: URL;
@@ -4488,7 +4398,7 @@ export class TransactionHeader {
   @encodeAs.field(4).bytes
   public metadata?: Uint8Array;
 
-  constructor(args: TransactionHeader.Args) {
+  constructor(args: TransactionHeaderArgs) {
     this.principal =
       args.principal == undefined
         ? undefined
@@ -4514,7 +4424,7 @@ export class TransactionHeader {
     return new TransactionHeader(this.asObject());
   }
 
-  asObject(): TransactionHeader.Args {
+  asObject(): TransactionHeaderArgs {
     return {
       principal: this.principal && this.principal.toString(),
       initiator: this.initiator && Buffer.from(this.initiator).toString("hex"),
@@ -4524,23 +4434,21 @@ export class TransactionHeader {
   }
 }
 
-export namespace TransactionStatus {
-  export type Args = {
-    txID?: TxID | string;
-    code?: errors2.Status.Args;
-    error?: errors2.Error | errors2.Error.Args;
-    result?: TransactionResult | TransactionResult.Args;
-    received?: number;
-    initiator?: URL | string;
-    signers?: (Signer | Signer.Args)[];
-    sourceNetwork?: URL | string;
-    destinationNetwork?: URL | string;
-    sequenceNumber?: number;
-    gotDirectoryReceipt?: boolean;
-    proof?: merkle.Receipt | merkle.Receipt.Args;
-    anchorSigners?: (Uint8Array | string)[];
-  };
-}
+export type TransactionStatusArgs = {
+  txID?: TxID | string;
+  code?: errors2.StatusArgs;
+  error?: errors2.Error | errors2.ErrorArgs;
+  result?: TransactionResult | TransactionResultArgs;
+  received?: number;
+  initiator?: URL | string;
+  signers?: (Signer | SignerArgs)[];
+  sourceNetwork?: URL | string;
+  destinationNetwork?: URL | string;
+  sequenceNumber?: number;
+  gotDirectoryReceipt?: boolean;
+  proof?: merkle.Receipt | merkle.ReceiptArgs;
+  anchorSigners?: (Uint8Array | string)[];
+};
 export class TransactionStatus {
   @encodeAs.field(1).txid
   public txID?: TxID;
@@ -4569,7 +4477,7 @@ export class TransactionStatus {
   @encodeAs.field(13).repeatable.bytes
   public anchorSigners?: Uint8Array[];
 
-  constructor(args: TransactionStatus.Args) {
+  constructor(args: TransactionStatusArgs) {
     this.txID =
       args.txID == undefined
         ? undefined
@@ -4624,7 +4532,7 @@ export class TransactionStatus {
     return new TransactionStatus(this.asObject());
   }
 
-  asObject(): TransactionStatus.Args {
+  asObject(): TransactionStatusArgs {
     return {
       txID: this.txID && this.txID.toString(),
       code: this.code && errors2.Status.getName(this.code),
@@ -4644,19 +4552,19 @@ export class TransactionStatus {
   }
 }
 
-export namespace TransferCredits {
-  export type Args = {
-    to?: (CreditRecipient | CreditRecipient.Args)[];
-  };
-  export type ArgsWithType = Args & { type: TransactionType.TransferCredits | "transferCredits" };
-}
+export type TransferCreditsArgs = {
+  to?: (CreditRecipient | CreditRecipientArgs)[];
+};
+export type TransferCreditsArgsWithType = TransferCreditsArgs & {
+  type: TransactionType.TransferCredits | "transferCredits";
+};
 export class TransferCredits {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.TransferCredits;
   @encodeAs.field(2).repeatable.reference
   public to?: CreditRecipient[];
 
-  constructor(args: TransferCredits.Args) {
+  constructor(args: TransferCreditsArgs) {
     this.to =
       args.to == undefined
         ? undefined
@@ -4667,7 +4575,7 @@ export class TransferCredits {
     return new TransferCredits(this.asObject());
   }
 
-  asObject(): TransferCredits.ArgsWithType {
+  asObject(): TransferCreditsArgsWithType {
     return {
       type: "transferCredits",
       to: this.to && this.to?.map((v) => v.asObject()),
@@ -4675,16 +4583,14 @@ export class TransferCredits {
   }
 }
 
-export namespace TxIdSet {
-  export type Args = {
-    entries?: (TxID | string)[];
-  };
-}
+export type TxIdSetArgs = {
+  entries?: (TxID | string)[];
+};
 export class TxIdSet {
   @encodeAs.field(1).repeatable.txid
   public entries?: TxID[];
 
-  constructor(args: TxIdSet.Args) {
+  constructor(args: TxIdSetArgs) {
     this.entries =
       args.entries == undefined
         ? undefined
@@ -4695,26 +4601,26 @@ export class TxIdSet {
     return new TxIdSet(this.asObject());
   }
 
-  asObject(): TxIdSet.Args {
+  asObject(): TxIdSetArgs {
     return {
       entries: this.entries && this.entries?.map((v) => v.toString()),
     };
   }
 }
 
-export namespace UnknownAccount {
-  export type Args = {
-    url?: URL | string;
-  };
-  export type ArgsWithType = Args & { type: AccountType.Unknown | "unknown" };
-}
+export type UnknownAccountArgs = {
+  url?: URL | string;
+};
+export type UnknownAccountArgsWithType = UnknownAccountArgs & {
+  type: AccountType.Unknown | "unknown";
+};
 export class UnknownAccount {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.Unknown;
   @encodeAs.field(2).url
   public url?: URL;
 
-  constructor(args: UnknownAccount.Args) {
+  constructor(args: UnknownAccountArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
   }
@@ -4723,7 +4629,7 @@ export class UnknownAccount {
     return new UnknownAccount(this.asObject());
   }
 
-  asObject(): UnknownAccount.ArgsWithType {
+  asObject(): UnknownAccountArgsWithType {
     return {
       type: "unknown",
       url: this.url && this.url.toString(),
@@ -4731,13 +4637,13 @@ export class UnknownAccount {
   }
 }
 
-export namespace UnknownSigner {
-  export type Args = {
-    url?: URL | string;
-    version?: number;
-  };
-  export type ArgsWithType = Args & { type: AccountType.UnknownSigner | "unknownSigner" };
-}
+export type UnknownSignerArgs = {
+  url?: URL | string;
+  version?: number;
+};
+export type UnknownSignerArgsWithType = UnknownSignerArgs & {
+  type: AccountType.UnknownSigner | "unknownSigner";
+};
 export class UnknownSigner {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = AccountType.UnknownSigner;
@@ -4746,7 +4652,7 @@ export class UnknownSigner {
   @encodeAs.field(3).uint
   public version?: number;
 
-  constructor(args: UnknownSigner.Args) {
+  constructor(args: UnknownSignerArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.version = args.version == undefined ? undefined : args.version;
@@ -4756,7 +4662,7 @@ export class UnknownSigner {
     return new UnknownSigner(this.asObject());
   }
 
-  asObject(): UnknownSigner.ArgsWithType {
+  asObject(): UnknownSignerArgsWithType {
     return {
       type: "unknownSigner",
       url: this.url && this.url.toString(),
@@ -4765,21 +4671,19 @@ export class UnknownSigner {
   }
 }
 
-export namespace UpdateAccountAuth {
-  export type Args = {
-    operations?: (AccountAuthOperation | AccountAuthOperation.Args)[];
-  };
-  export type ArgsWithType = Args & {
-    type: TransactionType.UpdateAccountAuth | "updateAccountAuth";
-  };
-}
+export type UpdateAccountAuthArgs = {
+  operations?: (AccountAuthOperation | AccountAuthOperationArgs)[];
+};
+export type UpdateAccountAuthArgsWithType = UpdateAccountAuthArgs & {
+  type: TransactionType.UpdateAccountAuth | "updateAccountAuth";
+};
 export class UpdateAccountAuth {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.UpdateAccountAuth;
   @encodeAs.field(2).repeatable.union
   public operations?: AccountAuthOperation[];
 
-  constructor(args: UpdateAccountAuth.Args) {
+  constructor(args: UpdateAccountAuthArgs) {
     this.operations =
       args.operations == undefined
         ? undefined
@@ -4790,7 +4694,7 @@ export class UpdateAccountAuth {
     return new UpdateAccountAuth(this.asObject());
   }
 
-  asObject(): UpdateAccountAuth.ArgsWithType {
+  asObject(): UpdateAccountAuthArgsWithType {
     return {
       type: "updateAccountAuth",
       operations: this.operations && this.operations?.map((v) => v.asObject()),
@@ -4798,13 +4702,13 @@ export class UpdateAccountAuth {
   }
 }
 
-export namespace UpdateAllowedKeyPageOperation {
-  export type Args = {
-    allow?: TransactionType.Args[];
-    deny?: TransactionType.Args[];
-  };
-  export type ArgsWithType = Args & { type: KeyPageOperationType.UpdateAllowed | "updateAllowed" };
-}
+export type UpdateAllowedKeyPageOperationArgs = {
+  allow?: TransactionTypeArgs[];
+  deny?: TransactionTypeArgs[];
+};
+export type UpdateAllowedKeyPageOperationArgsWithType = UpdateAllowedKeyPageOperationArgs & {
+  type: KeyPageOperationType.UpdateAllowed | "updateAllowed";
+};
 export class UpdateAllowedKeyPageOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.UpdateAllowed;
@@ -4813,7 +4717,7 @@ export class UpdateAllowedKeyPageOperation {
   @encodeAs.field(3).repeatable.enum
   public deny?: TransactionType[];
 
-  constructor(args: UpdateAllowedKeyPageOperation.Args) {
+  constructor(args: UpdateAllowedKeyPageOperationArgs) {
     this.allow =
       args.allow == undefined ? undefined : args.allow.map((v) => TransactionType.fromObject(v));
     this.deny =
@@ -4824,7 +4728,7 @@ export class UpdateAllowedKeyPageOperation {
     return new UpdateAllowedKeyPageOperation(this.asObject());
   }
 
-  asObject(): UpdateAllowedKeyPageOperation.ArgsWithType {
+  asObject(): UpdateAllowedKeyPageOperationArgsWithType {
     return {
       type: "updateAllowed",
       allow: this.allow && this.allow?.map((v) => TransactionType.getName(v)),
@@ -4833,19 +4737,19 @@ export class UpdateAllowedKeyPageOperation {
   }
 }
 
-export namespace UpdateKey {
-  export type Args = {
-    newKeyHash?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.UpdateKey | "updateKey" };
-}
+export type UpdateKeyArgs = {
+  newKeyHash?: Uint8Array | string;
+};
+export type UpdateKeyArgsWithType = UpdateKeyArgs & {
+  type: TransactionType.UpdateKey | "updateKey";
+};
 export class UpdateKey {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.UpdateKey;
   @encodeAs.field(2).bytes
   public newKeyHash?: Uint8Array;
 
-  constructor(args: UpdateKey.Args) {
+  constructor(args: UpdateKeyArgs) {
     this.newKeyHash =
       args.newKeyHash == undefined
         ? undefined
@@ -4858,7 +4762,7 @@ export class UpdateKey {
     return new UpdateKey(this.asObject());
   }
 
-  asObject(): UpdateKey.ArgsWithType {
+  asObject(): UpdateKeyArgsWithType {
     return {
       type: "updateKey",
       newKeyHash: this.newKeyHash && Buffer.from(this.newKeyHash).toString("hex"),
@@ -4866,13 +4770,13 @@ export class UpdateKey {
   }
 }
 
-export namespace UpdateKeyOperation {
-  export type Args = {
-    oldEntry?: KeySpecParams | KeySpecParams.Args;
-    newEntry?: KeySpecParams | KeySpecParams.Args;
-  };
-  export type ArgsWithType = Args & { type: KeyPageOperationType.Update | "update" };
-}
+export type UpdateKeyOperationArgs = {
+  oldEntry?: KeySpecParams | KeySpecParamsArgs;
+  newEntry?: KeySpecParams | KeySpecParamsArgs;
+};
+export type UpdateKeyOperationArgsWithType = UpdateKeyOperationArgs & {
+  type: KeyPageOperationType.Update | "update";
+};
 export class UpdateKeyOperation {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = KeyPageOperationType.Update;
@@ -4881,7 +4785,7 @@ export class UpdateKeyOperation {
   @encodeAs.field(3).reference
   public newEntry?: KeySpecParams;
 
-  constructor(args: UpdateKeyOperation.Args) {
+  constructor(args: UpdateKeyOperationArgs) {
     this.oldEntry =
       args.oldEntry == undefined
         ? undefined
@@ -4900,7 +4804,7 @@ export class UpdateKeyOperation {
     return new UpdateKeyOperation(this.asObject());
   }
 
-  asObject(): UpdateKeyOperation.ArgsWithType {
+  asObject(): UpdateKeyOperationArgsWithType {
     return {
       type: "update",
       oldEntry: this.oldEntry && this.oldEntry.asObject(),
@@ -4909,19 +4813,19 @@ export class UpdateKeyOperation {
   }
 }
 
-export namespace UpdateKeyPage {
-  export type Args = {
-    operation?: (KeyPageOperation | KeyPageOperation.Args)[];
-  };
-  export type ArgsWithType = Args & { type: TransactionType.UpdateKeyPage | "updateKeyPage" };
-}
+export type UpdateKeyPageArgs = {
+  operation?: (KeyPageOperation | KeyPageOperationArgs)[];
+};
+export type UpdateKeyPageArgsWithType = UpdateKeyPageArgs & {
+  type: TransactionType.UpdateKeyPage | "updateKeyPage";
+};
 export class UpdateKeyPage {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.UpdateKeyPage;
   @encodeAs.field(2).repeatable.union
   public operation?: KeyPageOperation[];
 
-  constructor(args: UpdateKeyPage.Args) {
+  constructor(args: UpdateKeyPageArgs) {
     this.operation =
       args.operation == undefined
         ? undefined
@@ -4932,7 +4836,7 @@ export class UpdateKeyPage {
     return new UpdateKeyPage(this.asObject());
   }
 
-  asObject(): UpdateKeyPage.ArgsWithType {
+  asObject(): UpdateKeyPageArgsWithType {
     return {
       type: "updateKeyPage",
       operation: this.operation && this.operation?.map((v) => v.asObject()),
@@ -4940,14 +4844,12 @@ export class UpdateKeyPage {
   }
 }
 
-export namespace ValidatorInfo {
-  export type Args = {
-    publicKey?: Uint8Array | string;
-    publicKeyHash?: Uint8Array | string;
-    operator?: URL | string;
-    partitions?: (ValidatorPartitionInfo | ValidatorPartitionInfo.Args)[];
-  };
-}
+export type ValidatorInfoArgs = {
+  publicKey?: Uint8Array | string;
+  publicKeyHash?: Uint8Array | string;
+  operator?: URL | string;
+  partitions?: (ValidatorPartitionInfo | ValidatorPartitionInfoArgs)[];
+};
 export class ValidatorInfo {
   @encodeAs.field(1).bytes
   public publicKey?: Uint8Array;
@@ -4958,7 +4860,7 @@ export class ValidatorInfo {
   @encodeAs.field(4).repeatable.reference
   public partitions?: ValidatorPartitionInfo[];
 
-  constructor(args: ValidatorInfo.Args) {
+  constructor(args: ValidatorInfoArgs) {
     this.publicKey =
       args.publicKey == undefined
         ? undefined
@@ -4989,7 +4891,7 @@ export class ValidatorInfo {
     return new ValidatorInfo(this.asObject());
   }
 
-  asObject(): ValidatorInfo.Args {
+  asObject(): ValidatorInfoArgs {
     return {
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
@@ -4999,19 +4901,17 @@ export class ValidatorInfo {
   }
 }
 
-export namespace ValidatorPartitionInfo {
-  export type Args = {
-    id?: string;
-    active?: boolean;
-  };
-}
+export type ValidatorPartitionInfoArgs = {
+  id?: string;
+  active?: boolean;
+};
 export class ValidatorPartitionInfo {
   @encodeAs.field(1).string
   public id?: string;
   @encodeAs.field(2).keepEmpty.bool
   public active?: boolean;
 
-  constructor(args: ValidatorPartitionInfo.Args) {
+  constructor(args: ValidatorPartitionInfoArgs) {
     this.id = args.id == undefined ? undefined : args.id;
     this.active = args.active == undefined ? undefined : args.active;
   }
@@ -5020,7 +4920,7 @@ export class ValidatorPartitionInfo {
     return new ValidatorPartitionInfo(this.asObject());
   }
 
-  asObject(): ValidatorPartitionInfo.Args {
+  asObject(): ValidatorPartitionInfoArgs {
     return {
       id: this.id && this.id,
       active: this.active && this.active,
@@ -5028,14 +4928,14 @@ export class ValidatorPartitionInfo {
   }
 }
 
-export namespace WriteData {
-  export type Args = {
-    entry?: DataEntry | DataEntry.Args;
-    scratch?: boolean;
-    writeToState?: boolean;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.WriteData | "writeData" };
-}
+export type WriteDataArgs = {
+  entry?: DataEntry | DataEntryArgs;
+  scratch?: boolean;
+  writeToState?: boolean;
+};
+export type WriteDataArgsWithType = WriteDataArgs & {
+  type: TransactionType.WriteData | "writeData";
+};
 export class WriteData {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.WriteData;
@@ -5046,7 +4946,7 @@ export class WriteData {
   @encodeAs.field(4).bool
   public writeToState?: boolean;
 
-  constructor(args: WriteData.Args) {
+  constructor(args: WriteDataArgs) {
     this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
     this.scratch = args.scratch == undefined ? undefined : args.scratch;
     this.writeToState = args.writeToState == undefined ? undefined : args.writeToState;
@@ -5056,7 +4956,7 @@ export class WriteData {
     return new WriteData(this.asObject());
   }
 
-  asObject(): WriteData.ArgsWithType {
+  asObject(): WriteDataArgsWithType {
     return {
       type: "writeData",
       entry: this.entry && this.entry.asObject(),
@@ -5066,14 +4966,14 @@ export class WriteData {
   }
 }
 
-export namespace WriteDataResult {
-  export type Args = {
-    entryHash?: Uint8Array | string;
-    accountUrl?: URL | string;
-    accountID?: Uint8Array | string;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.WriteData | "writeData" };
-}
+export type WriteDataResultArgs = {
+  entryHash?: Uint8Array | string;
+  accountUrl?: URL | string;
+  accountID?: Uint8Array | string;
+};
+export type WriteDataResultArgsWithType = WriteDataResultArgs & {
+  type: TransactionType.WriteData | "writeData";
+};
 export class WriteDataResult {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.WriteData;
@@ -5084,7 +4984,7 @@ export class WriteDataResult {
   @encodeAs.field(4).bytes
   public accountID?: Uint8Array;
 
-  constructor(args: WriteDataResult.Args) {
+  constructor(args: WriteDataResultArgs) {
     this.entryHash =
       args.entryHash == undefined
         ? undefined
@@ -5109,7 +5009,7 @@ export class WriteDataResult {
     return new WriteDataResult(this.asObject());
   }
 
-  asObject(): WriteDataResult.ArgsWithType {
+  asObject(): WriteDataResultArgsWithType {
     return {
       type: "writeData",
       entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
@@ -5119,13 +5019,13 @@ export class WriteDataResult {
   }
 }
 
-export namespace WriteDataTo {
-  export type Args = {
-    recipient?: URL | string;
-    entry?: DataEntry | DataEntry.Args;
-  };
-  export type ArgsWithType = Args & { type: TransactionType.WriteDataTo | "writeDataTo" };
-}
+export type WriteDataToArgs = {
+  recipient?: URL | string;
+  entry?: DataEntry | DataEntryArgs;
+};
+export type WriteDataToArgsWithType = WriteDataToArgs & {
+  type: TransactionType.WriteDataTo | "writeDataTo";
+};
 export class WriteDataTo {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.WriteDataTo;
@@ -5134,7 +5034,7 @@ export class WriteDataTo {
   @encodeAs.field(3).union
   public entry?: DataEntry;
 
-  constructor(args: WriteDataTo.Args) {
+  constructor(args: WriteDataToArgs) {
     this.recipient =
       args.recipient == undefined
         ? undefined
@@ -5148,7 +5048,7 @@ export class WriteDataTo {
     return new WriteDataTo(this.asObject());
   }
 
-  asObject(): WriteDataTo.ArgsWithType {
+  asObject(): WriteDataToArgsWithType {
     return {
       type: "writeDataTo",
       recipient: this.recipient && this.recipient.toString(),

@@ -55,10 +55,11 @@ export enum Status {
   PeerMisbehaved = 507,
 }
 
-export namespace Status {
-  export type Args = Status | string;
+export type StatusArgs = Status | string;
 
-  export function fromObject(obj: Args): Status {
+/** @ignore */
+export namespace Status {
+  export function fromObject(obj: StatusArgs): Status {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }

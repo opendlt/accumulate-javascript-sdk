@@ -21,10 +21,11 @@ export enum MessageType {
   BlockSummary = 8,
 }
 
-export namespace MessageType {
-  export type Args = MessageType | string;
+export type MessageTypeArgs = MessageType | string;
 
-  export function fromObject(obj: Args): MessageType {
+/** @ignore */
+export namespace MessageType {
+  export function fromObject(obj: MessageTypeArgs): MessageType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }

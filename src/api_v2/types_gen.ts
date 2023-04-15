@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { BlockFilterMode, TxFetchMode } from ".";
+import { BlockFilterMode, BlockFilterModeArgs, TxFetchMode, TxFetchModeArgs } from ".";
 import { encodeAs } from "../encoding";
 import * as errors2 from "../errors";
 import * as merkle from "../merkle";
@@ -16,21 +16,19 @@ import * as protocol from "./protocol";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 
-export namespace ChainEntry {
-  export type Args = {
-    height?: number;
-    entry?: Uint8Array | string;
-    state?: (Uint8Array | string)[];
-    value?: any;
-  };
-}
+export type ChainEntryArgs = {
+  height?: number;
+  entry?: Uint8Array | string;
+  state?: (Uint8Array | string)[];
+  value?: any;
+};
 export class ChainEntry {
   public height?: number;
   public entry?: Uint8Array;
   public state?: Uint8Array[];
   public value?: any;
 
-  constructor(args: ChainEntry.Args) {
+  constructor(args: ChainEntryArgs) {
     this.height = args.height == undefined ? undefined : args.height;
     this.entry =
       args.entry == undefined
@@ -49,7 +47,7 @@ export class ChainEntry {
     return new ChainEntry(this.asObject());
   }
 
-  asObject(): ChainEntry.Args {
+  asObject(): ChainEntryArgs {
     return {
       height: this.height && this.height,
       entry: this.entry && Buffer.from(this.entry).toString("hex"),
@@ -59,15 +57,13 @@ export class ChainEntry {
   }
 }
 
-export namespace ChainIdQuery {
-  export type Args = {
-    chainId?: Uint8Array | string;
-  };
-}
+export type ChainIdQueryArgs = {
+  chainId?: Uint8Array | string;
+};
 export class ChainIdQuery {
   public chainId?: Uint8Array;
 
-  constructor(args: ChainIdQuery.Args) {
+  constructor(args: ChainIdQueryArgs) {
     this.chainId =
       args.chainId == undefined
         ? undefined
@@ -80,23 +76,21 @@ export class ChainIdQuery {
     return new ChainIdQuery(this.asObject());
   }
 
-  asObject(): ChainIdQuery.Args {
+  asObject(): ChainIdQueryArgs {
     return {
       chainId: this.chainId && Buffer.from(this.chainId).toString("hex"),
     };
   }
 }
 
-export namespace ChainQueryResponse {
-  export type Args = {
-    type?: string;
-    mainChain?: MerkleState | MerkleState.Args;
-    chains?: (ChainState | ChainState.Args)[];
-    data?: any;
-    chainId?: Uint8Array | string;
-    receipt?: GeneralReceipt | GeneralReceipt.Args;
-  };
-}
+export type ChainQueryResponseArgs = {
+  type?: string;
+  mainChain?: MerkleState | MerkleStateArgs;
+  chains?: (ChainState | ChainStateArgs)[];
+  data?: any;
+  chainId?: Uint8Array | string;
+  receipt?: GeneralReceipt | GeneralReceiptArgs;
+};
 export class ChainQueryResponse {
   public type?: string;
   public mainChain?: MerkleState;
@@ -105,7 +99,7 @@ export class ChainQueryResponse {
   public chainId?: Uint8Array;
   public receipt?: GeneralReceipt;
 
-  constructor(args: ChainQueryResponse.Args) {
+  constructor(args: ChainQueryResponseArgs) {
     this.type = args.type == undefined ? undefined : args.type;
     this.mainChain =
       args.mainChain == undefined
@@ -136,7 +130,7 @@ export class ChainQueryResponse {
     return new ChainQueryResponse(this.asObject());
   }
 
-  asObject(): ChainQueryResponse.Args {
+  asObject(): ChainQueryResponseArgs {
     return {
       type: this.type && this.type,
       mainChain: this.mainChain && this.mainChain.asObject(),
@@ -148,14 +142,12 @@ export class ChainQueryResponse {
   }
 }
 
-export namespace ChainState {
-  export type Args = {
-    name?: string;
-    type?: protocol.ChainType.Args;
-    height?: number;
-    roots?: (Uint8Array | string)[];
-  };
-}
+export type ChainStateArgs = {
+  name?: string;
+  type?: protocol.ChainTypeArgs;
+  height?: number;
+  roots?: (Uint8Array | string)[];
+};
 export class ChainState {
   @encodeAs.field(1).string
   public name?: string;
@@ -166,7 +158,7 @@ export class ChainState {
   @encodeAs.field(4).repeatable.bytes
   public roots?: Uint8Array[];
 
-  constructor(args: ChainState.Args) {
+  constructor(args: ChainStateArgs) {
     this.name = args.name == undefined ? undefined : args.name;
     this.type = args.type == undefined ? undefined : protocol.ChainType.fromObject(args.type);
     this.height = args.height == undefined ? undefined : args.height;
@@ -180,7 +172,7 @@ export class ChainState {
     return new ChainState(this.asObject());
   }
 
-  asObject(): ChainState.Args {
+  asObject(): ChainStateArgs {
     return {
       name: this.name && this.name,
       type: this.type && protocol.ChainType.getName(this.type),
@@ -190,19 +182,17 @@ export class ChainState {
   }
 }
 
-export namespace DataEntryQuery {
-  export type Args = {
-    url?: URL | string;
-    entryHash?: Uint8Array | string;
-  };
-}
+export type DataEntryQueryArgs = {
+  url?: URL | string;
+  entryHash?: Uint8Array | string;
+};
 export class DataEntryQuery {
   @encodeAs.field(1).url
   public url?: URL;
   @encodeAs.field(2).hash
   public entryHash?: Uint8Array;
 
-  constructor(args: DataEntryQuery.Args) {
+  constructor(args: DataEntryQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.entryHash =
@@ -217,7 +207,7 @@ export class DataEntryQuery {
     return new DataEntryQuery(this.asObject());
   }
 
-  asObject(): DataEntryQuery.Args {
+  asObject(): DataEntryQueryArgs {
     return {
       url: this.url && this.url.toString(),
       entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
@@ -225,14 +215,12 @@ export class DataEntryQuery {
   }
 }
 
-export namespace DataEntryQueryResponse {
-  export type Args = {
-    entryHash?: Uint8Array | string;
-    entry?: protocol.DataEntry | protocol.DataEntry.Args;
-    txId?: TxID | string;
-    causeTxId?: TxID | string;
-  };
-}
+export type DataEntryQueryResponseArgs = {
+  entryHash?: Uint8Array | string;
+  entry?: protocol.DataEntry | protocol.DataEntryArgs;
+  txId?: TxID | string;
+  causeTxId?: TxID | string;
+};
 export class DataEntryQueryResponse {
   @encodeAs.field(1).hash
   public entryHash?: Uint8Array;
@@ -243,7 +231,7 @@ export class DataEntryQueryResponse {
   @encodeAs.field(4).txid
   public causeTxId?: TxID;
 
-  constructor(args: DataEntryQueryResponse.Args) {
+  constructor(args: DataEntryQueryResponseArgs) {
     this.entryHash =
       args.entryHash == undefined
         ? undefined
@@ -269,7 +257,7 @@ export class DataEntryQueryResponse {
     return new DataEntryQueryResponse(this.asObject());
   }
 
-  asObject(): DataEntryQueryResponse.Args {
+  asObject(): DataEntryQueryResponseArgs {
     return {
       entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
       entry: this.entry && this.entry.asObject(),
@@ -279,18 +267,16 @@ export class DataEntryQueryResponse {
   }
 }
 
-export namespace DataEntrySetQuery {
-  export type Args = {
-    url?: URL | string;
-    start?: number;
-    count?: number;
-    expand?: boolean;
-    height?: number;
-    scratch?: boolean;
-    prove?: boolean;
-    includeRemote?: boolean;
-  };
-}
+export type DataEntrySetQueryArgs = {
+  url?: URL | string;
+  start?: number;
+  count?: number;
+  expand?: boolean;
+  height?: number;
+  scratch?: boolean;
+  prove?: boolean;
+  includeRemote?: boolean;
+};
 export class DataEntrySetQuery {
   public url?: URL;
   public start?: number;
@@ -301,7 +287,7 @@ export class DataEntrySetQuery {
   public prove?: boolean;
   public includeRemote?: boolean;
 
-  constructor(args: DataEntrySetQuery.Args) {
+  constructor(args: DataEntrySetQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.start = args.start == undefined ? undefined : args.start;
@@ -317,7 +303,7 @@ export class DataEntrySetQuery {
     return new DataEntrySetQuery(this.asObject());
   }
 
-  asObject(): DataEntrySetQuery.Args {
+  asObject(): DataEntrySetQueryArgs {
     return {
       url: this.url && this.url.toString(),
       start: this.start && this.start,
@@ -331,16 +317,14 @@ export class DataEntrySetQuery {
   }
 }
 
-export namespace DescriptionResponse {
-  export type Args = {
-    partitionId?: string;
-    networkType?: protocol.PartitionType.Args;
-    network?: config.Network | config.Network.Args;
-    networkAnchor?: Uint8Array | string;
-    values?: core.GlobalValues | core.GlobalValues.Args;
-    error?: errors2.Error | errors2.Error.Args;
-  };
-}
+export type DescriptionResponseArgs = {
+  partitionId?: string;
+  networkType?: protocol.PartitionTypeArgs;
+  network?: config.Network | config.NetworkArgs;
+  networkAnchor?: Uint8Array | string;
+  values?: core.GlobalValues | core.GlobalValuesArgs;
+  error?: errors2.Error | errors2.ErrorArgs;
+};
 export class DescriptionResponse {
   public partitionId?: string;
   public networkType?: protocol.PartitionType;
@@ -349,7 +333,7 @@ export class DescriptionResponse {
   public values?: core.GlobalValues;
   public error?: errors2.Error;
 
-  constructor(args: DescriptionResponse.Args) {
+  constructor(args: DescriptionResponseArgs) {
     this.partitionId = args.partitionId == undefined ? undefined : args.partitionId;
     this.networkType =
       args.networkType == undefined
@@ -385,7 +369,7 @@ export class DescriptionResponse {
     return new DescriptionResponse(this.asObject());
   }
 
-  asObject(): DescriptionResponse.Args {
+  asObject(): DescriptionResponseArgs {
     return {
       partitionId: this.partitionId && this.partitionId,
       networkType: this.networkType && protocol.PartitionType.getName(this.networkType),
@@ -397,18 +381,16 @@ export class DescriptionResponse {
   }
 }
 
-export namespace DirectoryQuery {
-  export type Args = {
-    url?: URL | string;
-    start?: number;
-    count?: number;
-    expand?: boolean;
-    height?: number;
-    scratch?: boolean;
-    prove?: boolean;
-    includeRemote?: boolean;
-  };
-}
+export type DirectoryQueryArgs = {
+  url?: URL | string;
+  start?: number;
+  count?: number;
+  expand?: boolean;
+  height?: number;
+  scratch?: boolean;
+  prove?: boolean;
+  includeRemote?: boolean;
+};
 export class DirectoryQuery {
   public url?: URL;
   public start?: number;
@@ -419,7 +401,7 @@ export class DirectoryQuery {
   public prove?: boolean;
   public includeRemote?: boolean;
 
-  constructor(args: DirectoryQuery.Args) {
+  constructor(args: DirectoryQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.start = args.start == undefined ? undefined : args.start;
@@ -435,7 +417,7 @@ export class DirectoryQuery {
     return new DirectoryQuery(this.asObject());
   }
 
-  asObject(): DirectoryQuery.Args {
+  asObject(): DirectoryQueryArgs {
     return {
       url: this.url && this.url.toString(),
       start: this.start && this.start,
@@ -449,17 +431,15 @@ export class DirectoryQuery {
   }
 }
 
-export namespace ExecuteRequest {
-  export type Args = {
-    envelope?: messaging.Envelope | messaging.Envelope.Args;
-    checkOnly?: boolean;
-  };
-}
+export type ExecuteRequestArgs = {
+  envelope?: messaging.Envelope | messaging.EnvelopeArgs;
+  checkOnly?: boolean;
+};
 export class ExecuteRequest {
   public envelope?: messaging.Envelope;
   public checkOnly?: boolean;
 
-  constructor(args: ExecuteRequest.Args) {
+  constructor(args: ExecuteRequestArgs) {
     this.envelope =
       args.envelope == undefined
         ? undefined
@@ -473,7 +453,7 @@ export class ExecuteRequest {
     return new ExecuteRequest(this.asObject());
   }
 
-  asObject(): ExecuteRequest.Args {
+  asObject(): ExecuteRequestArgs {
     return {
       envelope: this.envelope && this.envelope.asObject(),
       checkOnly: this.checkOnly && this.checkOnly,
@@ -481,16 +461,14 @@ export class ExecuteRequest {
   }
 }
 
-export namespace GeneralQuery {
-  export type Args = {
-    url?: URL | string;
-    expand?: boolean;
-    height?: number;
-    scratch?: boolean;
-    prove?: boolean;
-    includeRemote?: boolean;
-  };
-}
+export type GeneralQueryArgs = {
+  url?: URL | string;
+  expand?: boolean;
+  height?: number;
+  scratch?: boolean;
+  prove?: boolean;
+  includeRemote?: boolean;
+};
 export class GeneralQuery {
   public url?: URL;
   public expand?: boolean;
@@ -499,7 +477,7 @@ export class GeneralQuery {
   public prove?: boolean;
   public includeRemote?: boolean;
 
-  constructor(args: GeneralQuery.Args) {
+  constructor(args: GeneralQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.expand = args.expand == undefined ? undefined : args.expand;
@@ -513,7 +491,7 @@ export class GeneralQuery {
     return new GeneralQuery(this.asObject());
   }
 
-  asObject(): GeneralQuery.Args {
+  asObject(): GeneralQueryArgs {
     return {
       url: this.url && this.url.toString(),
       expand: this.expand && this.expand,
@@ -525,16 +503,14 @@ export class GeneralQuery {
   }
 }
 
-export namespace GeneralReceipt {
-  export type Args = {
-    localBlock?: number;
-    localBlockTime?: Date | string;
-    directoryBlock?: number;
-    majorBlock?: number;
-    proof?: merkle.Receipt | merkle.Receipt.Args;
-    error?: string;
-  };
-}
+export type GeneralReceiptArgs = {
+  localBlock?: number;
+  localBlockTime?: Date | string;
+  directoryBlock?: number;
+  majorBlock?: number;
+  proof?: merkle.Receipt | merkle.ReceiptArgs;
+  error?: string;
+};
 export class GeneralReceipt {
   @encodeAs.field(1).uint
   public localBlock?: number;
@@ -549,7 +525,7 @@ export class GeneralReceipt {
   @encodeAs.field(6).string
   public error?: string;
 
-  constructor(args: GeneralReceipt.Args) {
+  constructor(args: GeneralReceiptArgs) {
     this.localBlock = args.localBlock == undefined ? undefined : args.localBlock;
     this.localBlockTime =
       args.localBlockTime == undefined
@@ -572,7 +548,7 @@ export class GeneralReceipt {
     return new GeneralReceipt(this.asObject());
   }
 
-  asObject(): GeneralReceipt.Args {
+  asObject(): GeneralReceiptArgs {
     return {
       localBlock: this.localBlock && this.localBlock,
       localBlockTime: this.localBlockTime && this.localBlockTime,
@@ -584,15 +560,13 @@ export class GeneralReceipt {
   }
 }
 
-export namespace KeyPage {
-  export type Args = {
-    version?: number;
-  };
-}
+export type KeyPageArgs = {
+  version?: number;
+};
 export class KeyPage {
   public version?: number;
 
-  constructor(args: KeyPage.Args) {
+  constructor(args: KeyPageArgs) {
     this.version = args.version == undefined ? undefined : args.version;
   }
 
@@ -600,24 +574,22 @@ export class KeyPage {
     return new KeyPage(this.asObject());
   }
 
-  asObject(): KeyPage.Args {
+  asObject(): KeyPageArgs {
     return {
       version: this.version && this.version,
     };
   }
 }
 
-export namespace KeyPageIndexQuery {
-  export type Args = {
-    url?: URL | string;
-    key?: Uint8Array | string;
-  };
-}
+export type KeyPageIndexQueryArgs = {
+  url?: URL | string;
+  key?: Uint8Array | string;
+};
 export class KeyPageIndexQuery {
   public url?: URL;
   public key?: Uint8Array;
 
-  constructor(args: KeyPageIndexQuery.Args) {
+  constructor(args: KeyPageIndexQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.key =
@@ -632,7 +604,7 @@ export class KeyPageIndexQuery {
     return new KeyPageIndexQuery(this.asObject());
   }
 
-  asObject(): KeyPageIndexQuery.Args {
+  asObject(): KeyPageIndexQueryArgs {
     return {
       url: this.url && this.url.toString(),
       key: this.key && Buffer.from(this.key).toString("hex"),
@@ -640,19 +612,17 @@ export class KeyPageIndexQuery {
   }
 }
 
-export namespace MajorBlocksQuery {
-  export type Args = {
-    url?: URL | string;
-    start?: number;
-    count?: number;
-  };
-}
+export type MajorBlocksQueryArgs = {
+  url?: URL | string;
+  start?: number;
+  count?: number;
+};
 export class MajorBlocksQuery {
   public url?: URL;
   public start?: number;
   public count?: number;
 
-  constructor(args: MajorBlocksQuery.Args) {
+  constructor(args: MajorBlocksQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.start = args.start == undefined ? undefined : args.start;
@@ -663,7 +633,7 @@ export class MajorBlocksQuery {
     return new MajorBlocksQuery(this.asObject());
   }
 
-  asObject(): MajorBlocksQuery.Args {
+  asObject(): MajorBlocksQueryArgs {
     return {
       url: this.url && this.url.toString(),
       start: this.start && this.start,
@@ -672,19 +642,17 @@ export class MajorBlocksQuery {
   }
 }
 
-export namespace MajorQueryResponse {
-  export type Args = {
-    majorBlockIndex?: number;
-    majorBlockTime?: Date | string;
-    minorBlocks?: (MinorBlock | MinorBlock.Args)[];
-  };
-}
+export type MajorQueryResponseArgs = {
+  majorBlockIndex?: number;
+  majorBlockTime?: Date | string;
+  minorBlocks?: (MinorBlock | MinorBlockArgs)[];
+};
 export class MajorQueryResponse {
   public majorBlockIndex?: number;
   public majorBlockTime?: Date;
   public minorBlocks?: MinorBlock[];
 
-  constructor(args: MajorQueryResponse.Args) {
+  constructor(args: MajorQueryResponseArgs) {
     this.majorBlockIndex = args.majorBlockIndex == undefined ? undefined : args.majorBlockIndex;
     this.majorBlockTime =
       args.majorBlockTime == undefined
@@ -702,7 +670,7 @@ export class MajorQueryResponse {
     return new MajorQueryResponse(this.asObject());
   }
 
-  asObject(): MajorQueryResponse.Args {
+  asObject(): MajorQueryResponseArgs {
     return {
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
       majorBlockTime: this.majorBlockTime && this.majorBlockTime,
@@ -711,17 +679,15 @@ export class MajorQueryResponse {
   }
 }
 
-export namespace MerkleState {
-  export type Args = {
-    height?: number;
-    roots?: (Uint8Array | string)[];
-  };
-}
+export type MerkleStateArgs = {
+  height?: number;
+  roots?: (Uint8Array | string)[];
+};
 export class MerkleState {
   public height?: number;
   public roots?: Uint8Array[];
 
-  constructor(args: MerkleState.Args) {
+  constructor(args: MerkleStateArgs) {
     this.height = args.height == undefined ? undefined : args.height;
     this.roots =
       args.roots == undefined
@@ -733,7 +699,7 @@ export class MerkleState {
     return new MerkleState(this.asObject());
   }
 
-  asObject(): MerkleState.Args {
+  asObject(): MerkleStateArgs {
     return {
       height: this.height && this.height,
       roots: this.roots && this.roots?.map((v) => Buffer.from(v).toString("hex")),
@@ -741,17 +707,15 @@ export class MerkleState {
   }
 }
 
-export namespace MetricsQuery {
-  export type Args = {
-    metric?: string;
-    duration?: number;
-  };
-}
+export type MetricsQueryArgs = {
+  metric?: string;
+  duration?: number;
+};
 export class MetricsQuery {
   public metric?: string;
   public duration?: number;
 
-  constructor(args: MetricsQuery.Args) {
+  constructor(args: MetricsQueryArgs) {
     this.metric = args.metric == undefined ? undefined : args.metric;
     this.duration = args.duration == undefined ? undefined : args.duration;
   }
@@ -760,7 +724,7 @@ export class MetricsQuery {
     return new MetricsQuery(this.asObject());
   }
 
-  asObject(): MetricsQuery.Args {
+  asObject(): MetricsQueryArgs {
     return {
       metric: this.metric && this.metric,
       duration: this.duration && this.duration,
@@ -768,15 +732,13 @@ export class MetricsQuery {
   }
 }
 
-export namespace MetricsResponse {
-  export type Args = {
-    value?: any;
-  };
-}
+export type MetricsResponseArgs = {
+  value?: any;
+};
 export class MetricsResponse {
   public value?: any;
 
-  constructor(args: MetricsResponse.Args) {
+  constructor(args: MetricsResponseArgs) {
     this.value = args.value == undefined ? undefined : args.value;
   }
 
@@ -784,24 +746,22 @@ export class MetricsResponse {
     return new MetricsResponse(this.asObject());
   }
 
-  asObject(): MetricsResponse.Args {
+  asObject(): MetricsResponseArgs {
     return {
       value: this.value && this.value,
     };
   }
 }
 
-export namespace MinorBlock {
-  export type Args = {
-    blockIndex?: number;
-    blockTime?: Date | string;
-  };
-}
+export type MinorBlockArgs = {
+  blockIndex?: number;
+  blockTime?: Date | string;
+};
 export class MinorBlock {
   public blockIndex?: number;
   public blockTime?: Date;
 
-  constructor(args: MinorBlock.Args) {
+  constructor(args: MinorBlockArgs) {
     this.blockIndex = args.blockIndex == undefined ? undefined : args.blockIndex;
     this.blockTime =
       args.blockTime == undefined
@@ -815,7 +775,7 @@ export class MinorBlock {
     return new MinorBlock(this.asObject());
   }
 
-  asObject(): MinorBlock.Args {
+  asObject(): MinorBlockArgs {
     return {
       blockIndex: this.blockIndex && this.blockIndex,
       blockTime: this.blockTime && this.blockTime,
@@ -823,15 +783,13 @@ export class MinorBlock {
   }
 }
 
-export namespace MinorBlocksQuery {
-  export type Args = {
-    url?: URL | string;
-    start?: number;
-    count?: number;
-    txFetchMode?: TxFetchMode.Args;
-    blockFilterMode?: BlockFilterMode.Args;
-  };
-}
+export type MinorBlocksQueryArgs = {
+  url?: URL | string;
+  start?: number;
+  count?: number;
+  txFetchMode?: TxFetchModeArgs;
+  blockFilterMode?: BlockFilterModeArgs;
+};
 export class MinorBlocksQuery {
   public url?: URL;
   public start?: number;
@@ -839,7 +797,7 @@ export class MinorBlocksQuery {
   public txFetchMode?: TxFetchMode;
   public blockFilterMode?: BlockFilterMode;
 
-  constructor(args: MinorBlocksQuery.Args) {
+  constructor(args: MinorBlocksQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.start = args.start == undefined ? undefined : args.start;
@@ -856,7 +814,7 @@ export class MinorBlocksQuery {
     return new MinorBlocksQuery(this.asObject());
   }
 
-  asObject(): MinorBlocksQuery.Args {
+  asObject(): MinorBlocksQueryArgs {
     return {
       url: this.url && this.url.toString(),
       start: this.start && this.start,
@@ -867,15 +825,13 @@ export class MinorBlocksQuery {
   }
 }
 
-export namespace MinorQueryResponse {
-  export type Args = {
-    blockIndex?: number;
-    blockTime?: Date | string;
-    txCount?: number;
-    txIds?: (Uint8Array | string)[];
-    transactions?: (TransactionQueryResponse | TransactionQueryResponse.Args)[];
-  };
-}
+export type MinorQueryResponseArgs = {
+  blockIndex?: number;
+  blockTime?: Date | string;
+  txCount?: number;
+  txIds?: (Uint8Array | string)[];
+  transactions?: (TransactionQueryResponse | TransactionQueryResponseArgs)[];
+};
 export class MinorQueryResponse {
   public blockIndex?: number;
   public blockTime?: Date;
@@ -883,7 +839,7 @@ export class MinorQueryResponse {
   public txIds?: Uint8Array[];
   public transactions?: TransactionQueryResponse[];
 
-  constructor(args: MinorQueryResponse.Args) {
+  constructor(args: MinorQueryResponseArgs) {
     this.blockIndex = args.blockIndex == undefined ? undefined : args.blockIndex;
     this.blockTime =
       args.blockTime == undefined
@@ -908,7 +864,7 @@ export class MinorQueryResponse {
     return new MinorQueryResponse(this.asObject());
   }
 
-  asObject(): MinorQueryResponse.Args {
+  asObject(): MinorQueryResponseArgs {
     return {
       blockIndex: this.blockIndex && this.blockIndex,
       blockTime: this.blockTime && this.blockTime,
@@ -919,16 +875,14 @@ export class MinorQueryResponse {
   }
 }
 
-export namespace MultiResponse {
-  export type Args = {
-    type?: string;
-    items?: any[];
-    start?: number;
-    count?: number;
-    total?: number;
-    otherItems?: any[];
-  };
-}
+export type MultiResponseArgs = {
+  type?: string;
+  items?: any[];
+  start?: number;
+  count?: number;
+  total?: number;
+  otherItems?: any[];
+};
 export class MultiResponse {
   public type?: string;
   public items?: any[];
@@ -937,7 +891,7 @@ export class MultiResponse {
   public total?: number;
   public otherItems?: any[];
 
-  constructor(args: MultiResponse.Args) {
+  constructor(args: MultiResponseArgs) {
     this.type = args.type == undefined ? undefined : args.type;
     this.items = args.items == undefined ? undefined : args.items.map((v) => v);
     this.start = args.start == undefined ? undefined : args.start;
@@ -950,7 +904,7 @@ export class MultiResponse {
     return new MultiResponse(this.asObject());
   }
 
-  asObject(): MultiResponse.Args {
+  asObject(): MultiResponseArgs {
     return {
       type: this.type && this.type,
       items: this.items && this.items?.map((v) => v),
@@ -962,15 +916,13 @@ export class MultiResponse {
   }
 }
 
-export namespace QueryOptions {
-  export type Args = {
-    expand?: boolean;
-    height?: number;
-    scratch?: boolean;
-    prove?: boolean;
-    includeRemote?: boolean;
-  };
-}
+export type QueryOptionsArgs = {
+  expand?: boolean;
+  height?: number;
+  scratch?: boolean;
+  prove?: boolean;
+  includeRemote?: boolean;
+};
 export class QueryOptions {
   public expand?: boolean;
   public height?: number;
@@ -978,7 +930,7 @@ export class QueryOptions {
   public prove?: boolean;
   public includeRemote?: boolean;
 
-  constructor(args: QueryOptions.Args) {
+  constructor(args: QueryOptionsArgs) {
     this.expand = args.expand == undefined ? undefined : args.expand;
     this.height = args.height == undefined ? undefined : args.height;
     this.scratch = args.scratch == undefined ? undefined : args.scratch;
@@ -990,7 +942,7 @@ export class QueryOptions {
     return new QueryOptions(this.asObject());
   }
 
-  asObject(): QueryOptions.Args {
+  asObject(): QueryOptionsArgs {
     return {
       expand: this.expand && this.expand,
       height: this.height && this.height,
@@ -1001,17 +953,15 @@ export class QueryOptions {
   }
 }
 
-export namespace QueryPagination {
-  export type Args = {
-    start?: number;
-    count?: number;
-  };
-}
+export type QueryPaginationArgs = {
+  start?: number;
+  count?: number;
+};
 export class QueryPagination {
   public start?: number;
   public count?: number;
 
-  constructor(args: QueryPagination.Args) {
+  constructor(args: QueryPaginationArgs) {
     this.start = args.start == undefined ? undefined : args.start;
     this.count = args.count == undefined ? undefined : args.count;
   }
@@ -1020,7 +970,7 @@ export class QueryPagination {
     return new QueryPagination(this.asObject());
   }
 
-  asObject(): QueryPagination.Args {
+  asObject(): QueryPaginationArgs {
     return {
       start: this.start && this.start,
       count: this.count && this.count,
@@ -1028,14 +978,12 @@ export class QueryPagination {
   }
 }
 
-export namespace ResponseDataEntry {
-  export type Args = {
-    entryHash?: Uint8Array | string;
-    entry?: protocol.DataEntry | protocol.DataEntry.Args;
-    txId?: TxID | string;
-    causeTxId?: TxID | string;
-  };
-}
+export type ResponseDataEntryArgs = {
+  entryHash?: Uint8Array | string;
+  entry?: protocol.DataEntry | protocol.DataEntryArgs;
+  txId?: TxID | string;
+  causeTxId?: TxID | string;
+};
 export class ResponseDataEntry {
   @encodeAs.field(1).hash
   public entryHash?: Uint8Array;
@@ -1046,7 +994,7 @@ export class ResponseDataEntry {
   @encodeAs.field(4).txid
   public causeTxId?: TxID;
 
-  constructor(args: ResponseDataEntry.Args) {
+  constructor(args: ResponseDataEntryArgs) {
     this.entryHash =
       args.entryHash == undefined
         ? undefined
@@ -1072,7 +1020,7 @@ export class ResponseDataEntry {
     return new ResponseDataEntry(this.asObject());
   }
 
-  asObject(): ResponseDataEntry.Args {
+  asObject(): ResponseDataEntryArgs {
     return {
       entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
       entry: this.entry && this.entry.asObject(),
@@ -1082,19 +1030,17 @@ export class ResponseDataEntry {
   }
 }
 
-export namespace ResponseDataEntrySet {
-  export type Args = {
-    dataEntries?: (ResponseDataEntry | ResponseDataEntry.Args)[];
-    total?: number;
-  };
-}
+export type ResponseDataEntrySetArgs = {
+  dataEntries?: (ResponseDataEntry | ResponseDataEntryArgs)[];
+  total?: number;
+};
 export class ResponseDataEntrySet {
   @encodeAs.field(1).repeatable.reference
   public dataEntries?: ResponseDataEntry[];
   @encodeAs.field(2).uint
   public total?: number;
 
-  constructor(args: ResponseDataEntrySet.Args) {
+  constructor(args: ResponseDataEntrySetArgs) {
     this.dataEntries =
       args.dataEntries == undefined
         ? undefined
@@ -1108,7 +1054,7 @@ export class ResponseDataEntrySet {
     return new ResponseDataEntrySet(this.asObject());
   }
 
-  asObject(): ResponseDataEntrySet.Args {
+  asObject(): ResponseDataEntrySetArgs {
     return {
       dataEntries: this.dataEntries && this.dataEntries?.map((v) => v.asObject()),
       total: this.total && this.total,
@@ -1116,13 +1062,11 @@ export class ResponseDataEntrySet {
   }
 }
 
-export namespace ResponseKeyPageIndex {
-  export type Args = {
-    authority?: URL | string;
-    signer?: URL | string;
-    index?: number;
-  };
-}
+export type ResponseKeyPageIndexArgs = {
+  authority?: URL | string;
+  signer?: URL | string;
+  index?: number;
+};
 export class ResponseKeyPageIndex {
   @encodeAs.field(1).url
   public authority?: URL;
@@ -1131,7 +1075,7 @@ export class ResponseKeyPageIndex {
   @encodeAs.field(3).keepEmpty.uint
   public index?: number;
 
-  constructor(args: ResponseKeyPageIndex.Args) {
+  constructor(args: ResponseKeyPageIndexArgs) {
     this.authority =
       args.authority == undefined
         ? undefined
@@ -1151,7 +1095,7 @@ export class ResponseKeyPageIndex {
     return new ResponseKeyPageIndex(this.asObject());
   }
 
-  asObject(): ResponseKeyPageIndex.Args {
+  asObject(): ResponseKeyPageIndexArgs {
     return {
       authority: this.authority && this.authority.toString(),
       signer: this.signer && this.signer.toString(),
@@ -1160,17 +1104,15 @@ export class ResponseKeyPageIndex {
   }
 }
 
-export namespace SignatureBook {
-  export type Args = {
-    authority?: URL | string;
-    pages?: (SignaturePage | SignaturePage.Args)[];
-  };
-}
+export type SignatureBookArgs = {
+  authority?: URL | string;
+  pages?: (SignaturePage | SignaturePageArgs)[];
+};
 export class SignatureBook {
   public authority?: URL;
   public pages?: SignaturePage[];
 
-  constructor(args: SignatureBook.Args) {
+  constructor(args: SignatureBookArgs) {
     this.authority =
       args.authority == undefined
         ? undefined
@@ -1187,7 +1129,7 @@ export class SignatureBook {
     return new SignatureBook(this.asObject());
   }
 
-  asObject(): SignatureBook.Args {
+  asObject(): SignatureBookArgs {
     return {
       authority: this.authority && this.authority.toString(),
       pages: this.pages && this.pages?.map((v) => v.asObject()),
@@ -1195,17 +1137,15 @@ export class SignatureBook {
   }
 }
 
-export namespace SignaturePage {
-  export type Args = {
-    signer?: SignerMetadata | SignerMetadata.Args;
-    signatures?: (protocol.Signature | protocol.Signature.Args)[];
-  };
-}
+export type SignaturePageArgs = {
+  signer?: SignerMetadata | SignerMetadataArgs;
+  signatures?: (protocol.Signature | protocol.SignatureArgs)[];
+};
 export class SignaturePage {
   public signer?: SignerMetadata;
   public signatures?: protocol.Signature[];
 
-  constructor(args: SignaturePage.Args) {
+  constructor(args: SignaturePageArgs) {
     this.signer =
       args.signer == undefined
         ? undefined
@@ -1222,7 +1162,7 @@ export class SignaturePage {
     return new SignaturePage(this.asObject());
   }
 
-  asObject(): SignaturePage.Args {
+  asObject(): SignaturePageArgs {
     return {
       signer: this.signer && this.signer.asObject(),
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
@@ -1230,16 +1170,14 @@ export class SignaturePage {
   }
 }
 
-export namespace Signer {
-  export type Args = {
-    publicKey?: Uint8Array | string;
-    timestamp?: number;
-    url?: URL | string;
-    version?: number;
-    signatureType?: protocol.SignatureType.Args;
-    useSimpleHash?: boolean;
-  };
-}
+export type SignerArgs = {
+  publicKey?: Uint8Array | string;
+  timestamp?: number;
+  url?: URL | string;
+  version?: number;
+  signatureType?: protocol.SignatureTypeArgs;
+  useSimpleHash?: boolean;
+};
 export class Signer {
   public publicKey?: Uint8Array;
   public timestamp?: number;
@@ -1248,7 +1186,7 @@ export class Signer {
   public signatureType?: protocol.SignatureType;
   public useSimpleHash?: boolean;
 
-  constructor(args: Signer.Args) {
+  constructor(args: SignerArgs) {
     this.publicKey =
       args.publicKey == undefined
         ? undefined
@@ -1270,7 +1208,7 @@ export class Signer {
     return new Signer(this.asObject());
   }
 
-  asObject(): Signer.Args {
+  asObject(): SignerArgs {
     return {
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       timestamp: this.timestamp && this.timestamp,
@@ -1282,19 +1220,17 @@ export class Signer {
   }
 }
 
-export namespace SignerMetadata {
-  export type Args = {
-    type?: protocol.AccountType.Args;
-    url?: URL | string;
-    acceptThreshold?: number;
-  };
-}
+export type SignerMetadataArgs = {
+  type?: protocol.AccountTypeArgs;
+  url?: URL | string;
+  acceptThreshold?: number;
+};
 export class SignerMetadata {
   public type?: protocol.AccountType;
   public url?: URL;
   public acceptThreshold?: number;
 
-  constructor(args: SignerMetadata.Args) {
+  constructor(args: SignerMetadataArgs) {
     this.type = args.type == undefined ? undefined : protocol.AccountType.fromObject(args.type);
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
@@ -1305,7 +1241,7 @@ export class SignerMetadata {
     return new SignerMetadata(this.asObject());
   }
 
-  asObject(): SignerMetadata.Args {
+  asObject(): SignerMetadataArgs {
     return {
       type: this.type && protocol.AccountType.getName(this.type),
       url: this.url && this.url.toString(),
@@ -1314,20 +1250,18 @@ export class SignerMetadata {
   }
 }
 
-export namespace StatusResponse {
-  export type Args = {
-    ok?: boolean;
-    bvnHeight?: number;
-    dnHeight?: number;
-    bvnTime?: Date | string;
-    dnTime?: Date | string;
-    lastDirectoryAnchorHeight?: number;
-    bvnRootHash?: Uint8Array | string;
-    dnRootHash?: Uint8Array | string;
-    bvnBptHash?: Uint8Array | string;
-    dnBptHash?: Uint8Array | string;
-  };
-}
+export type StatusResponseArgs = {
+  ok?: boolean;
+  bvnHeight?: number;
+  dnHeight?: number;
+  bvnTime?: Date | string;
+  dnTime?: Date | string;
+  lastDirectoryAnchorHeight?: number;
+  bvnRootHash?: Uint8Array | string;
+  dnRootHash?: Uint8Array | string;
+  bvnBptHash?: Uint8Array | string;
+  dnBptHash?: Uint8Array | string;
+};
 export class StatusResponse {
   public ok?: boolean;
   public bvnHeight?: number;
@@ -1340,7 +1274,7 @@ export class StatusResponse {
   public bvnBptHash?: Uint8Array;
   public dnBptHash?: Uint8Array;
 
-  constructor(args: StatusResponse.Args) {
+  constructor(args: StatusResponseArgs) {
     this.ok = args.ok == undefined ? undefined : args.ok;
     this.bvnHeight = args.bvnHeight == undefined ? undefined : args.bvnHeight;
     this.dnHeight = args.dnHeight == undefined ? undefined : args.dnHeight;
@@ -1388,7 +1322,7 @@ export class StatusResponse {
     return new StatusResponse(this.asObject());
   }
 
-  asObject(): StatusResponse.Args {
+  asObject(): StatusResponseArgs {
     return {
       ok: this.ok && this.ok,
       bvnHeight: this.bvnHeight && this.bvnHeight,
@@ -1404,21 +1338,19 @@ export class StatusResponse {
   }
 }
 
-export namespace SyntheticTransactionRequest {
-  export type Args = {
-    source?: URL | string;
-    destination?: URL | string;
-    sequenceNumber?: number;
-    anchor?: boolean;
-  };
-}
+export type SyntheticTransactionRequestArgs = {
+  source?: URL | string;
+  destination?: URL | string;
+  sequenceNumber?: number;
+  anchor?: boolean;
+};
 export class SyntheticTransactionRequest {
   public source?: URL;
   public destination?: URL;
   public sequenceNumber?: number;
   public anchor?: boolean;
 
-  constructor(args: SyntheticTransactionRequest.Args) {
+  constructor(args: SyntheticTransactionRequestArgs) {
     this.source =
       args.source == undefined
         ? undefined
@@ -1439,7 +1371,7 @@ export class SyntheticTransactionRequest {
     return new SyntheticTransactionRequest(this.asObject());
   }
 
-  asObject(): SyntheticTransactionRequest.Args {
+  asObject(): SyntheticTransactionRequestArgs {
     return {
       source: this.source && this.source.toString(),
       destination: this.destination && this.destination.toString(),
@@ -1449,19 +1381,17 @@ export class SyntheticTransactionRequest {
   }
 }
 
-export namespace TokenDeposit {
-  export type Args = {
-    url?: URL | string;
-    amount?: BN | string | number;
-    txid?: Uint8Array | string;
-  };
-}
+export type TokenDepositArgs = {
+  url?: URL | string;
+  amount?: BN | string | number;
+  txid?: Uint8Array | string;
+};
 export class TokenDeposit {
   public url?: URL;
   public amount?: BN;
   public txid?: Uint8Array;
 
-  constructor(args: TokenDeposit.Args) {
+  constructor(args: TokenDepositArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.amount =
@@ -1482,7 +1412,7 @@ export class TokenDeposit {
     return new TokenDeposit(this.asObject());
   }
 
-  asObject(): TokenDeposit.Args {
+  asObject(): TokenDepositArgs {
     return {
       url: this.url && this.url.toString(),
       amount: this.amount && this.amount.toString(),
@@ -1491,17 +1421,15 @@ export class TokenDeposit {
   }
 }
 
-export namespace TokenSend {
-  export type Args = {
-    from?: URL | string;
-    to?: (TokenDeposit | TokenDeposit.Args)[];
-  };
-}
+export type TokenSendArgs = {
+  from?: URL | string;
+  to?: (TokenDeposit | TokenDepositArgs)[];
+};
 export class TokenSend {
   public from?: URL;
   public to?: TokenDeposit[];
 
-  constructor(args: TokenSend.Args) {
+  constructor(args: TokenSendArgs) {
     this.from =
       args.from == undefined
         ? undefined
@@ -1518,7 +1446,7 @@ export class TokenSend {
     return new TokenSend(this.asObject());
   }
 
-  asObject(): TokenSend.Args {
+  asObject(): TokenSendArgs {
     return {
       from: this.from && this.from.toString(),
       to: this.to && this.to?.map((v) => v.asObject()),
@@ -1526,22 +1454,20 @@ export class TokenSend {
   }
 }
 
-export namespace TransactionQueryResponse {
-  export type Args = {
-    type?: string;
-    mainChain?: MerkleState | MerkleState.Args;
-    data?: any;
-    origin?: URL | string;
-    transactionHash?: Uint8Array | string;
-    txid?: TxID | string;
-    transaction?: protocol.Transaction | protocol.Transaction.Args;
-    signatures?: (protocol.Signature | protocol.Signature.Args)[];
-    status?: protocol.TransactionStatus | protocol.TransactionStatus.Args;
-    produced?: (TxID | string)[];
-    receipts?: (TxReceipt | TxReceipt.Args)[];
-    signatureBooks?: (SignatureBook | SignatureBook.Args)[];
-  };
-}
+export type TransactionQueryResponseArgs = {
+  type?: string;
+  mainChain?: MerkleState | MerkleStateArgs;
+  data?: any;
+  origin?: URL | string;
+  transactionHash?: Uint8Array | string;
+  txid?: TxID | string;
+  transaction?: protocol.Transaction | protocol.TransactionArgs;
+  signatures?: (protocol.Signature | protocol.SignatureArgs)[];
+  status?: protocol.TransactionStatus | protocol.TransactionStatusArgs;
+  produced?: (TxID | string)[];
+  receipts?: (TxReceipt | TxReceiptArgs)[];
+  signatureBooks?: (SignatureBook | SignatureBookArgs)[];
+};
 export class TransactionQueryResponse {
   public type?: string;
   public mainChain?: MerkleState;
@@ -1556,7 +1482,7 @@ export class TransactionQueryResponse {
   public receipts?: TxReceipt[];
   public signatureBooks?: SignatureBook[];
 
-  constructor(args: TransactionQueryResponse.Args) {
+  constructor(args: TransactionQueryResponseArgs) {
     this.type = args.type == undefined ? undefined : args.type;
     this.mainChain =
       args.mainChain == undefined
@@ -1617,7 +1543,7 @@ export class TransactionQueryResponse {
     return new TransactionQueryResponse(this.asObject());
   }
 
-  asObject(): TransactionQueryResponse.Args {
+  asObject(): TransactionQueryResponseArgs {
     return {
       type: this.type && this.type,
       mainChain: this.mainChain && this.mainChain.asObject(),
@@ -1635,21 +1561,19 @@ export class TransactionQueryResponse {
   }
 }
 
-export namespace TxHistoryQuery {
-  export type Args = {
-    url?: URL | string;
-    start?: number;
-    count?: number;
-    scratch?: boolean;
-  };
-}
+export type TxHistoryQueryArgs = {
+  url?: URL | string;
+  start?: number;
+  count?: number;
+  scratch?: boolean;
+};
 export class TxHistoryQuery {
   public url?: URL;
   public start?: number;
   public count?: number;
   public scratch?: boolean;
 
-  constructor(args: TxHistoryQuery.Args) {
+  constructor(args: TxHistoryQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
     this.start = args.start == undefined ? undefined : args.start;
@@ -1661,7 +1585,7 @@ export class TxHistoryQuery {
     return new TxHistoryQuery(this.asObject());
   }
 
-  asObject(): TxHistoryQuery.Args {
+  asObject(): TxHistoryQueryArgs {
     return {
       url: this.url && this.url.toString(),
       start: this.start && this.start,
@@ -1671,18 +1595,16 @@ export class TxHistoryQuery {
   }
 }
 
-export namespace TxReceipt {
-  export type Args = {
-    localBlock?: number;
-    localBlockTime?: Date | string;
-    directoryBlock?: number;
-    majorBlock?: number;
-    proof?: merkle.Receipt | merkle.Receipt.Args;
-    error?: string;
-    account?: URL | string;
-    chain?: string;
-  };
-}
+export type TxReceiptArgs = {
+  localBlock?: number;
+  localBlockTime?: Date | string;
+  directoryBlock?: number;
+  majorBlock?: number;
+  proof?: merkle.Receipt | merkle.ReceiptArgs;
+  error?: string;
+  account?: URL | string;
+  chain?: string;
+};
 export class TxReceipt {
   @encodeAs.field(1, 1).uint
   public localBlock?: number;
@@ -1701,7 +1623,7 @@ export class TxReceipt {
   @encodeAs.field(3).string
   public chain?: string;
 
-  constructor(args: TxReceipt.Args) {
+  constructor(args: TxReceiptArgs) {
     this.localBlock = args.localBlock == undefined ? undefined : args.localBlock;
     this.localBlockTime =
       args.localBlockTime == undefined
@@ -1731,7 +1653,7 @@ export class TxReceipt {
     return new TxReceipt(this.asObject());
   }
 
-  asObject(): TxReceipt.Args {
+  asObject(): TxReceiptArgs {
     return {
       localBlock: this.localBlock && this.localBlock,
       localBlockTime: this.localBlockTime && this.localBlockTime,
@@ -1745,20 +1667,18 @@ export class TxReceipt {
   }
 }
 
-export namespace TxRequest {
-  export type Args = {
-    checkOnly?: boolean;
-    isEnvelope?: boolean;
-    origin?: URL | string;
-    signer?: Signer | Signer.Args;
-    signature?: Uint8Array | string;
-    keyPage?: KeyPage | KeyPage.Args;
-    txHash?: Uint8Array | string;
-    payload?: any;
-    memo?: string;
-    metadata?: Uint8Array | string;
-  };
-}
+export type TxRequestArgs = {
+  checkOnly?: boolean;
+  isEnvelope?: boolean;
+  origin?: URL | string;
+  signer?: Signer | SignerArgs;
+  signature?: Uint8Array | string;
+  keyPage?: KeyPage | KeyPageArgs;
+  txHash?: Uint8Array | string;
+  payload?: any;
+  memo?: string;
+  metadata?: Uint8Array | string;
+};
 export class TxRequest {
   public checkOnly?: boolean;
   public isEnvelope?: boolean;
@@ -1771,7 +1691,7 @@ export class TxRequest {
   public memo?: string;
   public metadata?: Uint8Array;
 
-  constructor(args: TxRequest.Args) {
+  constructor(args: TxRequestArgs) {
     this.checkOnly = args.checkOnly == undefined ? undefined : args.checkOnly;
     this.isEnvelope = args.isEnvelope == undefined ? undefined : args.isEnvelope;
     this.origin =
@@ -1818,7 +1738,7 @@ export class TxRequest {
     return new TxRequest(this.asObject());
   }
 
-  asObject(): TxRequest.Args {
+  asObject(): TxRequestArgs {
     return {
       checkOnly: this.checkOnly && this.checkOnly,
       isEnvelope: this.isEnvelope && this.isEnvelope,
@@ -1834,18 +1754,16 @@ export class TxRequest {
   }
 }
 
-export namespace TxResponse {
-  export type Args = {
-    transactionHash?: Uint8Array | string;
-    txid?: TxID | string;
-    signatureHashes?: (Uint8Array | string)[];
-    simpleHash?: Uint8Array | string;
-    code?: number;
-    message?: string;
-    delivered?: boolean;
-    result?: any;
-  };
-}
+export type TxResponseArgs = {
+  transactionHash?: Uint8Array | string;
+  txid?: TxID | string;
+  signatureHashes?: (Uint8Array | string)[];
+  simpleHash?: Uint8Array | string;
+  code?: number;
+  message?: string;
+  delivered?: boolean;
+  result?: any;
+};
 export class TxResponse {
   public transactionHash?: Uint8Array;
   public txid?: TxID;
@@ -1856,7 +1774,7 @@ export class TxResponse {
   public delivered?: boolean;
   public result?: any;
 
-  constructor(args: TxResponse.Args) {
+  constructor(args: TxResponseArgs) {
     this.transactionHash =
       args.transactionHash == undefined
         ? undefined
@@ -1889,7 +1807,7 @@ export class TxResponse {
     return new TxResponse(this.asObject());
   }
 
-  asObject(): TxResponse.Args {
+  asObject(): TxResponseArgs {
     return {
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
       txid: this.txid && this.txid.toString(),
@@ -1904,19 +1822,17 @@ export class TxResponse {
   }
 }
 
-export namespace TxnQuery {
-  export type Args = {
-    expand?: boolean;
-    height?: number;
-    scratch?: boolean;
-    prove?: boolean;
-    includeRemote?: boolean;
-    txid?: Uint8Array | string;
-    txIdUrl?: TxID | string;
-    wait?: number;
-    ignorePending?: boolean;
-  };
-}
+export type TxnQueryArgs = {
+  expand?: boolean;
+  height?: number;
+  scratch?: boolean;
+  prove?: boolean;
+  includeRemote?: boolean;
+  txid?: Uint8Array | string;
+  txIdUrl?: TxID | string;
+  wait?: number;
+  ignorePending?: boolean;
+};
 export class TxnQuery {
   public expand?: boolean;
   public height?: number;
@@ -1928,7 +1844,7 @@ export class TxnQuery {
   public wait?: number;
   public ignorePending?: boolean;
 
-  constructor(args: TxnQuery.Args) {
+  constructor(args: TxnQueryArgs) {
     this.expand = args.expand == undefined ? undefined : args.expand;
     this.height = args.height == undefined ? undefined : args.height;
     this.scratch = args.scratch == undefined ? undefined : args.scratch;
@@ -1954,7 +1870,7 @@ export class TxnQuery {
     return new TxnQuery(this.asObject());
   }
 
-  asObject(): TxnQuery.Args {
+  asObject(): TxnQueryArgs {
     return {
       expand: this.expand && this.expand,
       height: this.height && this.height,
@@ -1969,15 +1885,13 @@ export class TxnQuery {
   }
 }
 
-export namespace UrlQuery {
-  export type Args = {
-    url?: URL | string;
-  };
-}
+export type UrlQueryArgs = {
+  url?: URL | string;
+};
 export class UrlQuery {
   public url?: URL;
 
-  constructor(args: UrlQuery.Args) {
+  constructor(args: UrlQueryArgs) {
     this.url =
       args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
   }
@@ -1986,28 +1900,26 @@ export class UrlQuery {
     return new UrlQuery(this.asObject());
   }
 
-  asObject(): UrlQuery.Args {
+  asObject(): UrlQueryArgs {
     return {
       url: this.url && this.url.toString(),
     };
   }
 }
 
-export namespace VersionResponse {
-  export type Args = {
-    version?: string;
-    commit?: string;
-    versionIsKnown?: boolean;
-    isTestNet?: boolean;
-  };
-}
+export type VersionResponseArgs = {
+  version?: string;
+  commit?: string;
+  versionIsKnown?: boolean;
+  isTestNet?: boolean;
+};
 export class VersionResponse {
   public version?: string;
   public commit?: string;
   public versionIsKnown?: boolean;
   public isTestNet?: boolean;
 
-  constructor(args: VersionResponse.Args) {
+  constructor(args: VersionResponseArgs) {
     this.version = args.version == undefined ? undefined : args.version;
     this.commit = args.commit == undefined ? undefined : args.commit;
     this.versionIsKnown = args.versionIsKnown == undefined ? undefined : args.versionIsKnown;
@@ -2018,7 +1930,7 @@ export class VersionResponse {
     return new VersionResponse(this.asObject());
   }
 
-  asObject(): VersionResponse.Args {
+  asObject(): VersionResponseArgs {
     return {
       version: this.version && this.version,
       commit: this.commit && this.commit,

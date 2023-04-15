@@ -3,36 +3,48 @@ import { ANCHORS_URL } from "./acc-url";
 import {
   ChainQueryResponse,
   DescriptionResponse,
-  ExecuteRequest,
-  GeneralQuery,
-  MinorBlocksQuery,
-  QueryOptions,
-  QueryPagination,
+  ExecuteRequestArgs,
+  GeneralQueryArgs,
+  MinorBlocksQueryArgs,
+  QueryOptionsArgs,
+  QueryPaginationArgs,
   StatusResponse,
-  TxHistoryQuery,
-  TxnQuery,
+  TxHistoryQueryArgs,
+  TxnQueryArgs,
   TxResponse,
 } from "./api_v2";
 import {
-  AccountAuthOperation,
+  AccountAuthOperationArgs,
   AddCredits,
+  AddCreditsArgs,
   BurnTokens,
+  BurnTokensArgs,
   CreateDataAccount,
+  CreateDataAccountArgs,
   CreateIdentity,
+  CreateIdentityArgs,
   CreateKeyBook,
+  CreateKeyBookArgs,
   CreateKeyPage,
+  CreateKeyPageArgs,
   CreateToken,
   CreateTokenAccount,
+  CreateTokenAccountArgs,
+  CreateTokenArgs,
   IssueTokens,
-  KeyPageOperation,
+  IssueTokensArgs,
+  KeyPageOperationArgs,
   SendTokens,
+  SendTokensArgs,
   Transaction,
   TransactionBody,
   TransactionHeader,
   UpdateAccountAuth,
   UpdateKey,
+  UpdateKeyArgs,
   UpdateKeyPage,
   WriteData,
+  WriteDataArgs,
 } from "./core";
 import { Envelope } from "./messaging";
 import { RpcClient } from "./rpc-client";
@@ -105,7 +117,7 @@ export class Client {
     return this.queryUrl(ANCHORS_URL.join(`#anchor/${anchor}`));
   }
 
-  queryUrl(url: string | URL, options?: Omit<GeneralQuery.Args, "url">): Promise<any> {
+  queryUrl(url: string | URL, options?: Omit<GeneralQueryArgs, "url">): Promise<any> {
     const urlStr = url.toString();
 
     return this.call("query", {
@@ -114,7 +126,7 @@ export class Client {
     });
   }
 
-  queryTx(txId: string | URL, options?: Omit<TxnQuery.Args, "txid" | "txidUrl">): Promise<any> {
+  queryTx(txId: string | URL, options?: Omit<TxnQueryArgs, "txid" | "txidUrl">): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 
@@ -126,8 +138,8 @@ export class Client {
 
   queryTxHistory(
     url: string | URL,
-    pagination: QueryPagination.Args,
-    options?: Omit<TxHistoryQuery.Args, "url" | keyof QueryPagination.Args>
+    pagination: QueryPaginationArgs,
+    options?: Omit<TxHistoryQueryArgs, "url" | keyof QueryPaginationArgs>
   ): Promise<any> {
     const urlStr = url.toString();
     return this.call("query-tx-history", {
@@ -139,8 +151,8 @@ export class Client {
 
   queryDirectory(
     url: string | URL,
-    pagination: QueryPagination.Args,
-    options?: QueryOptions.Args
+    pagination: QueryPaginationArgs,
+    options?: QueryOptionsArgs
   ): Promise<any> {
     return this.call("query-directory", {
       url: url.toString(),
@@ -158,8 +170,8 @@ export class Client {
 
   queryDataSet(
     url: string | URL,
-    pagination: QueryPagination.Args,
-    options?: QueryOptions.Args
+    pagination: QueryPaginationArgs,
+    options?: QueryOptionsArgs
   ): Promise<any> {
     return this.call("query-data-set", {
       url: url.toString(),
@@ -178,7 +190,7 @@ export class Client {
     });
   }
 
-  queryMajorBlocks(url: string | URL, pagination: QueryPagination.Args): Promise<any> {
+  queryMajorBlocks(url: string | URL, pagination: QueryPaginationArgs): Promise<any> {
     return this.call("query-major-blocks", {
       url: url.toString(),
       ...pagination,
@@ -187,8 +199,8 @@ export class Client {
 
   queryMinorBlocks(
     url: string | URL,
-    pagination: QueryPagination.Args,
-    options?: Omit<MinorBlocksQuery.Args, "url" | keyof QueryPagination.Args>
+    pagination: QueryPaginationArgs,
+    options?: Omit<MinorBlocksQueryArgs, "url" | keyof QueryPaginationArgs>
   ): Promise<any> {
     return this.call("query-minor-blocks", {
       url: url.toString(),
@@ -289,7 +301,7 @@ export class Client {
 
   addCredits(
     principal: URL | string,
-    addCredits: AddCredits.Args,
+    addCredits: AddCreditsArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new AddCredits(addCredits), signer);
@@ -297,7 +309,7 @@ export class Client {
 
   burnTokens(
     principal: URL | string,
-    burnTokens: BurnTokens.Args,
+    burnTokens: BurnTokensArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new BurnTokens(burnTokens), signer);
@@ -305,7 +317,7 @@ export class Client {
 
   createDataAccount(
     principal: URL | string,
-    createDataAccount: CreateDataAccount.Args,
+    createDataAccount: CreateDataAccountArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateDataAccount(createDataAccount), signer);
@@ -313,7 +325,7 @@ export class Client {
 
   createIdentity(
     principal: URL | string,
-    createIdentity: CreateIdentity.Args,
+    createIdentity: CreateIdentityArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateIdentity(createIdentity), signer);
@@ -321,7 +333,7 @@ export class Client {
 
   createKeyBook(
     principal: URL | string,
-    createKeyBook: CreateKeyBook.Args,
+    createKeyBook: CreateKeyBookArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateKeyBook(createKeyBook), signer);
@@ -329,7 +341,7 @@ export class Client {
 
   createKeyPage(
     principal: URL | string,
-    createKeyPage: CreateKeyPage.Args,
+    createKeyPage: CreateKeyPageArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateKeyPage(createKeyPage), signer);
@@ -337,7 +349,7 @@ export class Client {
 
   createToken(
     principal: URL | string,
-    createToken: CreateToken.Args,
+    createToken: CreateTokenArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateToken(createToken), signer);
@@ -345,14 +357,14 @@ export class Client {
 
   createTokenAccount(
     principal: URL | string,
-    createTokenAccount: CreateTokenAccount.Args,
+    createTokenAccount: CreateTokenAccountArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateTokenAccount(createTokenAccount), signer);
   }
 
   async execute(env: Envelope): Promise<TxResponse> {
-    const req: ExecuteRequest.Args = {
+    const req: ExecuteRequestArgs = {
       envelope: env.asObject(),
     };
     const res: TxResponse = await this.call("execute-direct", req);
@@ -364,7 +376,7 @@ export class Client {
 
   issueTokens(
     principal: URL | string,
-    issueTokens: IssueTokens.Args,
+    issueTokens: IssueTokensArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new IssueTokens(issueTokens), signer);
@@ -372,7 +384,7 @@ export class Client {
 
   sendTokens(
     principal: URL | string,
-    sendTokens: SendTokens.Args,
+    sendTokens: SendTokensArgs,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(URL.parse(principal), new SendTokens(sendTokens), signer);
@@ -380,20 +392,20 @@ export class Client {
 
   updateAccountAuth(
     principal: URL | string,
-    operation: AccountAuthOperation.Args | AccountAuthOperation.Args[],
+    operation: AccountAuthOperationArgs | AccountAuthOperationArgs[],
     signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
     return this._execute(URL.parse(principal), new UpdateAccountAuth({ operations }), signer);
   }
 
-  updateKey(principal: URL | string, updateKey: UpdateKey.Args, signer: PageSigner): Promise<any> {
+  updateKey(principal: URL | string, updateKey: UpdateKeyArgs, signer: PageSigner): Promise<any> {
     return this._execute(URL.parse(principal), new UpdateKey(updateKey), signer);
   }
 
   updateKeyPage(
     principal: URL | string,
-    operation: KeyPageOperation.Args | KeyPageOperation.Args[],
+    operation: KeyPageOperationArgs | KeyPageOperationArgs[],
     signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
@@ -404,7 +416,7 @@ export class Client {
     );
   }
 
-  writeData(principal: URL | string, writeData: WriteData.Args, signer: PageSigner): Promise<any> {
+  writeData(principal: URL | string, writeData: WriteDataArgs, signer: PageSigner): Promise<any> {
     return this._execute(URL.parse(principal), new WriteData(writeData), signer);
   }
 

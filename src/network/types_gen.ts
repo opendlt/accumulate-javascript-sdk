@@ -8,15 +8,13 @@ import { encodeAs } from "../encoding";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 
-export namespace GlobalValues {
-  export type Args = {
-    oracle?: protocol.AcmeOracle | protocol.AcmeOracle.Args;
-    globals?: protocol.NetworkGlobals | protocol.NetworkGlobals.Args;
-    network?: protocol.NetworkDefinition | protocol.NetworkDefinition.Args;
-    routing?: protocol.RoutingTable | protocol.RoutingTable.Args;
-    executorVersion?: protocol.ExecutorVersion.Args;
-  };
-}
+export type GlobalValuesArgs = {
+  oracle?: protocol.AcmeOracle | protocol.AcmeOracleArgs;
+  globals?: protocol.NetworkGlobals | protocol.NetworkGlobalsArgs;
+  network?: protocol.NetworkDefinition | protocol.NetworkDefinitionArgs;
+  routing?: protocol.RoutingTable | protocol.RoutingTableArgs;
+  executorVersion?: protocol.ExecutorVersionArgs;
+};
 export class GlobalValues {
   @encodeAs.field(1).reference
   public oracle?: protocol.AcmeOracle;
@@ -29,7 +27,7 @@ export class GlobalValues {
   @encodeAs.field(5).enum
   public executorVersion?: protocol.ExecutorVersion;
 
-  constructor(args: GlobalValues.Args) {
+  constructor(args: GlobalValuesArgs) {
     this.oracle =
       args.oracle == undefined
         ? undefined
@@ -64,7 +62,7 @@ export class GlobalValues {
     return new GlobalValues(this.asObject());
   }
 
-  asObject(): GlobalValues.Args {
+  asObject(): GlobalValuesArgs {
     return {
       oracle: this.oracle && this.oracle.asObject(),
       globals: this.globals && this.globals.asObject(),

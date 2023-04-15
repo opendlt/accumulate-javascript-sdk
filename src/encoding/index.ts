@@ -215,7 +215,7 @@ class Encoding {
 export const encodeAs = {
   field(...number: number[]) {
     return new Annotator(number);
-  }
+  },
 };
 
 export class Annotator {
