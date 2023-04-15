@@ -1,5 +1,5 @@
 import { ANCHORS_URL } from "./acc-url";
-import { URL } from "../new/url";
+import { URL } from "./url";
 import {
   QueryOptions,
   QueryPagination,
@@ -8,7 +8,7 @@ import {
   TxnQuery,
   GeneralQuery,
   ExecuteRequest,
-} from "../new/api_v2";
+} from "./api_v2";
 import {
   AddCredits,
   BurnTokens,
@@ -29,11 +29,11 @@ import {
   TransactionBody,
   TransactionHeader,
   Transaction,
-} from "../new/core";
+} from "./core";
 import { RpcClient } from "./rpc-client";
 import { sleep } from "./util";
 import { PageSigner } from "./signing/signer";
-import { Envelope } from "../new/messaging";
+import { Envelope } from "./messaging";
 import { signTransaction } from "./signing";
 
 /**

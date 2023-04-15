@@ -1,10 +1,10 @@
-import { CreateToken, Transaction, TransactionHeader } from "../new/core";
-import { hashBody } from "../new/core/base";
-import { URL } from "../new/url";
+import { CreateToken, Transaction, TransactionHeader } from "./core";
+import { hashBody } from "./core/base";
+import { URL } from "./url";
 import { Client } from "./client";
 import { sha256 } from "./crypto";
-import { combineReceipts, Receipt } from "../new/merkle";
-import { encode } from "../new/encoding";
+import { combineReceipts, Receipt } from "./merkle";
+import { encode } from "./encoding";
 
 export async function sleep(millis: number) {
   return new Promise((resolve) => setTimeout(resolve, millis));

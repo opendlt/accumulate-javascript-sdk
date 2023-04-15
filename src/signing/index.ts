@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { KeySignature, Transaction } from "../../new/core";
-import { encode } from "../../new/encoding";
-import { Envelope } from "../../new/messaging";
+import { KeySignature, Transaction } from ".././core";
+import { encode } from ".././encoding";
+import { Envelope } from ".././messaging";
 import { sha256 } from "../crypto";
 import { PageSigner } from "./signer";
 

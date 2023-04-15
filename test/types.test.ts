@@ -1,5 +1,5 @@
-import { Envelope } from "../new/messaging";
-import { encode } from "../new/encoding";
+import { Envelope } from "./messaging";
+import { encode } from "./encoding";
 import { transactions as transactionTests } from "./data/sdk/protocol.1.json";
 
 const tests = transactionTests.filter(x => !x.name.startsWith('Synthetic'))

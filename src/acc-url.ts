@@ -1,4 +1,4 @@
-import { URL } from "../new/url";
+import { URL } from "./url";
 
 /**
  * The URL of the ACME token
