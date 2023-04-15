@@ -3,7 +3,6 @@ export * from "./acc-url";
 export * as api_v2 from "./api_v2";
 export * from "./client";
 export * as core from "./core";
-export * from "./encoding";
 export * as errors from "./errors";
 export * as merkle from "./merkle";
 export * as messaging from "./messaging";
