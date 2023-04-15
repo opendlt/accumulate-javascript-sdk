@@ -5,6 +5,7 @@ import {
   MinorBlocksQuery,
   TxHistoryQuery,
   TxnQuery,
+  GeneralQuery,
 } from "../new/api_v2";
 import {
   AddCredits,
@@ -94,7 +95,7 @@ export class Client {
     return this.queryUrl(ANCHORS_URL.join(`#anchor/${anchor}`));
   }
 
-  queryUrl(url: string | AccURL, options?: QueryOptions): Promise<any> {
+  queryUrl(url: string | AccURL, options?: Omit<GeneralQuery.Args, 'url'>): Promise<any> {
     const urlStr = url.toString();
 
     return this.call("query", {
@@ -103,7 +104,7 @@ export class Client {
     });
   }
 
-  queryTx(txId: string | AccURL, options?: QueryOptions & Omit<TxnQuery, 'txid' | 'txidUrl'>): Promise<any> {
+  queryTx(txId: string | AccURL, options?: Omit<TxnQuery.Args, 'txid' | 'txidUrl'>): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 
@@ -115,8 +116,8 @@ export class Client {
 
   queryTxHistory(
     url: string | AccURL,
-    pagination: QueryPagination,
-    options?: Omit<TxHistoryQuery, 'url' | keyof QueryPagination>
+    pagination: QueryPagination.Args,
+    options?: Omit<TxHistoryQuery.Args, 'url' | keyof QueryPagination.Args>
   ): Promise<any> {
     const urlStr = url.toString();
     return this.call("query-tx-history", {
@@ -128,8 +129,8 @@ export class Client {
 
   queryDirectory(
     url: string | AccURL,
-    pagination: QueryPagination,
-    options?: QueryOptions
+    pagination: QueryPagination.Args,
+    options?: QueryOptions.Args
   ): Promise<any> {
     return this.call("query-directory", {
       url: url.toString(),
@@ -147,8 +148,8 @@ export class Client {
 
   queryDataSet(
     url: string | AccURL,
-    pagination: QueryPagination,
-    options?: QueryOptions
+    pagination: QueryPagination.Args,
+    options?: QueryOptions.Args
   ): Promise<any> {
     return this.call("query-data-set", {
       url: url.toString(),
@@ -167,7 +168,7 @@ export class Client {
     });
   }
 
-  queryMajorBlocks(url: string | AccURL, pagination: QueryPagination): Promise<any> {
+  queryMajorBlocks(url: string | AccURL, pagination: QueryPagination.Args): Promise<any> {
     return this.call("query-major-blocks", {
       url: url.toString(),
       ...pagination,
@@ -176,8 +177,8 @@ export class Client {
 
   queryMinorBlocks(
     url: string | AccURL,
-    pagination: QueryPagination,
-    options?: Omit<MinorBlocksQuery, 'url' | keyof QueryPagination>
+    pagination: QueryPagination.Args,
+    options?: Omit<MinorBlocksQuery.Args, 'url' | keyof QueryPagination.Args>
   ): Promise<any> {
     return this.call("query-minor-blocks", {
       url: url.toString(),

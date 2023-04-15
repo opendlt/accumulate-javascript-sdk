@@ -3,7 +3,7 @@ import { hashBody } from "../new/core/base";
 import { AccURL } from "./acc-url";
 import { Client } from "./client";
 import { sha256 } from "./crypto";
-import { combineReceipts, Receipt } from "./receipt";
+import { combineReceipts, Receipt } from "../new/merkle";
 import { Header, Transaction } from "./transaction";
 
 export async function sleep(millis: number) {
@@ -41,7 +41,7 @@ export async function constructIssuerProof(
   const txn = new Transaction(body, header);
 
   // Prove that the body is part of the transaction
-  const proof1: Receipt = {
+  const proof1: Receipt.Args = {
     start: hashBody(body),
     startIndex: 0,
     end: hashBody(body),
@@ -60,6 +60,6 @@ export async function constructIssuerProof(
   const proof3 = anchorRes.receipt.proof;
 
   // Assemble the full proof
-  const receipt = combineReceipts(combineReceipts(proof1, proof2), proof3);
+  const receipt = combineReceipts(combineReceipts(new Receipt(proof1), new Receipt(proof2)), proof3);
   return { receipt, transaction: body };
 }
