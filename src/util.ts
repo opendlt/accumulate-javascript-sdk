@@ -1,10 +1,10 @@
-import { CreateToken } from "../new/core";
+import { CreateToken, Transaction, TransactionHeader } from "../new/core";
 import { hashBody } from "../new/core/base";
 import { AccURL } from "./acc-url";
 import { Client } from "./client";
 import { sha256 } from "./crypto";
 import { combineReceipts, Receipt } from "../new/merkle";
-import { Header, Transaction } from "./transaction";
+import { encode } from "../new/encoding";
 
 export async function sleep(millis: number) {
   return new Promise((resolve) => setTimeout(resolve, millis));
@@ -30,7 +30,8 @@ export async function constructIssuerProof(
       `Expected first transaction of ${issuer} to be createToken but got ${transaction.body.type}`
     );
   }
-  const header = new Header(transaction.header.principal, {
+  const header = new TransactionHeader({
+    principal: transaction.header.principal,
     initiator: Buffer.from(transaction.header.initiator, "hex"),
     memo: transaction.header.memo,
     metadata: transaction.header.metadata
@@ -38,7 +39,7 @@ export async function constructIssuerProof(
       : undefined,
   });
   const body = new CreateToken(transaction.body);
-  const txn = new Transaction(body, header);
+  const txn = new Transaction({ body, header });
 
   // Prove that the body is part of the transaction
   const proof1: Receipt.Args = {
@@ -49,7 +50,7 @@ export async function constructIssuerProof(
     anchor: txn.hash(),
     entries: [
       {
-        hash: sha256(header.marshalBinary()),
+        hash: sha256(encode(header)),
         right: false,
       },
     ],

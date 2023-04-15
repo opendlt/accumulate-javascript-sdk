@@ -6,6 +6,7 @@ import {
   TxHistoryQuery,
   TxnQuery,
   GeneralQuery,
+  ExecuteRequest,
 } from "../new/api_v2";
 import {
   AddCredits,
@@ -25,11 +26,14 @@ import {
   KeyPageOperation,
   WriteData,
   TransactionBody,
+  TransactionHeader,
+  Transaction,
 } from "../new/core";
 import { RpcClient } from "./rpc-client";
-import { Header, Transaction } from "./transaction";
 import { sleep } from "./util";
-import { TxSigner } from "./signing/signer";
+import { PageSigner } from "./signing/signer";
+import { Envelope } from "../new/messaging";
+import { signTransaction } from "./signing";
 
 /**
  * Options for waiting on transaction delivering.
@@ -187,7 +191,7 @@ export class Client {
     });
   }
 
-  async querySignerVersion(signer: TxSigner | AccURL, publicKeyHash?: Uint8Array): Promise<number> {
+  async querySignerVersion(signer: PageSigner | AccURL, publicKeyHash?: Uint8Array): Promise<number> {
     let signerUrl: AccURL;
     let pkh: Uint8Array;
     if (signer instanceof AccURL) {
@@ -279,7 +283,7 @@ export class Client {
   addCredits(
     principal: AccURL | string,
     addCredits: AddCredits.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(AccURL.parse(principal), new AddCredits(addCredits), signer);
   }
@@ -287,7 +291,7 @@ export class Client {
   burnTokens(
     principal: AccURL | string,
     burnTokens: BurnTokens.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(AccURL.parse(principal), new BurnTokens(burnTokens), signer);
   }
@@ -295,7 +299,7 @@ export class Client {
   createDataAccount(
     principal: AccURL | string,
     createDataAccount: CreateDataAccount.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(
       AccURL.parse(principal),
@@ -307,7 +311,7 @@ export class Client {
   createIdentity(
     principal: AccURL | string,
     createIdentity: CreateIdentity.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(AccURL.parse(principal), new CreateIdentity(createIdentity), signer);
   }
@@ -315,7 +319,7 @@ export class Client {
   createKeyBook(
     principal: AccURL | string,
     createKeyBook: CreateKeyBook.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(AccURL.parse(principal), new CreateKeyBook(createKeyBook), signer);
   }
@@ -323,7 +327,7 @@ export class Client {
   createKeyPage(
     principal: AccURL | string,
     createKeyPage: CreateKeyPage.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(AccURL.parse(principal), new CreateKeyPage(createKeyPage), signer);
   }
@@ -331,7 +335,7 @@ export class Client {
   createToken(
     principal: AccURL | string,
     createToken: CreateToken.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(AccURL.parse(principal), new CreateToken(createToken), signer);
   }
@@ -339,7 +343,7 @@ export class Client {
   createTokenAccount(
     principal: AccURL | string,
     createTokenAccount: CreateTokenAccount.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(
       AccURL.parse(principal),
@@ -348,14 +352,17 @@ export class Client {
     );
   }
 
-  execute(tx: Transaction): Promise<any> {
-    return this.call("execute", tx.toTxRequest());
+  execute(env: Envelope): Promise<any> {
+    const req: ExecuteRequest.Args = {
+      envelope: env,
+    }
+    return this.call("execute-direct", req);
   }
 
   issueTokens(
     principal: AccURL | string,
     issueTokens: IssueTokens.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(AccURL.parse(principal), new IssueTokens(issueTokens), signer);
   }
@@ -363,7 +370,7 @@ export class Client {
   sendTokens(
     principal: AccURL | string,
     sendTokens: SendTokens.Args,
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     return this._execute(AccURL.parse(principal), new SendTokens(sendTokens), signer);
   }
@@ -371,35 +378,37 @@ export class Client {
   updateAccountAuth(
     principal: AccURL | string,
     operation: AccountAuthOperation | AccountAuthOperation[],
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
     return this._execute(AccURL.parse(principal), new UpdateAccountAuth({ operations }), signer);
   }
 
-  updateKey(principal: AccURL | string, updateKey: UpdateKey.Args, signer: TxSigner): Promise<any> {
+  updateKey(principal: AccURL | string, updateKey: UpdateKey.Args, signer: PageSigner): Promise<any> {
     return this._execute(AccURL.parse(principal), new UpdateKey(updateKey), signer);
   }
 
   updateKeyPage(
     principal: AccURL | string,
     operation: KeyPageOperation | KeyPageOperation[],
-    signer: TxSigner
+    signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
     return this._execute(AccURL.parse(principal), new UpdateKeyPage({ operation: operations }), signer);
   }
 
-  writeData(principal: AccURL | string, writeData: WriteData.Args, signer: TxSigner): Promise<any> {
+  writeData(principal: AccURL | string, writeData: WriteData.Args, signer: PageSigner): Promise<any> {
     return this._execute(AccURL.parse(principal), new WriteData(writeData), signer);
   }
 
-  private async _execute(principal: AccURL, payload: TransactionBody, signer: TxSigner): Promise<any> {
-    const header = new Header(principal);
-    const tx = new Transaction(payload, header);
-    await tx.sign(signer);
+  private async _execute(principal: AccURL, payload: TransactionBody, signer: PageSigner): Promise<any> {
+    const header = new TransactionHeader({ principal });
+    const tx = new Transaction({ body: payload, header });
+    const env = await signTransaction(tx, signer, {
+      timestamp: Date.now()
+    })
 
-    return this.execute(tx);
+    return this.execute(env);
   }
 
   /******************
