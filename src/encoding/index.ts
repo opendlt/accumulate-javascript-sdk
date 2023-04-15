@@ -212,13 +212,13 @@ class Encoding {
   }
 }
 
-export const encodeAs = new (class {
+export const encodeAs = {
   field(...number: number[]) {
     return new Annotator(number);
   }
-})();
+};
 
-class Annotator {
+export class Annotator {
   private field: Omit<Field, "name" | "type" | "number">;
 
   constructor(private number: number[]) {
