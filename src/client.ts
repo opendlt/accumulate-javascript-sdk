@@ -1,4 +1,5 @@
-import { AccURL, ANCHORS_URL } from "./acc-url";
+import { ANCHORS_URL } from "./acc-url";
+import { URL } from "../new/url";
 import {
   QueryOptions,
   QueryPagination,
@@ -99,7 +100,7 @@ export class Client {
     return this.queryUrl(ANCHORS_URL.join(`#anchor/${anchor}`));
   }
 
-  queryUrl(url: string | AccURL, options?: Omit<GeneralQuery.Args, 'url'>): Promise<any> {
+  queryUrl(url: string | URL, options?: Omit<GeneralQuery.Args, 'url'>): Promise<any> {
     const urlStr = url.toString();
 
     return this.call("query", {
@@ -108,7 +109,7 @@ export class Client {
     });
   }
 
-  queryTx(txId: string | AccURL, options?: Omit<TxnQuery.Args, 'txid' | 'txidUrl'>): Promise<any> {
+  queryTx(txId: string | URL, options?: Omit<TxnQuery.Args, 'txid' | 'txidUrl'>): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 
@@ -119,7 +120,7 @@ export class Client {
   }
 
   queryTxHistory(
-    url: string | AccURL,
+    url: string | URL,
     pagination: QueryPagination.Args,
     options?: Omit<TxHistoryQuery.Args, 'url' | keyof QueryPagination.Args>
   ): Promise<any> {
@@ -132,7 +133,7 @@ export class Client {
   }
 
   queryDirectory(
-    url: string | AccURL,
+    url: string | URL,
     pagination: QueryPagination.Args,
     options?: QueryOptions.Args
   ): Promise<any> {
@@ -143,7 +144,7 @@ export class Client {
     });
   }
 
-  queryData(url: string | AccURL, entryHash?: string): Promise<any> {
+  queryData(url: string | URL, entryHash?: string): Promise<any> {
     return this.call("query-data", {
       url: url.toString(),
       entryHash,
@@ -151,7 +152,7 @@ export class Client {
   }
 
   queryDataSet(
-    url: string | AccURL,
+    url: string | URL,
     pagination: QueryPagination.Args,
     options?: QueryOptions.Args
   ): Promise<any> {
@@ -162,7 +163,7 @@ export class Client {
     });
   }
 
-  queryKeyPageIndex(url: string | AccURL, key: string | Uint8Array): Promise<any> {
+  queryKeyPageIndex(url: string | URL, key: string | Uint8Array): Promise<any> {
     const urlStr = url.toString();
     const keyStr = key instanceof Uint8Array ? Buffer.from(key).toString("hex") : key;
 
@@ -172,7 +173,7 @@ export class Client {
     });
   }
 
-  queryMajorBlocks(url: string | AccURL, pagination: QueryPagination.Args): Promise<any> {
+  queryMajorBlocks(url: string | URL, pagination: QueryPagination.Args): Promise<any> {
     return this.call("query-major-blocks", {
       url: url.toString(),
       ...pagination,
@@ -180,7 +181,7 @@ export class Client {
   }
 
   queryMinorBlocks(
-    url: string | AccURL,
+    url: string | URL,
     pagination: QueryPagination.Args,
     options?: Omit<MinorBlocksQuery.Args, 'url' | keyof QueryPagination.Args>
   ): Promise<any> {
@@ -191,10 +192,10 @@ export class Client {
     });
   }
 
-  async querySignerVersion(signer: PageSigner | AccURL, publicKeyHash?: Uint8Array): Promise<number> {
-    let signerUrl: AccURL;
+  async querySignerVersion(signer: PageSigner | URL, publicKeyHash?: Uint8Array): Promise<number> {
+    let signerUrl: URL;
     let pkh: Uint8Array;
-    if (signer instanceof AccURL) {
+    if (signer instanceof URL) {
       signerUrl = signer;
       if (!publicKeyHash) {
         throw new Error("Missing public key hash");
@@ -281,72 +282,72 @@ export class Client {
    ******************/
 
   addCredits(
-    principal: AccURL | string,
+    principal: URL | string,
     addCredits: AddCredits.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.parse(principal), new AddCredits(addCredits), signer);
+    return this._execute(URL.parse(principal), new AddCredits(addCredits), signer);
   }
 
   burnTokens(
-    principal: AccURL | string,
+    principal: URL | string,
     burnTokens: BurnTokens.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.parse(principal), new BurnTokens(burnTokens), signer);
+    return this._execute(URL.parse(principal), new BurnTokens(burnTokens), signer);
   }
 
   createDataAccount(
-    principal: AccURL | string,
+    principal: URL | string,
     createDataAccount: CreateDataAccount.Args,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(
-      AccURL.parse(principal),
+      URL.parse(principal),
       new CreateDataAccount(createDataAccount),
       signer
     );
   }
 
   createIdentity(
-    principal: AccURL | string,
+    principal: URL | string,
     createIdentity: CreateIdentity.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.parse(principal), new CreateIdentity(createIdentity), signer);
+    return this._execute(URL.parse(principal), new CreateIdentity(createIdentity), signer);
   }
 
   createKeyBook(
-    principal: AccURL | string,
+    principal: URL | string,
     createKeyBook: CreateKeyBook.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.parse(principal), new CreateKeyBook(createKeyBook), signer);
+    return this._execute(URL.parse(principal), new CreateKeyBook(createKeyBook), signer);
   }
 
   createKeyPage(
-    principal: AccURL | string,
+    principal: URL | string,
     createKeyPage: CreateKeyPage.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.parse(principal), new CreateKeyPage(createKeyPage), signer);
+    return this._execute(URL.parse(principal), new CreateKeyPage(createKeyPage), signer);
   }
 
   createToken(
-    principal: AccURL | string,
+    principal: URL | string,
     createToken: CreateToken.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.parse(principal), new CreateToken(createToken), signer);
+    return this._execute(URL.parse(principal), new CreateToken(createToken), signer);
   }
 
   createTokenAccount(
-    principal: AccURL | string,
+    principal: URL | string,
     createTokenAccount: CreateTokenAccount.Args,
     signer: PageSigner
   ): Promise<any> {
     return this._execute(
-      AccURL.parse(principal),
+      URL.parse(principal),
       new CreateTokenAccount(createTokenAccount),
       signer
     );
@@ -360,48 +361,48 @@ export class Client {
   }
 
   issueTokens(
-    principal: AccURL | string,
+    principal: URL | string,
     issueTokens: IssueTokens.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.parse(principal), new IssueTokens(issueTokens), signer);
+    return this._execute(URL.parse(principal), new IssueTokens(issueTokens), signer);
   }
 
   sendTokens(
-    principal: AccURL | string,
+    principal: URL | string,
     sendTokens: SendTokens.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.parse(principal), new SendTokens(sendTokens), signer);
+    return this._execute(URL.parse(principal), new SendTokens(sendTokens), signer);
   }
 
   updateAccountAuth(
-    principal: AccURL | string,
+    principal: URL | string,
     operation: AccountAuthOperation | AccountAuthOperation[],
     signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
-    return this._execute(AccURL.parse(principal), new UpdateAccountAuth({ operations }), signer);
+    return this._execute(URL.parse(principal), new UpdateAccountAuth({ operations }), signer);
   }
 
-  updateKey(principal: AccURL | string, updateKey: UpdateKey.Args, signer: PageSigner): Promise<any> {
-    return this._execute(AccURL.parse(principal), new UpdateKey(updateKey), signer);
+  updateKey(principal: URL | string, updateKey: UpdateKey.Args, signer: PageSigner): Promise<any> {
+    return this._execute(URL.parse(principal), new UpdateKey(updateKey), signer);
   }
 
   updateKeyPage(
-    principal: AccURL | string,
+    principal: URL | string,
     operation: KeyPageOperation | KeyPageOperation[],
     signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
-    return this._execute(AccURL.parse(principal), new UpdateKeyPage({ operation: operations }), signer);
+    return this._execute(URL.parse(principal), new UpdateKeyPage({ operation: operations }), signer);
   }
 
-  writeData(principal: AccURL | string, writeData: WriteData.Args, signer: PageSigner): Promise<any> {
-    return this._execute(AccURL.parse(principal), new WriteData(writeData), signer);
+  writeData(principal: URL | string, writeData: WriteData.Args, signer: PageSigner): Promise<any> {
+    return this._execute(URL.parse(principal), new WriteData(writeData), signer);
   }
 
-  private async _execute(principal: AccURL, payload: TransactionBody, signer: PageSigner): Promise<any> {
+  private async _execute(principal: URL, payload: TransactionBody, signer: PageSigner): Promise<any> {
     const header = new TransactionHeader({ principal });
     const tx = new Transaction({ body: payload, header });
     const env = await signTransaction(tx, signer, {
@@ -415,7 +416,7 @@ export class Client {
    * Others
    ******************/
 
-  faucet(url: string | AccURL): Promise<any> {
+  faucet(url: string | URL): Promise<any> {
     return this.call("faucet", {
       url: url.toString(),
     });

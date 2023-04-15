@@ -1,5 +1,6 @@
 import { KeySignature, SignatureType } from "../../new/core";
-import { AccURL, ACME_TOKEN_URL } from "../acc-url";
+import { ACME_TOKEN_URL } from "../acc-url";
+import { URL } from "../../new/url";
 import { sha256 } from "../crypto";
 
 export interface Signer {
@@ -12,7 +13,7 @@ export interface Signer {
 
 export type SignerInfo = {
   type: SignatureType;
-  url: AccURL;
+  url: URL;
   publicKey: Uint8Array;
   version: number;
 };
@@ -27,12 +28,12 @@ export type Signature = {
  * Class to sign Transactions using a Signer
  */
 abstract class TxSigner {
-  protected readonly _url: AccURL;
+  protected readonly _url: URL;
   protected readonly _signer: Signer;
   protected readonly _version: number;
 
-  constructor(url: string | AccURL, signer: Signer, version?: number) {
-    this._url = AccURL.parse(url);
+  constructor(url: string | URL, signer: Signer, version?: number) {
+    this._url = URL.parse(url);
     this._signer = signer;
     this._version = version ?? 1;
   }
@@ -41,7 +42,7 @@ abstract class TxSigner {
     return this._signer;
   }
 
-  get url(): AccURL {
+  get url(): URL {
     return this._url;
   }
 
@@ -111,17 +112,17 @@ export class LiteSigner extends TxSigner {
   /**
    * Helper method to get the ACME token account controled by the LiteIdentity.
    */
-  get acmeTokenAccount(): AccURL {
+  get acmeTokenAccount(): URL {
     return this._url.join(ACME_TOKEN_URL);
   }
 
   /**
    * Compute a LiteIdentity URL based on public key hash
    */
-  static computeUrl(publicKeyHash: Uint8Array): AccURL {
+  static computeUrl(publicKeyHash: Uint8Array): URL {
     const pkHash = Buffer.from(publicKeyHash.slice(0, 20));
     const checkSum = sha256(pkHash.toString("hex")).slice(28);
     const authority = Buffer.concat([pkHash, checkSum]).toString("hex");
-    return AccURL.parse(`acc://${authority}`);
+    return URL.parse(`acc://${authority}`);
   }
 }
