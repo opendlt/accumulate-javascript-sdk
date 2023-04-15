@@ -273,10 +273,10 @@ describe("Test Accumulate client", () => {
     expect(res.type).toStrictEqual("dataAccount");
 
     // Write data
-    const data = [randomBuffer(), randomBuffer(), randomBuffer()];
+    const data = [Buffer.from('foo'), Buffer.from('bar'), Buffer.from('baz'),];
     const writeData: WriteData.Args = {
       entry: {
-        type: "doubleHash",
+        type: "accumulate",
         data: data,
       },
     };
@@ -298,7 +298,7 @@ describe("Test Accumulate client", () => {
     const data2 = [randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer()];
     const writeData2: WriteData.Args = {
       entry: {
-        type: "doubleHash",
+        type: "accumulate",
         data: data2,
       },
     };
