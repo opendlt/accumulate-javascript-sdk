@@ -1,8 +1,10 @@
 import { randomBytes } from "tweetnacl";
-import { AccURL, BN, Client, Ed25519KeypairSigner, LiteIdentity } from "../src";
+import { BN, Client } from "../src";
+import { ED25519KeypairSigner, LiteSigner } from "../src/signing";
+import { URL } from "../src/url";
 
-export function randomLiteIdentity(): LiteIdentity {
-  return new LiteIdentity(Ed25519KeypairSigner.generate());
+export function randomLiteIdentity(): LiteSigner {
+  return new LiteSigner(ED25519KeypairSigner.generate());
 }
 
 export function randomBuffer(length = 12) {
@@ -15,9 +17,9 @@ export function randomString(length = 6) {
 
 export async function addCredits(
   client: Client,
-  recipient: AccURL | string,
+  recipient: URL | string,
   creditAmount: number,
-  signer: LiteIdentity
+  signer: LiteSigner
 ) {
   let res = await client.queryUrl(recipient);
   const originalBalance = new BN(res.data.creditBalance);

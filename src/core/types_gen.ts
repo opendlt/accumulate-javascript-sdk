@@ -61,7 +61,7 @@ export class ADI {
   }
 
   copy() {
-    return new ADI(this);
+    return new ADI(this.asObject());
   }
 
   asObject(): ADI.ArgsWithType {
@@ -90,7 +90,7 @@ export class AccountAuth {
   }
 
   copy() {
-    return new AccountAuth(this);
+    return new AccountAuth(this.asObject());
   }
 
   asObject(): AccountAuth.Args {
@@ -120,7 +120,7 @@ export class AccumulateDataEntry {
   }
 
   copy() {
-    return new AccumulateDataEntry(this);
+    return new AccumulateDataEntry(this.asObject());
   }
 
   asObject(): AccumulateDataEntry.ArgsWithType {
@@ -149,7 +149,7 @@ export class AcmeFaucet {
   }
 
   copy() {
-    return new AcmeFaucet(this);
+    return new AcmeFaucet(this.asObject());
   }
 
   asObject(): AcmeFaucet.ArgsWithType {
@@ -174,7 +174,7 @@ export class AcmeOracle {
   }
 
   copy() {
-    return new AcmeOracle(this);
+    return new AcmeOracle(this.asObject());
   }
 
   asObject(): AcmeOracle.Args {
@@ -203,7 +203,7 @@ export class ActivateProtocolVersion {
   }
 
   copy() {
-    return new ActivateProtocolVersion(this);
+    return new ActivateProtocolVersion(this.asObject());
   }
 
   asObject(): ActivateProtocolVersion.ArgsWithType {
@@ -238,7 +238,7 @@ export class AddAccountAuthorityOperation {
   }
 
   copy() {
-    return new AddAccountAuthorityOperation(this);
+    return new AddAccountAuthorityOperation(this.asObject());
   }
 
   asObject(): AddAccountAuthorityOperation.ArgsWithType {
@@ -252,7 +252,7 @@ export class AddAccountAuthorityOperation {
 export namespace AddCredits {
   export type Args = {
     recipient?: URL | string;
-    amount?: BN | string;
+    amount?: BN | string | number;
     oracle?: number;
   };
   export type ArgsWithType = Args & { type: TransactionType.AddCredits | "addCredits" };
@@ -284,7 +284,7 @@ export class AddCredits {
   }
 
   copy() {
-    return new AddCredits(this);
+    return new AddCredits(this.asObject());
   }
 
   asObject(): AddCredits.ArgsWithType {
@@ -299,7 +299,7 @@ export class AddCredits {
 
 export namespace AddCreditsResult {
   export type Args = {
-    amount?: BN | string;
+    amount?: BN | string | number;
     credits?: number;
     oracle?: number;
   };
@@ -327,7 +327,7 @@ export class AddCreditsResult {
   }
 
   copy() {
-    return new AddCreditsResult(this);
+    return new AddCreditsResult(this.asObject());
   }
 
   asObject(): AddCreditsResult.ArgsWithType {
@@ -362,7 +362,7 @@ export class AddKeyOperation {
   }
 
   copy() {
-    return new AddKeyOperation(this);
+    return new AddKeyOperation(this.asObject());
   }
 
   asObject(): AddKeyOperation.ArgsWithType {
@@ -425,7 +425,7 @@ export class AnchorLedger {
   }
 
   copy() {
-    return new AnchorLedger(this);
+    return new AnchorLedger(this.asObject());
   }
 
   asObject(): AnchorLedger.ArgsWithType {
@@ -490,7 +490,7 @@ export class AnchorMetadata {
   }
 
   copy() {
-    return new AnchorMetadata(this);
+    return new AnchorMetadata(this.asObject());
   }
 
   asObject(): AnchorMetadata.Args {
@@ -534,7 +534,7 @@ export class AnnotatedReceipt {
   }
 
   copy() {
-    return new AnnotatedReceipt(this);
+    return new AnnotatedReceipt(this.asObject());
   }
 
   asObject(): AnnotatedReceipt.Args {
@@ -564,7 +564,7 @@ export class AuthorityEntry {
   }
 
   copy() {
-    return new AuthorityEntry(this);
+    return new AuthorityEntry(this.asObject());
   }
 
   asObject(): AuthorityEntry.Args {
@@ -635,7 +635,7 @@ export class AuthoritySignature {
   }
 
   copy() {
-    return new AuthoritySignature(this);
+    return new AuthoritySignature(this.asObject());
   }
 
   asObject(): AuthoritySignature.ArgsWithType {
@@ -712,7 +712,7 @@ export class BTCLegacySignature {
   }
 
   copy() {
-    return new BTCLegacySignature(this);
+    return new BTCLegacySignature(this.asObject());
   }
 
   asObject(): BTCLegacySignature.ArgsWithType {
@@ -790,7 +790,7 @@ export class BTCSignature {
   }
 
   copy() {
-    return new BTCSignature(this);
+    return new BTCSignature(this.asObject());
   }
 
   asObject(): BTCSignature.ArgsWithType {
@@ -834,7 +834,7 @@ export class BlockEntry {
   }
 
   copy() {
-    return new BlockEntry(this);
+    return new BlockEntry(this.asObject());
   }
 
   asObject(): BlockEntry.Args {
@@ -884,7 +884,7 @@ export class BlockLedger {
   }
 
   copy() {
-    return new BlockLedger(this);
+    return new BlockLedger(this.asObject());
   }
 
   asObject(): BlockLedger.ArgsWithType {
@@ -906,7 +906,7 @@ export namespace BlockValidatorAnchor {
     rootChainIndex?: number;
     rootChainAnchor?: Uint8Array | string;
     stateTreeAnchor?: Uint8Array | string;
-    acmeBurnt?: BN | string;
+    acmeBurnt?: BN | string | number;
   };
   export type ArgsWithType = Args & {
     type: TransactionType.BlockValidatorAnchor | "blockValidatorAnchor";
@@ -961,7 +961,7 @@ export class BlockValidatorAnchor {
   }
 
   copy() {
-    return new BlockValidatorAnchor(this);
+    return new BlockValidatorAnchor(this.asObject());
   }
 
   asObject(): BlockValidatorAnchor.ArgsWithType {
@@ -995,7 +995,7 @@ export class BurnCredits {
   }
 
   copy() {
-    return new BurnCredits(this);
+    return new BurnCredits(this.asObject());
   }
 
   asObject(): BurnCredits.ArgsWithType {
@@ -1008,7 +1008,7 @@ export class BurnCredits {
 
 export namespace BurnTokens {
   export type Args = {
-    amount?: BN | string;
+    amount?: BN | string | number;
   };
   export type ArgsWithType = Args & { type: TransactionType.BurnTokens | "burnTokens" };
 }
@@ -1028,7 +1028,7 @@ export class BurnTokens {
   }
 
   copy() {
-    return new BurnTokens(this);
+    return new BurnTokens(this.asObject());
   }
 
   asObject(): BurnTokens.ArgsWithType {
@@ -1057,7 +1057,7 @@ export class ChainMetadata {
   }
 
   copy() {
-    return new ChainMetadata(this);
+    return new ChainMetadata(this.asObject());
   }
 
   asObject(): ChainMetadata.Args {
@@ -1091,7 +1091,7 @@ export class ChainParams {
   }
 
   copy() {
-    return new ChainParams(this);
+    return new ChainParams(this.asObject());
   }
 
   asObject(): ChainParams.Args {
@@ -1129,7 +1129,7 @@ export class CreateDataAccount {
   }
 
   copy() {
-    return new CreateDataAccount(this);
+    return new CreateDataAccount(this.asObject());
   }
 
   asObject(): CreateDataAccount.ArgsWithType {
@@ -1184,7 +1184,7 @@ export class CreateIdentity {
   }
 
   copy() {
-    return new CreateIdentity(this);
+    return new CreateIdentity(this.asObject());
   }
 
   asObject(): CreateIdentity.ArgsWithType {
@@ -1232,7 +1232,7 @@ export class CreateKeyBook {
   }
 
   copy() {
-    return new CreateKeyBook(this);
+    return new CreateKeyBook(this.asObject());
   }
 
   asObject(): CreateKeyBook.ArgsWithType {
@@ -1265,7 +1265,7 @@ export class CreateKeyPage {
   }
 
   copy() {
-    return new CreateKeyPage(this);
+    return new CreateKeyPage(this.asObject());
   }
 
   asObject(): CreateKeyPage.ArgsWithType {
@@ -1289,7 +1289,7 @@ export class CreateLiteTokenAccount {
   constructor(_: CreateLiteTokenAccount.Args) {}
 
   copy() {
-    return new CreateLiteTokenAccount(this);
+    return new CreateLiteTokenAccount(this.asObject());
   }
 
   asObject(): CreateLiteTokenAccount.ArgsWithType {
@@ -1305,7 +1305,7 @@ export namespace CreateToken {
     symbol?: string;
     precision?: number;
     properties?: URL | string;
-    supplyLimit?: BN | string;
+    supplyLimit?: BN | string | number;
     authorities?: (URL | string)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.CreateToken | "createToken" };
@@ -1350,7 +1350,7 @@ export class CreateToken {
   }
 
   copy() {
-    return new CreateToken(this);
+    return new CreateToken(this.asObject());
   }
 
   asObject(): CreateToken.ArgsWithType {
@@ -1411,7 +1411,7 @@ export class CreateTokenAccount {
   }
 
   copy() {
-    return new CreateTokenAccount(this);
+    return new CreateTokenAccount(this.asObject());
   }
 
   asObject(): CreateTokenAccount.ArgsWithType {
@@ -1444,7 +1444,7 @@ export class CreditRecipient {
   }
 
   copy() {
-    return new CreditRecipient(this);
+    return new CreditRecipient(this.asObject());
   }
 
   asObject(): CreditRecipient.Args {
@@ -1484,7 +1484,7 @@ export class DataAccount {
   }
 
   copy() {
-    return new DataAccount(this);
+    return new DataAccount(this.asObject());
   }
 
   asObject(): DataAccount.ArgsWithType {
@@ -1523,7 +1523,7 @@ export class DelegatedSignature {
   }
 
   copy() {
-    return new DelegatedSignature(this);
+    return new DelegatedSignature(this.asObject());
   }
 
   asObject(): DelegatedSignature.ArgsWithType {
@@ -1618,7 +1618,7 @@ export class DirectoryAnchor {
   }
 
   copy() {
-    return new DirectoryAnchor(this);
+    return new DirectoryAnchor(this.asObject());
   }
 
   asObject(): DirectoryAnchor.ArgsWithType {
@@ -1660,7 +1660,7 @@ export class DisableAccountAuthOperation {
   }
 
   copy() {
-    return new DisableAccountAuthOperation(this);
+    return new DisableAccountAuthOperation(this.asObject());
   }
 
   asObject(): DisableAccountAuthOperation.ArgsWithType {
@@ -1691,7 +1691,7 @@ export class DoubleHashDataEntry {
   }
 
   copy() {
-    return new DoubleHashDataEntry(this);
+    return new DoubleHashDataEntry(this.asObject());
   }
 
   asObject(): DoubleHashDataEntry.ArgsWithType {
@@ -1763,7 +1763,7 @@ export class ED25519Signature {
   }
 
   copy() {
-    return new ED25519Signature(this);
+    return new ED25519Signature(this.asObject());
   }
 
   asObject(): ED25519Signature.ArgsWithType {
@@ -1841,7 +1841,7 @@ export class ETHSignature {
   }
 
   copy() {
-    return new ETHSignature(this);
+    return new ETHSignature(this.asObject());
   }
 
   asObject(): ETHSignature.ArgsWithType {
@@ -1869,7 +1869,7 @@ export class EmptyResult {
   constructor(_: EmptyResult.Args) {}
 
   copy() {
-    return new EmptyResult(this);
+    return new EmptyResult(this.asObject());
   }
 
   asObject(): EmptyResult.ArgsWithType {
@@ -1901,7 +1901,7 @@ export class EnableAccountAuthOperation {
   }
 
   copy() {
-    return new EnableAccountAuthOperation(this);
+    return new EnableAccountAuthOperation(this.asObject());
   }
 
   asObject(): EnableAccountAuthOperation.ArgsWithType {
@@ -1944,7 +1944,7 @@ export class FactomDataEntry {
   }
 
   copy() {
-    return new FactomDataEntry(this);
+    return new FactomDataEntry(this.asObject());
   }
 
   asObject(): FactomDataEntry.Args {
@@ -1994,7 +1994,7 @@ export class FactomDataEntryWrapper {
   }
 
   copy() {
-    return new FactomDataEntryWrapper(this);
+    return new FactomDataEntryWrapper(this.asObject());
   }
 
   asObject(): FactomDataEntryWrapper.ArgsWithType {
@@ -2024,7 +2024,7 @@ export class FeeSchedule {
   }
 
   copy() {
-    return new FeeSchedule(this);
+    return new FeeSchedule(this.asObject());
   }
 
   asObject(): FeeSchedule.Args {
@@ -2070,7 +2070,7 @@ export class IndexEntry {
   }
 
   copy() {
-    return new IndexEntry(this);
+    return new IndexEntry(this.asObject());
   }
 
   asObject(): IndexEntry.Args {
@@ -2115,7 +2115,7 @@ export class InternalSignature {
   }
 
   copy() {
-    return new InternalSignature(this);
+    return new InternalSignature(this.asObject());
   }
 
   asObject(): InternalSignature.ArgsWithType {
@@ -2130,7 +2130,7 @@ export class InternalSignature {
 export namespace IssueTokens {
   export type Args = {
     recipient?: URL | string;
-    amount?: BN | string;
+    amount?: BN | string | number;
     to?: (TokenRecipient | TokenRecipient.Args)[];
   };
   export type ArgsWithType = Args & { type: TransactionType.IssueTokens | "issueTokens" };
@@ -2165,7 +2165,7 @@ export class IssueTokens {
   }
 
   copy() {
-    return new IssueTokens(this);
+    return new IssueTokens(this.asObject());
   }
 
   asObject(): IssueTokens.ArgsWithType {
@@ -2211,7 +2211,7 @@ export class KeyBook {
   }
 
   copy() {
-    return new KeyBook(this);
+    return new KeyBook(this.asObject());
   }
 
   asObject(): KeyBook.ArgsWithType {
@@ -2282,7 +2282,7 @@ export class KeyPage {
   }
 
   copy() {
-    return new KeyPage(this);
+    return new KeyPage(this.asObject());
   }
 
   asObject(): KeyPage.ArgsWithType {
@@ -2334,7 +2334,7 @@ export class KeySpec {
   }
 
   copy() {
-    return new KeySpec(this);
+    return new KeySpec(this.asObject());
   }
 
   asObject(): KeySpec.Args {
@@ -2374,7 +2374,7 @@ export class KeySpecParams {
   }
 
   copy() {
-    return new KeySpecParams(this);
+    return new KeySpecParams(this.asObject());
   }
 
   asObject(): KeySpecParams.Args {
@@ -2446,7 +2446,7 @@ export class LegacyED25519Signature {
   }
 
   copy() {
-    return new LegacyED25519Signature(this);
+    return new LegacyED25519Signature(this.asObject());
   }
 
   asObject(): LegacyED25519Signature.ArgsWithType {
@@ -2481,7 +2481,7 @@ export class LiteDataAccount {
   }
 
   copy() {
-    return new LiteDataAccount(this);
+    return new LiteDataAccount(this.asObject());
   }
 
   asObject(): LiteDataAccount.ArgsWithType {
@@ -2518,7 +2518,7 @@ export class LiteIdentity {
   }
 
   copy() {
-    return new LiteIdentity(this);
+    return new LiteIdentity(this.asObject());
   }
 
   asObject(): LiteIdentity.ArgsWithType {
@@ -2535,7 +2535,7 @@ export namespace LiteTokenAccount {
   export type Args = {
     url?: URL | string;
     tokenUrl?: URL | string;
-    balance?: BN | string;
+    balance?: BN | string | number;
     lockHeight?: number;
   };
   export type ArgsWithType = Args & { type: AccountType.LiteTokenAccount | "liteTokenAccount" };
@@ -2571,7 +2571,7 @@ export class LiteTokenAccount {
   }
 
   copy() {
-    return new LiteTokenAccount(this);
+    return new LiteTokenAccount(this.asObject());
   }
 
   asObject(): LiteTokenAccount.ArgsWithType {
@@ -2602,7 +2602,7 @@ export class LockAccount {
   }
 
   copy() {
-    return new LockAccount(this);
+    return new LockAccount(this.asObject());
   }
 
   asObject(): LockAccount.ArgsWithType {
@@ -2631,7 +2631,7 @@ export class NetworkAccountUpdate {
   }
 
   copy() {
-    return new NetworkAccountUpdate(this);
+    return new NetworkAccountUpdate(this.asObject());
   }
 
   asObject(): NetworkAccountUpdate.Args {
@@ -2674,7 +2674,7 @@ export class NetworkDefinition {
   }
 
   copy() {
-    return new NetworkDefinition(this);
+    return new NetworkDefinition(this.asObject());
   }
 
   asObject(): NetworkDefinition.Args {
@@ -2743,7 +2743,7 @@ export class NetworkGlobals {
   }
 
   copy() {
-    return new NetworkGlobals(this);
+    return new NetworkGlobals(this.asObject());
   }
 
   asObject(): NetworkGlobals.Args {
@@ -2791,7 +2791,7 @@ export class NetworkLimits {
   }
 
   copy() {
-    return new NetworkLimits(this);
+    return new NetworkLimits(this.asObject());
   }
 
   asObject(): NetworkLimits.Args {
@@ -2854,7 +2854,7 @@ export class PartitionAnchor {
   }
 
   copy() {
-    return new PartitionAnchor(this);
+    return new PartitionAnchor(this.asObject());
   }
 
   asObject(): PartitionAnchor.Args {
@@ -2897,7 +2897,7 @@ export class PartitionAnchorReceipt {
   }
 
   copy() {
-    return new PartitionAnchorReceipt(this);
+    return new PartitionAnchorReceipt(this.asObject());
   }
 
   asObject(): PartitionAnchorReceipt.Args {
@@ -2926,7 +2926,7 @@ export class PartitionInfo {
   }
 
   copy() {
-    return new PartitionInfo(this);
+    return new PartitionInfo(this.asObject());
   }
 
   asObject(): PartitionInfo.Args {
@@ -2981,7 +2981,7 @@ export class PartitionSignature {
   }
 
   copy() {
-    return new PartitionSignature(this);
+    return new PartitionSignature(this.asObject());
   }
 
   asObject(): PartitionSignature.ArgsWithType {
@@ -3029,7 +3029,7 @@ export class PartitionSyntheticLedger {
   }
 
   copy() {
-    return new PartitionSyntheticLedger(this);
+    return new PartitionSyntheticLedger(this.asObject());
   }
 
   asObject(): PartitionSyntheticLedger.Args {
@@ -3104,7 +3104,7 @@ export class RCD1Signature {
   }
 
   copy() {
-    return new RCD1Signature(this);
+    return new RCD1Signature(this.asObject());
   }
 
   asObject(): RCD1Signature.ArgsWithType {
@@ -3139,7 +3139,7 @@ export class Rational {
   }
 
   copy() {
-    return new Rational(this);
+    return new Rational(this.asObject());
   }
 
   asObject(): Rational.Args {
@@ -3190,7 +3190,7 @@ export class ReceiptSignature {
   }
 
   copy() {
-    return new ReceiptSignature(this);
+    return new ReceiptSignature(this.asObject());
   }
 
   asObject(): ReceiptSignature.ArgsWithType {
@@ -3236,7 +3236,7 @@ export class RemoteSignature {
   }
 
   copy() {
-    return new RemoteSignature(this);
+    return new RemoteSignature(this.asObject());
   }
 
   asObject(): RemoteSignature.ArgsWithType {
@@ -3271,7 +3271,7 @@ export class RemoteTransaction {
   }
 
   copy() {
-    return new RemoteTransaction(this);
+    return new RemoteTransaction(this.asObject());
   }
 
   asObject(): RemoteTransaction.ArgsWithType {
@@ -3306,7 +3306,7 @@ export class RemoveAccountAuthorityOperation {
   }
 
   copy() {
-    return new RemoveAccountAuthorityOperation(this);
+    return new RemoveAccountAuthorityOperation(this.asObject());
   }
 
   asObject(): RemoveAccountAuthorityOperation.ArgsWithType {
@@ -3339,7 +3339,7 @@ export class RemoveKeyOperation {
   }
 
   copy() {
-    return new RemoveKeyOperation(this);
+    return new RemoveKeyOperation(this.asObject());
   }
 
   asObject(): RemoveKeyOperation.ArgsWithType {
@@ -3372,7 +3372,7 @@ export class Route {
   }
 
   copy() {
-    return new Route(this);
+    return new Route(this.asObject());
   }
 
   asObject(): Route.Args {
@@ -3407,7 +3407,7 @@ export class RouteOverride {
   }
 
   copy() {
-    return new RouteOverride(this);
+    return new RouteOverride(this.asObject());
   }
 
   asObject(): RouteOverride.Args {
@@ -3442,7 +3442,7 @@ export class RoutingTable {
   }
 
   copy() {
-    return new RoutingTable(this);
+    return new RoutingTable(this.asObject());
   }
 
   asObject(): RoutingTable.Args {
@@ -3486,7 +3486,7 @@ export class SendTokens {
   }
 
   copy() {
-    return new SendTokens(this);
+    return new SendTokens(this.asObject());
   }
 
   asObject(): SendTokens.ArgsWithType {
@@ -3516,7 +3516,7 @@ export class SetThresholdKeyPageOperation {
   }
 
   copy() {
-    return new SetThresholdKeyPageOperation(this);
+    return new SetThresholdKeyPageOperation(this.asObject());
   }
 
   asObject(): SetThresholdKeyPageOperation.ArgsWithType {
@@ -3578,7 +3578,7 @@ export class SignatureSet {
   }
 
   copy() {
-    return new SignatureSet(this);
+    return new SignatureSet(this.asObject());
   }
 
   asObject(): SignatureSet.ArgsWithType {
@@ -3599,7 +3599,7 @@ export namespace SyntheticBurnTokens {
     source?: URL | string;
     initiator?: URL | string;
     feeRefund?: number;
-    amount?: BN | string;
+    amount?: BN | string | number;
     isRefund?: boolean;
   };
   export type ArgsWithType = Args & {
@@ -3652,7 +3652,7 @@ export class SyntheticBurnTokens {
   }
 
   copy() {
-    return new SyntheticBurnTokens(this);
+    return new SyntheticBurnTokens(this.asObject());
   }
 
   asObject(): SyntheticBurnTokens.ArgsWithType {
@@ -3719,7 +3719,7 @@ export class SyntheticCreateIdentity {
   }
 
   copy() {
-    return new SyntheticCreateIdentity(this);
+    return new SyntheticCreateIdentity(this.asObject());
   }
 
   asObject(): SyntheticCreateIdentity.ArgsWithType {
@@ -3741,7 +3741,7 @@ export namespace SyntheticDepositCredits {
     initiator?: URL | string;
     feeRefund?: number;
     amount?: number;
-    acmeRefundAmount?: BN | string;
+    acmeRefundAmount?: BN | string | number;
     isRefund?: boolean;
   };
   export type ArgsWithType = Args & {
@@ -3797,7 +3797,7 @@ export class SyntheticDepositCredits {
   }
 
   copy() {
-    return new SyntheticDepositCredits(this);
+    return new SyntheticDepositCredits(this.asObject());
   }
 
   asObject(): SyntheticDepositCredits.ArgsWithType {
@@ -3821,7 +3821,7 @@ export namespace SyntheticDepositTokens {
     initiator?: URL | string;
     feeRefund?: number;
     token?: URL | string;
-    amount?: BN | string;
+    amount?: BN | string | number;
     isIssuer?: boolean;
     isRefund?: boolean;
   };
@@ -3886,7 +3886,7 @@ export class SyntheticDepositTokens {
   }
 
   copy() {
-    return new SyntheticDepositTokens(this);
+    return new SyntheticDepositTokens(this.asObject());
   }
 
   asObject(): SyntheticDepositTokens.ArgsWithType {
@@ -3935,7 +3935,7 @@ export class SyntheticForwardTransaction {
   }
 
   copy() {
-    return new SyntheticForwardTransaction(this);
+    return new SyntheticForwardTransaction(this.asObject());
   }
 
   asObject(): SyntheticForwardTransaction.ArgsWithType {
@@ -3974,7 +3974,7 @@ export class SyntheticLedger {
   }
 
   copy() {
-    return new SyntheticLedger(this);
+    return new SyntheticLedger(this.asObject());
   }
 
   asObject(): SyntheticLedger.ArgsWithType {
@@ -4018,7 +4018,7 @@ export class SyntheticOrigin {
   }
 
   copy() {
-    return new SyntheticOrigin(this);
+    return new SyntheticOrigin(this.asObject());
   }
 
   asObject(): SyntheticOrigin.Args {
@@ -4080,7 +4080,7 @@ export class SyntheticWriteData {
   }
 
   copy() {
-    return new SyntheticWriteData(this);
+    return new SyntheticWriteData(this.asObject());
   }
 
   asObject(): SyntheticWriteData.ArgsWithType {
@@ -4106,7 +4106,7 @@ export class SystemGenesis {
   constructor(_: SystemGenesis.Args) {}
 
   copy() {
-    return new SystemGenesis(this);
+    return new SystemGenesis(this.asObject());
   }
 
   asObject(): SystemGenesis.ArgsWithType {
@@ -4121,7 +4121,7 @@ export namespace SystemLedger {
     url?: URL | string;
     index?: number;
     timestamp?: Date | string;
-    acmeBurnt?: BN | string;
+    acmeBurnt?: BN | string | number;
     pendingUpdates?: (NetworkAccountUpdate | NetworkAccountUpdate.Args)[];
     anchor?: AnchorBody | AnchorBody.Args;
     executorVersion?: ExecutorVersion.Args;
@@ -4176,7 +4176,7 @@ export class SystemLedger {
   }
 
   copy() {
-    return new SystemLedger(this);
+    return new SystemLedger(this.asObject());
   }
 
   asObject(): SystemLedger.ArgsWithType {
@@ -4214,7 +4214,7 @@ export class SystemWriteData {
   }
 
   copy() {
-    return new SystemWriteData(this);
+    return new SystemWriteData(this.asObject());
   }
 
   asObject(): SystemWriteData.ArgsWithType {
@@ -4231,7 +4231,7 @@ export namespace TokenAccount {
     url?: URL | string;
     authorities?: (AuthorityEntry | AuthorityEntry.Args)[];
     tokenUrl?: URL | string;
-    balance?: BN | string;
+    balance?: BN | string | number;
   };
   export type ArgsWithType = Args & { type: AccountType.TokenAccount | "tokenAccount" };
 }
@@ -4269,7 +4269,7 @@ export class TokenAccount {
   }
 
   copy() {
-    return new TokenAccount(this);
+    return new TokenAccount(this.asObject());
   }
 
   asObject(): TokenAccount.ArgsWithType {
@@ -4290,8 +4290,8 @@ export namespace TokenIssuer {
     symbol?: string;
     precision?: number;
     properties?: URL | string;
-    issued?: BN | string;
-    supplyLimit?: BN | string;
+    issued?: BN | string | number;
+    supplyLimit?: BN | string | number;
   };
   export type ArgsWithType = Args & { type: AccountType.TokenIssuer | "tokenIssuer" };
 }
@@ -4343,7 +4343,7 @@ export class TokenIssuer {
   }
 
   copy() {
-    return new TokenIssuer(this);
+    return new TokenIssuer(this.asObject());
   }
 
   asObject(): TokenIssuer.ArgsWithType {
@@ -4388,7 +4388,7 @@ export class TokenIssuerProof {
   }
 
   copy() {
-    return new TokenIssuerProof(this);
+    return new TokenIssuerProof(this.asObject());
   }
 
   asObject(): TokenIssuerProof.Args {
@@ -4402,7 +4402,7 @@ export class TokenIssuerProof {
 export namespace TokenRecipient {
   export type Args = {
     url?: URL | string;
-    amount?: BN | string;
+    amount?: BN | string | number;
   };
 }
 export class TokenRecipient {
@@ -4423,7 +4423,7 @@ export class TokenRecipient {
   }
 
   copy() {
-    return new TokenRecipient(this);
+    return new TokenRecipient(this.asObject());
   }
 
   asObject(): TokenRecipient.Args {
@@ -4458,7 +4458,7 @@ export class Transaction extends TransactionBase {
   }
 
   copy() {
-    return new Transaction(this);
+    return new Transaction(this.asObject());
   }
 
   asObject(): Transaction.Args {
@@ -4510,7 +4510,7 @@ export class TransactionHeader {
   }
 
   copy() {
-    return new TransactionHeader(this);
+    return new TransactionHeader(this.asObject());
   }
 
   asObject(): TransactionHeader.Args {
@@ -4620,7 +4620,7 @@ export class TransactionStatus {
   }
 
   copy() {
-    return new TransactionStatus(this);
+    return new TransactionStatus(this.asObject());
   }
 
   asObject(): TransactionStatus.Args {
@@ -4663,7 +4663,7 @@ export class TransferCredits {
   }
 
   copy() {
-    return new TransferCredits(this);
+    return new TransferCredits(this.asObject());
   }
 
   asObject(): TransferCredits.ArgsWithType {
@@ -4691,7 +4691,7 @@ export class TxIdSet {
   }
 
   copy() {
-    return new TxIdSet(this);
+    return new TxIdSet(this.asObject());
   }
 
   asObject(): TxIdSet.Args {
@@ -4719,7 +4719,7 @@ export class UnknownAccount {
   }
 
   copy() {
-    return new UnknownAccount(this);
+    return new UnknownAccount(this.asObject());
   }
 
   asObject(): UnknownAccount.ArgsWithType {
@@ -4752,7 +4752,7 @@ export class UnknownSigner {
   }
 
   copy() {
-    return new UnknownSigner(this);
+    return new UnknownSigner(this.asObject());
   }
 
   asObject(): UnknownSigner.ArgsWithType {
@@ -4786,7 +4786,7 @@ export class UpdateAccountAuth {
   }
 
   copy() {
-    return new UpdateAccountAuth(this);
+    return new UpdateAccountAuth(this.asObject());
   }
 
   asObject(): UpdateAccountAuth.ArgsWithType {
@@ -4820,7 +4820,7 @@ export class UpdateAllowedKeyPageOperation {
   }
 
   copy() {
-    return new UpdateAllowedKeyPageOperation(this);
+    return new UpdateAllowedKeyPageOperation(this.asObject());
   }
 
   asObject(): UpdateAllowedKeyPageOperation.ArgsWithType {
@@ -4854,7 +4854,7 @@ export class UpdateKey {
   }
 
   copy() {
-    return new UpdateKey(this);
+    return new UpdateKey(this.asObject());
   }
 
   asObject(): UpdateKey.ArgsWithType {
@@ -4896,7 +4896,7 @@ export class UpdateKeyOperation {
   }
 
   copy() {
-    return new UpdateKeyOperation(this);
+    return new UpdateKeyOperation(this.asObject());
   }
 
   asObject(): UpdateKeyOperation.ArgsWithType {
@@ -4928,7 +4928,7 @@ export class UpdateKeyPage {
   }
 
   copy() {
-    return new UpdateKeyPage(this);
+    return new UpdateKeyPage(this.asObject());
   }
 
   asObject(): UpdateKeyPage.ArgsWithType {
@@ -4985,7 +4985,7 @@ export class ValidatorInfo {
   }
 
   copy() {
-    return new ValidatorInfo(this);
+    return new ValidatorInfo(this.asObject());
   }
 
   asObject(): ValidatorInfo.Args {
@@ -5016,7 +5016,7 @@ export class ValidatorPartitionInfo {
   }
 
   copy() {
-    return new ValidatorPartitionInfo(this);
+    return new ValidatorPartitionInfo(this.asObject());
   }
 
   asObject(): ValidatorPartitionInfo.Args {
@@ -5052,7 +5052,7 @@ export class WriteData {
   }
 
   copy() {
-    return new WriteData(this);
+    return new WriteData(this.asObject());
   }
 
   asObject(): WriteData.ArgsWithType {
@@ -5105,7 +5105,7 @@ export class WriteDataResult {
   }
 
   copy() {
-    return new WriteDataResult(this);
+    return new WriteDataResult(this.asObject());
   }
 
   asObject(): WriteDataResult.ArgsWithType {
@@ -5144,7 +5144,7 @@ export class WriteDataTo {
   }
 
   copy() {
-    return new WriteDataTo(this);
+    return new WriteDataTo(this.asObject());
   }
 
   asObject(): WriteDataTo.ArgsWithType {

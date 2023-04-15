@@ -8,7 +8,7 @@ import {
   stringMarshalBinary,
   uvarintMarshalBinary,
   varintMarshalBinary,
-} from "../src/encoding";
+} from "../src/encoding/encoding";
 
 test("should uvarint marshal binary BN numbers", () => {
   expect(uvarintMarshalBinary(0)).toStrictEqual(Buffer.from([0]));

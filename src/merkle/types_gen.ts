@@ -59,7 +59,7 @@ export class Receipt {
   }
 
   copy() {
-    return new Receipt(this);
+    return new Receipt(this.asObject());
   }
 
   asObject(): Receipt.Args {
@@ -97,7 +97,7 @@ export class ReceiptEntry {
   }
 
   copy() {
-    return new ReceiptEntry(this);
+    return new ReceiptEntry(this.asObject());
   }
 
   asObject(): ReceiptEntry.Args {
@@ -133,7 +133,7 @@ export class State {
   }
 
   copy() {
-    return new State(this);
+    return new State(this.asObject());
   }
 
   asObject(): State.Args {

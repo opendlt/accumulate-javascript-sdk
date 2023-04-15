@@ -32,7 +32,7 @@ export class BlockAnchor {
   }
 
   copy() {
-    return new BlockAnchor(this);
+    return new BlockAnchor(this.asObject());
   }
 
   asObject(): BlockAnchor.ArgsWithType {
@@ -92,7 +92,7 @@ export class CreditPayment {
   }
 
   copy() {
-    return new CreditPayment(this);
+    return new CreditPayment(this.asObject());
   }
 
   asObject(): CreditPayment.ArgsWithType {
@@ -147,7 +147,7 @@ export class Envelope {
   }
 
   copy() {
-    return new Envelope(this);
+    return new Envelope(this.asObject());
   }
 
   asObject(): Envelope.Args {
@@ -199,7 +199,7 @@ export class SequencedMessage {
   }
 
   copy() {
-    return new SequencedMessage(this);
+    return new SequencedMessage(this.asObject());
   }
 
   asObject(): SequencedMessage.ArgsWithType {
@@ -240,7 +240,7 @@ export class SignatureMessage {
   }
 
   copy() {
-    return new SignatureMessage(this);
+    return new SignatureMessage(this.asObject());
   }
 
   asObject(): SignatureMessage.ArgsWithType {
@@ -292,7 +292,7 @@ export class SignatureRequest {
   }
 
   copy() {
-    return new SignatureRequest(this);
+    return new SignatureRequest(this.asObject());
   }
 
   asObject(): SignatureRequest.ArgsWithType {
@@ -336,7 +336,7 @@ export class SyntheticMessage {
   }
 
   copy() {
-    return new SyntheticMessage(this);
+    return new SyntheticMessage(this.asObject());
   }
 
   asObject(): SyntheticMessage.ArgsWithType {
@@ -371,7 +371,7 @@ export class TransactionMessage {
   }
 
   copy() {
-    return new TransactionMessage(this);
+    return new TransactionMessage(this.asObject());
   }
 
   asObject(): TransactionMessage.ArgsWithType {

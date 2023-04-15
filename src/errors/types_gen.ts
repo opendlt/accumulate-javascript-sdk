@@ -30,7 +30,7 @@ export class CallSite {
   }
 
   copy() {
-    return new CallSite(this);
+    return new CallSite(this.asObject());
   }
 
   asObject(): CallSite.Args {
@@ -76,7 +76,7 @@ export class Error {
   }
 
   copy() {
-    return new Error(this);
+    return new Error(this.asObject());
   }
 
   asObject(): Error.Args {

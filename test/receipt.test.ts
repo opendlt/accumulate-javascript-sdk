@@ -1,7 +1,8 @@
-import { cloneReceipt, combineReceipts } from "../src/receipt";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { combineReceipts, Receipt } from "../src/merkle";
 
 test("should clone receipt with string hashes", () => {
-  const r1 = {
+  const r1 = new Receipt({
     start: "c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52",
     startIndex: 1,
     end: "c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52",
@@ -16,9 +17,9 @@ test("should clone receipt with string hashes", () => {
         right: true,
       },
     ],
-  };
+  });
 
-  const r2 = cloneReceipt(r1);
+  const r2 = r1.copy();
 
   // Check the clone has equal fields
   expect(r1.start).toEqual(r2.start);
@@ -26,26 +27,27 @@ test("should clone receipt with string hashes", () => {
   expect(r1.end).toEqual(r2.end);
   expect(r1.endIndex).toEqual(r2.endIndex);
   expect(r1.anchor).toEqual(r2.anchor);
-  expect(r1.entries.length).toEqual(r2.entries.length);
-  for (let i = 0; i < r1.entries.length; ++i) {
-    expect(r1.entries[i].hash).toEqual(r2.entries[i].hash);
-    expect(r1.entries[i].right).toEqual(r2.entries[i].right);
+  expect(r1.entries!.length).toEqual(r2.entries!.length);
+  for (let i = 0; i < r1.entries!.length; ++i) {
+    expect(r1.entries![i].hash).toEqual(r2.entries![i].hash);
+    expect(r1.entries![i].right).toEqual(r2.entries![i].right);
   }
 
   // Verify the clone is deep copy
-  r1.start += "new";
-  r1.entries[0].hash += "new";
-  r1.entries[0].right = true;
+  r1.start = Buffer.from("new");
+  r1.entries![0].hash = Buffer.from("new");
+  r1.entries![0].right = true;
 
-  expect(r2.start).toEqual("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52");
-  expect(r2.entries[0].hash).toEqual(
+  const r2o = r2.asObject()
+  expect(r2o.start).toEqual("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52");
+  expect(r2o.entries![0].hash).toEqual(
     "baee50fcd5b881c14fd54437d5b371cadedc0bce12f3f443e42a91529005c588"
   );
-  expect(r2.entries[0].right).toBeFalsy();
+  expect(r2o.entries![0].right).toBeFalsy();
 });
 
 test("should clone receipt with Buffer hashes", () => {
-  const r1 = {
+  const r1 = new Receipt({
     start: Buffer.from("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52", "hex"),
     startIndex: 1,
     end: Buffer.from("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52", "hex"),
@@ -66,9 +68,9 @@ test("should clone receipt with Buffer hashes", () => {
         right: true,
       },
     ],
-  };
+  });
 
-  const r2 = cloneReceipt(r1);
+  const r2 = r1.copy();
 
   // Check the clone has equal fields
   expect(r1.start).toEqual(r2.start);
@@ -76,28 +78,28 @@ test("should clone receipt with Buffer hashes", () => {
   expect(r1.end).toEqual(r2.end);
   expect(r1.endIndex).toEqual(r2.endIndex);
   expect(r1.anchor).toEqual(r2.anchor);
-  expect(r1.entries.length).toEqual(r2.entries.length);
-  for (let i = 0; i < r1.entries.length; ++i) {
-    expect(r1.entries[i].hash).toEqual(r2.entries[i].hash);
-    expect(r1.entries[i].right).toEqual(r2.entries[i].right);
+  expect(r1.entries!.length).toEqual(r2.entries!.length);
+  for (let i = 0; i < r1.entries!.length; ++i) {
+    expect(r1.entries![i].hash).toEqual(r2.entries![i].hash);
+    expect(r1.entries![i].right).toEqual(r2.entries![i].right);
   }
 
   // Verify the clone is deep copy
-  r1.start[0] = 4;
-  r1.entries[0].hash[0] = 7;
-  r1.entries[0].right = true;
+  r1.start![0] = 4;
+  r1.entries![0].hash![0] = 7;
+  r1.entries![0].right = true;
 
   expect(r2.start).toEqual(
     Buffer.from("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52", "hex")
   );
-  expect(r2.entries[0].hash).toEqual(
+  expect(r2.entries![0].hash).toEqual(
     Buffer.from("baee50fcd5b881c14fd54437d5b371cadedc0bce12f3f443e42a91529005c588", "hex")
   );
-  expect(r2.entries[0].right).toBeFalsy();
+  expect(r2.entries![0].right).toBeFalsy();
 });
 
 test("should combine receipts", () => {
-  const r1 = {
+  const r1 = new Receipt({
     start: "c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52",
     startIndex: 1,
     end: "c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52",
@@ -123,8 +125,8 @@ test("should combine receipts", () => {
         hash: "3b95c9a7de9bc5dde675dea63dabbaef089b9ee21868cd84f3c0277d2507c5a2",
       },
     ],
-  };
-  const r2 = {
+  });
+  const r2 = new Receipt({
     start: "ceb7ad426ca0e66dc4aef2002c92de6172d452f7e181279246205caea32962ca",
     startIndex: 32,
     end: "ceb7ad426ca0e66dc4aef2002c92de6172d452f7e181279246205caea32962ca",
@@ -154,12 +156,12 @@ test("should combine receipts", () => {
         hash: "cea9ddc3f85f2336e881f32160dbb5f4da5881494bee4a99836a7089e4cebf48",
       },
     ],
-  };
+  });
 
   const combined = combineReceipts(r1, r2);
 
-  expect(r1.entries.length).toEqual(6);
-  expect(r2.entries.length).toEqual(7);
-  expect(combined.entries.length).toEqual(r1.entries.length + r2.entries.length);
+  expect(r1.entries!.length).toEqual(6);
+  expect(r2.entries!.length).toEqual(7);
+  expect(combined.entries!.length).toEqual(r1.entries!.length + r2.entries!.length);
   expect(combined.anchor).toEqual(r2.anchor);
 });

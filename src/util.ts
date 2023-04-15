@@ -1,10 +1,10 @@
+import { Client } from "./client";
 import { CreateToken, Transaction, TransactionHeader } from "./core";
 import { hashBody } from "./core/base";
-import { URL } from "./url";
-import { Client } from "./client";
 import { sha256 } from "./crypto";
-import { combineReceipts, Receipt } from "./merkle";
 import { encode } from "./encoding";
+import { combineReceipts, Receipt } from "./merkle";
+import { URL } from "./url";
 
 export async function sleep(millis: number) {
   return new Promise((resolve) => setTimeout(resolve, millis));
@@ -61,6 +61,9 @@ export async function constructIssuerProof(
   const proof3 = anchorRes.receipt.proof;
 
   // Assemble the full proof
-  const receipt = combineReceipts(combineReceipts(new Receipt(proof1), new Receipt(proof2)), proof3);
+  const receipt = combineReceipts(
+    combineReceipts(new Receipt(proof1), new Receipt(proof2)),
+    proof3
+  );
   return { receipt, transaction: body };
 }

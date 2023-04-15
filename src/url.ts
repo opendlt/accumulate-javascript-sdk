@@ -10,7 +10,7 @@ export class URL {
     // eslint-disable-next-line no-useless-catch
     try {
       if (typeof input === "string") {
-        if (input.indexOf("acc://") != 0) {
+        if (input.indexOf("://") < 0) {
           input = "acc://" + input;
         }
         input = new _URL(input);

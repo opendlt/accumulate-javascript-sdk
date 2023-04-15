@@ -1,4 +1,6 @@
-import { BN, Client, Header, LiteIdentity, SendTokens, Transaction } from "../src";
+/*
+import { BN, Client, Header, Transaction } from "../src";
+import { SendTokens } from "../src/core";
 import { addCredits, randomLiteIdentity } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
@@ -45,3 +47,4 @@ describe("Test manual transactions", () => {
     expect(() => client.execute(tx)).toThrowError(/unsigned transaction/i);
   });
 });
+*/

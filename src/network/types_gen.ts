@@ -61,7 +61,7 @@ export class GlobalValues {
   }
 
   copy() {
-    return new GlobalValues(this);
+    return new GlobalValues(this.asObject());
   }
 
   asObject(): GlobalValues.Args {
