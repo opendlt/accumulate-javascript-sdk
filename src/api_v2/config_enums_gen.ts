@@ -9,10 +9,11 @@ export enum NodeType {
   Follower = 2,
 }
 
-export namespace NodeType {
-  export type Args = NodeType | string;
+export type NodeTypeArgs = NodeType | string;
 
-  export function fromObject(obj: Args): NodeType {
+/** @ignore */
+export namespace NodeType {
+  export function fromObject(obj: NodeTypeArgs): NodeType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -53,10 +54,11 @@ export enum PortOffset {
   AccumulateApi = 4,
 }
 
-export namespace PortOffset {
-  export type Args = PortOffset | string;
+export type PortOffsetArgs = PortOffset | string;
 
-  export function fromObject(obj: Args): PortOffset {
+/** @ignore */
+export namespace PortOffset {
+  export function fromObject(obj: PortOffsetArgs): PortOffset {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }

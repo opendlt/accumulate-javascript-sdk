@@ -21,40 +21,41 @@ export type Account =
   | types.UnknownAccount
   | types.UnknownSigner;
 
-export namespace Account {
-  export type Args =
-    | types.ADI
-    | types.ADI.ArgsWithType
-    | types.AnchorLedger
-    | types.AnchorLedger.ArgsWithType
-    | types.BlockLedger
-    | types.BlockLedger.ArgsWithType
-    | types.DataAccount
-    | types.DataAccount.ArgsWithType
-    | types.KeyBook
-    | types.KeyBook.ArgsWithType
-    | types.KeyPage
-    | types.KeyPage.ArgsWithType
-    | types.LiteDataAccount
-    | types.LiteDataAccount.ArgsWithType
-    | types.LiteIdentity
-    | types.LiteIdentity.ArgsWithType
-    | types.LiteTokenAccount
-    | types.LiteTokenAccount.ArgsWithType
-    | types.SyntheticLedger
-    | types.SyntheticLedger.ArgsWithType
-    | types.SystemLedger
-    | types.SystemLedger.ArgsWithType
-    | types.TokenAccount
-    | types.TokenAccount.ArgsWithType
-    | types.TokenIssuer
-    | types.TokenIssuer.ArgsWithType
-    | types.UnknownAccount
-    | types.UnknownAccount.ArgsWithType
-    | types.UnknownSigner
-    | types.UnknownSigner.ArgsWithType;
+export type AccountArgs =
+  | types.ADI
+  | types.ADIArgsWithType
+  | types.AnchorLedger
+  | types.AnchorLedgerArgsWithType
+  | types.BlockLedger
+  | types.BlockLedgerArgsWithType
+  | types.DataAccount
+  | types.DataAccountArgsWithType
+  | types.KeyBook
+  | types.KeyBookArgsWithType
+  | types.KeyPage
+  | types.KeyPageArgsWithType
+  | types.LiteDataAccount
+  | types.LiteDataAccountArgsWithType
+  | types.LiteIdentity
+  | types.LiteIdentityArgsWithType
+  | types.LiteTokenAccount
+  | types.LiteTokenAccountArgsWithType
+  | types.SyntheticLedger
+  | types.SyntheticLedgerArgsWithType
+  | types.SystemLedger
+  | types.SystemLedgerArgsWithType
+  | types.TokenAccount
+  | types.TokenAccountArgsWithType
+  | types.TokenIssuer
+  | types.TokenIssuerArgsWithType
+  | types.UnknownAccount
+  | types.UnknownAccountArgsWithType
+  | types.UnknownSigner
+  | types.UnknownSignerArgsWithType;
 
-  export function fromObject(obj: Args): Account {
+/** @ignore */
+export namespace Account {
+  export function fromObject(obj: AccountArgs): Account {
     if (obj instanceof types.ADI) return obj;
     if (obj instanceof types.AnchorLedger) return obj;
     if (obj instanceof types.BlockLedger) return obj;
@@ -128,16 +129,17 @@ export type DataEntry =
   | types.DoubleHashDataEntry
   | types.FactomDataEntryWrapper;
 
-export namespace DataEntry {
-  export type Args =
-    | types.AccumulateDataEntry
-    | types.AccumulateDataEntry.ArgsWithType
-    | types.DoubleHashDataEntry
-    | types.DoubleHashDataEntry.ArgsWithType
-    | types.FactomDataEntryWrapper
-    | types.FactomDataEntryWrapper.ArgsWithType;
+export type DataEntryArgs =
+  | types.AccumulateDataEntry
+  | types.AccumulateDataEntryArgsWithType
+  | types.DoubleHashDataEntry
+  | types.DoubleHashDataEntryArgsWithType
+  | types.FactomDataEntryWrapper
+  | types.FactomDataEntryWrapperArgsWithType;
 
-  export function fromObject(obj: Args): DataEntry {
+/** @ignore */
+export namespace DataEntry {
+  export function fromObject(obj: DataEntryArgs): DataEntry {
     if (obj instanceof types.AccumulateDataEntry) return obj;
     if (obj instanceof types.DoubleHashDataEntry) return obj;
     if (obj instanceof types.FactomDataEntryWrapper) return obj;
@@ -192,74 +194,75 @@ export type TransactionBody =
   | types.WriteData
   | types.WriteDataTo;
 
-export namespace TransactionBody {
-  export type Args =
-    | types.AcmeFaucet
-    | types.AcmeFaucet.ArgsWithType
-    | types.ActivateProtocolVersion
-    | types.ActivateProtocolVersion.ArgsWithType
-    | types.AddCredits
-    | types.AddCredits.ArgsWithType
-    | types.BlockValidatorAnchor
-    | types.BlockValidatorAnchor.ArgsWithType
-    | types.BurnCredits
-    | types.BurnCredits.ArgsWithType
-    | types.BurnTokens
-    | types.BurnTokens.ArgsWithType
-    | types.CreateDataAccount
-    | types.CreateDataAccount.ArgsWithType
-    | types.CreateIdentity
-    | types.CreateIdentity.ArgsWithType
-    | types.CreateKeyBook
-    | types.CreateKeyBook.ArgsWithType
-    | types.CreateKeyPage
-    | types.CreateKeyPage.ArgsWithType
-    | types.CreateLiteTokenAccount
-    | types.CreateLiteTokenAccount.ArgsWithType
-    | types.CreateToken
-    | types.CreateToken.ArgsWithType
-    | types.CreateTokenAccount
-    | types.CreateTokenAccount.ArgsWithType
-    | types.DirectoryAnchor
-    | types.DirectoryAnchor.ArgsWithType
-    | types.IssueTokens
-    | types.IssueTokens.ArgsWithType
-    | types.LockAccount
-    | types.LockAccount.ArgsWithType
-    | types.RemoteTransaction
-    | types.RemoteTransaction.ArgsWithType
-    | types.SendTokens
-    | types.SendTokens.ArgsWithType
-    | types.SyntheticBurnTokens
-    | types.SyntheticBurnTokens.ArgsWithType
-    | types.SyntheticCreateIdentity
-    | types.SyntheticCreateIdentity.ArgsWithType
-    | types.SyntheticDepositCredits
-    | types.SyntheticDepositCredits.ArgsWithType
-    | types.SyntheticDepositTokens
-    | types.SyntheticDepositTokens.ArgsWithType
-    | types.SyntheticForwardTransaction
-    | types.SyntheticForwardTransaction.ArgsWithType
-    | types.SyntheticWriteData
-    | types.SyntheticWriteData.ArgsWithType
-    | types.SystemGenesis
-    | types.SystemGenesis.ArgsWithType
-    | types.SystemWriteData
-    | types.SystemWriteData.ArgsWithType
-    | types.TransferCredits
-    | types.TransferCredits.ArgsWithType
-    | types.UpdateAccountAuth
-    | types.UpdateAccountAuth.ArgsWithType
-    | types.UpdateKey
-    | types.UpdateKey.ArgsWithType
-    | types.UpdateKeyPage
-    | types.UpdateKeyPage.ArgsWithType
-    | types.WriteData
-    | types.WriteData.ArgsWithType
-    | types.WriteDataTo
-    | types.WriteDataTo.ArgsWithType;
+export type TransactionBodyArgs =
+  | types.AcmeFaucet
+  | types.AcmeFaucetArgsWithType
+  | types.ActivateProtocolVersion
+  | types.ActivateProtocolVersionArgsWithType
+  | types.AddCredits
+  | types.AddCreditsArgsWithType
+  | types.BlockValidatorAnchor
+  | types.BlockValidatorAnchorArgsWithType
+  | types.BurnCredits
+  | types.BurnCreditsArgsWithType
+  | types.BurnTokens
+  | types.BurnTokensArgsWithType
+  | types.CreateDataAccount
+  | types.CreateDataAccountArgsWithType
+  | types.CreateIdentity
+  | types.CreateIdentityArgsWithType
+  | types.CreateKeyBook
+  | types.CreateKeyBookArgsWithType
+  | types.CreateKeyPage
+  | types.CreateKeyPageArgsWithType
+  | types.CreateLiteTokenAccount
+  | types.CreateLiteTokenAccountArgsWithType
+  | types.CreateToken
+  | types.CreateTokenArgsWithType
+  | types.CreateTokenAccount
+  | types.CreateTokenAccountArgsWithType
+  | types.DirectoryAnchor
+  | types.DirectoryAnchorArgsWithType
+  | types.IssueTokens
+  | types.IssueTokensArgsWithType
+  | types.LockAccount
+  | types.LockAccountArgsWithType
+  | types.RemoteTransaction
+  | types.RemoteTransactionArgsWithType
+  | types.SendTokens
+  | types.SendTokensArgsWithType
+  | types.SyntheticBurnTokens
+  | types.SyntheticBurnTokensArgsWithType
+  | types.SyntheticCreateIdentity
+  | types.SyntheticCreateIdentityArgsWithType
+  | types.SyntheticDepositCredits
+  | types.SyntheticDepositCreditsArgsWithType
+  | types.SyntheticDepositTokens
+  | types.SyntheticDepositTokensArgsWithType
+  | types.SyntheticForwardTransaction
+  | types.SyntheticForwardTransactionArgsWithType
+  | types.SyntheticWriteData
+  | types.SyntheticWriteDataArgsWithType
+  | types.SystemGenesis
+  | types.SystemGenesisArgsWithType
+  | types.SystemWriteData
+  | types.SystemWriteDataArgsWithType
+  | types.TransferCredits
+  | types.TransferCreditsArgsWithType
+  | types.UpdateAccountAuth
+  | types.UpdateAccountAuthArgsWithType
+  | types.UpdateKey
+  | types.UpdateKeyArgsWithType
+  | types.UpdateKeyPage
+  | types.UpdateKeyPageArgsWithType
+  | types.WriteData
+  | types.WriteDataArgsWithType
+  | types.WriteDataTo
+  | types.WriteDataToArgsWithType;
 
-  export function fromObject(obj: Args): TransactionBody {
+/** @ignore */
+export namespace TransactionBody {
+  export function fromObject(obj: TransactionBodyArgs): TransactionBody {
     if (obj instanceof types.AcmeFaucet) return obj;
     if (obj instanceof types.ActivateProtocolVersion) return obj;
     if (obj instanceof types.AddCredits) return obj;
@@ -402,18 +405,19 @@ export type AccountAuthOperation =
   | types.EnableAccountAuthOperation
   | types.RemoveAccountAuthorityOperation;
 
-export namespace AccountAuthOperation {
-  export type Args =
-    | types.AddAccountAuthorityOperation
-    | types.AddAccountAuthorityOperation.ArgsWithType
-    | types.DisableAccountAuthOperation
-    | types.DisableAccountAuthOperation.ArgsWithType
-    | types.EnableAccountAuthOperation
-    | types.EnableAccountAuthOperation.ArgsWithType
-    | types.RemoveAccountAuthorityOperation
-    | types.RemoveAccountAuthorityOperation.ArgsWithType;
+export type AccountAuthOperationArgs =
+  | types.AddAccountAuthorityOperation
+  | types.AddAccountAuthorityOperationArgsWithType
+  | types.DisableAccountAuthOperation
+  | types.DisableAccountAuthOperationArgsWithType
+  | types.EnableAccountAuthOperation
+  | types.EnableAccountAuthOperationArgsWithType
+  | types.RemoveAccountAuthorityOperation
+  | types.RemoveAccountAuthorityOperationArgsWithType;
 
-  export function fromObject(obj: Args): AccountAuthOperation {
+/** @ignore */
+export namespace AccountAuthOperation {
+  export function fromObject(obj: AccountAuthOperationArgs): AccountAuthOperation {
     if (obj instanceof types.AddAccountAuthorityOperation) return obj;
     if (obj instanceof types.DisableAccountAuthOperation) return obj;
     if (obj instanceof types.EnableAccountAuthOperation) return obj;
@@ -445,20 +449,21 @@ export type KeyPageOperation =
   | types.UpdateAllowedKeyPageOperation
   | types.UpdateKeyOperation;
 
-export namespace KeyPageOperation {
-  export type Args =
-    | types.AddKeyOperation
-    | types.AddKeyOperation.ArgsWithType
-    | types.RemoveKeyOperation
-    | types.RemoveKeyOperation.ArgsWithType
-    | types.SetThresholdKeyPageOperation
-    | types.SetThresholdKeyPageOperation.ArgsWithType
-    | types.UpdateAllowedKeyPageOperation
-    | types.UpdateAllowedKeyPageOperation.ArgsWithType
-    | types.UpdateKeyOperation
-    | types.UpdateKeyOperation.ArgsWithType;
+export type KeyPageOperationArgs =
+  | types.AddKeyOperation
+  | types.AddKeyOperationArgsWithType
+  | types.RemoveKeyOperation
+  | types.RemoveKeyOperationArgsWithType
+  | types.SetThresholdKeyPageOperation
+  | types.SetThresholdKeyPageOperationArgsWithType
+  | types.UpdateAllowedKeyPageOperation
+  | types.UpdateAllowedKeyPageOperationArgsWithType
+  | types.UpdateKeyOperation
+  | types.UpdateKeyOperationArgsWithType;
 
-  export function fromObject(obj: Args): KeyPageOperation {
+/** @ignore */
+export namespace KeyPageOperation {
+  export function fromObject(obj: KeyPageOperationArgs): KeyPageOperation {
     if (obj instanceof types.AddKeyOperation) return obj;
     if (obj instanceof types.RemoveKeyOperation) return obj;
     if (obj instanceof types.SetThresholdKeyPageOperation) return obj;
@@ -502,36 +507,37 @@ export type Signature =
   | types.RemoteSignature
   | types.SignatureSet;
 
-export namespace Signature {
-  export type Args =
-    | types.AuthoritySignature
-    | types.AuthoritySignature.ArgsWithType
-    | types.BTCLegacySignature
-    | types.BTCLegacySignature.ArgsWithType
-    | types.BTCSignature
-    | types.BTCSignature.ArgsWithType
-    | types.DelegatedSignature
-    | types.DelegatedSignature.ArgsWithType
-    | types.ED25519Signature
-    | types.ED25519Signature.ArgsWithType
-    | types.ETHSignature
-    | types.ETHSignature.ArgsWithType
-    | types.InternalSignature
-    | types.InternalSignature.ArgsWithType
-    | types.LegacyED25519Signature
-    | types.LegacyED25519Signature.ArgsWithType
-    | types.PartitionSignature
-    | types.PartitionSignature.ArgsWithType
-    | types.RCD1Signature
-    | types.RCD1Signature.ArgsWithType
-    | types.ReceiptSignature
-    | types.ReceiptSignature.ArgsWithType
-    | types.RemoteSignature
-    | types.RemoteSignature.ArgsWithType
-    | types.SignatureSet
-    | types.SignatureSet.ArgsWithType;
+export type SignatureArgs =
+  | types.AuthoritySignature
+  | types.AuthoritySignatureArgsWithType
+  | types.BTCLegacySignature
+  | types.BTCLegacySignatureArgsWithType
+  | types.BTCSignature
+  | types.BTCSignatureArgsWithType
+  | types.DelegatedSignature
+  | types.DelegatedSignatureArgsWithType
+  | types.ED25519Signature
+  | types.ED25519SignatureArgsWithType
+  | types.ETHSignature
+  | types.ETHSignatureArgsWithType
+  | types.InternalSignature
+  | types.InternalSignatureArgsWithType
+  | types.LegacyED25519Signature
+  | types.LegacyED25519SignatureArgsWithType
+  | types.PartitionSignature
+  | types.PartitionSignatureArgsWithType
+  | types.RCD1Signature
+  | types.RCD1SignatureArgsWithType
+  | types.ReceiptSignature
+  | types.ReceiptSignatureArgsWithType
+  | types.RemoteSignature
+  | types.RemoteSignatureArgsWithType
+  | types.SignatureSet
+  | types.SignatureSetArgsWithType;
 
-  export function fromObject(obj: Args): Signature {
+/** @ignore */
+export namespace Signature {
+  export function fromObject(obj: SignatureArgs): Signature {
     if (obj instanceof types.AuthoritySignature) return obj;
     if (obj instanceof types.BTCLegacySignature) return obj;
     if (obj instanceof types.BTCSignature) return obj;

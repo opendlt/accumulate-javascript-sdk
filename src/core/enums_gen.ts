@@ -15,10 +15,11 @@ export enum AccountAuthOperationType {
   RemoveAuthority = 4,
 }
 
-export namespace AccountAuthOperationType {
-  export type Args = AccountAuthOperationType | string;
+export type AccountAuthOperationTypeArgs = AccountAuthOperationType | string;
 
-  export function fromObject(obj: Args): AccountAuthOperationType {
+/** @ignore */
+export namespace AccountAuthOperationType {
+  export function fromObject(obj: AccountAuthOperationTypeArgs): AccountAuthOperationType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -91,10 +92,11 @@ export enum AccountType {
   SyntheticLedger = 16,
 }
 
-export namespace AccountType {
-  export type Args = AccountType | string;
+export type AccountTypeArgs = AccountType | string;
 
-  export function fromObject(obj: Args): AccountType {
+/** @ignore */
+export namespace AccountType {
+  export function fromObject(obj: AccountTypeArgs): AccountType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -183,10 +185,11 @@ export enum AllowedTransactionBit {
   UpdateAccountAuth = 2,
 }
 
-export namespace AllowedTransactionBit {
-  export type Args = AllowedTransactionBit | string;
+export type AllowedTransactionBitArgs = AllowedTransactionBit | string;
 
-  export function fromObject(obj: Args): AllowedTransactionBit {
+/** @ignore */
+export namespace AllowedTransactionBit {
+  export function fromObject(obj: AllowedTransactionBitArgs): AllowedTransactionBit {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -223,10 +226,11 @@ export enum BookType {
   Operator = 2,
 }
 
-export namespace BookType {
-  export type Args = BookType | string;
+export type BookTypeArgs = BookType | string;
 
-  export function fromObject(obj: Args): BookType {
+/** @ignore */
+export namespace BookType {
+  export function fromObject(obj: BookTypeArgs): BookType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -269,10 +273,11 @@ export enum DataEntryType {
   DoubleHash = 3,
 }
 
-export namespace DataEntryType {
-  export type Args = DataEntryType | string;
+export type DataEntryTypeArgs = DataEntryType | string;
 
-  export function fromObject(obj: Args): DataEntryType {
+/** @ignore */
+export namespace DataEntryType {
+  export function fromObject(obj: DataEntryTypeArgs): DataEntryType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -321,10 +326,11 @@ export enum ExecutorVersion {
   V2 = 5,
 }
 
-export namespace ExecutorVersion {
-  export type Args = ExecutorVersion | string;
+export type ExecutorVersionArgs = ExecutorVersion | string;
 
-  export function fromObject(obj: Args): ExecutorVersion {
+/** @ignore */
+export namespace ExecutorVersion {
+  export function fromObject(obj: ExecutorVersionArgs): ExecutorVersion {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -379,10 +385,11 @@ export enum KeyPageOperationType {
   UpdateAllowed = 5,
 }
 
-export namespace KeyPageOperationType {
-  export type Args = KeyPageOperationType | string;
+export type KeyPageOperationTypeArgs = KeyPageOperationType | string;
 
-  export function fromObject(obj: Args): KeyPageOperationType {
+/** @ignore */
+export namespace KeyPageOperationType {
+  export function fromObject(obj: KeyPageOperationTypeArgs): KeyPageOperationType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -435,10 +442,11 @@ export enum ObjectType {
   Transaction = 2,
 }
 
-export namespace ObjectType {
-  export type Args = ObjectType | string;
+export type ObjectTypeArgs = ObjectType | string;
 
-  export function fromObject(obj: Args): ObjectType {
+/** @ignore */
+export namespace ObjectType {
+  export function fromObject(obj: ObjectTypeArgs): ObjectType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -479,10 +487,11 @@ export enum PartitionType {
   BlockSummary = 3,
 }
 
-export namespace PartitionType {
-  export type Args = PartitionType | string;
+export type PartitionTypeArgs = PartitionType | string;
 
-  export function fromObject(obj: Args): PartitionType {
+/** @ignore */
+export namespace PartitionType {
+  export function fromObject(obj: PartitionTypeArgs): PartitionType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -549,10 +558,11 @@ export enum SignatureType {
   Authority = 13,
 }
 
-export namespace SignatureType {
-  export type Args = SignatureType | string;
+export type SignatureTypeArgs = SignatureType | string;
 
-  export function fromObject(obj: Args): SignatureType {
+/** @ignore */
+export namespace SignatureType {
+  export function fromObject(obj: SignatureTypeArgs): SignatureType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -639,10 +649,11 @@ export enum TransactionMax {
   System = 255,
 }
 
-export namespace TransactionMax {
-  export type Args = TransactionMax | string;
+export type TransactionMaxArgs = TransactionMax | string;
 
-  export function fromObject(obj: Args): TransactionMax {
+/** @ignore */
+export namespace TransactionMax {
+  export function fromObject(obj: TransactionMaxArgs): TransactionMax {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -743,10 +754,11 @@ export enum TransactionType {
   SystemWriteData = 99,
 }
 
-export namespace TransactionType {
-  export type Args = TransactionType | string;
+export type TransactionTypeArgs = TransactionType | string;
 
-  export function fromObject(obj: Args): TransactionType {
+/** @ignore */
+export namespace TransactionType {
+  export function fromObject(obj: TransactionTypeArgs): TransactionType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -911,10 +923,11 @@ export enum VoteType {
   Suggest = 3,
 }
 
-export namespace VoteType {
-  export type Args = VoteType | string;
+export type VoteTypeArgs = VoteType | string;
 
-  export function fromObject(obj: Args): VoteType {
+/** @ignore */
+export namespace VoteType {
+  export function fromObject(obj: VoteTypeArgs): VoteType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }

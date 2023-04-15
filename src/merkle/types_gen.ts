@@ -7,16 +7,14 @@ import { encodeAs } from "../encoding";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 
-export namespace Receipt {
-  export type Args = {
-    start?: Uint8Array | string;
-    startIndex?: number;
-    end?: Uint8Array | string;
-    endIndex?: number;
-    anchor?: Uint8Array | string;
-    entries?: (ReceiptEntry | ReceiptEntry.Args)[];
-  };
-}
+export type ReceiptArgs = {
+  start?: Uint8Array | string;
+  startIndex?: number;
+  end?: Uint8Array | string;
+  endIndex?: number;
+  anchor?: Uint8Array | string;
+  entries?: (ReceiptEntry | ReceiptEntryArgs)[];
+};
 export class Receipt {
   @encodeAs.field(1).bytes
   public start?: Uint8Array;
@@ -31,7 +29,7 @@ export class Receipt {
   @encodeAs.field(6).repeatable.reference
   public entries?: ReceiptEntry[];
 
-  constructor(args: Receipt.Args) {
+  constructor(args: ReceiptArgs) {
     this.start =
       args.start == undefined
         ? undefined
@@ -62,7 +60,7 @@ export class Receipt {
     return new Receipt(this.asObject());
   }
 
-  asObject(): Receipt.Args {
+  asObject(): ReceiptArgs {
     return {
       start: this.start && Buffer.from(this.start).toString("hex"),
       startIndex: this.startIndex && this.startIndex,
@@ -74,19 +72,17 @@ export class Receipt {
   }
 }
 
-export namespace ReceiptEntry {
-  export type Args = {
-    right?: boolean;
-    hash?: Uint8Array | string;
-  };
-}
+export type ReceiptEntryArgs = {
+  right?: boolean;
+  hash?: Uint8Array | string;
+};
 export class ReceiptEntry {
   @encodeAs.field(1).bool
   public right?: boolean;
   @encodeAs.field(2).bytes
   public hash?: Uint8Array;
 
-  constructor(args: ReceiptEntry.Args) {
+  constructor(args: ReceiptEntryArgs) {
     this.right = args.right == undefined ? undefined : args.right;
     this.hash =
       args.hash == undefined
@@ -100,7 +96,7 @@ export class ReceiptEntry {
     return new ReceiptEntry(this.asObject());
   }
 
-  asObject(): ReceiptEntry.Args {
+  asObject(): ReceiptEntryArgs {
     return {
       right: this.right && this.right,
       hash: this.hash && Buffer.from(this.hash).toString("hex"),
@@ -108,19 +104,17 @@ export class ReceiptEntry {
   }
 }
 
-export namespace State {
-  export type Args = {
-    count?: number;
-    pending?: (Uint8Array | string)[];
-    hashList?: (Uint8Array | string)[];
-  };
-}
+export type StateArgs = {
+  count?: number;
+  pending?: (Uint8Array | string)[];
+  hashList?: (Uint8Array | string)[];
+};
 export class State {
   public count?: number;
   public pending?: Uint8Array[];
   public hashList?: Uint8Array[];
 
-  constructor(args: State.Args) {
+  constructor(args: StateArgs) {
     this.count = args.count == undefined ? undefined : args.count;
     this.pending =
       args.pending == undefined
@@ -136,7 +130,7 @@ export class State {
     return new State(this.asObject());
   }
 
-  asObject(): State.Args {
+  asObject(): StateArgs {
     return {
       count: this.count && this.count,
       pending: this.pending && this.pending?.map((v) => Buffer.from(v).toString("hex")),

@@ -1,2 +1,2 @@
 export * from "../core";
-export { ChainType } from "../merkle";
+export { ChainType, ChainTypeArgs } from "../merkle";

@@ -9,10 +9,11 @@ export enum BlockFilterMode {
   ExcludeEmpty = 1,
 }
 
-export namespace BlockFilterMode {
-  export type Args = BlockFilterMode | string;
+export type BlockFilterModeArgs = BlockFilterMode | string;
 
-  export function fromObject(obj: Args): BlockFilterMode {
+/** @ignore */
+export namespace BlockFilterMode {
+  export function fromObject(obj: BlockFilterModeArgs): BlockFilterMode {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }
@@ -51,10 +52,11 @@ export enum TxFetchMode {
   Omit = 3,
 }
 
-export namespace TxFetchMode {
-  export type Args = TxFetchMode | string;
+export type TxFetchModeArgs = TxFetchMode | string;
 
-  export function fromObject(obj: Args): TxFetchMode {
+/** @ignore */
+export namespace TxFetchMode {
+  export function fromObject(obj: TxFetchModeArgs): TxFetchMode {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }

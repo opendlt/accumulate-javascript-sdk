@@ -13,24 +13,25 @@ export type Message =
   | types.SyntheticMessage
   | types.TransactionMessage;
 
-export namespace Message {
-  export type Args =
-    | types.BlockAnchor
-    | types.BlockAnchor.ArgsWithType
-    | types.CreditPayment
-    | types.CreditPayment.ArgsWithType
-    | types.SequencedMessage
-    | types.SequencedMessage.ArgsWithType
-    | types.SignatureMessage
-    | types.SignatureMessage.ArgsWithType
-    | types.SignatureRequest
-    | types.SignatureRequest.ArgsWithType
-    | types.SyntheticMessage
-    | types.SyntheticMessage.ArgsWithType
-    | types.TransactionMessage
-    | types.TransactionMessage.ArgsWithType;
+export type MessageArgs =
+  | types.BlockAnchor
+  | types.BlockAnchorArgsWithType
+  | types.CreditPayment
+  | types.CreditPaymentArgsWithType
+  | types.SequencedMessage
+  | types.SequencedMessageArgsWithType
+  | types.SignatureMessage
+  | types.SignatureMessageArgsWithType
+  | types.SignatureRequest
+  | types.SignatureRequestArgsWithType
+  | types.SyntheticMessage
+  | types.SyntheticMessageArgsWithType
+  | types.TransactionMessage
+  | types.TransactionMessageArgsWithType;
 
-  export function fromObject(obj: Args): Message {
+/** @ignore */
+export namespace Message {
+  export function fromObject(obj: MessageArgs): Message {
     if (obj instanceof types.BlockAnchor) return obj;
     if (obj instanceof types.CreditPayment) return obj;
     if (obj instanceof types.SequencedMessage) return obj;

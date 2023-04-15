@@ -13,10 +13,11 @@ export enum ChainType {
   Index = 4,
 }
 
-export namespace ChainType {
-  export type Args = ChainType | string;
+export type ChainTypeArgs = ChainType | string;
 
-  export function fromObject(obj: Args): ChainType {
+/** @ignore */
+export namespace ChainType {
+  export function fromObject(obj: ChainTypeArgs): ChainType {
     if (typeof obj === "number") return obj;
     return byName(obj);
   }

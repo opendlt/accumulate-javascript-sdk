@@ -19,35 +19,50 @@ import {
   WriteDataResult,
 } from ".";
 import {
+  AddCreditsResultArgsWithType,
+  BlockValidatorAnchorArgsWithType,
   BTCLegacySignature,
+  BTCLegacySignatureArgsWithType,
   BTCSignature,
+  BTCSignatureArgsWithType,
+  DirectoryAnchorArgsWithType,
   ED25519Signature,
+  ED25519SignatureArgsWithType,
+  EmptyResultArgsWithType,
   ETHSignature,
+  ETHSignatureArgsWithType,
+  KeyPageArgsWithType,
   LegacyED25519Signature,
+  LegacyED25519SignatureArgsWithType,
+  LiteIdentityArgsWithType,
   RCD1Signature,
+  RCD1SignatureArgsWithType,
+  UnknownSignerArgsWithType,
+  WriteDataResultArgsWithType,
 } from "./types_gen";
 import { Signature } from "./unions_gen";
 
 export type Fee = number;
-export type AllowedTransactions = TransactionType[];
+export type FeeArgs = Fee | string;
 
+/** @ignore */
 export namespace Fee {
-  export type Args = Fee | string;
-
   export function getName(fee: Fee) {
     return fee;
   }
 
-  export function fromObject(obj: Args): Fee {
+  export function fromObject(obj: FeeArgs): Fee {
     if (typeof obj === "string") return Number(obj);
     return obj;
   }
 }
 
-export namespace AllowedTransactions {
-  export type Args = AllowedTransactions | string[];
+export type AllowedTransactions = TransactionType[];
+export type AllowedTransactionsArgs = AllowedTransactions | string[];
 
-  export function fromObject(obj: Args): AllowedTransactions {
+/** @ignore */
+export namespace AllowedTransactions {
+  export function fromObject(obj: AllowedTransactionsArgs): AllowedTransactions {
     if (!obj.length) return [];
     if (typeof obj[0] === "number") return <number[]>obj;
     return (<string[]>obj).map((v) => TransactionType.byName(v));
@@ -55,44 +70,47 @@ export namespace AllowedTransactions {
 }
 
 export type AnchorBody = DirectoryAnchor | BlockValidatorAnchor;
-export namespace AnchorBody {
-  export type Args =
-    | DirectoryAnchor
-    | BlockValidatorAnchor
-    | DirectoryAnchor.ArgsWithType
-    | BlockValidatorAnchor.ArgsWithType;
+export type AnchorBodyArgs =
+  | DirectoryAnchor
+  | BlockValidatorAnchor
+  | DirectoryAnchorArgsWithType
+  | BlockValidatorAnchorArgsWithType;
 
-  export function fromObject(obj: Args): AnchorBody {
+/** @ignore */
+export namespace AnchorBody {
+  export function fromObject(obj: AnchorBodyArgs): AnchorBody {
     return <AnchorBody>TransactionBody.fromObject(obj);
   }
 }
 
 export type Signer = LiteIdentity | KeyPage | UnknownSigner;
-export namespace Signer {
-  export type Args =
-    | LiteIdentity
-    | KeyPage
-    | UnknownSigner
-    | LiteIdentity.ArgsWithType
-    | KeyPage.ArgsWithType
-    | UnknownSigner.ArgsWithType;
+export type SignerArgs =
+  | LiteIdentity
+  | KeyPage
+  | UnknownSigner
+  | LiteIdentityArgsWithType
+  | KeyPageArgsWithType
+  | UnknownSignerArgsWithType;
 
-  export function fromObject(obj: Args): Signer {
+/** @ignore */
+export namespace Signer {
+  export function fromObject(obj: SignerArgs): Signer {
     return <Signer>Account.fromObject(obj);
   }
 }
 
 export type TransactionResult = AddCreditsResult | EmptyResult | WriteDataResult;
-export namespace TransactionResult {
-  export type Args =
-    | AddCreditsResult
-    | EmptyResult
-    | WriteDataResult
-    | AddCreditsResult.ArgsWithType
-    | EmptyResult.ArgsWithType
-    | WriteDataResult.ArgsWithType;
+export type TransactionResultArgs =
+  | AddCreditsResult
+  | EmptyResult
+  | WriteDataResult
+  | AddCreditsResultArgsWithType
+  | EmptyResultArgsWithType
+  | WriteDataResultArgsWithType;
 
-  export function fromObject(obj: Args): TransactionResult {
+/** @ignore */
+export namespace TransactionResult {
+  export function fromObject(obj: TransactionResultArgs): TransactionResult {
     if (obj instanceof AddCreditsResult) return obj;
     if (obj instanceof EmptyResult) return obj;
     if (obj instanceof WriteDataResult) return obj;
@@ -117,22 +135,23 @@ export type KeySignature =
   | ETHSignature
   | LegacyED25519Signature
   | RCD1Signature;
-export namespace KeySignature {
-  export type Args =
-    | BTCLegacySignature
-    | BTCSignature
-    | ED25519Signature
-    | ETHSignature
-    | LegacyED25519Signature
-    | RCD1Signature
-    | BTCLegacySignature.ArgsWithType
-    | BTCSignature.ArgsWithType
-    | ED25519Signature.ArgsWithType
-    | ETHSignature.ArgsWithType
-    | LegacyED25519Signature.ArgsWithType
-    | RCD1Signature.ArgsWithType;
+export type KeySignatureArgs =
+  | BTCLegacySignature
+  | BTCSignature
+  | ED25519Signature
+  | ETHSignature
+  | LegacyED25519Signature
+  | RCD1Signature
+  | BTCLegacySignatureArgsWithType
+  | BTCSignatureArgsWithType
+  | ED25519SignatureArgsWithType
+  | ETHSignatureArgsWithType
+  | LegacyED25519SignatureArgsWithType
+  | RCD1SignatureArgsWithType;
 
-  export function fromObject(obj: Args): KeySignature {
+/** @ignore */
+export namespace KeySignature {
+  export function fromObject(obj: KeySignatureArgs): KeySignature {
     return <KeySignature>Signature.fromObject(obj);
   }
 }
