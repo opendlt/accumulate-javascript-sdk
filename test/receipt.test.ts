@@ -38,7 +38,7 @@ test("should clone receipt with string hashes", () => {
   r1.entries![0].hash = Buffer.from("new");
   r1.entries![0].right = true;
 
-  const r2o = r2.asObject()
+  const r2o = r2.asObject();
   expect(r2o.start).toEqual("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52");
   expect(r2o.entries![0].hash).toEqual(
     "baee50fcd5b881c14fd54437d5b371cadedc0bce12f3f443e42a91529005c588"

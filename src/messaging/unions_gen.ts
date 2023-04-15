@@ -40,22 +40,29 @@ export namespace Message {
     if (obj instanceof types.TransactionMessage) return obj;
 
     switch (obj.type) {
-      case (types.MessageType.BlockAnchor, "blockAnchor"):
+      case types.MessageType.BlockAnchor:
+      case "blockAnchor":
         return new types.BlockAnchor(obj);
-      case (types.MessageType.CreditPayment, "creditPayment"):
+      case types.MessageType.CreditPayment:
+      case "creditPayment":
         return new types.CreditPayment(obj);
-      case (types.MessageType.Sequenced, "sequenced"):
+      case types.MessageType.Sequenced:
+      case "sequenced":
         return new types.SequencedMessage(obj);
-      case (types.MessageType.Signature, "signature"):
+      case types.MessageType.Signature:
+      case "signature":
         return new types.SignatureMessage(obj);
-      case (types.MessageType.SignatureRequest, "signatureRequest"):
+      case types.MessageType.SignatureRequest:
+      case "signatureRequest":
         return new types.SignatureRequest(obj);
-      case (types.MessageType.Synthetic, "synthetic"):
+      case types.MessageType.Synthetic:
+      case "synthetic":
         return new types.SyntheticMessage(obj);
-      case (types.MessageType.Transaction, "transaction"):
+      case types.MessageType.Transaction:
+      case "transaction":
         return new types.TransactionMessage(obj);
+      default:
+        throw new Error(`Unknown message '${(obj as any).type}'`);
     }
-
-    throw new Error(`Unknown message '${obj.type}'`);
   }
 }

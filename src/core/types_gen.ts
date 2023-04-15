@@ -66,7 +66,7 @@ export class ADI {
 
   asObject(): ADI.ArgsWithType {
     return {
-      type: this.type,
+      type: "identity",
       url: this.url && this.url.toString(),
       authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
     };
@@ -125,7 +125,7 @@ export class AccumulateDataEntry {
 
   asObject(): AccumulateDataEntry.ArgsWithType {
     return {
-      type: this.type,
+      type: "accumulate",
       data: this.data && this.data?.map((v) => Buffer.from(v).toString("hex")),
     };
   }
@@ -154,7 +154,7 @@ export class AcmeFaucet {
 
   asObject(): AcmeFaucet.ArgsWithType {
     return {
-      type: this.type,
+      type: "acmeFaucet",
       url: this.url && this.url.toString(),
     };
   }
@@ -208,8 +208,8 @@ export class ActivateProtocolVersion {
 
   asObject(): ActivateProtocolVersion.ArgsWithType {
     return {
-      type: this.type,
-      version: this.version && this.version.toString(),
+      type: "activateProtocolVersion",
+      version: this.version && ExecutorVersion.getName(this.version),
     };
   }
 }
@@ -243,7 +243,7 @@ export class AddAccountAuthorityOperation {
 
   asObject(): AddAccountAuthorityOperation.ArgsWithType {
     return {
-      type: this.type,
+      type: "addAuthority",
       authority: this.authority && this.authority.toString(),
     };
   }
@@ -289,7 +289,7 @@ export class AddCredits {
 
   asObject(): AddCredits.ArgsWithType {
     return {
-      type: this.type,
+      type: "addCredits",
       recipient: this.recipient && this.recipient.toString(),
       amount: this.amount && this.amount.toString(),
       oracle: this.oracle && this.oracle,
@@ -332,7 +332,7 @@ export class AddCreditsResult {
 
   asObject(): AddCreditsResult.ArgsWithType {
     return {
-      type: this.type,
+      type: "addCredits",
       amount: this.amount && this.amount.toString(),
       credits: this.credits && this.credits,
       oracle: this.oracle && this.oracle,
@@ -367,7 +367,7 @@ export class AddKeyOperation {
 
   asObject(): AddKeyOperation.ArgsWithType {
     return {
-      type: this.type,
+      type: "add",
       entry: this.entry && this.entry.asObject(),
     };
   }
@@ -430,7 +430,7 @@ export class AnchorLedger {
 
   asObject(): AnchorLedger.ArgsWithType {
     return {
-      type: this.type,
+      type: "anchorLedger",
       url: this.url && this.url.toString(),
       minorBlockSequenceNumber: this.minorBlockSequenceNumber && this.minorBlockSequenceNumber,
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
@@ -496,7 +496,7 @@ export class AnchorMetadata {
   asObject(): AnchorMetadata.Args {
     return {
       name: this.name && this.name,
-      type: this.type && this.type.toString(),
+      type: this.type && ChainType.getName(this.type),
       account: this.account && this.account.toString(),
       index: this.index && this.index,
       sourceIndex: this.sourceIndex && this.sourceIndex,
@@ -640,10 +640,10 @@ export class AuthoritySignature {
 
   asObject(): AuthoritySignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "authority",
       origin: this.origin && this.origin.toString(),
       authority: this.authority && this.authority.toString(),
-      vote: this.vote && this.vote.toString(),
+      vote: this.vote && VoteType.getName(this.vote),
       txID: this.txID && this.txID.toString(),
       cause: this.cause && this.cause.toString(),
       delegator: this.delegator && this.delegator?.map((v) => v.toString()),
@@ -717,13 +717,13 @@ export class BTCLegacySignature {
 
   asObject(): BTCLegacySignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "btclegacy",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       signature: this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && this.vote.toString(),
+      vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
@@ -795,13 +795,13 @@ export class BTCSignature {
 
   asObject(): BTCSignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "btc",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       signature: this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && this.vote.toString(),
+      vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
@@ -889,7 +889,7 @@ export class BlockLedger {
 
   asObject(): BlockLedger.ArgsWithType {
     return {
-      type: this.type,
+      type: "blockLedger",
       url: this.url && this.url.toString(),
       index: this.index && this.index,
       time: this.time && this.time,
@@ -966,7 +966,7 @@ export class BlockValidatorAnchor {
 
   asObject(): BlockValidatorAnchor.ArgsWithType {
     return {
-      type: this.type,
+      type: "blockValidatorAnchor",
       source: this.source && this.source.toString(),
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
       minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
@@ -1000,7 +1000,7 @@ export class BurnCredits {
 
   asObject(): BurnCredits.ArgsWithType {
     return {
-      type: this.type,
+      type: "burnCredits",
       amount: this.amount && this.amount,
     };
   }
@@ -1033,7 +1033,7 @@ export class BurnTokens {
 
   asObject(): BurnTokens.ArgsWithType {
     return {
-      type: this.type,
+      type: "burnTokens",
       amount: this.amount && this.amount.toString(),
     };
   }
@@ -1063,7 +1063,7 @@ export class ChainMetadata {
   asObject(): ChainMetadata.Args {
     return {
       name: this.name && this.name,
-      type: this.type && this.type.toString(),
+      type: this.type && ChainType.getName(this.type),
     };
   }
 }
@@ -1134,7 +1134,7 @@ export class CreateDataAccount {
 
   asObject(): CreateDataAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "createDataAccount",
       url: this.url && this.url.toString(),
       authorities: this.authorities && this.authorities?.map((v) => v.toString()),
     };
@@ -1189,7 +1189,7 @@ export class CreateIdentity {
 
   asObject(): CreateIdentity.ArgsWithType {
     return {
-      type: this.type,
+      type: "createIdentity",
       url: this.url && this.url.toString(),
       keyHash: this.keyHash && Buffer.from(this.keyHash).toString("hex"),
       keyBookUrl: this.keyBookUrl && this.keyBookUrl.toString(),
@@ -1237,7 +1237,7 @@ export class CreateKeyBook {
 
   asObject(): CreateKeyBook.ArgsWithType {
     return {
-      type: this.type,
+      type: "createKeyBook",
       url: this.url && this.url.toString(),
       publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
       authorities: this.authorities && this.authorities?.map((v) => v.toString()),
@@ -1270,7 +1270,7 @@ export class CreateKeyPage {
 
   asObject(): CreateKeyPage.ArgsWithType {
     return {
-      type: this.type,
+      type: "createKeyPage",
       keys: this.keys && this.keys?.map((v) => v.asObject()),
     };
   }
@@ -1294,7 +1294,7 @@ export class CreateLiteTokenAccount {
 
   asObject(): CreateLiteTokenAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "createLiteTokenAccount",
     };
   }
 }
@@ -1355,7 +1355,7 @@ export class CreateToken {
 
   asObject(): CreateToken.ArgsWithType {
     return {
-      type: this.type,
+      type: "createToken",
       url: this.url && this.url.toString(),
       symbol: this.symbol && this.symbol,
       precision: this.precision && this.precision,
@@ -1416,7 +1416,7 @@ export class CreateTokenAccount {
 
   asObject(): CreateTokenAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "createTokenAccount",
       url: this.url && this.url.toString(),
       tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
       authorities: this.authorities && this.authorities?.map((v) => v.toString()),
@@ -1489,7 +1489,7 @@ export class DataAccount {
 
   asObject(): DataAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "dataAccount",
       url: this.url && this.url.toString(),
       authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
       entry: this.entry && this.entry.asObject(),
@@ -1528,7 +1528,7 @@ export class DelegatedSignature {
 
   asObject(): DelegatedSignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "delegated",
       signature: this.signature && this.signature.asObject(),
       delegator: this.delegator && this.delegator.toString(),
     };
@@ -1623,7 +1623,7 @@ export class DirectoryAnchor {
 
   asObject(): DirectoryAnchor.ArgsWithType {
     return {
-      type: this.type,
+      type: "directoryAnchor",
       source: this.source && this.source.toString(),
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
       minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
@@ -1665,7 +1665,7 @@ export class DisableAccountAuthOperation {
 
   asObject(): DisableAccountAuthOperation.ArgsWithType {
     return {
-      type: this.type,
+      type: "disable",
       authority: this.authority && this.authority.toString(),
     };
   }
@@ -1696,7 +1696,7 @@ export class DoubleHashDataEntry {
 
   asObject(): DoubleHashDataEntry.ArgsWithType {
     return {
-      type: this.type,
+      type: "doubleHash",
       data: this.data && this.data?.map((v) => Buffer.from(v).toString("hex")),
     };
   }
@@ -1768,13 +1768,13 @@ export class ED25519Signature {
 
   asObject(): ED25519Signature.ArgsWithType {
     return {
-      type: this.type,
+      type: "ed25519",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       signature: this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && this.vote.toString(),
+      vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
@@ -1846,13 +1846,13 @@ export class ETHSignature {
 
   asObject(): ETHSignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "eth",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       signature: this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && this.vote.toString(),
+      vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
@@ -1874,7 +1874,7 @@ export class EmptyResult {
 
   asObject(): EmptyResult.ArgsWithType {
     return {
-      type: this.type,
+      type: "unknown",
     };
   }
 }
@@ -1906,7 +1906,7 @@ export class EnableAccountAuthOperation {
 
   asObject(): EnableAccountAuthOperation.ArgsWithType {
     return {
-      type: this.type,
+      type: "enable",
       authority: this.authority && this.authority.toString(),
     };
   }
@@ -1999,7 +1999,7 @@ export class FactomDataEntryWrapper {
 
   asObject(): FactomDataEntryWrapper.ArgsWithType {
     return {
-      type: this.type,
+      type: "factom",
       accountId: this.accountId && Buffer.from(this.accountId).toString("hex"),
       data: this.data && Buffer.from(this.data).toString("hex"),
       extIds: this.extIds && this.extIds?.map((v) => Buffer.from(v).toString("hex")),
@@ -2030,7 +2030,7 @@ export class FeeSchedule {
   asObject(): FeeSchedule.Args {
     return {
       createIdentitySliding:
-        this.createIdentitySliding && this.createIdentitySliding?.map((v) => v.toString()),
+        this.createIdentitySliding && this.createIdentitySliding?.map((v) => Fee.getName(v)),
     };
   }
 }
@@ -2120,7 +2120,7 @@ export class InternalSignature {
 
   asObject(): InternalSignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "internal",
       cause: this.cause && Buffer.from(this.cause).toString("hex"),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
@@ -2170,7 +2170,7 @@ export class IssueTokens {
 
   asObject(): IssueTokens.ArgsWithType {
     return {
-      type: this.type,
+      type: "issueTokens",
       recipient: this.recipient && this.recipient.toString(),
       amount: this.amount && this.amount.toString(),
       to: this.to && this.to?.map((v) => v.asObject()),
@@ -2216,9 +2216,9 @@ export class KeyBook {
 
   asObject(): KeyBook.ArgsWithType {
     return {
-      type: this.type,
+      type: "keyBook",
       url: this.url && this.url.toString(),
-      bookType: this.bookType && this.bookType.toString(),
+      bookType: this.bookType && BookType.getName(this.bookType),
       authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
       pageCount: this.pageCount && this.pageCount,
     };
@@ -2287,7 +2287,7 @@ export class KeyPage {
 
   asObject(): KeyPage.ArgsWithType {
     return {
-      type: this.type,
+      type: "keyPage",
       url: this.url && this.url.toString(),
       creditBalance: this.creditBalance && this.creditBalance,
       acceptThreshold: this.acceptThreshold && this.acceptThreshold,
@@ -2297,7 +2297,8 @@ export class KeyPage {
       version: this.version && this.version,
       keys: this.keys && this.keys?.map((v) => v.asObject()),
       transactionBlacklist:
-        this.transactionBlacklist && this.transactionBlacklist.map((v) => v.toString()),
+        this.transactionBlacklist &&
+        this.transactionBlacklist.map((v) => TransactionType.getName(v)),
     };
   }
 }
@@ -2451,13 +2452,13 @@ export class LegacyED25519Signature {
 
   asObject(): LegacyED25519Signature.ArgsWithType {
     return {
-      type: this.type,
+      type: "legacyED25519",
       timestamp: this.timestamp && this.timestamp,
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       signature: this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
-      vote: this.vote && this.vote.toString(),
+      vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
@@ -2486,7 +2487,7 @@ export class LiteDataAccount {
 
   asObject(): LiteDataAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "liteDataAccount",
       url: this.url && this.url.toString(),
     };
   }
@@ -2523,7 +2524,7 @@ export class LiteIdentity {
 
   asObject(): LiteIdentity.ArgsWithType {
     return {
-      type: this.type,
+      type: "liteIdentity",
       url: this.url && this.url.toString(),
       creditBalance: this.creditBalance && this.creditBalance,
       lastUsedOn: this.lastUsedOn && this.lastUsedOn,
@@ -2576,7 +2577,7 @@ export class LiteTokenAccount {
 
   asObject(): LiteTokenAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "liteTokenAccount",
       url: this.url && this.url.toString(),
       tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
       balance: this.balance && this.balance.toString(),
@@ -2607,7 +2608,7 @@ export class LockAccount {
 
   asObject(): LockAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "lockAccount",
       height: this.height && this.height,
     };
   }
@@ -2932,7 +2933,7 @@ export class PartitionInfo {
   asObject(): PartitionInfo.Args {
     return {
       id: this.id && this.id,
-      type: this.type && this.type.toString(),
+      type: this.type && PartitionType.getName(this.type),
     };
   }
 }
@@ -2986,7 +2987,7 @@ export class PartitionSignature {
 
   asObject(): PartitionSignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "partition",
       sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
       destinationNetwork: this.destinationNetwork && this.destinationNetwork.toString(),
       sequenceNumber: this.sequenceNumber && this.sequenceNumber,
@@ -3109,13 +3110,13 @@ export class RCD1Signature {
 
   asObject(): RCD1Signature.ArgsWithType {
     return {
-      type: this.type,
+      type: "rcd1",
       publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       signature: this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && this.vote.toString(),
+      vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
@@ -3195,7 +3196,7 @@ export class ReceiptSignature {
 
   asObject(): ReceiptSignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "receipt",
       sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
       proof: this.proof && this.proof.asObject(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
@@ -3241,7 +3242,7 @@ export class RemoteSignature {
 
   asObject(): RemoteSignature.ArgsWithType {
     return {
-      type: this.type,
+      type: "remote",
       destination: this.destination && this.destination.toString(),
       signature: this.signature && this.signature.asObject(),
       cause: this.cause && this.cause?.map((v) => Buffer.from(v).toString("hex")),
@@ -3276,7 +3277,7 @@ export class RemoteTransaction {
 
   asObject(): RemoteTransaction.ArgsWithType {
     return {
-      type: this.type,
+      type: "remote",
       hash: this.hash && Buffer.from(this.hash).toString("hex"),
     };
   }
@@ -3311,7 +3312,7 @@ export class RemoveAccountAuthorityOperation {
 
   asObject(): RemoveAccountAuthorityOperation.ArgsWithType {
     return {
-      type: this.type,
+      type: "removeAuthority",
       authority: this.authority && this.authority.toString(),
     };
   }
@@ -3344,7 +3345,7 @@ export class RemoveKeyOperation {
 
   asObject(): RemoveKeyOperation.ArgsWithType {
     return {
-      type: this.type,
+      type: "remove",
       entry: this.entry && this.entry.asObject(),
     };
   }
@@ -3491,7 +3492,7 @@ export class SendTokens {
 
   asObject(): SendTokens.ArgsWithType {
     return {
-      type: this.type,
+      type: "sendTokens",
       hash: this.hash && Buffer.from(this.hash).toString("hex"),
       meta: this.meta && this.meta,
       to: this.to && this.to?.map((v) => v.asObject()),
@@ -3521,7 +3522,7 @@ export class SetThresholdKeyPageOperation {
 
   asObject(): SetThresholdKeyPageOperation.ArgsWithType {
     return {
-      type: this.type,
+      type: "setThreshold",
       threshold: this.threshold && this.threshold,
     };
   }
@@ -3583,8 +3584,8 @@ export class SignatureSet {
 
   asObject(): SignatureSet.ArgsWithType {
     return {
-      type: this.type,
-      vote: this.vote && this.vote.toString(),
+      type: "set",
+      vote: this.vote && VoteType.getName(this.vote),
       signer: this.signer && this.signer.toString(),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
@@ -3657,7 +3658,7 @@ export class SyntheticBurnTokens {
 
   asObject(): SyntheticBurnTokens.ArgsWithType {
     return {
-      type: this.type,
+      type: "syntheticBurnTokens",
       cause: this.cause && this.cause.toString(),
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
@@ -3724,7 +3725,7 @@ export class SyntheticCreateIdentity {
 
   asObject(): SyntheticCreateIdentity.ArgsWithType {
     return {
-      type: this.type,
+      type: "syntheticCreateIdentity",
       cause: this.cause && this.cause.toString(),
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
@@ -3802,7 +3803,7 @@ export class SyntheticDepositCredits {
 
   asObject(): SyntheticDepositCredits.ArgsWithType {
     return {
-      type: this.type,
+      type: "syntheticDepositCredits",
       cause: this.cause && this.cause.toString(),
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
@@ -3891,7 +3892,7 @@ export class SyntheticDepositTokens {
 
   asObject(): SyntheticDepositTokens.ArgsWithType {
     return {
-      type: this.type,
+      type: "syntheticDepositTokens",
       cause: this.cause && this.cause.toString(),
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
@@ -3940,7 +3941,7 @@ export class SyntheticForwardTransaction {
 
   asObject(): SyntheticForwardTransaction.ArgsWithType {
     return {
-      type: this.type,
+      type: "syntheticForwardTransaction",
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
       transaction: this.transaction && this.transaction.asObject(),
     };
@@ -3979,7 +3980,7 @@ export class SyntheticLedger {
 
   asObject(): SyntheticLedger.ArgsWithType {
     return {
-      type: this.type,
+      type: "syntheticLedger",
       url: this.url && this.url.toString(),
       sequence: this.sequence && this.sequence?.map((v) => v.asObject()),
     };
@@ -4085,7 +4086,7 @@ export class SyntheticWriteData {
 
   asObject(): SyntheticWriteData.ArgsWithType {
     return {
-      type: this.type,
+      type: "syntheticWriteData",
       cause: this.cause && this.cause.toString(),
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
@@ -4111,7 +4112,7 @@ export class SystemGenesis {
 
   asObject(): SystemGenesis.ArgsWithType {
     return {
-      type: this.type,
+      type: "systemGenesis",
     };
   }
 }
@@ -4181,14 +4182,14 @@ export class SystemLedger {
 
   asObject(): SystemLedger.ArgsWithType {
     return {
-      type: this.type,
+      type: "systemLedger",
       url: this.url && this.url.toString(),
       index: this.index && this.index,
       timestamp: this.timestamp && this.timestamp,
       acmeBurnt: this.acmeBurnt && this.acmeBurnt.toString(),
       pendingUpdates: this.pendingUpdates && this.pendingUpdates?.map((v) => v.asObject()),
       anchor: this.anchor && this.anchor.asObject(),
-      executorVersion: this.executorVersion && this.executorVersion.toString(),
+      executorVersion: this.executorVersion && ExecutorVersion.getName(this.executorVersion),
     };
   }
 }
@@ -4219,7 +4220,7 @@ export class SystemWriteData {
 
   asObject(): SystemWriteData.ArgsWithType {
     return {
-      type: this.type,
+      type: "systemWriteData",
       entry: this.entry && this.entry.asObject(),
       writeToState: this.writeToState && this.writeToState,
     };
@@ -4274,7 +4275,7 @@ export class TokenAccount {
 
   asObject(): TokenAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "tokenAccount",
       url: this.url && this.url.toString(),
       authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
       tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
@@ -4348,7 +4349,7 @@ export class TokenIssuer {
 
   asObject(): TokenIssuer.ArgsWithType {
     return {
-      type: this.type,
+      type: "tokenIssuer",
       url: this.url && this.url.toString(),
       authorities: this.authorities && this.authorities?.map((v) => v.asObject()),
       symbol: this.symbol && this.symbol,
@@ -4626,7 +4627,7 @@ export class TransactionStatus {
   asObject(): TransactionStatus.Args {
     return {
       txID: this.txID && this.txID.toString(),
-      code: this.code && this.code.toString(),
+      code: this.code && errors2.Status.getName(this.code),
       error: this.error && this.error.asObject(),
       result: this.result && this.result.asObject(),
       received: this.received && this.received,
@@ -4668,7 +4669,7 @@ export class TransferCredits {
 
   asObject(): TransferCredits.ArgsWithType {
     return {
-      type: this.type,
+      type: "transferCredits",
       to: this.to && this.to?.map((v) => v.asObject()),
     };
   }
@@ -4724,7 +4725,7 @@ export class UnknownAccount {
 
   asObject(): UnknownAccount.ArgsWithType {
     return {
-      type: this.type,
+      type: "unknown",
       url: this.url && this.url.toString(),
     };
   }
@@ -4757,7 +4758,7 @@ export class UnknownSigner {
 
   asObject(): UnknownSigner.ArgsWithType {
     return {
-      type: this.type,
+      type: "unknownSigner",
       url: this.url && this.url.toString(),
       version: this.version && this.version,
     };
@@ -4791,7 +4792,7 @@ export class UpdateAccountAuth {
 
   asObject(): UpdateAccountAuth.ArgsWithType {
     return {
-      type: this.type,
+      type: "updateAccountAuth",
       operations: this.operations && this.operations?.map((v) => v.asObject()),
     };
   }
@@ -4825,9 +4826,9 @@ export class UpdateAllowedKeyPageOperation {
 
   asObject(): UpdateAllowedKeyPageOperation.ArgsWithType {
     return {
-      type: this.type,
-      allow: this.allow && this.allow?.map((v) => v.toString()),
-      deny: this.deny && this.deny?.map((v) => v.toString()),
+      type: "updateAllowed",
+      allow: this.allow && this.allow?.map((v) => TransactionType.getName(v)),
+      deny: this.deny && this.deny?.map((v) => TransactionType.getName(v)),
     };
   }
 }
@@ -4859,7 +4860,7 @@ export class UpdateKey {
 
   asObject(): UpdateKey.ArgsWithType {
     return {
-      type: this.type,
+      type: "updateKey",
       newKeyHash: this.newKeyHash && Buffer.from(this.newKeyHash).toString("hex"),
     };
   }
@@ -4901,7 +4902,7 @@ export class UpdateKeyOperation {
 
   asObject(): UpdateKeyOperation.ArgsWithType {
     return {
-      type: this.type,
+      type: "update",
       oldEntry: this.oldEntry && this.oldEntry.asObject(),
       newEntry: this.newEntry && this.newEntry.asObject(),
     };
@@ -4933,7 +4934,7 @@ export class UpdateKeyPage {
 
   asObject(): UpdateKeyPage.ArgsWithType {
     return {
-      type: this.type,
+      type: "updateKeyPage",
       operation: this.operation && this.operation?.map((v) => v.asObject()),
     };
   }
@@ -5057,7 +5058,7 @@ export class WriteData {
 
   asObject(): WriteData.ArgsWithType {
     return {
-      type: this.type,
+      type: "writeData",
       entry: this.entry && this.entry.asObject(),
       scratch: this.scratch && this.scratch,
       writeToState: this.writeToState && this.writeToState,
@@ -5110,7 +5111,7 @@ export class WriteDataResult {
 
   asObject(): WriteDataResult.ArgsWithType {
     return {
-      type: this.type,
+      type: "writeData",
       entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
       accountUrl: this.accountUrl && this.accountUrl.toString(),
       accountID: this.accountID && Buffer.from(this.accountID).toString("hex"),
@@ -5149,7 +5150,7 @@ export class WriteDataTo {
 
   asObject(): WriteDataTo.ArgsWithType {
     return {
-      type: this.type,
+      type: "writeDataTo",
       recipient: this.recipient && this.recipient.toString(),
       entry: this.entry && this.entry.asObject(),
     };

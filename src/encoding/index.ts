@@ -132,7 +132,7 @@ function encodeValue(value: any, field: Field, parts: Buffer[]) {
 }
 
 function isZeroHash(value: any) {
-  if (!value) return;
+  if (!value) return true;
   for (const v of value) {
     if (v !== 0) return false;
   }

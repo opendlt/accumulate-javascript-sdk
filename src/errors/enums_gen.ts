@@ -120,7 +120,7 @@ export namespace Status {
     }
   }
 
-  export function getName(v: Status): string {
+  export function getName(v: Status) {
     switch (v) {
       case Status.OK:
         return "ok";

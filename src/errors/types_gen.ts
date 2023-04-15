@@ -82,7 +82,7 @@ export class Error {
   asObject(): Error.Args {
     return {
       message: this.message && this.message,
-      code: this.code && this.code.toString(),
+      code: this.code && Status.getName(this.code),
       cause: this.cause && this.cause.asObject(),
       callStack: this.callStack && this.callStack?.map((v) => v.asObject()),
     };

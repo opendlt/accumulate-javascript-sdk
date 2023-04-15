@@ -11,6 +11,7 @@ import {
   StatusResponse,
   TxHistoryQuery,
   TxnQuery,
+  TxResponse,
 } from "./api_v2";
 import {
   AccountAuthOperation,
@@ -239,6 +240,7 @@ export class Client {
 
         switch (status.code) {
           case "pending":
+          case "remote":
             await sleep(pollInterval);
             continue;
           case "delivered":
@@ -349,11 +351,15 @@ export class Client {
     return this._execute(URL.parse(principal), new CreateTokenAccount(createTokenAccount), signer);
   }
 
-  execute(env: Envelope): Promise<any> {
+  async execute(env: Envelope): Promise<TxResponse> {
     const req: ExecuteRequest.Args = {
-      envelope: env,
+      envelope: env.asObject(),
     };
-    return this.call("execute-direct", req);
+    const res: TxResponse = await this.call("execute-direct", req);
+    if (res.result.error) {
+      throw res.result.error;
+    }
+    return res;
   }
 
   issueTokens(
@@ -374,7 +380,7 @@ export class Client {
 
   updateAccountAuth(
     principal: URL | string,
-    operation: AccountAuthOperation | AccountAuthOperation[],
+    operation: AccountAuthOperation.Args | AccountAuthOperation.Args[],
     signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
@@ -387,7 +393,7 @@ export class Client {
 
   updateKeyPage(
     principal: URL | string,
-    operation: KeyPageOperation | KeyPageOperation[],
+    operation: KeyPageOperation.Args | KeyPageOperation.Args[],
     signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
@@ -420,10 +426,14 @@ export class Client {
    * Others
    ******************/
 
-  faucet(url: string | URL): Promise<any> {
-    return this.call("faucet", {
+  async faucet(url: string | URL): Promise<TxResponse> {
+    const res: TxResponse = await this.call("faucet", {
       url: url.toString(),
     });
+    if (res.result.error) {
+      throw res.result.error;
+    }
+    return res;
   }
 
   status(): Promise<StatusResponse> {

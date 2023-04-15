@@ -70,7 +70,8 @@ export class GlobalValues {
       globals: this.globals && this.globals.asObject(),
       network: this.network && this.network.asObject(),
       routing: this.routing && this.routing.asObject(),
-      executorVersion: this.executorVersion && this.executorVersion.toString(),
+      executorVersion:
+        this.executorVersion && protocol.ExecutorVersion.getName(this.executorVersion),
     };
   }
 }

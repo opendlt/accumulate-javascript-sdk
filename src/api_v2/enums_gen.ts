@@ -28,7 +28,7 @@ export namespace BlockFilterMode {
     }
   }
 
-  export function getName(v: BlockFilterMode): string {
+  export function getName(v: BlockFilterMode) {
     switch (v) {
       case BlockFilterMode.ExcludeNone:
         return "excludeNone";
@@ -74,7 +74,7 @@ export namespace TxFetchMode {
     }
   }
 
-  export function getName(v: TxFetchMode): string {
+  export function getName(v: TxFetchMode) {
     switch (v) {
       case TxFetchMode.Expand:
         return "expand";
