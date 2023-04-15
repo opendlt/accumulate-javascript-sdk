@@ -10,7 +10,7 @@ import {
   stringMarshalBinary,
   uvarintMarshalBinary as uintMarshalBinary,
   varintMarshalBinary as intMarshalBinary,
-} from "../../src/encoding";
+} from "./encoding";
 
 export function encode(target: any) {
   const enc = Encoding.get(target);

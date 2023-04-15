@@ -21,6 +21,6 @@
     "types": ["node", "jest"],
     "lib": ["ES6", "DOM"]
   },
-  "include": ["src/**/*.ts", "new/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

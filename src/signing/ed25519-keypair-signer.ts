@@ -1,5 +1,5 @@
 import nacl from "tweetnacl";
-import { ED25519Signature, KeySignature, SignatureType } from "../../new/core";
+import { ED25519Signature, KeySignature, SignatureType } from ".././core";
 import { sha256 } from "../crypto";
 import { Signer } from "./signer";
 import { Ed25519Keypair } from "./ed25519-keypair";

@@ -1,6 +1,6 @@
-import { KeySignature, SignatureType } from "../../new/core";
+import { KeySignature, SignatureType } from ".././core";
 import { ACME_TOKEN_URL } from "../acc-url";
-import { URL } from "../../new/url";
+import { URL } from ".././url";
 import { sha256 } from "../crypto";
 
 export interface Signer {
