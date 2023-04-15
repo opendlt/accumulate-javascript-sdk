@@ -28,8 +28,7 @@ export class URL {
   }
 
   static parse(input: _URL | string | URL) {
-    if (input instanceof URL)
-      return input;
+    if (input instanceof URL) return input;
     return new this(input);
   }
 

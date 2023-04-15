@@ -27,6 +27,17 @@ export namespace BlockFilterMode {
         throw new Error(`Unknown BlockFilterMode '${name}'`);
     }
   }
+
+  export function getName(v: BlockFilterMode): string {
+    switch (v) {
+      case BlockFilterMode.ExcludeNone:
+        return "excludeNone";
+      case BlockFilterMode.ExcludeEmpty:
+        return "excludeEmpty";
+      default:
+        throw new Error(`Unknown BlockFilterMode ${v}`);
+    }
+  }
 }
 
 export enum TxFetchMode {
@@ -60,6 +71,21 @@ export namespace TxFetchMode {
         return TxFetchMode.Omit;
       default:
         throw new Error(`Unknown TxFetchMode '${name}'`);
+    }
+  }
+
+  export function getName(v: TxFetchMode): string {
+    switch (v) {
+      case TxFetchMode.Expand:
+        return "expand";
+      case TxFetchMode.Ids:
+        return "ids";
+      case TxFetchMode.CountOnly:
+        return "countOnly";
+      case TxFetchMode.Omit:
+        return "omit";
+      default:
+        throw new Error(`Unknown TxFetchMode ${v}`);
     }
   }
 }

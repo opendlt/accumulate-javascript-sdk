@@ -11,7 +11,7 @@ export class TxSigner {
   protected readonly _version: number;
 
   constructor(url: string | AccURL, signer: Signer, version?: number) {
-    this._url = AccURL.toAccURL(url);
+    this._url = AccURL.parse(url);
     this._signer = signer;
     this._version = version ?? 1;
   }

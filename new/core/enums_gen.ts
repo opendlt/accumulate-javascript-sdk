@@ -39,6 +39,23 @@ export namespace AccountAuthOperationType {
         throw new Error(`Unknown AccountAuthOperationType '${name}'`);
     }
   }
+
+  export function getName(v: AccountAuthOperationType): string {
+    switch (v) {
+      case AccountAuthOperationType.Unknown:
+        return "unknown";
+      case AccountAuthOperationType.Enable:
+        return "enable";
+      case AccountAuthOperationType.Disable:
+        return "disable";
+      case AccountAuthOperationType.AddAuthority:
+        return "addAuthority";
+      case AccountAuthOperationType.RemoveAuthority:
+        return "removeAuthority";
+      default:
+        throw new Error(`Unknown AccountAuthOperationType ${v}`);
+    }
+  }
 }
 
 export enum AccountType {
@@ -120,6 +137,43 @@ export namespace AccountType {
         throw new Error(`Unknown AccountType '${name}'`);
     }
   }
+
+  export function getName(v: AccountType): string {
+    switch (v) {
+      case AccountType.Unknown:
+        return "unknown";
+      case AccountType.AnchorLedger:
+        return "anchorLedger";
+      case AccountType.Identity:
+        return "identity";
+      case AccountType.TokenIssuer:
+        return "tokenIssuer";
+      case AccountType.TokenAccount:
+        return "tokenAccount";
+      case AccountType.LiteTokenAccount:
+        return "liteTokenAccount";
+      case AccountType.BlockLedger:
+        return "blockLedger";
+      case AccountType.KeyPage:
+        return "keyPage";
+      case AccountType.KeyBook:
+        return "keyBook";
+      case AccountType.DataAccount:
+        return "dataAccount";
+      case AccountType.LiteDataAccount:
+        return "liteDataAccount";
+      case AccountType.UnknownSigner:
+        return "unknownSigner";
+      case AccountType.SystemLedger:
+        return "systemLedger";
+      case AccountType.LiteIdentity:
+        return "liteIdentity";
+      case AccountType.SyntheticLedger:
+        return "syntheticLedger";
+      default:
+        throw new Error(`Unknown AccountType ${v}`);
+    }
+  }
 }
 
 export enum AllowedTransactionBit {
@@ -145,6 +199,17 @@ export namespace AllowedTransactionBit {
         return AllowedTransactionBit.UpdateAccountAuth;
       default:
         throw new Error(`Unknown AllowedTransactionBit '${name}'`);
+    }
+  }
+
+  export function getName(v: AllowedTransactionBit): string {
+    switch (v) {
+      case AllowedTransactionBit.UpdateKeyPage:
+        return "updateKeyPage";
+      case AllowedTransactionBit.UpdateAccountAuth:
+        return "updateAccountAuth";
+      default:
+        throw new Error(`Unknown AllowedTransactionBit ${v}`);
     }
   }
 }
@@ -176,6 +241,19 @@ export namespace BookType {
         return BookType.Operator;
       default:
         throw new Error(`Unknown BookType '${name}'`);
+    }
+  }
+
+  export function getName(v: BookType): string {
+    switch (v) {
+      case BookType.Normal:
+        return "normal";
+      case BookType.Validator:
+        return "validator";
+      case BookType.Operator:
+        return "operator";
+      default:
+        throw new Error(`Unknown BookType ${v}`);
     }
   }
 }
@@ -211,6 +289,21 @@ export namespace DataEntryType {
         return DataEntryType.DoubleHash;
       default:
         throw new Error(`Unknown DataEntryType '${name}'`);
+    }
+  }
+
+  export function getName(v: DataEntryType): string {
+    switch (v) {
+      case DataEntryType.Unknown:
+        return "unknown";
+      case DataEntryType.Factom:
+        return "factom";
+      case DataEntryType.Accumulate:
+        return "accumulate";
+      case DataEntryType.DoubleHash:
+        return "doubleHash";
+      default:
+        throw new Error(`Unknown DataEntryType ${v}`);
     }
   }
 }
@@ -250,6 +343,23 @@ export namespace ExecutorVersion {
         return ExecutorVersion.V2;
       default:
         throw new Error(`Unknown ExecutorVersion '${name}'`);
+    }
+  }
+
+  export function getName(v: ExecutorVersion): string {
+    switch (v) {
+      case ExecutorVersion.V1:
+        return "v1";
+      case ExecutorVersion.V1SignatureAnchoring:
+        return "v1SignatureAnchoring";
+      case ExecutorVersion.V1DoubleHashEntries:
+        return "v1DoubleHashEntries";
+      case ExecutorVersion.V1Halt:
+        return "v1Halt";
+      case ExecutorVersion.V2:
+        return "v2";
+      default:
+        throw new Error(`Unknown ExecutorVersion ${v}`);
     }
   }
 }
@@ -295,6 +405,25 @@ export namespace KeyPageOperationType {
         throw new Error(`Unknown KeyPageOperationType '${name}'`);
     }
   }
+
+  export function getName(v: KeyPageOperationType): string {
+    switch (v) {
+      case KeyPageOperationType.Unknown:
+        return "unknown";
+      case KeyPageOperationType.Update:
+        return "update";
+      case KeyPageOperationType.Remove:
+        return "remove";
+      case KeyPageOperationType.Add:
+        return "add";
+      case KeyPageOperationType.SetThreshold:
+        return "setThreshold";
+      case KeyPageOperationType.UpdateAllowed:
+        return "updateAllowed";
+      default:
+        throw new Error(`Unknown KeyPageOperationType ${v}`);
+    }
+  }
 }
 
 export enum ObjectType {
@@ -324,6 +453,19 @@ export namespace ObjectType {
         return ObjectType.Transaction;
       default:
         throw new Error(`Unknown ObjectType '${name}'`);
+    }
+  }
+
+  export function getName(v: ObjectType): string {
+    switch (v) {
+      case ObjectType.Unknown:
+        return "unknown";
+      case ObjectType.Account:
+        return "account";
+      case ObjectType.Transaction:
+        return "transaction";
+      default:
+        throw new Error(`Unknown ObjectType ${v}`);
     }
   }
 }
@@ -359,6 +501,19 @@ export namespace PartitionType {
         return PartitionType.BlockSummary;
       default:
         throw new Error(`Unknown PartitionType '${name}'`);
+    }
+  }
+
+  export function getName(v: PartitionType): string {
+    switch (v) {
+      case PartitionType.Directory:
+        return "directory";
+      case PartitionType.BlockValidator:
+        return "blockValidator";
+      case PartitionType.BlockSummary:
+        return "blockSummary";
+      default:
+        throw new Error(`Unknown PartitionType ${v}`);
     }
   }
 }
@@ -438,6 +593,41 @@ export namespace SignatureType {
         throw new Error(`Unknown SignatureType '${name}'`);
     }
   }
+
+  export function getName(v: SignatureType): string {
+    switch (v) {
+      case SignatureType.Unknown:
+        return "unknown";
+      case SignatureType.LegacyED25519:
+        return "legacyED25519";
+      case SignatureType.ED25519:
+        return "ed25519";
+      case SignatureType.RCD1:
+        return "rcd1";
+      case SignatureType.Receipt:
+        return "receipt";
+      case SignatureType.Partition:
+        return "partition";
+      case SignatureType.Set:
+        return "set";
+      case SignatureType.Remote:
+        return "remote";
+      case SignatureType.BTC:
+        return "btc";
+      case SignatureType.BTCLegacy:
+        return "btclegacy";
+      case SignatureType.ETH:
+        return "eth";
+      case SignatureType.Delegated:
+        return "delegated";
+      case SignatureType.Internal:
+        return "internal";
+      case SignatureType.Authority:
+        return "authority";
+      default:
+        throw new Error(`Unknown SignatureType ${v}`);
+    }
+  }
 }
 
 export enum TransactionMax {
@@ -467,6 +657,19 @@ export namespace TransactionMax {
         return TransactionMax.System;
       default:
         throw new Error(`Unknown TransactionMax '${name}'`);
+    }
+  }
+
+  export function getName(v: TransactionMax): string {
+    switch (v) {
+      case TransactionMax.User:
+        return "user";
+      case TransactionMax.Synthetic:
+        return "synthetic";
+      case TransactionMax.System:
+        return "system";
+      default:
+        throw new Error(`Unknown TransactionMax ${v}`);
     }
   }
 }
@@ -622,6 +825,79 @@ export namespace TransactionType {
         throw new Error(`Unknown TransactionType '${name}'`);
     }
   }
+
+  export function getName(v: TransactionType): string {
+    switch (v) {
+      case TransactionType.Unknown:
+        return "unknown";
+      case TransactionType.CreateIdentity:
+        return "createIdentity";
+      case TransactionType.CreateTokenAccount:
+        return "createTokenAccount";
+      case TransactionType.SendTokens:
+        return "sendTokens";
+      case TransactionType.CreateDataAccount:
+        return "createDataAccount";
+      case TransactionType.WriteData:
+        return "writeData";
+      case TransactionType.WriteDataTo:
+        return "writeDataTo";
+      case TransactionType.AcmeFaucet:
+        return "acmeFaucet";
+      case TransactionType.CreateToken:
+        return "createToken";
+      case TransactionType.IssueTokens:
+        return "issueTokens";
+      case TransactionType.BurnTokens:
+        return "burnTokens";
+      case TransactionType.CreateLiteTokenAccount:
+        return "createLiteTokenAccount";
+      case TransactionType.CreateKeyPage:
+        return "createKeyPage";
+      case TransactionType.CreateKeyBook:
+        return "createKeyBook";
+      case TransactionType.AddCredits:
+        return "addCredits";
+      case TransactionType.UpdateKeyPage:
+        return "updateKeyPage";
+      case TransactionType.LockAccount:
+        return "lockAccount";
+      case TransactionType.BurnCredits:
+        return "burnCredits";
+      case TransactionType.TransferCredits:
+        return "transferCredits";
+      case TransactionType.UpdateAccountAuth:
+        return "updateAccountAuth";
+      case TransactionType.UpdateKey:
+        return "updateKey";
+      case TransactionType.ActivateProtocolVersion:
+        return "activateProtocolVersion";
+      case TransactionType.Remote:
+        return "remote";
+      case TransactionType.SyntheticCreateIdentity:
+        return "syntheticCreateIdentity";
+      case TransactionType.SyntheticWriteData:
+        return "syntheticWriteData";
+      case TransactionType.SyntheticDepositTokens:
+        return "syntheticDepositTokens";
+      case TransactionType.SyntheticDepositCredits:
+        return "syntheticDepositCredits";
+      case TransactionType.SyntheticBurnTokens:
+        return "syntheticBurnTokens";
+      case TransactionType.SyntheticForwardTransaction:
+        return "syntheticForwardTransaction";
+      case TransactionType.SystemGenesis:
+        return "systemGenesis";
+      case TransactionType.DirectoryAnchor:
+        return "directoryAnchor";
+      case TransactionType.BlockValidatorAnchor:
+        return "blockValidatorAnchor";
+      case TransactionType.SystemWriteData:
+        return "systemWriteData";
+      default:
+        throw new Error(`Unknown TransactionType ${v}`);
+    }
+  }
 }
 
 export enum VoteType {
@@ -655,6 +931,21 @@ export namespace VoteType {
         return VoteType.Suggest;
       default:
         throw new Error(`Unknown VoteType '${name}'`);
+    }
+  }
+
+  export function getName(v: VoteType): string {
+    switch (v) {
+      case VoteType.Accept:
+        return "accept";
+      case VoteType.Reject:
+        return "reject";
+      case VoteType.Abstain:
+        return "abstain";
+      case VoteType.Suggest:
+        return "suggest";
+      default:
+        throw new Error(`Unknown VoteType ${v}`);
     }
   }
 }
