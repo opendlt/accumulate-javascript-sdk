@@ -273,7 +273,7 @@ describe("Test Accumulate client", () => {
     expect(res.type).toStrictEqual("dataAccount");
 
     // Write data
-    const data = [Buffer.from('foo'), Buffer.from('bar'), Buffer.from('baz'),];
+    const data = [Buffer.from("foo"), Buffer.from("bar"), Buffer.from("baz")];
     const writeData: WriteData.Args = {
       entry: {
         type: "accumulate",
