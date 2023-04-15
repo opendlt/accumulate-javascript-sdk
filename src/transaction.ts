@@ -1,3 +1,4 @@
+import { TxRequest } from "../new/api_v2";
 import { TransactionBody } from "../new/core";
 import { hashBody } from "../new/core/base";
 import { encode } from "../new/encoding";
@@ -38,7 +39,7 @@ export class Header {
    * - If timestamp is not specified it defaults to the current timestamp in microseconds.
    */
   constructor(principal: string | AccURL, options?: HeaderOptions) {
-    this._principal = AccURL.toAccURL(principal);
+    this._principal = AccURL.parse(principal);
     this._timestamp = options?.timestamp ?? Date.now();
     this._initiator = options?.initiator && Buffer.from(options.initiator);
     this._memo = options?.memo;
@@ -161,7 +162,7 @@ export class Transaction {
   /**
    * Convert the Transaction into the param object for the `execute` API method
    */
-  toTxRequest(checkOnly?: boolean): TxRequest {
+  toTxRequest(checkOnly?: boolean): TxRequest.Args {
     if (!this._signature) {
       throw new Error("Unsigned transaction cannot be converted to TxRequest");
     }
@@ -188,22 +189,3 @@ export class Transaction {
     };
   }
 }
-
-export type TxRequest = {
-  checkOnly?: boolean;
-  isEnvelope?: boolean;
-  origin: string;
-  signer: {
-    publicKey: string;
-    timestamp: number;
-    url: string;
-    version?: number;
-    signatureType?: string;
-    useSimpleHash?: boolean;
-  };
-  signature: string;
-  txHash?: string;
-  payload: string;
-  memo?: string;
-  metadata?: string;
-};
