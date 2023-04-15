@@ -1,13 +1,13 @@
-import { SignatureType } from "../../new/core";
+import { KeySignature, SignatureType } from "../../new/core";
 import { AccURL, ACME_TOKEN_URL } from "../acc-url";
 import { sha256 } from "../crypto";
-import { Transaction } from "../transaction";
 
 export interface Signer {
   signRaw(data: Uint8Array): Promise<Uint8Array>;
   get publicKey(): Uint8Array;
   get publicKeyHash(): Uint8Array;
   get type(): SignatureType;
+  newSignature(): KeySignature;
 }
 
 export type SignerInfo = {
@@ -26,7 +26,7 @@ export type Signature = {
 /**
  * Class to sign Transactions using a Signer
  */
-export class TxSigner {
+abstract class TxSigner {
   protected readonly _url: AccURL;
   protected readonly _signer: Signer;
   protected readonly _version: number;
@@ -35,17 +35,6 @@ export class TxSigner {
     this._url = AccURL.parse(url);
     this._signer = signer;
     this._version = version ?? 1;
-  }
-
-  /**
-   * Helper to create a new instance of TxSigner with a new version
-   * while copying other TxSigner attributes
-   * @param signer original TxSigner
-   * @param version new version
-   * @returns
-   */
-  static withNewVersion(signer: TxSigner, version: number): TxSigner {
-    return new TxSigner(signer.info.url, signer.signer, version);
   }
 
   get signer(): Signer {
@@ -81,11 +70,29 @@ export class TxSigner {
     return this._url.toString();
   }
 
-  async sign(tx: Transaction): Promise<Signature> {
-    return {
-      signerInfo: this.info,
-      signature: await this._signer.signRaw(tx.dataForSignature(this.info)),
-    };
+  sign(hash: Uint8Array): Promise<Uint8Array> {
+    return this._signer.signRaw(hash);
+  }
+
+  makeSignature(opts: { timestamp?: number } = {}): KeySignature {
+    const sig = this._signer.newSignature();
+    sig.signer = this.url;
+    sig.signerVersion = this.version;
+    sig.timestamp = opts.timestamp;
+    return sig;
+  }
+}
+
+export class PageSigner extends TxSigner {
+  /**
+   * Helper to create a new instance of TxSigner with a new version
+   * while copying other TxSigner attributes
+   * @param signer original TxSigner
+   * @param version new version
+   * @returns
+   */
+  static withNewVersion(signer: PageSigner, version: number): PageSigner {
+    return new PageSigner(signer.info.url, signer.signer, version);
   }
 }
 
