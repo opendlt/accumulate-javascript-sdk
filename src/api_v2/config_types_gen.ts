@@ -43,7 +43,7 @@ export class Describe {
   }
 
   copy() {
-    return new Describe(this);
+    return new Describe(this.asObject());
   }
 
   asObject(): Describe.Args {
@@ -77,7 +77,7 @@ export class Network {
   }
 
   copy() {
-    return new Network(this);
+    return new Network(this.asObject());
   }
 
   asObject(): Network.Args {
@@ -106,7 +106,7 @@ export class Node {
   }
 
   copy() {
-    return new Node(this);
+    return new Node(this.asObject());
   }
 
   asObject(): Node.Args {
@@ -146,7 +146,7 @@ export class Partition {
   }
 
   copy() {
-    return new Partition(this);
+    return new Partition(this.asObject());
   }
 
   asObject(): Partition.Args {

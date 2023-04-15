@@ -25,6 +25,6 @@ export class RCD1KeypairSigner extends BaseEd25519KeypairSigner {
   newSignature(): RCD1Signature {
     return new RCD1Signature({
       publicKey: this.publicKey,
-    })
+    });
   }
 }

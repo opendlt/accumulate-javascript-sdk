@@ -1,15 +1,19 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ANCHORS_URL } from "./acc-url";
-import { URL } from "./url";
 import {
+  ChainQueryResponse,
+  DescriptionResponse,
+  ExecuteRequest,
+  GeneralQuery,
+  MinorBlocksQuery,
   QueryOptions,
   QueryPagination,
-  MinorBlocksQuery,
+  StatusResponse,
   TxHistoryQuery,
   TxnQuery,
-  GeneralQuery,
-  ExecuteRequest,
 } from "./api_v2";
 import {
+  AccountAuthOperation,
   AddCredits,
   BurnTokens,
   CreateDataAccount,
@@ -19,22 +23,22 @@ import {
   CreateToken,
   CreateTokenAccount,
   IssueTokens,
-  SendTokens,
-  AccountAuthOperation,
-  UpdateKey,
-  UpdateKeyPage,
-  UpdateAccountAuth,
   KeyPageOperation,
-  WriteData,
+  SendTokens,
+  Transaction,
   TransactionBody,
   TransactionHeader,
-  Transaction,
+  UpdateAccountAuth,
+  UpdateKey,
+  UpdateKeyPage,
+  WriteData,
 } from "./core";
-import { RpcClient } from "./rpc-client";
-import { sleep } from "./util";
-import { PageSigner } from "./signing/signer";
 import { Envelope } from "./messaging";
+import { RpcClient } from "./rpc-client";
 import { signTransaction } from "./signing";
+import { PageSigner } from "./signing/signer";
+import { URL } from "./url";
+import { sleep } from "./util";
 
 /**
  * Options for waiting on transaction delivering.
@@ -93,14 +97,14 @@ export class Client {
    ******************/
 
   queryAcmeOracle(): Promise<number> {
-    return this.describe().then((d) => d.values.oracle.price);
+    return this.describe().then((d) => d.values!.oracle!.price!);
   }
 
   queryAnchor(anchor: string): Promise<any> {
     return this.queryUrl(ANCHORS_URL.join(`#anchor/${anchor}`));
   }
 
-  queryUrl(url: string | URL, options?: Omit<GeneralQuery.Args, 'url'>): Promise<any> {
+  queryUrl(url: string | URL, options?: Omit<GeneralQuery.Args, "url">): Promise<any> {
     const urlStr = url.toString();
 
     return this.call("query", {
@@ -109,7 +113,7 @@ export class Client {
     });
   }
 
-  queryTx(txId: string | URL, options?: Omit<TxnQuery.Args, 'txid' | 'txidUrl'>): Promise<any> {
+  queryTx(txId: string | URL, options?: Omit<TxnQuery.Args, "txid" | "txidUrl">): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 
@@ -122,7 +126,7 @@ export class Client {
   queryTxHistory(
     url: string | URL,
     pagination: QueryPagination.Args,
-    options?: Omit<TxHistoryQuery.Args, 'url' | keyof QueryPagination.Args>
+    options?: Omit<TxHistoryQuery.Args, "url" | keyof QueryPagination.Args>
   ): Promise<any> {
     const urlStr = url.toString();
     return this.call("query-tx-history", {
@@ -183,7 +187,7 @@ export class Client {
   queryMinorBlocks(
     url: string | URL,
     pagination: QueryPagination.Args,
-    options?: Omit<MinorBlocksQuery.Args, 'url' | keyof QueryPagination.Args>
+    options?: Omit<MinorBlocksQuery.Args, "url" | keyof QueryPagination.Args>
   ): Promise<any> {
     return this.call("query-minor-blocks", {
       url: url.toString(),
@@ -302,11 +306,7 @@ export class Client {
     createDataAccount: CreateDataAccount.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(
-      URL.parse(principal),
-      new CreateDataAccount(createDataAccount),
-      signer
-    );
+    return this._execute(URL.parse(principal), new CreateDataAccount(createDataAccount), signer);
   }
 
   createIdentity(
@@ -346,17 +346,13 @@ export class Client {
     createTokenAccount: CreateTokenAccount.Args,
     signer: PageSigner
   ): Promise<any> {
-    return this._execute(
-      URL.parse(principal),
-      new CreateTokenAccount(createTokenAccount),
-      signer
-    );
+    return this._execute(URL.parse(principal), new CreateTokenAccount(createTokenAccount), signer);
   }
 
   execute(env: Envelope): Promise<any> {
     const req: ExecuteRequest.Args = {
       envelope: env,
-    }
+    };
     return this.call("execute-direct", req);
   }
 
@@ -395,19 +391,27 @@ export class Client {
     signer: PageSigner
   ): Promise<any> {
     const operations = operation instanceof Array ? operation : [operation];
-    return this._execute(URL.parse(principal), new UpdateKeyPage({ operation: operations }), signer);
+    return this._execute(
+      URL.parse(principal),
+      new UpdateKeyPage({ operation: operations }),
+      signer
+    );
   }
 
   writeData(principal: URL | string, writeData: WriteData.Args, signer: PageSigner): Promise<any> {
     return this._execute(URL.parse(principal), new WriteData(writeData), signer);
   }
 
-  private async _execute(principal: URL, payload: TransactionBody, signer: PageSigner): Promise<any> {
+  private async _execute(
+    principal: URL,
+    payload: TransactionBody,
+    signer: PageSigner
+  ): Promise<any> {
     const header = new TransactionHeader({ principal });
     const tx = new Transaction({ body: payload, header });
     const env = await signTransaction(tx, signer, {
-      timestamp: Date.now()
-    })
+      timestamp: Date.now(),
+    });
 
     return this.execute(env);
   }
@@ -422,19 +426,19 @@ export class Client {
     });
   }
 
-  status(): Promise<any> {
+  status(): Promise<StatusResponse> {
     return this.call("status");
   }
 
-  version(): Promise<any> {
+  version(): Promise<ChainQueryResponse> {
     return this.call("version");
   }
 
-  describe(): Promise<any> {
+  describe(): Promise<DescriptionResponse> {
     return this.call("describe");
   }
 
-  metrics(metric: string, duration: number): Promise<any> {
+  metrics(metric: string, duration: number): Promise<ChainQueryResponse> {
     return this.call("metrics", {
       metric,
       duration,

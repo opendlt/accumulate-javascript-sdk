@@ -1,6 +1,6 @@
 import { KeySignature, SignatureType } from ".././core";
-import { ACME_TOKEN_URL } from "../acc-url";
 import { URL } from ".././url";
+import { ACME_TOKEN_URL } from "../acc-url";
 import { sha256 } from "../crypto";
 
 export interface Signer {
@@ -22,7 +22,6 @@ export type Signature = {
   signerInfo: SignerInfo;
   signature: Uint8Array;
 };
-
 
 /**
  * Class to sign Transactions using a Signer

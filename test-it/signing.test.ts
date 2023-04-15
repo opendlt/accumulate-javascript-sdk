@@ -1,13 +1,15 @@
-import { Client, LiteIdentity, RCD1KeypairSigner, SignatureType } from "../src";
+import { Client } from "../src";
+import { SignatureType } from "../src/core";
+import { LiteSigner, RCD1KeypairSigner } from "../src/signing";
 import { addCredits } from "./util";
 
 const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 
 describe("Test signing schemes", () => {
   test("should sign transaction using RCD1 hash", async () => {
-    const rcd1Account = new LiteIdentity(RCD1KeypairSigner.generate());
+    const rcd1Account = new LiteSigner(RCD1KeypairSigner.generate());
 
-    expect(rcd1Account.info.type).toStrictEqual(SignatureType.SignatureTypeRCD1);
+    expect(rcd1Account.info.type).toStrictEqual(SignatureType.RCD1);
 
     // Get some ACME
     const res = await client.faucet(rcd1Account.acmeTokenAccount);

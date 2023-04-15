@@ -46,7 +46,7 @@ export class ChainEntry {
   }
 
   copy() {
-    return new ChainEntry(this);
+    return new ChainEntry(this.asObject());
   }
 
   asObject(): ChainEntry.Args {
@@ -77,7 +77,7 @@ export class ChainIdQuery {
   }
 
   copy() {
-    return new ChainIdQuery(this);
+    return new ChainIdQuery(this.asObject());
   }
 
   asObject(): ChainIdQuery.Args {
@@ -133,7 +133,7 @@ export class ChainQueryResponse {
   }
 
   copy() {
-    return new ChainQueryResponse(this);
+    return new ChainQueryResponse(this.asObject());
   }
 
   asObject(): ChainQueryResponse.Args {
@@ -177,7 +177,7 @@ export class ChainState {
   }
 
   copy() {
-    return new ChainState(this);
+    return new ChainState(this.asObject());
   }
 
   asObject(): ChainState.Args {
@@ -214,7 +214,7 @@ export class DataEntryQuery {
   }
 
   copy() {
-    return new DataEntryQuery(this);
+    return new DataEntryQuery(this.asObject());
   }
 
   asObject(): DataEntryQuery.Args {
@@ -266,7 +266,7 @@ export class DataEntryQueryResponse {
   }
 
   copy() {
-    return new DataEntryQueryResponse(this);
+    return new DataEntryQueryResponse(this.asObject());
   }
 
   asObject(): DataEntryQueryResponse.Args {
@@ -314,7 +314,7 @@ export class DataEntrySetQuery {
   }
 
   copy() {
-    return new DataEntrySetQuery(this);
+    return new DataEntrySetQuery(this.asObject());
   }
 
   asObject(): DataEntrySetQuery.Args {
@@ -382,7 +382,7 @@ export class DescriptionResponse {
   }
 
   copy() {
-    return new DescriptionResponse(this);
+    return new DescriptionResponse(this.asObject());
   }
 
   asObject(): DescriptionResponse.Args {
@@ -432,7 +432,7 @@ export class DirectoryQuery {
   }
 
   copy() {
-    return new DirectoryQuery(this);
+    return new DirectoryQuery(this.asObject());
   }
 
   asObject(): DirectoryQuery.Args {
@@ -470,7 +470,7 @@ export class ExecuteRequest {
   }
 
   copy() {
-    return new ExecuteRequest(this);
+    return new ExecuteRequest(this.asObject());
   }
 
   asObject(): ExecuteRequest.Args {
@@ -510,7 +510,7 @@ export class GeneralQuery {
   }
 
   copy() {
-    return new GeneralQuery(this);
+    return new GeneralQuery(this.asObject());
   }
 
   asObject(): GeneralQuery.Args {
@@ -569,7 +569,7 @@ export class GeneralReceipt {
   }
 
   copy() {
-    return new GeneralReceipt(this);
+    return new GeneralReceipt(this.asObject());
   }
 
   asObject(): GeneralReceipt.Args {
@@ -597,7 +597,7 @@ export class KeyPage {
   }
 
   copy() {
-    return new KeyPage(this);
+    return new KeyPage(this.asObject());
   }
 
   asObject(): KeyPage.Args {
@@ -629,7 +629,7 @@ export class KeyPageIndexQuery {
   }
 
   copy() {
-    return new KeyPageIndexQuery(this);
+    return new KeyPageIndexQuery(this.asObject());
   }
 
   asObject(): KeyPageIndexQuery.Args {
@@ -660,7 +660,7 @@ export class MajorBlocksQuery {
   }
 
   copy() {
-    return new MajorBlocksQuery(this);
+    return new MajorBlocksQuery(this.asObject());
   }
 
   asObject(): MajorBlocksQuery.Args {
@@ -699,7 +699,7 @@ export class MajorQueryResponse {
   }
 
   copy() {
-    return new MajorQueryResponse(this);
+    return new MajorQueryResponse(this.asObject());
   }
 
   asObject(): MajorQueryResponse.Args {
@@ -730,7 +730,7 @@ export class MerkleState {
   }
 
   copy() {
-    return new MerkleState(this);
+    return new MerkleState(this.asObject());
   }
 
   asObject(): MerkleState.Args {
@@ -757,7 +757,7 @@ export class MetricsQuery {
   }
 
   copy() {
-    return new MetricsQuery(this);
+    return new MetricsQuery(this.asObject());
   }
 
   asObject(): MetricsQuery.Args {
@@ -781,7 +781,7 @@ export class MetricsResponse {
   }
 
   copy() {
-    return new MetricsResponse(this);
+    return new MetricsResponse(this.asObject());
   }
 
   asObject(): MetricsResponse.Args {
@@ -812,7 +812,7 @@ export class MinorBlock {
   }
 
   copy() {
-    return new MinorBlock(this);
+    return new MinorBlock(this.asObject());
   }
 
   asObject(): MinorBlock.Args {
@@ -853,7 +853,7 @@ export class MinorBlocksQuery {
   }
 
   copy() {
-    return new MinorBlocksQuery(this);
+    return new MinorBlocksQuery(this.asObject());
   }
 
   asObject(): MinorBlocksQuery.Args {
@@ -905,7 +905,7 @@ export class MinorQueryResponse {
   }
 
   copy() {
-    return new MinorQueryResponse(this);
+    return new MinorQueryResponse(this.asObject());
   }
 
   asObject(): MinorQueryResponse.Args {
@@ -947,7 +947,7 @@ export class MultiResponse {
   }
 
   copy() {
-    return new MultiResponse(this);
+    return new MultiResponse(this.asObject());
   }
 
   asObject(): MultiResponse.Args {
@@ -987,7 +987,7 @@ export class QueryOptions {
   }
 
   copy() {
-    return new QueryOptions(this);
+    return new QueryOptions(this.asObject());
   }
 
   asObject(): QueryOptions.Args {
@@ -1017,7 +1017,7 @@ export class QueryPagination {
   }
 
   copy() {
-    return new QueryPagination(this);
+    return new QueryPagination(this.asObject());
   }
 
   asObject(): QueryPagination.Args {
@@ -1069,7 +1069,7 @@ export class ResponseDataEntry {
   }
 
   copy() {
-    return new ResponseDataEntry(this);
+    return new ResponseDataEntry(this.asObject());
   }
 
   asObject(): ResponseDataEntry.Args {
@@ -1105,7 +1105,7 @@ export class ResponseDataEntrySet {
   }
 
   copy() {
-    return new ResponseDataEntrySet(this);
+    return new ResponseDataEntrySet(this.asObject());
   }
 
   asObject(): ResponseDataEntrySet.Args {
@@ -1148,7 +1148,7 @@ export class ResponseKeyPageIndex {
   }
 
   copy() {
-    return new ResponseKeyPageIndex(this);
+    return new ResponseKeyPageIndex(this.asObject());
   }
 
   asObject(): ResponseKeyPageIndex.Args {
@@ -1184,7 +1184,7 @@ export class SignatureBook {
   }
 
   copy() {
-    return new SignatureBook(this);
+    return new SignatureBook(this.asObject());
   }
 
   asObject(): SignatureBook.Args {
@@ -1219,7 +1219,7 @@ export class SignaturePage {
   }
 
   copy() {
-    return new SignaturePage(this);
+    return new SignaturePage(this.asObject());
   }
 
   asObject(): SignaturePage.Args {
@@ -1267,7 +1267,7 @@ export class Signer {
   }
 
   copy() {
-    return new Signer(this);
+    return new Signer(this.asObject());
   }
 
   asObject(): Signer.Args {
@@ -1302,7 +1302,7 @@ export class SignerMetadata {
   }
 
   copy() {
-    return new SignerMetadata(this);
+    return new SignerMetadata(this.asObject());
   }
 
   asObject(): SignerMetadata.Args {
@@ -1385,7 +1385,7 @@ export class StatusResponse {
   }
 
   copy() {
-    return new StatusResponse(this);
+    return new StatusResponse(this.asObject());
   }
 
   asObject(): StatusResponse.Args {
@@ -1436,7 +1436,7 @@ export class SyntheticTransactionRequest {
   }
 
   copy() {
-    return new SyntheticTransactionRequest(this);
+    return new SyntheticTransactionRequest(this.asObject());
   }
 
   asObject(): SyntheticTransactionRequest.Args {
@@ -1452,7 +1452,7 @@ export class SyntheticTransactionRequest {
 export namespace TokenDeposit {
   export type Args = {
     url?: URL | string;
-    amount?: BN | string;
+    amount?: BN | string | number;
     txid?: Uint8Array | string;
   };
 }
@@ -1479,7 +1479,7 @@ export class TokenDeposit {
   }
 
   copy() {
-    return new TokenDeposit(this);
+    return new TokenDeposit(this.asObject());
   }
 
   asObject(): TokenDeposit.Args {
@@ -1515,7 +1515,7 @@ export class TokenSend {
   }
 
   copy() {
-    return new TokenSend(this);
+    return new TokenSend(this.asObject());
   }
 
   asObject(): TokenSend.Args {
@@ -1614,7 +1614,7 @@ export class TransactionQueryResponse {
   }
 
   copy() {
-    return new TransactionQueryResponse(this);
+    return new TransactionQueryResponse(this.asObject());
   }
 
   asObject(): TransactionQueryResponse.Args {
@@ -1658,7 +1658,7 @@ export class TxHistoryQuery {
   }
 
   copy() {
-    return new TxHistoryQuery(this);
+    return new TxHistoryQuery(this.asObject());
   }
 
   asObject(): TxHistoryQuery.Args {
@@ -1728,7 +1728,7 @@ export class TxReceipt {
   }
 
   copy() {
-    return new TxReceipt(this);
+    return new TxReceipt(this.asObject());
   }
 
   asObject(): TxReceipt.Args {
@@ -1815,7 +1815,7 @@ export class TxRequest {
   }
 
   copy() {
-    return new TxRequest(this);
+    return new TxRequest(this.asObject());
   }
 
   asObject(): TxRequest.Args {
@@ -1886,7 +1886,7 @@ export class TxResponse {
   }
 
   copy() {
-    return new TxResponse(this);
+    return new TxResponse(this.asObject());
   }
 
   asObject(): TxResponse.Args {
@@ -1951,7 +1951,7 @@ export class TxnQuery {
   }
 
   copy() {
-    return new TxnQuery(this);
+    return new TxnQuery(this.asObject());
   }
 
   asObject(): TxnQuery.Args {
@@ -1983,7 +1983,7 @@ export class UrlQuery {
   }
 
   copy() {
-    return new UrlQuery(this);
+    return new UrlQuery(this.asObject());
   }
 
   asObject(): UrlQuery.Args {
@@ -2015,7 +2015,7 @@ export class VersionResponse {
   }
 
   copy() {
-    return new VersionResponse(this);
+    return new VersionResponse(this.asObject());
   }
 
   asObject(): VersionResponse.Args {
