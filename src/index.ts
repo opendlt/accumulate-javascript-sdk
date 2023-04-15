@@ -11,6 +11,6 @@ export * from "./signing/ed25519-keypair-signer";
 export * from "./signing/rcd1-keypair-signer";
 export * from "./transaction";
 export * from "./tx-signer";
-export { TransactionType } from "./tx-types";
+export { TransactionType } from "../new/core";
 export { constructIssuerProof } from "./util";
 export { BN };
