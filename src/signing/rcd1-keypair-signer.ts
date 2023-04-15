@@ -1,5 +1,5 @@
+import { SignatureType } from "../../new/core";
 import { sha256 } from "../crypto";
-import { SignatureType } from "../signer";
 import { Ed25519Keypair } from "./ed25519-keypair";
 import { Ed25519KeypairSigner } from "./ed25519-keypair-signer";
 
@@ -19,6 +19,6 @@ export class RCD1KeypairSigner extends Ed25519KeypairSigner {
   }
 
   get type(): SignatureType {
-    return SignatureType.SignatureTypeRCD1;
+    return SignatureType.RCD1;
   }
 }
