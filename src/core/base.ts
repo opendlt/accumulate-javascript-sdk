@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { hashTree, sha256 } from "../../src/crypto";
 import { encode } from "../encoding";
 import { DataEntryType, TransactionType } from "./enums_gen";
@@ -27,16 +28,19 @@ export function hashBody(body: TransactionBody) {
     case TransactionType.SyntheticWriteData:
     case TransactionType.SystemWriteData: {
       if (!body.entry) throw new Error(`invalid ${body.type}: missing entry`);
-      if (body.entry.type != DataEntryType.Accumulate)
-        throw new Error(`cannot hash ${body.type}: ${body.entry.type} entries are not supported`);
       if (!body.entry.data) throw new Error(`invalid ${body.type}: missing entry data`);
 
       const copy = body.copy();
       delete copy.entry;
 
-      return sha256(
-        Buffer.concat([sha256(encode(copy)), hashTree(body.entry.data.map((x) => sha256(x)))])
-      );
+      switch (body.entry.type) {
+        case DataEntryType.Accumulate:
+          return sha256(Buffer.concat([sha256(encode(copy)), hashTree(body.entry.data)]));
+        case DataEntryType.DoubleHash:
+          return sha256(Buffer.concat([sha256(encode(copy)), sha256(hashTree(body.entry.data))]));
+        default:
+          throw new Error(`cannot hash ${body.type}: ${body.entry.type} entries are not supported`);
+      }
     }
 
     default:

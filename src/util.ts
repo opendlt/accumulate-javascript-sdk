@@ -63,7 +63,7 @@ export async function constructIssuerProof(
   // Assemble the full proof
   const receipt = combineReceipts(
     combineReceipts(new Receipt(proof1), new Receipt(proof2)),
-    proof3
+    new Receipt(proof3)
   );
   return { receipt, transaction: body };
 }
