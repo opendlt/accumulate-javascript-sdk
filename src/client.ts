@@ -1,13 +1,11 @@
 import { AccURL, ANCHORS_URL } from "./acc-url";
 import {
-  MinorBlocksQueryOptions,
   QueryOptions,
   QueryPagination,
-  TxError,
-  TxHistoryQueryOptions,
-  TxQueryOptions,
-  WaitTxOptions,
-} from "./api-types";
+  MinorBlocksQuery,
+  TxHistoryQuery,
+  TxnQuery,
+} from "../new/api_v2";
 import {
   AddCredits,
   BurnTokens,
@@ -31,6 +29,39 @@ import { RpcClient } from "./rpc-client";
 import { Header, Transaction } from "./transaction";
 import { TxSigner } from "./tx-signer";
 import { sleep } from "./util";
+
+/**
+ * Options for waiting on transaction delivering.
+ */
+export type WaitTxOptions = {
+  /**
+   * Timeout after which status polling is aborted. Duration in ms.
+   * Default: 30000ms (30s)
+   */
+  timeout?: number;
+  /**
+   * Interval between each tx status poll. Duration in ms.
+   * Default: 500ms.
+   */
+  pollInterval?: number;
+  /**
+   * If set to true, only the user tx status is checked.
+   * If set to false, will also wait on the associated synthetic txs to be delivered.
+   * Default: false
+   */
+  ignoreSyntheticTxs?: boolean;
+};
+
+export class TxError extends Error {
+  readonly txId: string;
+  readonly status: any;
+
+  constructor(txId: string, status: any) {
+    super(`Failed transaction ${txId}: ${JSON.stringify(status, null, 4)}`);
+    this.txId = txId;
+    this.status = status;
+  }
+}
 
 /**
  * Client to call Accumulate RPC APIs.
@@ -72,7 +103,7 @@ export class Client {
     });
   }
 
-  queryTx(txId: string | AccURL, options?: TxQueryOptions): Promise<any> {
+  queryTx(txId: string | AccURL, options?: QueryOptions & Omit<TxnQuery, 'txid' | 'txidUrl'>): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 
@@ -85,7 +116,7 @@ export class Client {
   queryTxHistory(
     url: string | AccURL,
     pagination: QueryPagination,
-    options?: TxHistoryQueryOptions
+    options?: Omit<TxHistoryQuery, 'url' | keyof QueryPagination>
   ): Promise<any> {
     const urlStr = url.toString();
     return this.call("query-tx-history", {
@@ -146,7 +177,7 @@ export class Client {
   queryMinorBlocks(
     url: string | AccURL,
     pagination: QueryPagination,
-    options?: MinorBlocksQueryOptions
+    options?: Omit<MinorBlocksQuery, 'url' | keyof QueryPagination>
   ): Promise<any> {
     return this.call("query-minor-blocks", {
       url: url.toString(),
