@@ -1,7 +1,7 @@
 import nacl from "tweetnacl";
 import { SignatureType } from "../../new/core";
 import { sha256 } from "../crypto";
-import { Signer } from "../signer";
+import { Signer } from "./signer";
 import { Ed25519Keypair } from "./ed25519-keypair";
 
 export class Ed25519KeypairSigner implements Signer {

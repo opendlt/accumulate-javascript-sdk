@@ -28,8 +28,8 @@ import {
 } from "../new/core";
 import { RpcClient } from "./rpc-client";
 import { Header, Transaction } from "./transaction";
-import { TxSigner } from "./tx-signer";
 import { sleep } from "./util";
+import { TxSigner } from "./signing/signer";
 
 /**
  * Options for waiting on transaction delivering.

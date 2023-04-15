@@ -10,8 +10,7 @@ import {
   stringMarshalBinary,
   uvarintMarshalBinary,
 } from "./encoding";
-import { Signature, SignerInfo } from "./signer";
-import { TxSigner } from "./tx-signer";
+import { Signature, SignerInfo, TxSigner } from "./signing/signer";
 
 export type HeaderOptions = {
   timestamp?: number;
