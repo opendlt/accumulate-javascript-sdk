@@ -34,6 +34,10 @@ export type AllowedTransactions = TransactionType[];
 export namespace Fee {
   export type Args = Fee | string;
 
+  export function getName(fee: Fee) {
+    return fee;
+  }
+
   export function fromObject(obj: Args): Fee {
     if (typeof obj === "string") return Number(obj);
     return obj;

@@ -1,8 +1,8 @@
-import { Envelope } from "../src/messaging";
 import { encode } from "../src/encoding";
+import { Envelope } from "../src/messaging";
 import { transactions as transactionTests } from "./data/sdk/protocol.1.json";
 
-const tests = transactionTests.filter(x => !x.name.startsWith('Synthetic'))
+const tests = transactionTests.filter((x) => !x.name.startsWith("Synthetic"));
 
 describe.each(tests)("transactions", ({ name, cases }) => {
   describe(name, () => {

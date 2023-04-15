@@ -28,7 +28,7 @@ export namespace NodeType {
     }
   }
 
-  export function getName(v: NodeType): string {
+  export function getName(v: NodeType) {
     switch (v) {
       case NodeType.Validator:
         return "validator";
@@ -78,7 +78,7 @@ export namespace PortOffset {
     }
   }
 
-  export function getName(v: PortOffset): string {
+  export function getName(v: PortOffset) {
     switch (v) {
       case PortOffset.TendermintP2P:
         return "tendermintP2P";

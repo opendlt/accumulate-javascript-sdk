@@ -37,7 +37,7 @@ export class BlockAnchor {
 
   asObject(): BlockAnchor.ArgsWithType {
     return {
-      type: this.type,
+      type: "blockAnchor",
       signature: this.signature && this.signature.asObject(),
       anchor: this.anchor && this.anchor.asObject(),
     };
@@ -97,8 +97,8 @@ export class CreditPayment {
 
   asObject(): CreditPayment.ArgsWithType {
     return {
-      type: this.type,
-      paid: this.paid && this.paid.toString(),
+      type: "creditPayment",
+      paid: this.paid && protocol.Fee.getName(this.paid),
       payer: this.payer && this.payer.toString(),
       initiator: this.initiator && this.initiator,
       txID: this.txID && this.txID.toString(),
@@ -204,7 +204,7 @@ export class SequencedMessage {
 
   asObject(): SequencedMessage.ArgsWithType {
     return {
-      type: this.type,
+      type: "sequenced",
       message: this.message && this.message.asObject(),
       source: this.source && this.source.toString(),
       destination: this.destination && this.destination.toString(),
@@ -245,7 +245,7 @@ export class SignatureMessage {
 
   asObject(): SignatureMessage.ArgsWithType {
     return {
-      type: this.type,
+      type: "signature",
       signature: this.signature && this.signature.asObject(),
       txID: this.txID && this.txID.toString(),
     };
@@ -297,7 +297,7 @@ export class SignatureRequest {
 
   asObject(): SignatureRequest.ArgsWithType {
     return {
-      type: this.type,
+      type: "signatureRequest",
       authority: this.authority && this.authority.toString(),
       txID: this.txID && this.txID.toString(),
       cause: this.cause && this.cause.toString(),
@@ -341,7 +341,7 @@ export class SyntheticMessage {
 
   asObject(): SyntheticMessage.ArgsWithType {
     return {
-      type: this.type,
+      type: "synthetic",
       message: this.message && this.message.asObject(),
       signature: this.signature && this.signature.asObject(),
       proof: this.proof && this.proof.asObject(),
@@ -376,7 +376,7 @@ export class TransactionMessage {
 
   asObject(): TransactionMessage.ArgsWithType {
     return {
-      type: this.type,
+      type: "transaction",
       transaction: this.transaction && this.transaction.asObject(),
     };
   }

@@ -40,7 +40,7 @@ export namespace AccountAuthOperationType {
     }
   }
 
-  export function getName(v: AccountAuthOperationType): string {
+  export function getName(v: AccountAuthOperationType) {
     switch (v) {
       case AccountAuthOperationType.Unknown:
         return "unknown";
@@ -138,7 +138,7 @@ export namespace AccountType {
     }
   }
 
-  export function getName(v: AccountType): string {
+  export function getName(v: AccountType) {
     switch (v) {
       case AccountType.Unknown:
         return "unknown";
@@ -202,7 +202,7 @@ export namespace AllowedTransactionBit {
     }
   }
 
-  export function getName(v: AllowedTransactionBit): string {
+  export function getName(v: AllowedTransactionBit) {
     switch (v) {
       case AllowedTransactionBit.UpdateKeyPage:
         return "updateKeyPage";
@@ -244,7 +244,7 @@ export namespace BookType {
     }
   }
 
-  export function getName(v: BookType): string {
+  export function getName(v: BookType) {
     switch (v) {
       case BookType.Normal:
         return "normal";
@@ -292,7 +292,7 @@ export namespace DataEntryType {
     }
   }
 
-  export function getName(v: DataEntryType): string {
+  export function getName(v: DataEntryType) {
     switch (v) {
       case DataEntryType.Unknown:
         return "unknown";
@@ -346,7 +346,7 @@ export namespace ExecutorVersion {
     }
   }
 
-  export function getName(v: ExecutorVersion): string {
+  export function getName(v: ExecutorVersion) {
     switch (v) {
       case ExecutorVersion.V1:
         return "v1";
@@ -406,7 +406,7 @@ export namespace KeyPageOperationType {
     }
   }
 
-  export function getName(v: KeyPageOperationType): string {
+  export function getName(v: KeyPageOperationType) {
     switch (v) {
       case KeyPageOperationType.Unknown:
         return "unknown";
@@ -456,7 +456,7 @@ export namespace ObjectType {
     }
   }
 
-  export function getName(v: ObjectType): string {
+  export function getName(v: ObjectType) {
     switch (v) {
       case ObjectType.Unknown:
         return "unknown";
@@ -504,7 +504,7 @@ export namespace PartitionType {
     }
   }
 
-  export function getName(v: PartitionType): string {
+  export function getName(v: PartitionType) {
     switch (v) {
       case PartitionType.Directory:
         return "directory";
@@ -594,7 +594,7 @@ export namespace SignatureType {
     }
   }
 
-  export function getName(v: SignatureType): string {
+  export function getName(v: SignatureType) {
     switch (v) {
       case SignatureType.Unknown:
         return "unknown";
@@ -660,7 +660,7 @@ export namespace TransactionMax {
     }
   }
 
-  export function getName(v: TransactionMax): string {
+  export function getName(v: TransactionMax) {
     switch (v) {
       case TransactionMax.User:
         return "user";
@@ -826,7 +826,7 @@ export namespace TransactionType {
     }
   }
 
-  export function getName(v: TransactionType): string {
+  export function getName(v: TransactionType) {
     switch (v) {
       case TransactionType.Unknown:
         return "unknown";
@@ -934,7 +934,7 @@ export namespace VoteType {
     }
   }
 
-  export function getName(v: VoteType): string {
+  export function getName(v: VoteType) {
     switch (v) {
       case VoteType.Accept:
         return "accept";

@@ -36,7 +36,7 @@ export namespace ChainType {
     }
   }
 
-  export function getName(v: ChainType): string {
+  export function getName(v: ChainType) {
     switch (v) {
       case ChainType.Unknown:
         return "unknown";

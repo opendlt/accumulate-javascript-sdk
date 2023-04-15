@@ -183,7 +183,7 @@ export class ChainState {
   asObject(): ChainState.Args {
     return {
       name: this.name && this.name,
-      type: this.type && this.type.toString(),
+      type: this.type && protocol.ChainType.getName(this.type),
       height: this.height && this.height,
       roots: this.roots && this.roots?.map((v) => Buffer.from(v).toString("hex")),
     };
@@ -388,7 +388,7 @@ export class DescriptionResponse {
   asObject(): DescriptionResponse.Args {
     return {
       partitionId: this.partitionId && this.partitionId,
-      networkType: this.networkType && this.networkType.toString(),
+      networkType: this.networkType && protocol.PartitionType.getName(this.networkType),
       network: this.network && this.network.asObject(),
       networkAnchor: this.networkAnchor && Buffer.from(this.networkAnchor).toString("hex"),
       values: this.values && this.values.asObject(),
@@ -861,8 +861,8 @@ export class MinorBlocksQuery {
       url: this.url && this.url.toString(),
       start: this.start && this.start,
       count: this.count && this.count,
-      txFetchMode: this.txFetchMode && this.txFetchMode.toString(),
-      blockFilterMode: this.blockFilterMode && this.blockFilterMode.toString(),
+      txFetchMode: this.txFetchMode && TxFetchMode.getName(this.txFetchMode),
+      blockFilterMode: this.blockFilterMode && BlockFilterMode.getName(this.blockFilterMode),
     };
   }
 }
@@ -1276,7 +1276,7 @@ export class Signer {
       timestamp: this.timestamp && this.timestamp,
       url: this.url && this.url.toString(),
       version: this.version && this.version,
-      signatureType: this.signatureType && this.signatureType.toString(),
+      signatureType: this.signatureType && protocol.SignatureType.getName(this.signatureType),
       useSimpleHash: this.useSimpleHash && this.useSimpleHash,
     };
   }
@@ -1307,7 +1307,7 @@ export class SignerMetadata {
 
   asObject(): SignerMetadata.Args {
     return {
-      type: this.type && this.type.toString(),
+      type: this.type && protocol.AccountType.getName(this.type),
       url: this.url && this.url.toString(),
       acceptThreshold: this.acceptThreshold && this.acceptThreshold,
     };

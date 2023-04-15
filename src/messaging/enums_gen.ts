@@ -52,7 +52,7 @@ export namespace MessageType {
     }
   }
 
-  export function getName(v: MessageType): string {
+  export function getName(v: MessageType) {
     switch (v) {
       case MessageType.Transaction:
         return "transaction";

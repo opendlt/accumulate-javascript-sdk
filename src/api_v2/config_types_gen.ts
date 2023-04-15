@@ -48,7 +48,7 @@ export class Describe {
 
   asObject(): Describe.Args {
     return {
-      networkType: this.networkType && this.networkType.toString(),
+      networkType: this.networkType && protocol.PartitionType.getName(this.networkType),
       partitionId: this.partitionId && this.partitionId,
       localAddress: this.localAddress && this.localAddress,
       network: this.network && this.network.asObject(),
@@ -112,7 +112,7 @@ export class Node {
   asObject(): Node.Args {
     return {
       address: this.address && this.address,
-      type: this.type && this.type.toString(),
+      type: this.type && NodeType.getName(this.type),
     };
   }
 }
@@ -152,7 +152,7 @@ export class Partition {
   asObject(): Partition.Args {
     return {
       id: this.id && this.id,
-      type: this.type && this.type.toString(),
+      type: this.type && protocol.PartitionType.getName(this.type),
       basePort: this.basePort && this.basePort,
       nodes: this.nodes && this.nodes?.map((v) => v.asObject()),
     };
