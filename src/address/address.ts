@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import { bases, hashes } from "multiformats/basics";
+import { encode } from "multibase";
 import { Signature, SignatureType } from "../core";
 import { sha256 } from "../crypto";
 
@@ -58,25 +58,25 @@ export interface Address {
   format(): Promise<string>;
 }
 
-export class UnknownAddress {
-  readonly type = SignatureType.Unknown;
-  constructor(public value: Uint8Array, public encoding: string) {}
+// export class UnknownAddress {
+//   readonly type = SignatureType.Unknown;
+//   constructor(public value: Uint8Array, public encoding: string) {}
 
-  async format() {
-    const base = Object.values(bases).find((x) => x.prefix == this.encoding);
-    if (!base) throw new Error(`unknown multibase encoding '${this.encoding}'`);
-    return formatMH(this.value, base);
-  }
-}
+//   async format() {
+//     const base = Object.values(bases).find((x) => x.prefix == this.encoding);
+//     if (!base) throw new Error(`unknown multibase encoding '${this.encoding}'`);
+//     return formatMH(this.value, base);
+//   }
+// }
 
-export class UnknownHashAddress implements Address {
-  readonly type = SignatureType.Unknown;
-  constructor(public publicKeyHash: Uint8Array) {}
+// export class UnknownHashAddress implements Address {
+//   readonly type = SignatureType.Unknown;
+//   constructor(public publicKeyHash: Uint8Array) {}
 
-  async format() {
-    return await formatMH(this.publicKeyHash);
-  }
-}
+//   async format() {
+//     return await formatMH(this.publicKeyHash);
+//   }
+// }
 
 export class PublicKeyHashAddress implements Address {
   constructor(public type: SignatureType, public publicKeyHash: Uint8Array) {}
@@ -94,7 +94,8 @@ export class PublicKeyHashAddress implements Address {
       case SignatureType.BTCLegacy:
         return await formatBTC(this.publicKeyHash);
       default:
-        return await formatMH(this.publicKeyHash);
+        throw new Error(`${this.type} is not a key signature type`);
+        // return await formatMH(this.publicKeyHash);
     }
   }
 }
@@ -132,20 +133,20 @@ async function doChecksum(...parts: Uint8Array[]) {
   return new Uint8Array(cc);
 }
 
-async function formatMH(
-  hash: Uint8Array,
-  codec: { encode: (input: Uint8Array) => string } = bases.base58btc
-) {
-  const digested = hashes.identity.digest(hash).bytes;
-  const checksum = (await doChecksum(string2bytes("MH"), digested)).slice(0, 4);
-  const encoded = codec.encode(concat([digested, checksum]));
-  return "MH" + encoded;
-}
+// async function formatMH(
+//   hash: Uint8Array,
+//   codec: { encode: (input: Uint8Array) => string } = bases.base58btc
+// ) {
+//   const digested = hashes.identity.digest(hash).bytes;
+//   const checksum = (await doChecksum(string2bytes("MH"), digested)).slice(0, 4);
+//   const encoded = codec.encode(concat([digested, checksum]));
+//   return "MH" + encoded;
+// }
 
 async function formatAC1(hash: Uint8Array) {
   const checksum = (await doChecksum(string2bytes("AC1"), hash)).slice(0, 4);
-  const encoded = bases.base58btc.baseEncode(concat([hash, checksum]));
-  return "AC1" + encoded;
+  const encoded = encode('z', concat([hash, checksum]));
+  return "AC1" + bytes2string(encoded);
 }
 
 function formatFA(hash: Uint8Array) {
@@ -165,15 +166,20 @@ async function formatETH(hash: Uint8Array) {
 
 async function formatWithPrefix(prefix: Uint8Array, hash: Uint8Array) {
   const checksum = (await doChecksum(prefix, hash)).slice(0, 4);
-  return bases.base58btc.baseEncode(concat([prefix, hash, checksum]));
+  const encoded = encode('z', concat([prefix, hash, checksum]));
+  return bytes2string(encoded);
 }
 
 function bytes2hex(b: Uint8Array) {
   return Buffer.from(b).toString("hex");
 }
 
-function string2bytes(s: string): Uint8Array {
+function string2bytes(s: string) {
   return Buffer.from(s, "utf-8");
+}
+
+function bytes2string(b: Uint8Array) {
+  return Buffer.from(b).toString('utf-8');
 }
 
 function concat(parts: Uint8Array[]) {
