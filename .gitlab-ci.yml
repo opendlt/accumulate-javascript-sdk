@@ -11,7 +11,6 @@ build:
   stage: build
   image: node:16
   script:
-    - npm install yarn -g
     - yarn install --immutable --immutable-cache --check-cache
     - yarn code-check
   artifacts:
@@ -25,7 +24,6 @@ test 1/2:
     GIT_SUBMODULE_STRATEGY: recursive
   needs: []
   script:
-    - npm install yarn -g
     - yarn install --immutable --immutable-cache --check-cache
     - yarn test:unit
 
@@ -36,7 +34,6 @@ test 2/2:
     GIT_SUBMODULE_STRATEGY: recursive
   needs: []
   script:
-    - npm install yarn -g
     - yarn install --immutable --immutable-cache --check-cache
     - yarn test:integration
 
