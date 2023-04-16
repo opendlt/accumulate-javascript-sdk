@@ -1,6 +1,5 @@
 import nacl from "tweetnacl";
 import { ED25519Signature, KeySignature, SignatureType } from ".././core";
-import { sha256 } from "../crypto";
 import { Ed25519Keypair } from "./ed25519-keypair";
 import { Signer } from "./signer";
 
@@ -21,10 +20,6 @@ export abstract class BaseEd25519KeypairSigner implements Signer {
 
   get publicKey(): Uint8Array {
     return this._keypair.publicKey;
-  }
-
-  get publicKeyHash(): Uint8Array {
-    return sha256(this._keypair.publicKey);
   }
 
   abstract newSignature(): KeySignature;

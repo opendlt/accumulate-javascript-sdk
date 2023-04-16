@@ -52,6 +52,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "bn.js": "^5.2.1",
+    "multiformats": "^11.0.2",
     "reflect-metadata": "^0.1.13",
     "tweetnacl": "^1.0.3"
   }

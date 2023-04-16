@@ -1,11 +1,11 @@
-import { BinaryLike, createHash } from "crypto";
+import { Buffer } from "buffer";
 
-export function sha256(data: BinaryLike): Buffer {
-  return createHash("sha256").update(data).digest();
+export async function sha256(data: Uint8Array): Promise<Buffer> {
+  return Buffer.from(await crypto.subtle.digest('SHA-256', data));
 }
 
-export function hashTree(items: Uint8Array[]): Buffer {
-  const hashes = items.map((i) => sha256(i));
+export async function hashTree(items: Uint8Array[]): Promise<Buffer> {
+  const hashes = await Promise.all(items.map((i) => sha256(i)));
 
   while (hashes.length > 1) {
     let i = 0; // hashes index
@@ -16,7 +16,7 @@ export function hashTree(items: Uint8Array[]): Buffer {
         hashes[p] = hashes[i];
         i += 1;
       } else {
-        hashes[p] = sha256(Buffer.concat([hashes[i], hashes[i + 1]]));
+        hashes[p] = await sha256(Buffer.concat([hashes[i], hashes[i + 1]]));
         i += 2;
       }
       p += 1;
