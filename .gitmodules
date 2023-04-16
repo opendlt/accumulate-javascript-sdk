@@ -1,7 +1,7 @@
 [submodule "accumulate"]
 	path = accumulate
-	url = ../accumulate.git
+	url = ../../accumulate.git
 	branch = develop
 [submodule "test/data/sdk"]
 	path = test/data/sdk
-	url = ../sdk/test-data.git
+	url = ../test-data.git

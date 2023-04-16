@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
-import { ACME_TOKEN_URL, BN, Client, RpcError, TransactionType } from "../src";
+import { ACME_TOKEN_URL, BN, Client, RpcError } from "../src";
 import {
-  AccountAuthOperation,
+  AccountAuthOperationArgs,
   AccountAuthOperationType,
-  CreateKeyPage,
-  KeyPageOperation,
+  CreateKeyPageArgs,
+  KeyPageOperationArgs,
   KeyPageOperationType,
-  WriteData,
+  TransactionType,
+  WriteDataArgs,
 } from "../src/core";
 import { sha256 } from "../src/crypto";
 import { ED25519KeypairSigner, LiteSigner, PageSigner } from "../src/signing";
@@ -146,7 +147,7 @@ describe("Test Accumulate client", () => {
 
     // Add new key to keypage
     const newKey = ED25519KeypairSigner.generate();
-    const addKeyToPage: KeyPageOperation.Args = {
+    const addKeyToPage: KeyPageOperationArgs = {
       type: KeyPageOperationType.Add,
       entry: { keyHash: newKey.publicKeyHash },
     };
@@ -161,7 +162,7 @@ describe("Test Accumulate client", () => {
     let version = await client.querySignerVersion(keyPage1TxSigner);
     keyPage1TxSigner = PageSigner.withNewVersion(keyPage1TxSigner, version);
     const newNewKey = ED25519KeypairSigner.generate();
-    const updateKeyPage: KeyPageOperation.Args = {
+    const updateKeyPage: KeyPageOperationArgs = {
       type: KeyPageOperationType.Update,
       oldEntry: { keyHash: newKey.publicKeyHash },
       newEntry: { keyHash: newNewKey.publicKeyHash },
@@ -191,7 +192,7 @@ describe("Test Accumulate client", () => {
     // Remove key from keypage
     version = await client.querySignerVersion(keyPage1TxSigner);
     keyPage1TxSigner = PageSigner.withNewVersion(keyPage1TxSigner, version);
-    const removeKeyPage: KeyPageOperation.Args = {
+    const removeKeyPage: KeyPageOperationArgs = {
       type: KeyPageOperationType.Remove,
       entry: { keyHash: newNewKey.publicKeyHash },
     };
@@ -208,7 +209,7 @@ describe("Test Accumulate client", () => {
     version = await client.querySignerVersion(keyPage1TxSigner);
     keyPage1TxSigner = PageSigner.withNewVersion(keyPage1TxSigner, version);
     const page2Signer = ED25519KeypairSigner.generate();
-    const createKeyPage2: CreateKeyPage.Args = {
+    const createKeyPage2: CreateKeyPageArgs = {
       keys: [{ keyHash: sha256(page2Signer.publicKey) }],
     };
 
@@ -218,7 +219,7 @@ describe("Test Accumulate client", () => {
     const page2Url = newKeyBookUrl + "/2";
 
     // Update allowed
-    const updateAllowed: KeyPageOperation.Args = {
+    const updateAllowed: KeyPageOperationArgs = {
       type: KeyPageOperationType.UpdateAllowed,
       deny: [TransactionType.UpdateKeyPage],
     };
@@ -229,7 +230,7 @@ describe("Test Accumulate client", () => {
     res = await client.queryUrl(page2Url);
     expect(res.data.transactionBlacklist).toStrictEqual(["updateKeyPage"]);
 
-    const updateAllowed2: KeyPageOperation.Args = {
+    const updateAllowed2: KeyPageOperationArgs = {
       type: KeyPageOperationType.UpdateAllowed,
       allow: [TransactionType.UpdateKeyPage],
     };
@@ -274,7 +275,7 @@ describe("Test Accumulate client", () => {
 
     // Write data
     const data = [Buffer.from("foo"), Buffer.from("bar"), Buffer.from("baz")];
-    const writeData: WriteData.Args = {
+    const writeData: WriteDataArgs = {
       entry: {
         type: "accumulate",
         data: data,
@@ -296,7 +297,7 @@ describe("Test Accumulate client", () => {
     const firstEntryHash = res.data.entryHash;
 
     const data2 = [randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer(), randomBuffer()];
-    const writeData2: WriteData.Args = {
+    const writeData2: WriteDataArgs = {
       entry: {
         type: "accumulate",
         data: data2,
@@ -378,7 +379,7 @@ describe("Test Accumulate client", () => {
 
   xtest("should update account auth", async () => {
     // Disable
-    const disable: AccountAuthOperation.Args = {
+    const disable: AccountAuthOperationArgs = {
       type: AccountAuthOperationType.Disable,
       authority: identityKeyPageTxSigner.url,
     };
