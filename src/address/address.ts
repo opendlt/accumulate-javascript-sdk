@@ -127,8 +127,8 @@ export class PrivateKeyAddress extends PublicKeyHashAddress {
 }
 
 async function doChecksum(...parts: Uint8Array[]) {
-  const c = await crypto.subtle.digest("SHA-256", concat(parts));
-  const cc = await crypto.subtle.digest("SHA-256", c);
+  const c = await sha256(concat(parts));
+  const cc = await sha256(c);
   return new Uint8Array(cc);
 }
 
