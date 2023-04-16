@@ -46,6 +46,7 @@ import {
   WriteData,
   WriteDataArgs,
 } from "./core";
+import { sha256 } from "./crypto";
 import { Envelope } from "./messaging";
 import { RpcClient } from "./rpc-client";
 import { signTransaction } from "./signing";
@@ -220,7 +221,7 @@ export class Client {
       pkh = publicKeyHash;
     } else {
       signerUrl = signer.url;
-      pkh = signer.publicKeyHash;
+      pkh = await sha256(signer.publicKey);
     }
 
     const {

@@ -43,14 +43,14 @@ export async function constructIssuerProof(
 
   // Prove that the body is part of the transaction
   const proof1: ReceiptArgs = {
-    start: hashBody(body),
+    start: await hashBody(body),
     startIndex: 0,
-    end: hashBody(body),
+    end: await hashBody(body),
     endIndex: 0,
-    anchor: txn.hash(),
+    anchor: await txn.hash(),
     entries: [
       {
-        hash: sha256(encode(header)),
+        hash: await sha256(encode(header)),
         right: false,
       },
     ],

@@ -9,7 +9,7 @@ export * as messaging from "./messaging";
 export * as network from "./network";
 export { RpcError } from "./rpc-client";
 export * from "./signing";
-export * from "./url";
+export * from "./address";
 export { constructIssuerProof } from "./util";
 export { BN };
 

@@ -6,7 +6,6 @@ import { sha256 } from "../crypto";
 export interface Signer {
   signRaw(data: Uint8Array): Promise<Uint8Array>;
   get publicKey(): Uint8Array;
-  get publicKeyHash(): Uint8Array;
   get type(): SignatureType;
   newSignature(): KeySignature;
 }
@@ -47,10 +46,6 @@ abstract class TxSigner {
 
   get publicKey(): Uint8Array {
     return this._signer.publicKey;
-  }
-
-  get publicKeyHash(): Uint8Array {
-    return this._signer.publicKeyHash;
   }
 
   get version(): number {
@@ -104,8 +99,9 @@ export class LiteSigner extends TxSigner {
    * Construct a LiteIdentity controlled by the Signer.
    * @param signer
    */
-  constructor(signer: Signer) {
-    super(LiteSigner.computeUrl(signer.publicKeyHash), signer);
+  static async from(signer: Signer) {
+    const hash = await sha256(signer.publicKey);
+    return new this(await this.computeUrl(hash), signer);
   }
 
   /**
@@ -118,9 +114,9 @@ export class LiteSigner extends TxSigner {
   /**
    * Compute a LiteIdentity URL based on public key hash
    */
-  static computeUrl(publicKeyHash: Uint8Array): URL {
+  static async computeUrl(publicKeyHash: Uint8Array): Promise<URL> {
     const pkHash = Buffer.from(publicKeyHash.slice(0, 20));
-    const checkSum = sha256(pkHash.toString("hex")).slice(28);
+    const checkSum = Uint8Array.prototype.slice.call(await sha256(Buffer.from(pkHash.toString("hex"), 'utf-8')), 28);
     const authority = Buffer.concat([pkHash, checkSum]).toString("hex");
     return URL.parse(`acc://${authority}`);
   }
