@@ -1,6 +1,6 @@
 {
   "name": "accumulate.js",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "Accumulate blockchain JS/TS SDK",
   "keywords": [
     "blockchain",
@@ -8,11 +8,11 @@
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "Luciap Technology Inc.",
+  "author": "Accumulate Foundation",
   "license": "MIT",
-  "homepage": "https://gitlab.com/accumulatenetwork/accumulate.js",
-  "bugs": "https://gitlab.com/accumulatenetwork/accumulate.js/-/issues",
-  "repository": "gitlab:accumulatenetwork/accumulate.js",
+  "homepage": "https://gitlab.com/accumulatenetwork/sdk/javascript",
+  "bugs": "https://gitlab.com/accumulatenetwork/sdk/javascript/-/issues",
+  "repository": "gitlab:accumulatenetwork/sdk/javascript",
   "private": false,
   "files": [
     "/lib",
