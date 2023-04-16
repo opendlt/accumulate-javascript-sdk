@@ -95,7 +95,7 @@ export class PublicKeyHashAddress implements Address {
         return await formatBTC(this.publicKeyHash);
       default:
         throw new Error(`${this.type} is not a key signature type`);
-        // return await formatMH(this.publicKeyHash);
+      // return await formatMH(this.publicKeyHash);
     }
   }
 }
@@ -145,7 +145,7 @@ async function doChecksum(...parts: Uint8Array[]) {
 
 async function formatAC1(hash: Uint8Array) {
   const checksum = (await doChecksum(string2bytes("AC1"), hash)).slice(0, 4);
-  const encoded = encode('z', concat([hash, checksum]));
+  const encoded = encode("z", concat([hash, checksum]));
   return "AC1" + bytes2string(encoded);
 }
 
@@ -166,7 +166,7 @@ async function formatETH(hash: Uint8Array) {
 
 async function formatWithPrefix(prefix: Uint8Array, hash: Uint8Array) {
   const checksum = (await doChecksum(prefix, hash)).slice(0, 4);
-  const encoded = encode('z', concat([prefix, hash, checksum]));
+  const encoded = encode("z", concat([prefix, hash, checksum]));
   return bytes2string(encoded);
 }
 
@@ -179,7 +179,7 @@ function string2bytes(s: string) {
 }
 
 function bytes2string(b: Uint8Array) {
-  return Buffer.from(b).toString('utf-8');
+  return Buffer.from(b).toString("utf-8");
 }
 
 function concat(parts: Uint8Array[]) {
