@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { hashTree, sha256 } from "../../src/crypto";
+import { hashTree, sha256 } from "../crypto";
 import { encode } from "../encoding";
 import { DataEntryType, TransactionType } from "./enums_gen";
 import { TransactionHeader } from "./types_gen";
