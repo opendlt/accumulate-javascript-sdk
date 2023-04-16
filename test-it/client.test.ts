@@ -30,7 +30,7 @@ describe("Test Accumulate client", () => {
     /**
      *  Initialize a LiteIdentity with credits
      */
-    lid = randomLiteIdentity();
+    lid = await randomLiteIdentity();
     const txres = await client.faucet(lid.acmeTokenAccount);
     await client.waitOnTx(txres.txid!.toString());
 
@@ -69,7 +69,7 @@ describe("Test Accumulate client", () => {
   });
 
   test("should send tokens", async () => {
-    const recipient = randomLiteIdentity().acmeTokenAccount;
+    const recipient = (await randomLiteIdentity()).acmeTokenAccount;
 
     const amount = new BN(12);
     const sendTokens = { to: [{ url: recipient, amount: amount }] };

@@ -16,7 +16,7 @@ afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Test manual transactions", () => {
   beforeAll(async () => {
-    lid = randomLiteIdentity();
+    lid = await randomLiteIdentity();
 
     // Get some ACME
     const res = await client.faucet(lid.acmeTokenAccount);
@@ -27,7 +27,7 @@ describe("Test manual transactions", () => {
   });
 
   test("should send tokens with manual transaction", async () => {
-    const recipient = randomLiteIdentity().acmeTokenAccount;
+    const recipient = (await randomLiteIdentity()).acmeTokenAccount;
     const amount = new BN(1025);
     const payload = new SendTokens({ to: [{ url: recipient, amount: amount }] });
     const header = new TransactionHeader({ principal: lid.acmeTokenAccount });
@@ -43,7 +43,7 @@ describe("Test manual transactions", () => {
   });
 
   test.skip("should reject unsigned transaction", async () => {
-    const recipient = randomLiteIdentity().acmeTokenAccount;
+    const recipient = (await randomLiteIdentity()).acmeTokenAccount;
     const amount = 50;
     const payload = new SendTokens({ to: [{ url: recipient, amount: amount }] });
     const header = new TransactionHeader({ principal: lid.url });
