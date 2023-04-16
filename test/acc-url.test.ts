@@ -1,7 +1,7 @@
-import { AccURL } from "../src/acc-url";
+import { URL } from "../src/url";
 
 test("should parse url", () => {
-  const u = AccURL.parse("acc://authority/path");
+  const u = URL.parse("acc://authority/path");
 
   expect(u.authority).toStrictEqual("authority");
   expect(u.path).toStrictEqual("/path");
@@ -9,16 +9,16 @@ test("should parse url", () => {
 });
 
 test("should throw on non Accumulate URL", () => {
-  expect(() => AccURL.parse("https://accumulatenetwork.io/")).toThrowError(/Invalid protocol/);
+  expect(() => URL.parse("https://accumulatenetwork.io/")).toThrowError(/Invalid protocol/);
 });
 
 test("should append path", () => {
-  const u = AccURL.parse("acc://authority");
-  const tokenURL = AccURL.parse("acc://105251bb367baa372c748930531ae63d6e143c9aa4470eff/my-token");
+  const u = URL.parse("acc://authority");
+  const tokenURL = URL.parse("acc://105251bb367baa372c748930531ae63d6e143c9aa4470eff/my-token");
 
-  expect(u.append("next").toString()).toStrictEqual("acc://authority/next");
-  expect(u.append("/next").toString()).toStrictEqual("acc://authority/next");
-  expect(u.append(tokenURL).toString()).toStrictEqual(
+  expect(u.join("next").toString()).toStrictEqual("acc://authority/next");
+  expect(u.join("/next").toString()).toStrictEqual("acc://authority/next");
+  expect(u.join(tokenURL).toString()).toStrictEqual(
     "acc://authority/105251bb367baa372c748930531ae63d6e143c9aa4470eff/my-token"
   );
 });

@@ -1,9 +1,10 @@
 import nacl from "tweetnacl";
+import { ED25519Signature, KeySignature, SignatureType } from ".././core";
 import { sha256 } from "../crypto";
-import { SignatureType, Signer } from "../signer";
 import { Ed25519Keypair } from "./ed25519-keypair";
+import { Signer } from "./signer";
 
-export class Ed25519KeypairSigner implements Signer {
+export abstract class BaseEd25519KeypairSigner implements Signer {
   protected readonly _keypair: Ed25519Keypair;
 
   constructor(keypair: Ed25519Keypair) {
@@ -11,11 +12,7 @@ export class Ed25519KeypairSigner implements Signer {
   }
 
   get type(): SignatureType {
-    return SignatureType.SignatureTypeED25519;
-  }
-
-  static generate(): Ed25519KeypairSigner {
-    return new Ed25519KeypairSigner(new Ed25519Keypair());
+    return SignatureType.ED25519;
   }
 
   async signRaw(data: Uint8Array): Promise<Uint8Array> {
@@ -28,5 +25,19 @@ export class Ed25519KeypairSigner implements Signer {
 
   get publicKeyHash(): Uint8Array {
     return sha256(this._keypair.publicKey);
+  }
+
+  abstract newSignature(): KeySignature;
+}
+
+export class ED25519KeypairSigner extends BaseEd25519KeypairSigner {
+  static generate(): ED25519KeypairSigner {
+    return new ED25519KeypairSigner(new Ed25519Keypair());
+  }
+
+  newSignature(): ED25519Signature {
+    return new ED25519Signature({
+      publicKey: this.publicKey,
+    });
   }
 }

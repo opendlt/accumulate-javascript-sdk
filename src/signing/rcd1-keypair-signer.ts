@@ -1,9 +1,9 @@
+import { RCD1Signature, SignatureType } from ".././core";
 import { sha256 } from "../crypto";
-import { SignatureType } from "../signer";
 import { Ed25519Keypair } from "./ed25519-keypair";
-import { Ed25519KeypairSigner } from "./ed25519-keypair-signer";
+import { BaseEd25519KeypairSigner } from "./ed25519-keypair-signer";
 
-export class RCD1KeypairSigner extends Ed25519KeypairSigner {
+export class RCD1KeypairSigner extends BaseEd25519KeypairSigner {
   private _rcd1Hash?: Uint8Array;
 
   get publicKeyHash(): Uint8Array {
@@ -19,6 +19,12 @@ export class RCD1KeypairSigner extends Ed25519KeypairSigner {
   }
 
   get type(): SignatureType {
-    return SignatureType.SignatureTypeRCD1;
+    return SignatureType.RCD1;
+  }
+
+  newSignature(): RCD1Signature {
+    return new RCD1Signature({
+      publicKey: this.publicKey,
+    });
   }
 }
