@@ -1,0 +1,10 @@
+MerkleState:
+  fields:
+    - name: Count
+      type: uint
+    - name: Pending
+      type: bytes
+      repeatable: true
+    - name: HashList
+      type: bytes
+      repeatable: true

@@ -1,35 +1,90 @@
-import { AccURL, ANCHORS_URL } from "./acc-url";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { ANCHORS_URL } from "./acc-url";
 import {
-  MinorBlocksQueryOptions,
-  QueryOptions,
-  QueryPagination,
-  TxError,
-  TxHistoryQueryOptions,
-  TxQueryOptions,
-  WaitTxOptions,
-} from "./api-types";
-import { Payload } from "./payload";
-import { AddCredits, AddCreditsArg } from "./payload/add-credits";
-import { AddValidator, AddValidatorArg } from "./payload/add-validator";
-import { BurnTokens, BurnTokensArg } from "./payload/burn-tokens";
-import { CreateDataAccount, CreateDataAccountArg } from "./payload/create-data-account";
-import { CreateIdentity, CreateIdentityArg } from "./payload/create-identity";
-import { CreateKeyBook, CreateKeyBookArg } from "./payload/create-key-book";
-import { CreateKeyPage, CreateKeyPageArg } from "./payload/create-key-page";
-import { CreateToken, CreateTokenArg } from "./payload/create-token";
-import { CreateTokenAccount, CreateTokenAccountArg } from "./payload/create-token-account";
-import { IssueTokens, IssueTokensArg } from "./payload/issue-tokens";
-import { RemoveValidator, RemoveValidatorArg } from "./payload/remove-validator";
-import { SendTokens, SendTokensArg } from "./payload/send-tokens";
-import { AccountAuthOperation, UpdateAccountAuth } from "./payload/update-account-auth";
-import { UpdateKey, UpdateKeyArg } from "./payload/update-key";
-import { KeyPageOperation, UpdateKeyPage } from "./payload/update-key-page";
-import { UpdateValidatorKey, UpdateValidatorKeyArg } from "./payload/update-validator-key";
-import { WriteData, WriteDataArg } from "./payload/write-data";
+  ChainQueryResponse,
+  DescriptionResponse,
+  ExecuteRequestArgs,
+  GeneralQueryArgs,
+  MinorBlocksQueryArgs,
+  QueryOptionsArgs,
+  QueryPaginationArgs,
+  StatusResponse,
+  TxHistoryQueryArgs,
+  TxnQueryArgs,
+  TxResponse,
+} from "./api_v2";
+import {
+  AccountAuthOperationArgs,
+  AddCredits,
+  AddCreditsArgs,
+  BurnTokens,
+  BurnTokensArgs,
+  CreateDataAccount,
+  CreateDataAccountArgs,
+  CreateIdentity,
+  CreateIdentityArgs,
+  CreateKeyBook,
+  CreateKeyBookArgs,
+  CreateKeyPage,
+  CreateKeyPageArgs,
+  CreateToken,
+  CreateTokenAccount,
+  CreateTokenAccountArgs,
+  CreateTokenArgs,
+  IssueTokens,
+  IssueTokensArgs,
+  KeyPageOperationArgs,
+  SendTokens,
+  SendTokensArgs,
+  Transaction,
+  TransactionBody,
+  TransactionHeader,
+  UpdateAccountAuth,
+  UpdateKey,
+  UpdateKeyArgs,
+  UpdateKeyPage,
+  WriteData,
+  WriteDataArgs,
+} from "./core";
+import { Envelope } from "./messaging";
 import { RpcClient } from "./rpc-client";
-import { Header, Transaction } from "./transaction";
-import { TxSigner } from "./tx-signer";
+import { signTransaction } from "./signing";
+import { PageSigner } from "./signing/signer";
+import { URL } from "./url";
 import { sleep } from "./util";
+
+/**
+ * Options for waiting on transaction delivering.
+ */
+export type WaitTxOptions = {
+  /**
+   * Timeout after which status polling is aborted. Duration in ms.
+   * Default: 30000ms (30s)
+   */
+  timeout?: number;
+  /**
+   * Interval between each tx status poll. Duration in ms.
+   * Default: 500ms.
+   */
+  pollInterval?: number;
+  /**
+   * If set to true, only the user tx status is checked.
+   * If set to false, will also wait on the associated synthetic txs to be delivered.
+   * Default: false
+   */
+  ignoreSyntheticTxs?: boolean;
+};
+
+export class TxError extends Error {
+  readonly txId: string;
+  readonly status: any;
+
+  constructor(txId: string, status: any) {
+    super(`Failed transaction ${txId}: ${JSON.stringify(status, null, 4)}`);
+    this.txId = txId;
+    this.status = status;
+  }
+}
 
 /**
  * Client to call Accumulate RPC APIs.
@@ -55,14 +110,14 @@ export class Client {
    ******************/
 
   queryAcmeOracle(): Promise<number> {
-    return this.describe().then((d) => d.values.oracle.price);
+    return this.describe().then((d) => d.values!.oracle!.price!);
   }
 
   queryAnchor(anchor: string): Promise<any> {
-    return this.queryUrl(ANCHORS_URL.append(`#anchor/${anchor}`));
+    return this.queryUrl(ANCHORS_URL.join(`#anchor/${anchor}`));
   }
 
-  queryUrl(url: string | AccURL, options?: QueryOptions): Promise<any> {
+  queryUrl(url: string | URL, options?: Omit<GeneralQueryArgs, "url">): Promise<any> {
     const urlStr = url.toString();
 
     return this.call("query", {
@@ -71,7 +126,7 @@ export class Client {
     });
   }
 
-  queryTx(txId: string | AccURL, options?: TxQueryOptions): Promise<any> {
+  queryTx(txId: string | URL, options?: Omit<TxnQueryArgs, "txid" | "txidUrl">): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 
@@ -82,9 +137,9 @@ export class Client {
   }
 
   queryTxHistory(
-    url: string | AccURL,
-    pagination: QueryPagination,
-    options?: TxHistoryQueryOptions
+    url: string | URL,
+    pagination: QueryPaginationArgs,
+    options?: Omit<TxHistoryQueryArgs, "url" | keyof QueryPaginationArgs>
   ): Promise<any> {
     const urlStr = url.toString();
     return this.call("query-tx-history", {
@@ -95,9 +150,9 @@ export class Client {
   }
 
   queryDirectory(
-    url: string | AccURL,
-    pagination: QueryPagination,
-    options?: QueryOptions
+    url: string | URL,
+    pagination: QueryPaginationArgs,
+    options?: QueryOptionsArgs
   ): Promise<any> {
     return this.call("query-directory", {
       url: url.toString(),
@@ -106,7 +161,7 @@ export class Client {
     });
   }
 
-  queryData(url: string | AccURL, entryHash?: string): Promise<any> {
+  queryData(url: string | URL, entryHash?: string): Promise<any> {
     return this.call("query-data", {
       url: url.toString(),
       entryHash,
@@ -114,9 +169,9 @@ export class Client {
   }
 
   queryDataSet(
-    url: string | AccURL,
-    pagination: QueryPagination,
-    options?: QueryOptions
+    url: string | URL,
+    pagination: QueryPaginationArgs,
+    options?: QueryOptionsArgs
   ): Promise<any> {
     return this.call("query-data-set", {
       url: url.toString(),
@@ -125,7 +180,7 @@ export class Client {
     });
   }
 
-  queryKeyPageIndex(url: string | AccURL, key: string | Uint8Array): Promise<any> {
+  queryKeyPageIndex(url: string | URL, key: string | Uint8Array): Promise<any> {
     const urlStr = url.toString();
     const keyStr = key instanceof Uint8Array ? Buffer.from(key).toString("hex") : key;
 
@@ -135,7 +190,7 @@ export class Client {
     });
   }
 
-  queryMajorBlocks(url: string | AccURL, pagination: QueryPagination): Promise<any> {
+  queryMajorBlocks(url: string | URL, pagination: QueryPaginationArgs): Promise<any> {
     return this.call("query-major-blocks", {
       url: url.toString(),
       ...pagination,
@@ -143,9 +198,9 @@ export class Client {
   }
 
   queryMinorBlocks(
-    url: string | AccURL,
-    pagination: QueryPagination,
-    options?: MinorBlocksQueryOptions
+    url: string | URL,
+    pagination: QueryPaginationArgs,
+    options?: Omit<MinorBlocksQueryArgs, "url" | keyof QueryPaginationArgs>
   ): Promise<any> {
     return this.call("query-minor-blocks", {
       url: url.toString(),
@@ -154,10 +209,10 @@ export class Client {
     });
   }
 
-  async querySignerVersion(signer: TxSigner | AccURL, publicKeyHash?: Uint8Array): Promise<number> {
-    let signerUrl: AccURL;
+  async querySignerVersion(signer: PageSigner | URL, publicKeyHash?: Uint8Array): Promise<number> {
+    let signerUrl: URL;
     let pkh: Uint8Array;
-    if (signer instanceof AccURL) {
+    if (signer instanceof URL) {
       signerUrl = signer;
       if (!publicKeyHash) {
         throw new Error("Missing public key hash");
@@ -197,6 +252,7 @@ export class Client {
 
         switch (status.code) {
           case "pending":
+          case "remote":
             await sleep(pollInterval);
             continue;
           case "delivered":
@@ -244,180 +300,167 @@ export class Client {
    ******************/
 
   addCredits(
-    principal: AccURL | string,
-    addCredits: AddCreditsArg,
-    signer: TxSigner
+    principal: URL | string,
+    addCredits: AddCreditsArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new AddCredits(addCredits), signer);
-  }
-
-  addValidator(
-    principal: AccURL | string,
-    addValidator: AddValidatorArg,
-    signer: TxSigner
-  ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new AddValidator(addValidator), signer);
+    return this._execute(URL.parse(principal), new AddCredits(addCredits), signer);
   }
 
   burnTokens(
-    principal: AccURL | string,
-    burnTokens: BurnTokensArg,
-    signer: TxSigner
+    principal: URL | string,
+    burnTokens: BurnTokensArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new BurnTokens(burnTokens), signer);
+    return this._execute(URL.parse(principal), new BurnTokens(burnTokens), signer);
   }
 
   createDataAccount(
-    principal: AccURL | string,
-    createDataAccount: CreateDataAccountArg,
-    signer: TxSigner
+    principal: URL | string,
+    createDataAccount: CreateDataAccountArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(
-      AccURL.toAccURL(principal),
-      new CreateDataAccount(createDataAccount),
-      signer
-    );
+    return this._execute(URL.parse(principal), new CreateDataAccount(createDataAccount), signer);
   }
 
   createIdentity(
-    principal: AccURL | string,
-    createIdentity: CreateIdentityArg,
-    signer: TxSigner
+    principal: URL | string,
+    createIdentity: CreateIdentityArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new CreateIdentity(createIdentity), signer);
+    return this._execute(URL.parse(principal), new CreateIdentity(createIdentity), signer);
   }
 
   createKeyBook(
-    principal: AccURL | string,
-    createKeyBook: CreateKeyBookArg,
-    signer: TxSigner
+    principal: URL | string,
+    createKeyBook: CreateKeyBookArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new CreateKeyBook(createKeyBook), signer);
+    return this._execute(URL.parse(principal), new CreateKeyBook(createKeyBook), signer);
   }
 
   createKeyPage(
-    principal: AccURL | string,
-    createKeyPage: CreateKeyPageArg,
-    signer: TxSigner
+    principal: URL | string,
+    createKeyPage: CreateKeyPageArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new CreateKeyPage(createKeyPage), signer);
+    return this._execute(URL.parse(principal), new CreateKeyPage(createKeyPage), signer);
   }
 
   createToken(
-    principal: AccURL | string,
-    createToken: CreateTokenArg,
-    signer: TxSigner
+    principal: URL | string,
+    createToken: CreateTokenArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new CreateToken(createToken), signer);
+    return this._execute(URL.parse(principal), new CreateToken(createToken), signer);
   }
 
   createTokenAccount(
-    principal: AccURL | string,
-    createTokenAccount: CreateTokenAccountArg,
-    signer: TxSigner
+    principal: URL | string,
+    createTokenAccount: CreateTokenAccountArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(
-      AccURL.toAccURL(principal),
-      new CreateTokenAccount(createTokenAccount),
-      signer
-    );
+    return this._execute(URL.parse(principal), new CreateTokenAccount(createTokenAccount), signer);
   }
 
-  execute(tx: Transaction): Promise<any> {
-    return this.call("execute", tx.toTxRequest());
+  async execute(env: Envelope): Promise<TxResponse> {
+    const req: ExecuteRequestArgs = {
+      envelope: env.asObject(),
+    };
+    const res: TxResponse = await this.call("execute-direct", req);
+    if (res.result.error) {
+      throw res.result.error;
+    }
+    return res;
   }
 
   issueTokens(
-    principal: AccURL | string,
-    issueTokens: IssueTokensArg,
-    signer: TxSigner
+    principal: URL | string,
+    issueTokens: IssueTokensArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new IssueTokens(issueTokens), signer);
-  }
-
-  removeValidator(
-    principal: AccURL | string,
-    removeValidator: RemoveValidatorArg,
-    signer: TxSigner
-  ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new RemoveValidator(removeValidator), signer);
+    return this._execute(URL.parse(principal), new IssueTokens(issueTokens), signer);
   }
 
   sendTokens(
-    principal: AccURL | string,
-    sendTokens: SendTokensArg,
-    signer: TxSigner
+    principal: URL | string,
+    sendTokens: SendTokensArgs,
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new SendTokens(sendTokens), signer);
+    return this._execute(URL.parse(principal), new SendTokens(sendTokens), signer);
   }
 
   updateAccountAuth(
-    principal: AccURL | string,
-    operation: AccountAuthOperation | AccountAuthOperation[],
-    signer: TxSigner
+    principal: URL | string,
+    operation: AccountAuthOperationArgs | AccountAuthOperationArgs[],
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new UpdateAccountAuth(operation), signer);
+    const operations = operation instanceof Array ? operation : [operation];
+    return this._execute(URL.parse(principal), new UpdateAccountAuth({ operations }), signer);
   }
 
-  updateKey(principal: AccURL | string, updateKey: UpdateKeyArg, signer: TxSigner): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new UpdateKey(updateKey), signer);
+  updateKey(principal: URL | string, updateKey: UpdateKeyArgs, signer: PageSigner): Promise<any> {
+    return this._execute(URL.parse(principal), new UpdateKey(updateKey), signer);
   }
 
   updateKeyPage(
-    principal: AccURL | string,
-    operation: KeyPageOperation | KeyPageOperation[],
-    signer: TxSigner
+    principal: URL | string,
+    operation: KeyPageOperationArgs | KeyPageOperationArgs[],
+    signer: PageSigner
   ): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new UpdateKeyPage(operation), signer);
-  }
-
-  updateValidatorKey(
-    principal: AccURL | string,
-    updateValidatorKey: UpdateValidatorKeyArg,
-    signer: TxSigner
-  ): Promise<any> {
+    const operations = operation instanceof Array ? operation : [operation];
     return this._execute(
-      AccURL.toAccURL(principal),
-      new UpdateValidatorKey(updateValidatorKey),
+      URL.parse(principal),
+      new UpdateKeyPage({ operation: operations }),
       signer
     );
   }
 
-  writeData(principal: AccURL | string, writeData: WriteDataArg, signer: TxSigner): Promise<any> {
-    return this._execute(AccURL.toAccURL(principal), new WriteData(writeData), signer);
+  writeData(principal: URL | string, writeData: WriteDataArgs, signer: PageSigner): Promise<any> {
+    return this._execute(URL.parse(principal), new WriteData(writeData), signer);
   }
 
-  private async _execute(principal: AccURL, payload: Payload, signer: TxSigner): Promise<any> {
-    const header = new Header(principal);
-    const tx = new Transaction(payload, header);
-    await tx.sign(signer);
+  private async _execute(
+    principal: URL,
+    payload: TransactionBody,
+    signer: PageSigner
+  ): Promise<any> {
+    const header = new TransactionHeader({ principal });
+    const tx = new Transaction({ body: payload, header });
+    const env = await signTransaction(tx, signer, {
+      timestamp: Date.now(),
+    });
 
-    return this.execute(tx);
+    return this.execute(env);
   }
 
   /******************
    * Others
    ******************/
 
-  faucet(url: string | AccURL): Promise<any> {
-    return this.call("faucet", {
+  async faucet(url: string | URL): Promise<TxResponse> {
+    const res: TxResponse = await this.call("faucet", {
       url: url.toString(),
     });
+    if (res.result.error) {
+      throw res.result.error;
+    }
+    return res;
   }
 
-  status(): Promise<any> {
+  status(): Promise<StatusResponse> {
     return this.call("status");
   }
 
-  version(): Promise<any> {
+  version(): Promise<ChainQueryResponse> {
     return this.call("version");
   }
 
-  describe(): Promise<any> {
+  describe(): Promise<DescriptionResponse> {
     return this.call("describe");
   }
 
-  metrics(metric: string, duration: number): Promise<any> {
+  metrics(metric: string, duration: number): Promise<ChainQueryResponse> {
     return this.call("metrics", {
       metric,
       duration,

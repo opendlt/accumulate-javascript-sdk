@@ -1,9 +1,10 @@
-import { CreateToken } from ".";
-import { AccURL } from "./acc-url";
 import { Client } from "./client";
+import { CreateToken, Transaction, TransactionHeader } from "./core";
+import { hashBody } from "./core/base";
 import { sha256 } from "./crypto";
-import { combineReceipts, Receipt } from "./receipt";
-import { Header, Transaction } from "./transaction";
+import { encode } from "./encoding";
+import { combineReceipts, Receipt, ReceiptArgs } from "./merkle";
+import { URL } from "./url";
 
 export async function sleep(millis: number) {
   return new Promise((resolve) => setTimeout(resolve, millis));
@@ -11,7 +12,7 @@ export async function sleep(millis: number) {
 
 export async function constructIssuerProof(
   client: Client,
-  issuer: string | AccURL
+  issuer: string | URL
 ): Promise<{ receipt: Receipt; transaction: CreateToken }> {
   // The first transaction of a token issuer must be the one that created it
   const txn0url = `${issuer}#txn/0`;
@@ -29,7 +30,8 @@ export async function constructIssuerProof(
       `Expected first transaction of ${issuer} to be createToken but got ${transaction.body.type}`
     );
   }
-  const header = new Header(transaction.header.principal, {
+  const header = new TransactionHeader({
+    principal: transaction.header.principal,
     initiator: Buffer.from(transaction.header.initiator, "hex"),
     memo: transaction.header.memo,
     metadata: transaction.header.metadata
@@ -37,18 +39,18 @@ export async function constructIssuerProof(
       : undefined,
   });
   const body = new CreateToken(transaction.body);
-  const txn = new Transaction(body, header);
+  const txn = new Transaction({ body, header });
 
   // Prove that the body is part of the transaction
-  const proof1: Receipt = {
-    start: body.hash(),
+  const proof1: ReceiptArgs = {
+    start: hashBody(body),
     startIndex: 0,
-    end: body.hash(),
+    end: hashBody(body),
     endIndex: 0,
     anchor: txn.hash(),
     entries: [
       {
-        hash: sha256(header.marshalBinary()),
+        hash: sha256(encode(header)),
         right: false,
       },
     ],
@@ -59,6 +61,9 @@ export async function constructIssuerProof(
   const proof3 = anchorRes.receipt.proof;
 
   // Assemble the full proof
-  const receipt = combineReceipts(combineReceipts(proof1, proof2), proof3);
+  const receipt = combineReceipts(
+    combineReceipts(new Receipt(proof1), new Receipt(proof2)),
+    new Receipt(proof3)
+  );
   return { receipt, transaction: body };
 }
