@@ -1,14 +1,14 @@
 import { Buffer } from "buffer";
 
 const hasher: Promise<(data: Uint8Array) => Promise<Buffer>> = (async () => {
-  if ('crypto' in global) {
+  if ("crypto" in global) {
     // Browser
-    return async (data: Uint8Array) => Buffer.from(await crypto.subtle.digest('SHA-256', data));
+    return async (data: Uint8Array) => Buffer.from(await crypto.subtle.digest("SHA-256", data));
   }
 
   // Node
   const { createHash } = await import("crypto");
-  return (data: Uint8Array) => Promise.resolve(createHash('sha256').update(data).digest())
+  return (data: Uint8Array) => Promise.resolve(createHash("sha256").update(data).digest());
 })();
 
 export async function sha256(data: Uint8Array): Promise<Buffer> {
