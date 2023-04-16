@@ -116,7 +116,10 @@ export class LiteSigner extends TxSigner {
    */
   static async computeUrl(publicKeyHash: Uint8Array): Promise<URL> {
     const pkHash = Buffer.from(publicKeyHash.slice(0, 20));
-    const checkSum = Uint8Array.prototype.slice.call(await sha256(Buffer.from(pkHash.toString("hex"), 'utf-8')), 28);
+    const checkSum = Uint8Array.prototype.slice.call(
+      await sha256(Buffer.from(pkHash.toString("hex"), "utf-8")),
+      28
+    );
     const authority = Buffer.concat([pkHash, checkSum]).toString("hex");
     return URL.parse(`acc://${authority}`);
   }

@@ -16,7 +16,9 @@ export abstract class TransactionBase {
     if (!this.header) throw new Error(`invalid transaction: missing header`);
     if (!this.body) throw new Error(`invalid transaction: missing body`);
 
-    this._hash = await sha256(Buffer.concat([await sha256(encode(this.header)), await hashBody(this.body)]));
+    this._hash = await sha256(
+      Buffer.concat([await sha256(encode(this.header)), await hashBody(this.body)])
+    );
     return this._hash;
   }
 }
@@ -35,9 +37,16 @@ export async function hashBody(body: TransactionBody) {
 
       switch (body.entry.type) {
         case DataEntryType.Accumulate:
-          return await sha256(Buffer.concat([await sha256(encode(copy)), await hashTree(body.entry.data)]));
+          return await sha256(
+            Buffer.concat([await sha256(encode(copy)), await hashTree(body.entry.data)])
+          );
         case DataEntryType.DoubleHash:
-          return await sha256(Buffer.concat([await sha256(encode(copy)), await sha256(await hashTree(body.entry.data))]));
+          return await sha256(
+            Buffer.concat([
+              await sha256(encode(copy)),
+              await sha256(await hashTree(body.entry.data)),
+            ])
+          );
         default:
           throw new Error(`cannot hash ${body.type}: ${body.entry.type} entries are not supported`);
       }
