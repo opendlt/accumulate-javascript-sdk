@@ -2,7 +2,7 @@
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
 import { BN, Client } from "../src";
-import { SendTokens, TransactionHeader, Transaction } from "../src/core";
+import { SendTokens, Transaction, TransactionHeader } from "../src/core";
 import { Envelope } from "../src/messaging";
 import { LiteSigner, signTransaction } from "../src/signing";
 import { addCredits, randomLiteIdentity, startSim } from "./util";

@@ -1,1 +1,1 @@
-export { URL, TxID } from "./address";
+export { TxID, URL } from "./address";

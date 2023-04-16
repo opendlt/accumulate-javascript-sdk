@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 
 export async function sha256(data: Uint8Array): Promise<Buffer> {
-  return Buffer.from(await crypto.subtle.digest('SHA-256', data));
+  return Buffer.from(await crypto.subtle.digest("SHA-256", data));
 }
 
 export async function hashTree(items: Uint8Array[]): Promise<Buffer> {
