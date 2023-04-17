@@ -25,9 +25,9 @@ export async function signTransaction(
   return new Envelope({ transaction: [transaction], signatures: [sig] });
 }
 
-function setInitiator(transaction: Transaction, signer: PageSigner, timestamp: number) {
+async function setInitiator(transaction: Transaction, signer: PageSigner, timestamp: number) {
   const sig = signer.makeSignature({ timestamp });
-  const hash = sha256(encode(sig)); // Simple hash
+  const hash = await sha256(encode(sig)); // Simple hash
   transaction.header!.initiator = hash;
 }
 
@@ -38,9 +38,9 @@ async function doSign(
 ): Promise<KeySignature> {
   // TODO this is only valid for ED25519 and RCD1 and will not work for ETH or BTC signatures
   const sig = signer.makeSignature({ timestamp });
-  const sigHash = sha256(encode(sig));
-  const txnHash = transaction.hash();
-  const hash = sha256(Buffer.concat([sigHash, txnHash]));
+  const sigHash = await sha256(encode(sig));
+  const txnHash = await transaction.hash();
+  const hash = await sha256(Buffer.concat([sigHash, txnHash]));
 
   sig.transactionHash = txnHash;
   sig.signature = await signer.sign(hash);

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
-import { BN, Client, Header, Transaction } from "../src";
-import { SendTokens } from "../src/core";
+import { BN, Client } from "../src";
+import { SendTokens, Transaction, TransactionHeader } from "../src/core";
 import { Envelope } from "../src/messaging";
 import { LiteSigner, signTransaction } from "../src/signing";
 import { addCredits, randomLiteIdentity, startSim } from "./util";
@@ -16,7 +16,7 @@ afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Test manual transactions", () => {
   beforeAll(async () => {
-    lid = randomLiteIdentity();
+    lid = await randomLiteIdentity();
 
     // Get some ACME
     const res = await client.faucet(lid.acmeTokenAccount);
@@ -27,10 +27,10 @@ describe("Test manual transactions", () => {
   });
 
   test("should send tokens with manual transaction", async () => {
-    const recipient = randomLiteIdentity().acmeTokenAccount;
+    const recipient = (await randomLiteIdentity()).acmeTokenAccount;
     const amount = new BN(1025);
     const payload = new SendTokens({ to: [{ url: recipient, amount: amount }] });
-    const header = new Header({ principal: lid.acmeTokenAccount });
+    const header = new TransactionHeader({ principal: lid.acmeTokenAccount });
 
     const tx = new Transaction({ body: payload, header });
     const env = await signTransaction(tx, lid, { timestamp: Date.now() });
@@ -43,10 +43,10 @@ describe("Test manual transactions", () => {
   });
 
   test.skip("should reject unsigned transaction", async () => {
-    const recipient = randomLiteIdentity().acmeTokenAccount;
+    const recipient = (await randomLiteIdentity()).acmeTokenAccount;
     const amount = 50;
     const payload = new SendTokens({ to: [{ url: recipient, amount: amount }] });
-    const header = new Header({ principal: lid.url });
+    const header = new TransactionHeader({ principal: lid.url });
 
     const tx = new Transaction({ body: payload, header });
 

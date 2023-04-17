@@ -1,27 +1,15 @@
-image: ruby:2.7
 
 stages:
   - build
-  - test
-  - deploy
 
 cache:
   paths:
     - vendor/
     - .yarn
 
-before_script:
-  - gem install bundler
-  - bundle config set --local path 'vendor'
-  - bundle install
-  - apt-get install -y curl
-  - curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-  - apt-get update -qy
-  - apt-get install -y nodejs
-  - npm install yarn -g
-
 build:
   stage: build
+  image: node:16
   script:
     - yarn install --immutable --immutable-cache --check-cache
     - yarn code-check
@@ -29,19 +17,25 @@ build:
     paths:
       - docs
 
-test:unit:
-  stage: test
+test:
+  stage: build
+  image: node:16
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
+  needs: []
   script:
     - yarn install --immutable --immutable-cache --check-cache
     - yarn test:unit
 
 pages:
-  stage: deploy
+  stage: build
+  image: ruby:2.7
   script:
-    - ls -al docs
+    - gem install bundler
+    - bundle config set --local path 'vendor'
+    - bundle install
     - bundle exec jekyll build -s docs -d public
+  needs: [ build ]
   artifacts:
     paths:
       - public

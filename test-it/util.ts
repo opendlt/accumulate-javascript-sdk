@@ -6,8 +6,8 @@ import { BN, Client } from "../src";
 import { ED25519KeypairSigner, LiteSigner } from "../src/signing";
 import { URL } from "../src/url";
 
-export function randomLiteIdentity(): LiteSigner {
-  return new LiteSigner(ED25519KeypairSigner.generate());
+export function randomLiteIdentity(): Promise<LiteSigner> {
+  return LiteSigner.from(ED25519KeypairSigner.generate());
 }
 
 export function randomBuffer(length = 12) {
