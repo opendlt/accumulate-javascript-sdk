@@ -4,6 +4,7 @@ export * from "./address";
 export * as api_v2 from "./api_v2";
 export * from "./client";
 export * as core from "./core";
+export { sha256 } from "./crypto";
 export * as errors from "./errors";
 export * as merkle from "./merkle";
 export * as messaging from "./messaging";
