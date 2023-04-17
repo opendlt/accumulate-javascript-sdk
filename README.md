@@ -22,12 +22,12 @@ For more usage examples see the file `test-it/client.test.ts`.
 Demo of some of the main APIs of Accumualte:
 
 ```js
-import { Client, LiteSigner, PageSigner, ED25519KeypairSigner } from "accumulate.js";
+import { Client, LiteSigner, PageSigner, ED25519KeypairSigner, sha256 } from "accumulate.js";
 
 const client = new Client("https://mainnet.accumulatenetwork.io/v2");
 
 // Generate a random LiteSigner (this is only local, until that account receive its first tokens)
-const lid = new LiteSigner(ED25519KeypairSigner.generate());
+const lid = await LiteSigner.from(ED25519KeypairSigner.generate());
 // Request some ACME token to get started from the faucet
 let res = await client.faucet(lid.acmeTokenAccount);
 await client.waitOnTx(res.txid.toString());
@@ -49,7 +49,7 @@ await client.waitOnTx(res.txid.toString());
 console.log(await client.queryUrl(lid.url));
 
 // Send some tokens to another random Lite ACME token Account
-const recipient = new LiteSigner(ED25519KeypairSigner.generate());
+const recipient = await LiteSigner.from(ED25519KeypairSigner.generate());
 const sendTokens = { to: [{ url: recipient.acmeTokenAccount, amount: 12 }] };
 res = await client.sendTokens(lid.acmeTokenAccount, sendTokens, lid);
 await client.waitOnTx(res.txid.toString());
@@ -63,7 +63,7 @@ const bookUrl = identityUrl + "/my-book";
 
 const createIdentity = {
     url: identityUrl,
-    keyHash: identitySigner.publicKeyHash,
+    keyHash: await sha256(identitySigner.publicKey),
     keyBookUrl: bookUrl,
 };
 
@@ -94,10 +94,10 @@ const identityKeyPage = new PageSigner(keyPageUrl, identitySigner);
 import { SendTokens, Transaction, TransactionHeader } from "accumulate.js/core";
 import { Client, ED25519KeypairSigner, LiteSigner, signTransaction } from "accumulate.js";
 
-const sender = new LiteSigner(ED25519KeypairSigner.generate());
+const sender = await LiteSigner.from(ED25519KeypairSigner.generate());
 
 // Build the Payload
-const recipient = new LiteSigner(ED25519KeypairSigner.generate());
+const recipient = await LiteSigner.from(ED25519KeypairSigner.generate());
 const amount = 10;
 const body = new SendTokens({ to: [{ url: recipient.acmeTokenAccount, amount: amount }] });
 // Build the transaction header with the transaction principal
