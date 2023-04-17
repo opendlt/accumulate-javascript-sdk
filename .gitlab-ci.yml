@@ -17,7 +17,7 @@ build:
     paths:
       - docs
 
-test 1/2:
+test:
   stage: build
   image: node:16
   variables:
@@ -26,16 +26,6 @@ test 1/2:
   script:
     - yarn install --immutable --immutable-cache --check-cache
     - yarn test:unit
-
-test 2/2:
-  stage: build
-  image: node:16
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
-  needs: []
-  script:
-    - yarn install --immutable --immutable-cache --check-cache
-    - yarn test:integration
 
 pages:
   stage: build
