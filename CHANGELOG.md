@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.8.1
+
+- Implements AIP-001 address formatting.
+- Updates hashing operations to be compatible with browser targets.
+
 ## v0.8
 
 - Generates SDK types directly from Accumulate type definitions.
