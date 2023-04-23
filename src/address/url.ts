@@ -1,5 +1,7 @@
 import { AccumulateTxID } from "./txid";
 
+export type URLArgs = AccumulateURL | URL | string;
+
 /**
  * An Accumulate URL (e.g: 'acc://my-identity/mydata')
  */
@@ -27,7 +29,7 @@ export class AccumulateURL {
     }
   }
 
-  static parse(input: URL | string | AccumulateURL) {
+  static parse(input: URLArgs) {
     if (input instanceof AccumulateURL) return input;
     return new this(input);
   }
