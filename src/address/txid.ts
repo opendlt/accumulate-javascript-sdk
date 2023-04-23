@@ -1,5 +1,7 @@
 import { AccumulateURL } from "./url";
 
+export type TxIDArgs = AccumulateTxID | URL | string | AccumulateURL;
+
 export class AccumulateTxID {
   public readonly account: AccumulateURL;
   public readonly hash: Uint8Array;
@@ -32,6 +34,11 @@ export class AccumulateTxID {
     this.hash = Buffer.from(input.username, "hex");
     input.username = "";
     this.account = new AccumulateURL(input);
+  }
+
+  static parse(input: TxIDArgs) {
+    if (input instanceof AccumulateTxID) return input;
+    return new this(input);
   }
 
   asUrl() {
