@@ -1,11 +1,12 @@
 import BN from "bn.js";
 import { BlockFilterMode, BlockFilterModeArgs, TxFetchMode, TxFetchModeArgs } from ".";
+import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
 import { encodeAs } from "../encoding";
 import * as errors2 from "../errors";
 import * as merkle from "../merkle";
 import * as messaging from "../messaging";
 import * as core from "../network";
-import { TxID, URL } from "../url";
 import * as config from "./config";
 import * as protocol from "./protocol";
 
@@ -183,7 +184,7 @@ export class ChainState {
 }
 
 export type DataEntryQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   entryHash?: Uint8Array | string;
 };
 export class DataEntryQuery {
@@ -193,8 +194,7 @@ export class DataEntryQuery {
   public entryHash?: Uint8Array;
 
   constructor(args: DataEntryQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.entryHash =
       args.entryHash == undefined
         ? undefined
@@ -218,8 +218,8 @@ export class DataEntryQuery {
 export type DataEntryQueryResponseArgs = {
   entryHash?: Uint8Array | string;
   entry?: protocol.DataEntry | protocol.DataEntryArgs;
-  txId?: TxID | string;
-  causeTxId?: TxID | string;
+  txId?: TxIDArgs;
+  causeTxId?: TxIDArgs;
 };
 export class DataEntryQueryResponse {
   @encodeAs.field(1).hash
@@ -239,18 +239,8 @@ export class DataEntryQueryResponse {
         ? args.entryHash
         : Buffer.from(args.entryHash, "hex");
     this.entry = args.entry == undefined ? undefined : protocol.DataEntry.fromObject(args.entry);
-    this.txId =
-      args.txId == undefined
-        ? undefined
-        : args.txId instanceof TxID
-        ? args.txId
-        : new TxID(args.txId);
-    this.causeTxId =
-      args.causeTxId == undefined
-        ? undefined
-        : args.causeTxId instanceof TxID
-        ? args.causeTxId
-        : new TxID(args.causeTxId);
+    this.txId = args.txId == undefined ? undefined : TxID.parse(args.txId);
+    this.causeTxId = args.causeTxId == undefined ? undefined : TxID.parse(args.causeTxId);
   }
 
   copy() {
@@ -268,7 +258,7 @@ export class DataEntryQueryResponse {
 }
 
 export type DataEntrySetQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   start?: number;
   count?: number;
   expand?: boolean;
@@ -288,8 +278,7 @@ export class DataEntrySetQuery {
   public includeRemote?: boolean;
 
   constructor(args: DataEntrySetQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.start = args.start == undefined ? undefined : args.start;
     this.count = args.count == undefined ? undefined : args.count;
     this.expand = args.expand == undefined ? undefined : args.expand;
@@ -382,7 +371,7 @@ export class DescriptionResponse {
 }
 
 export type DirectoryQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   start?: number;
   count?: number;
   expand?: boolean;
@@ -402,8 +391,7 @@ export class DirectoryQuery {
   public includeRemote?: boolean;
 
   constructor(args: DirectoryQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.start = args.start == undefined ? undefined : args.start;
     this.count = args.count == undefined ? undefined : args.count;
     this.expand = args.expand == undefined ? undefined : args.expand;
@@ -462,7 +450,7 @@ export class ExecuteRequest {
 }
 
 export type GeneralQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   expand?: boolean;
   height?: number;
   scratch?: boolean;
@@ -478,8 +466,7 @@ export class GeneralQuery {
   public includeRemote?: boolean;
 
   constructor(args: GeneralQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.expand = args.expand == undefined ? undefined : args.expand;
     this.height = args.height == undefined ? undefined : args.height;
     this.scratch = args.scratch == undefined ? undefined : args.scratch;
@@ -582,7 +569,7 @@ export class KeyPage {
 }
 
 export type KeyPageIndexQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   key?: Uint8Array | string;
 };
 export class KeyPageIndexQuery {
@@ -590,8 +577,7 @@ export class KeyPageIndexQuery {
   public key?: Uint8Array;
 
   constructor(args: KeyPageIndexQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.key =
       args.key == undefined
         ? undefined
@@ -613,7 +599,7 @@ export class KeyPageIndexQuery {
 }
 
 export type MajorBlocksQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   start?: number;
   count?: number;
 };
@@ -623,8 +609,7 @@ export class MajorBlocksQuery {
   public count?: number;
 
   constructor(args: MajorBlocksQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.start = args.start == undefined ? undefined : args.start;
     this.count = args.count == undefined ? undefined : args.count;
   }
@@ -784,7 +769,7 @@ export class MinorBlock {
 }
 
 export type MinorBlocksQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   start?: number;
   count?: number;
   txFetchMode?: TxFetchModeArgs;
@@ -798,8 +783,7 @@ export class MinorBlocksQuery {
   public blockFilterMode?: BlockFilterMode;
 
   constructor(args: MinorBlocksQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.start = args.start == undefined ? undefined : args.start;
     this.count = args.count == undefined ? undefined : args.count;
     this.txFetchMode =
@@ -981,8 +965,8 @@ export class QueryPagination {
 export type ResponseDataEntryArgs = {
   entryHash?: Uint8Array | string;
   entry?: protocol.DataEntry | protocol.DataEntryArgs;
-  txId?: TxID | string;
-  causeTxId?: TxID | string;
+  txId?: TxIDArgs;
+  causeTxId?: TxIDArgs;
 };
 export class ResponseDataEntry {
   @encodeAs.field(1).hash
@@ -1002,18 +986,8 @@ export class ResponseDataEntry {
         ? args.entryHash
         : Buffer.from(args.entryHash, "hex");
     this.entry = args.entry == undefined ? undefined : protocol.DataEntry.fromObject(args.entry);
-    this.txId =
-      args.txId == undefined
-        ? undefined
-        : args.txId instanceof TxID
-        ? args.txId
-        : new TxID(args.txId);
-    this.causeTxId =
-      args.causeTxId == undefined
-        ? undefined
-        : args.causeTxId instanceof TxID
-        ? args.causeTxId
-        : new TxID(args.causeTxId);
+    this.txId = args.txId == undefined ? undefined : TxID.parse(args.txId);
+    this.causeTxId = args.causeTxId == undefined ? undefined : TxID.parse(args.causeTxId);
   }
 
   copy() {
@@ -1063,8 +1037,8 @@ export class ResponseDataEntrySet {
 }
 
 export type ResponseKeyPageIndexArgs = {
-  authority?: URL | string;
-  signer?: URL | string;
+  authority?: URLArgs;
+  signer?: URLArgs;
   index?: number;
 };
 export class ResponseKeyPageIndex {
@@ -1076,18 +1050,8 @@ export class ResponseKeyPageIndex {
   public index?: number;
 
   constructor(args: ResponseKeyPageIndexArgs) {
-    this.authority =
-      args.authority == undefined
-        ? undefined
-        : args.authority instanceof URL
-        ? args.authority
-        : new URL(args.authority);
-    this.signer =
-      args.signer == undefined
-        ? undefined
-        : args.signer instanceof URL
-        ? args.signer
-        : new URL(args.signer);
+    this.authority = args.authority == undefined ? undefined : URL.parse(args.authority);
+    this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.index = args.index == undefined ? undefined : args.index;
   }
 
@@ -1105,7 +1069,7 @@ export class ResponseKeyPageIndex {
 }
 
 export type SignatureBookArgs = {
-  authority?: URL | string;
+  authority?: URLArgs;
   pages?: (SignaturePage | SignaturePageArgs)[];
 };
 export class SignatureBook {
@@ -1113,12 +1077,7 @@ export class SignatureBook {
   public pages?: SignaturePage[];
 
   constructor(args: SignatureBookArgs) {
-    this.authority =
-      args.authority == undefined
-        ? undefined
-        : args.authority instanceof URL
-        ? args.authority
-        : new URL(args.authority);
+    this.authority = args.authority == undefined ? undefined : URL.parse(args.authority);
     this.pages =
       args.pages == undefined
         ? undefined
@@ -1173,7 +1132,7 @@ export class SignaturePage {
 export type SignerArgs = {
   publicKey?: Uint8Array | string;
   timestamp?: number;
-  url?: URL | string;
+  url?: URLArgs;
   version?: number;
   signatureType?: protocol.SignatureTypeArgs;
   useSimpleHash?: boolean;
@@ -1194,8 +1153,7 @@ export class Signer {
         ? args.publicKey
         : Buffer.from(args.publicKey, "hex");
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.version = args.version == undefined ? undefined : args.version;
     this.signatureType =
       args.signatureType == undefined
@@ -1222,7 +1180,7 @@ export class Signer {
 
 export type SignerMetadataArgs = {
   type?: protocol.AccountTypeArgs;
-  url?: URL | string;
+  url?: URLArgs;
   acceptThreshold?: number;
 };
 export class SignerMetadata {
@@ -1232,8 +1190,7 @@ export class SignerMetadata {
 
   constructor(args: SignerMetadataArgs) {
     this.type = args.type == undefined ? undefined : protocol.AccountType.fromObject(args.type);
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.acceptThreshold = args.acceptThreshold == undefined ? undefined : args.acceptThreshold;
   }
 
@@ -1339,8 +1296,8 @@ export class StatusResponse {
 }
 
 export type SyntheticTransactionRequestArgs = {
-  source?: URL | string;
-  destination?: URL | string;
+  source?: URLArgs;
+  destination?: URLArgs;
   sequenceNumber?: number;
   anchor?: boolean;
 };
@@ -1351,18 +1308,8 @@ export class SyntheticTransactionRequest {
   public anchor?: boolean;
 
   constructor(args: SyntheticTransactionRequestArgs) {
-    this.source =
-      args.source == undefined
-        ? undefined
-        : args.source instanceof URL
-        ? args.source
-        : new URL(args.source);
-    this.destination =
-      args.destination == undefined
-        ? undefined
-        : args.destination instanceof URL
-        ? args.destination
-        : new URL(args.destination);
+    this.source = args.source == undefined ? undefined : URL.parse(args.source);
+    this.destination = args.destination == undefined ? undefined : URL.parse(args.destination);
     this.sequenceNumber = args.sequenceNumber == undefined ? undefined : args.sequenceNumber;
     this.anchor = args.anchor == undefined ? undefined : args.anchor;
   }
@@ -1382,7 +1329,7 @@ export class SyntheticTransactionRequest {
 }
 
 export type TokenDepositArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   amount?: BN | string | number;
   txid?: Uint8Array | string;
 };
@@ -1392,8 +1339,7 @@ export class TokenDeposit {
   public txid?: Uint8Array;
 
   constructor(args: TokenDepositArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.amount =
       args.amount == undefined
         ? undefined
@@ -1422,7 +1368,7 @@ export class TokenDeposit {
 }
 
 export type TokenSendArgs = {
-  from?: URL | string;
+  from?: URLArgs;
   to?: (TokenDeposit | TokenDepositArgs)[];
 };
 export class TokenSend {
@@ -1430,12 +1376,7 @@ export class TokenSend {
   public to?: TokenDeposit[];
 
   constructor(args: TokenSendArgs) {
-    this.from =
-      args.from == undefined
-        ? undefined
-        : args.from instanceof URL
-        ? args.from
-        : new URL(args.from);
+    this.from = args.from == undefined ? undefined : URL.parse(args.from);
     this.to =
       args.to == undefined
         ? undefined
@@ -1458,13 +1399,13 @@ export type TransactionQueryResponseArgs = {
   type?: string;
   mainChain?: MerkleState | MerkleStateArgs;
   data?: any;
-  origin?: URL | string;
+  origin?: URLArgs;
   transactionHash?: Uint8Array | string;
-  txid?: TxID | string;
+  txid?: TxIDArgs;
   transaction?: protocol.Transaction | protocol.TransactionArgs;
   signatures?: (protocol.Signature | protocol.SignatureArgs)[];
   status?: protocol.TransactionStatus | protocol.TransactionStatusArgs;
-  produced?: (TxID | string)[];
+  produced?: TxIDArgs[];
   receipts?: (TxReceipt | TxReceiptArgs)[];
   signatureBooks?: (SignatureBook | SignatureBookArgs)[];
 };
@@ -1491,24 +1432,14 @@ export class TransactionQueryResponse {
         ? args.mainChain
         : new MerkleState(args.mainChain);
     this.data = args.data == undefined ? undefined : args.data;
-    this.origin =
-      args.origin == undefined
-        ? undefined
-        : args.origin instanceof URL
-        ? args.origin
-        : new URL(args.origin);
+    this.origin = args.origin == undefined ? undefined : URL.parse(args.origin);
     this.transactionHash =
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
-    this.txid =
-      args.txid == undefined
-        ? undefined
-        : args.txid instanceof TxID
-        ? args.txid
-        : new TxID(args.txid);
+    this.txid = args.txid == undefined ? undefined : TxID.parse(args.txid);
     this.transaction =
       args.transaction == undefined
         ? undefined
@@ -1526,9 +1457,7 @@ export class TransactionQueryResponse {
         ? args.status
         : new protocol.TransactionStatus(args.status);
     this.produced =
-      args.produced == undefined
-        ? undefined
-        : args.produced.map((v) => (v instanceof TxID ? v : new TxID(v)));
+      args.produced == undefined ? undefined : args.produced.map((v) => TxID.parse(v));
     this.receipts =
       args.receipts == undefined
         ? undefined
@@ -1562,7 +1491,7 @@ export class TransactionQueryResponse {
 }
 
 export type TxHistoryQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
   start?: number;
   count?: number;
   scratch?: boolean;
@@ -1574,8 +1503,7 @@ export class TxHistoryQuery {
   public scratch?: boolean;
 
   constructor(args: TxHistoryQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.start = args.start == undefined ? undefined : args.start;
     this.count = args.count == undefined ? undefined : args.count;
     this.scratch = args.scratch == undefined ? undefined : args.scratch;
@@ -1602,7 +1530,7 @@ export type TxReceiptArgs = {
   majorBlock?: number;
   proof?: merkle.Receipt | merkle.ReceiptArgs;
   error?: string;
-  account?: URL | string;
+  account?: URLArgs;
   chain?: string;
 };
 export class TxReceipt {
@@ -1640,12 +1568,7 @@ export class TxReceipt {
         ? args.proof
         : new merkle.Receipt(args.proof);
     this.error = args.error == undefined ? undefined : args.error;
-    this.account =
-      args.account == undefined
-        ? undefined
-        : args.account instanceof URL
-        ? args.account
-        : new URL(args.account);
+    this.account = args.account == undefined ? undefined : URL.parse(args.account);
     this.chain = args.chain == undefined ? undefined : args.chain;
   }
 
@@ -1670,7 +1593,7 @@ export class TxReceipt {
 export type TxRequestArgs = {
   checkOnly?: boolean;
   isEnvelope?: boolean;
-  origin?: URL | string;
+  origin?: URLArgs;
   signer?: Signer | SignerArgs;
   signature?: Uint8Array | string;
   keyPage?: KeyPage | KeyPageArgs;
@@ -1694,12 +1617,7 @@ export class TxRequest {
   constructor(args: TxRequestArgs) {
     this.checkOnly = args.checkOnly == undefined ? undefined : args.checkOnly;
     this.isEnvelope = args.isEnvelope == undefined ? undefined : args.isEnvelope;
-    this.origin =
-      args.origin == undefined
-        ? undefined
-        : args.origin instanceof URL
-        ? args.origin
-        : new URL(args.origin);
+    this.origin = args.origin == undefined ? undefined : URL.parse(args.origin);
     this.signer =
       args.signer == undefined
         ? undefined
@@ -1756,7 +1674,7 @@ export class TxRequest {
 
 export type TxResponseArgs = {
   transactionHash?: Uint8Array | string;
-  txid?: TxID | string;
+  txid?: TxIDArgs;
   signatureHashes?: (Uint8Array | string)[];
   simpleHash?: Uint8Array | string;
   code?: number;
@@ -1781,12 +1699,7 @@ export class TxResponse {
         : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
-    this.txid =
-      args.txid == undefined
-        ? undefined
-        : args.txid instanceof TxID
-        ? args.txid
-        : new TxID(args.txid);
+    this.txid = args.txid == undefined ? undefined : TxID.parse(args.txid);
     this.signatureHashes =
       args.signatureHashes == undefined
         ? undefined
@@ -1829,7 +1742,7 @@ export type TxnQueryArgs = {
   prove?: boolean;
   includeRemote?: boolean;
   txid?: Uint8Array | string;
-  txIdUrl?: TxID | string;
+  txIdUrl?: TxIDArgs;
   wait?: number;
   ignorePending?: boolean;
 };
@@ -1856,12 +1769,7 @@ export class TxnQuery {
         : args.txid instanceof Uint8Array
         ? args.txid
         : Buffer.from(args.txid, "hex");
-    this.txIdUrl =
-      args.txIdUrl == undefined
-        ? undefined
-        : args.txIdUrl instanceof TxID
-        ? args.txIdUrl
-        : new TxID(args.txIdUrl);
+    this.txIdUrl = args.txIdUrl == undefined ? undefined : TxID.parse(args.txIdUrl);
     this.wait = args.wait == undefined ? undefined : args.wait;
     this.ignorePending = args.ignorePending == undefined ? undefined : args.ignorePending;
   }
@@ -1886,14 +1794,13 @@ export class TxnQuery {
 }
 
 export type UrlQueryArgs = {
-  url?: URL | string;
+  url?: URLArgs;
 };
 export class UrlQuery {
   public url?: URL;
 
   constructor(args: UrlQueryArgs) {
-    this.url =
-      args.url == undefined ? undefined : args.url instanceof URL ? args.url : new URL(args.url);
+    this.url = args.url == undefined ? undefined : URL.parse(args.url);
   }
 
   copy() {

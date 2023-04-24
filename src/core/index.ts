@@ -1,4 +1,3 @@
-// export { ChainType } from "../merkle"; // Compatibility
 export * from "./enums_gen";
 export * from "./types_gen";
 export * from "./unions_gen";
