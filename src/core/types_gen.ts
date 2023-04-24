@@ -38,8 +38,11 @@ import {
   VoteType,
   VoteTypeArgs,
 } from ".";
-import { errors as errors2, merkle, TxID, TxIDArgs, URL, URLArgs } from "..";
+import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
 import { encodeAs } from "../encoding";
+import * as errors2 from "../errors";
+import * as merkle from "../merkle";
 import { ChainType, ChainTypeArgs } from "../merkle";
 import { TransactionBase } from "./base";
 
