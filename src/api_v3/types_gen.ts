@@ -1,16 +1,12 @@
 import { Record, RecordArgs } from ".";
-import {
-  core as protocol,
-  errors as errors2,
-  merkle,
-  messaging,
-  network as core,
-  TxID,
-  TxIDArgs,
-  URL,
-  URLArgs,
-} from "..";
+import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
+import * as protocol from "../core";
 import { encodeAs } from "../encoding";
+import * as errors2 from "../errors";
+import * as merkle from "../merkle";
+import * as messaging from "../messaging";
+import * as core from "../network";
 import { EventType, QueryType, RecordType, ServiceType } from "./enums_gen";
 import * as p2p from "./p2p";
 

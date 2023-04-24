@@ -16,9 +16,13 @@ gen types -l typescript -o ../src/api_v3/msg_types_gen.ts --elide-package-type \
   -x Addressed,MetricsRequest,MetricsResponse \
   --reference pkg/api/v3/options.yml \
   --header='
-import { api_v3 as api, errors as errors2, messaging, URL, URLArgs } from "..";
+import * as api from ".";
+import * as errors2 from "../errors";
+import * as messaging from "../messaging";
 import { MessageType } from "./msg";
 import * as p2p from "./p2p";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
+import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 '
 gen types -l typescript-union -o ../src/api_v3/msg_unions_gen.ts --elide-package-type \
   pkg/api/v3/message/{messages,private}.yml \
@@ -35,8 +39,13 @@ gen types -l typescript -o ../src/api_v3/types_gen.ts --long-union-discriminator
   -x=Metrics,MetricsOptions \
   --header='
 import { Record, RecordArgs } from ".";
-import { core as protocol, errors as errors2, merkle, messaging, network as core, TxID, TxIDArgs, URL, URLArgs } from "..";
-import { TxID } from "../address";
+import * as messaging from "../messaging";
+import * as core from "../network";
+import * as errors2 from "../errors";
+import * as merkle from "../merkle";
+import * as protocol from "../core";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
+import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 import { EventType, QueryType, RecordType, ServiceType } from "./enums_gen";
 import * as p2p from "./p2p";
 '
@@ -45,7 +54,7 @@ gen types -l typescript-union -o ../src/api_v3/unions_gen.ts  --long-union-discr
   --reference pkg/api/v3/options.yml \
   --header='
 import * as types from ".";
-import { messaging } from "..";
+import * as messaging from "../messaging";
 '
 
 gen enum -l typescript -o ../src/api_v2/enums_gen.ts internal/api/v2/enums.yml
@@ -53,7 +62,12 @@ gen types -l typescript -o ../src/api_v2/types_gen.ts internal/api/v2/{responses
 import { BlockFilterMode, BlockFilterModeArgs, TxFetchMode, TxFetchModeArgs } from ".";
 import * as config from "./config";
 import * as protocol from "./protocol";
-import { merkle, messaging, network as core, errors as errors2, TxID, TxIDArgs, URL, URLArgs } from "..";
+import * as merkle from "../merkle";
+import * as messaging from "../messaging";
+import * as core from "../network";
+import * as errors2 from "../errors";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
+import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 '
 
 gen enum -l typescript -o ../src/api_v2/config_enums_gen.ts internal/node/config/enums.yml
@@ -88,7 +102,9 @@ gen types -l typescript -o ../src/messaging/types_gen.ts pkg/types/messaging/mes
   -x BlockSummary,RecordUpdate,StateTreeUpdate \
   --header='
 import { Message, MessageArgs, MessageType } from ".";
-import { core as protocol, TxID, TxIDArgs, URL, URLArgs } from "..";
+import * as protocol from "../core";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
+import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 '
 
 gen enum -l typescript -o ../src/core/enums_gen.ts protocol/enums.yml
@@ -103,7 +119,10 @@ gen types -l typescript -o ../src/core/types_gen.ts \
     -x Object \
     --header='
 import { ChainType, ChainTypeArgs } from "../merkle";
-import { merkle, errors as errors2, TxID, TxIDArgs, URL, URLArgs } from "..";
+import * as errors2 from "../errors";
+import * as merkle from "../merkle";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
+import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 import { TransactionBase } from "./base";
 import {
   Account,

@@ -1,5 +1,8 @@
-import { api_v3 as api, errors as errors2, messaging, URL, URLArgs } from "..";
+import * as api from ".";
+import { AccumulateURL as URL, URLArgs } from "../address/url";
 import { encodeAs } from "../encoding";
+import * as errors2 from "../errors";
+import * as messaging from "../messaging";
 import { MessageType } from "./msg";
 import * as p2p from "./p2p";
 
