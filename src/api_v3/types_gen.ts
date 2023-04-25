@@ -236,7 +236,7 @@ export class BlockQuery {
   }
 }
 
-export type ChainEntryRecordArgs<T extends Record> = {
+export type ChainEntryRecordArgs<T extends Record = Record> = {
   account?: URLArgs;
   name?: string;
   type?: merkle.ChainTypeArgs;
@@ -246,10 +246,10 @@ export type ChainEntryRecordArgs<T extends Record> = {
   receipt?: Receipt | ReceiptArgs;
   state?: (Uint8Array | string)[];
 };
-export type ChainEntryRecordArgsWithType<T extends Record> = ChainEntryRecordArgs<T> & {
+export type ChainEntryRecordArgsWithType<T extends Record = Record> = ChainEntryRecordArgs<T> & {
   recordType: RecordType.ChainEntry | "chainEntry";
 };
-export class ChainEntryRecord<T extends Record> {
+export class ChainEntryRecord<T extends Record = Record> {
   @encodeAs.field(1).keepEmpty.enum
   public readonly recordType = RecordType.ChainEntry;
   @encodeAs.field(2).url
@@ -1062,7 +1062,7 @@ export class MessageHashSearchQuery {
   }
 }
 
-export type MessageRecordArgs<T extends messaging.Message> = {
+export type MessageRecordArgs<T extends messaging.Message = messaging.Message> = {
   id?: TxIDArgs;
   message?: T | messaging.MessageArgs /* TODO messaging.MessageArgs is too broad */;
   status?: errors2.StatusArgs;
@@ -1076,10 +1076,9 @@ export type MessageRecordArgs<T extends messaging.Message> = {
   sequence?: messaging.SequencedMessage | messaging.SequencedMessageArgs;
   sourceReceipt?: merkle.Receipt | merkle.ReceiptArgs;
 };
-export type MessageRecordArgsWithType<T extends messaging.Message> = MessageRecordArgs<T> & {
-  recordType: RecordType.Message | "message";
-};
-export class MessageRecord<T extends messaging.Message> {
+export type MessageRecordArgsWithType<T extends messaging.Message = messaging.Message> =
+  MessageRecordArgs<T> & { recordType: RecordType.Message | "message" };
+export class MessageRecord<T extends messaging.Message = messaging.Message> {
   @encodeAs.field(1).keepEmpty.enum
   public readonly recordType = RecordType.Message;
   @encodeAs.field(2).txid
@@ -1613,15 +1612,15 @@ export class Receipt {
   }
 }
 
-export type RecordRangeArgs<T extends Record> = {
+export type RecordRangeArgs<T extends Record = Record> = {
   records?: (T | RecordArgs) /* TODO RecordArgs is too broad */[];
   start?: number;
   total?: number;
 };
-export type RecordRangeArgsWithType<T extends Record> = RecordRangeArgs<T> & {
+export type RecordRangeArgsWithType<T extends Record = Record> = RecordRangeArgs<T> & {
   recordType: RecordType.Range | "range";
 };
-export class RecordRange<T extends Record> {
+export class RecordRange<T extends Record = Record> {
   @encodeAs.field(1).keepEmpty.enum
   public readonly recordType = RecordType.Range;
   @encodeAs.field(2).repeatable.union
