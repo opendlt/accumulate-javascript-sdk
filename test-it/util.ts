@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ChildProcess, spawn } from "child_process";
+import { createServer } from "net";
 import path from "path";
 import { randomBytes } from "tweetnacl";
-import { BN, Client } from "../src";
+import { BN, URL } from "../src";
+import { Client } from "../src/api_v2";
 import { ED25519KeypairSigner, LiteSigner } from "../src/signing";
-import { URL } from "../src/url";
-
 export function randomLiteIdentity(): Promise<LiteSigner> {
   return LiteSigner.from(ED25519KeypairSigner.generate());
 }
@@ -39,10 +39,11 @@ export async function addCredits(
   expect(new BN(res.data.creditBalance)).toStrictEqual(originalBalance.add(new BN(creditAmount)));
 }
 
-export function startSim(fn: (proc: ChildProcess) => void) {
+export async function startSim(fn: (proc: ChildProcess, port: number) => void) {
   // Only start the simulator if the caller does not specify an API endpoint
   if (process.env.ACC_ENDPOINT) return;
 
+  const port = await getPortFree();
   const proc = spawn(
     "go",
     [
@@ -50,6 +51,7 @@ export function startSim(fn: (proc: ChildProcess) => void) {
       "-tags=testnet",
       "./tools/cmd/simulator",
       "--step=10ms",
+      `--port=${port}`,
       "--log=error;sim=info;executor=info",
     ],
     { cwd: path.join(__dirname, "..", "accumulate") }
@@ -88,6 +90,17 @@ export function startSim(fn: (proc: ChildProcess) => void) {
     proc.on("exit", errfn);
     proc.stdout!.on("data", stdfn);
     proc.stderr!.on("data", stdfn);
-    fn(proc);
+    fn(proc, port + 4); // Accumulate API offset
+  });
+}
+
+// Credit to https://stackoverflow.com/a/71178451/762175
+async function getPortFree(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const srv = createServer();
+    srv.listen(0, () => {
+      const port = (srv as any).address().port;
+      srv.close((err) => (err ? reject(err) : resolve(port)));
+    });
   });
 }

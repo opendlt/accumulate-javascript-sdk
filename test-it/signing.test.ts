@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
-import { Client } from "../src";
+import { Client } from "../src/api_v2";
 import { SignatureType } from "../src/core";
 import { LiteSigner, RCD1KeypairSigner } from "../src/signing";
 import { addCredits, startSim } from "./util";
 
-const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
+let client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 
 let sim: ChildProcess;
-beforeAll(async () => await startSim((p) => (sim = p)));
+beforeAll(
+  async () =>
+    await startSim((proc, port) => {
+      sim = proc;
+      client = new Client(`http://127.0.1.1:${port}/v2`);
+    })
+);
 afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Test signing schemes", () => {
