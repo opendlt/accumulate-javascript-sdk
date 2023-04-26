@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
-import { BN } from "../src";
 import { Client } from "../src/api_v2";
 import { SendTokens, Transaction, TransactionHeader } from "../src/core";
 import { Envelope } from "../src/messaging";
@@ -35,7 +34,7 @@ describe("Test manual transactions", () => {
 
   test("should send tokens with manual transaction", async () => {
     const recipient = (await randomLiteIdentity()).acmeTokenAccount;
-    const amount = new BN(1025);
+    const amount = 1025n;
     const payload = new SendTokens({ to: [{ url: recipient, amount: amount }] });
     const header = new TransactionHeader({ principal: lid.acmeTokenAccount });
 
@@ -46,7 +45,7 @@ describe("Test manual transactions", () => {
     await client.waitOnTx(res.txid!.toString());
 
     const { data } = await client.queryUrl(recipient);
-    expect(new BN(data.balance)).toStrictEqual(amount);
+    expect(BigInt(data.balance)).toStrictEqual(amount);
   });
 
   test.skip("should reject unsigned transaction", async () => {

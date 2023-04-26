@@ -1,4 +1,3 @@
-import { BN } from "bn.js";
 import {
   bigNumberMarshalBinary,
   booleanMarshalBinary,
@@ -22,10 +21,10 @@ test("should uvarint marshal binary BN numbers", () => {
   );
 
   // MAX_SAFE_INTEGER + 1
-  expect(uvarintMarshalBinary(new BN(2).pow(new BN(53)))).toStrictEqual(
+  expect(uvarintMarshalBinary(2n ** 53n)).toStrictEqual(
     Buffer.from([128, 128, 128, 128, 128, 128, 128, 16])
   );
-  expect(uvarintMarshalBinary(new BN(2).pow(new BN(64)).sub(new BN(1)))).toStrictEqual(
+  expect(uvarintMarshalBinary(2n ** 64n - 1n)).toStrictEqual(
     Buffer.from([255, 255, 255, 255, 255, 255, 255, 255, 255, 1])
   );
 });
@@ -47,12 +46,10 @@ test("should marshal binary strings", () => {
 });
 
 test("should marshal binary BN", () => {
-  expect(bigNumberMarshalBinary(new BN(0))).toStrictEqual(Buffer.from([1, 0]));
-  expect(bigNumberMarshalBinary(new BN(255))).toStrictEqual(Buffer.from([1, 255]));
-  expect(bigNumberMarshalBinary(new BN(256))).toStrictEqual(Buffer.from([2, 1, 0]));
-  expect(bigNumberMarshalBinary(new BN(1486548674))).toStrictEqual(
-    Buffer.from([4, 88, 154, 238, 194])
-  );
+  expect(bigNumberMarshalBinary(0n)).toStrictEqual(Buffer.from([1, 0]));
+  expect(bigNumberMarshalBinary(255n)).toStrictEqual(Buffer.from([1, 255]));
+  expect(bigNumberMarshalBinary(256n)).toStrictEqual(Buffer.from([2, 1, 0]));
+  expect(bigNumberMarshalBinary(1486548674n)).toStrictEqual(Buffer.from([4, 88, 154, 238, 194]));
 });
 
 test("should marshal binary boolean", () => {

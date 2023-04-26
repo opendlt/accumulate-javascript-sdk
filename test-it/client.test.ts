@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
-import { BN } from "../src";
 import { Client, RpcError } from "../src/api_v2";
 import { sha256 } from "../src/common/crypto";
 import { constructIssuerProof } from "../src/common/util";
@@ -79,14 +78,14 @@ describe("Test Accumulate client", () => {
   test("should send tokens", async () => {
     const recipient = (await randomLiteIdentity()).acmeTokenAccount;
 
-    const amount = new BN(12);
+    const amount = 12n;
     const sendTokens = { to: [{ url: recipient, amount: amount }] };
     const { txid } = await client.sendTokens(lid.acmeTokenAccount, sendTokens, lid);
 
     await client.waitOnTx(txid);
 
     const { data } = await client.queryUrl(recipient);
-    expect(new BN(data.balance)).toStrictEqual(amount);
+    expect(BigInt(data.balance)).toStrictEqual(amount);
 
     let res = await client.queryTx(txid);
     expect(res.type).toStrictEqual("sendTokens");
@@ -100,16 +99,16 @@ describe("Test Accumulate client", () => {
 
   test("should burn tokens", async () => {
     let res = await client.queryUrl(lid.acmeTokenAccount);
-    const originalBalance = new BN(res.data.balance);
+    const originalBalance = BigInt(res.data.balance);
 
-    const amount = new BN(15);
+    const amount = 15n;
     const burnTokens = { amount };
     res = await client.burnTokens(lid.acmeTokenAccount, burnTokens, lid);
 
     await client.waitOnTx(res.txid!.toString());
 
     res = await client.queryUrl(lid.acmeTokenAccount);
-    expect(new BN(res.data.balance)).toStrictEqual(originalBalance.sub(amount));
+    expect(BigInt(res.data.balance)).toStrictEqual(originalBalance - amount);
   });
 
   test("should create an ACME token account", async () => {
@@ -340,7 +339,7 @@ describe("Test Accumulate client", () => {
     await client.waitOnTx(createTokenTxId);
 
     const recipient = (await LiteSigner.from(ED25519KeypairSigner.generate())).url.join(tokenUrl);
-    const amount = new BN(123);
+    const amount = 123n;
     const issueToken = {
       to: [{ url: recipient, amount }],
     };
@@ -349,7 +348,7 @@ describe("Test Accumulate client", () => {
     await client.waitOnTx(res.txid!.toString());
 
     const { data } = await client.queryUrl(recipient);
-    expect(new BN(data.balance)).toStrictEqual(amount);
+    expect(BigInt(data.balance)).toStrictEqual(amount);
 
     // Create a token account for the TEST token
     const tokenAccountUrl = identityUrl + "/TEST2";

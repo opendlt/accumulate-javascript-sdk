@@ -3,7 +3,7 @@ import { ChildProcess, spawn } from "child_process";
 import { createServer } from "net";
 import path from "path";
 import { randomBytes } from "tweetnacl";
-import { BN, URL } from "../src";
+import { URL } from "../src";
 import { Client } from "../src/api_v2";
 import { ED25519KeypairSigner, LiteSigner } from "../src/signing";
 export function randomLiteIdentity(): Promise<LiteSigner> {
@@ -25,7 +25,7 @@ export async function addCredits(
   signer: LiteSigner
 ) {
   let res = await client.queryUrl(recipient);
-  const originalBalance = new BN(res.data.creditBalance);
+  const originalBalance = BigInt(res.data.creditBalance || 0);
   const oracle = await client.queryAcmeOracle();
   const addCredits = {
     recipient,
@@ -36,7 +36,7 @@ export async function addCredits(
   await client.waitOnTx(res.txid);
 
   res = await client.queryUrl(recipient);
-  expect(new BN(res.data.creditBalance)).toStrictEqual(originalBalance.add(new BN(creditAmount)));
+  expect(BigInt(res.data.creditBalance)).toStrictEqual(originalBalance + BigInt(creditAmount));
 }
 
 export async function startSim(fn: (proc: ChildProcess, port: number) => void) {

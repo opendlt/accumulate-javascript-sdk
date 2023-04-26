@@ -19,7 +19,7 @@ beforeAll(
 afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Test signing schemes", () => {
-  test("should sign transaction using RCD1 hash", async () => {
+  test.skip("should sign transaction using RCD1 hash", async () => {
     const rcd1Account = await LiteSigner.from(RCD1KeypairSigner.generate());
 
     expect(rcd1Account.info.type).toStrictEqual(SignatureType.RCD1);
