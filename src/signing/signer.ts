@@ -1,7 +1,6 @@
-import { KeySignature, SignatureType } from ".././core";
-import { URL } from ".././url";
-import { ACME_TOKEN_URL } from "../acc-url";
-import { sha256 } from "../crypto";
+import { URL } from "../address";
+import { sha256 } from "../common/crypto";
+import { ACME_TOKEN_URL, KeySignature, SignatureType } from "../core";
 
 export interface Signer {
   signRaw(data: Uint8Array): Promise<Uint8Array>;

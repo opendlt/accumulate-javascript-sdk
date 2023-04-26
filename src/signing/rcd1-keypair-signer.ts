@@ -1,4 +1,4 @@
-import { RCD1Signature, SignatureType } from ".././core";
+import { RCD1Signature, SignatureType } from "../core";
 import { Ed25519Keypair } from "./ed25519-keypair";
 import { BaseEd25519KeypairSigner } from "./ed25519-keypair-signer";
 
