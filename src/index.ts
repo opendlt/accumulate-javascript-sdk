@@ -8,7 +8,6 @@ export * as errors from "./errors";
 export * as merkle from "./merkle";
 export * as messaging from "./messaging";
 export * as network from "./network";
-export { RpcError } from "./rpc-client";
 export * from "./signing";
 export { constructIssuerProof } from "./util";
 export { BN };
