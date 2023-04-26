@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ANCHORS_URL } from "../core";
 import {
   ChainQueryResponse,
   DescriptionResponse,
@@ -13,10 +12,12 @@ import {
   TxnQueryArgs,
   TxResponse,
 } from ".";
+import { AccumulateURL as URL } from "../address/url";
 import {
   AccountAuthOperationArgs,
   AddCredits,
   AddCreditsArgs,
+  ANCHORS_URL,
   BurnTokens,
   BurnTokensArgs,
   CreateDataAccount,
@@ -48,11 +49,10 @@ import {
 } from "../core";
 import { sha256 } from "../crypto";
 import { Envelope } from "../messaging";
-import { RpcClient } from "./rpc-client";
 import { signTransaction } from "../signing";
 import { PageSigner } from "../signing/signer";
-import { AccumulateURL as URL } from "../address/url";
 import { sleep } from "../util";
+import { RpcClient } from "./rpc-client";
 
 /**
  * Options for waiting on transaction delivering.

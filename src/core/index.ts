@@ -57,7 +57,6 @@ export const DN_URL = URL.parse("acc://dn.acme");
  */
 export const ANCHORS_URL = DN_URL.join("anchors");
 
-
 export type Fee = number;
 export type FeeArgs = Fee | string;
 
