@@ -1,4 +1,4 @@
-import { Client } from "./client";
+import { Client } from "./api_v2";
 import { CreateToken, Transaction, TransactionHeader } from "./core";
 import { hashBody } from "./core/base";
 import { sha256 } from "./crypto";

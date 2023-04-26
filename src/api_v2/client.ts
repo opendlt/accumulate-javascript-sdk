@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ANCHORS_URL } from "./acc-url";
+import { ANCHORS_URL } from "../core";
 import {
   ChainQueryResponse,
   DescriptionResponse,
@@ -12,7 +12,7 @@ import {
   TxHistoryQueryArgs,
   TxnQueryArgs,
   TxResponse,
-} from "./api_v2";
+} from ".";
 import {
   AccountAuthOperationArgs,
   AddCredits,
@@ -45,14 +45,14 @@ import {
   UpdateKeyPage,
   WriteData,
   WriteDataArgs,
-} from "./core";
-import { sha256 } from "./crypto";
-import { Envelope } from "./messaging";
-import { RpcClient } from "./rpc-client";
-import { signTransaction } from "./signing";
-import { PageSigner } from "./signing/signer";
-import { URL } from "./url";
-import { sleep } from "./util";
+} from "../core";
+import { sha256 } from "../crypto";
+import { Envelope } from "../messaging";
+import { RpcClient } from "../rpc-client";
+import { signTransaction } from "../signing";
+import { PageSigner } from "../signing/signer";
+import { URL } from "../url";
+import { sleep } from "../util";
 
 /**
  * Options for waiting on transaction delivering.
