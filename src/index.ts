@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-export * from "./acc-url";
 export * from "./address";
 export * as api_v2 from "./api_v2";
 export * as api_v3 from "./api_v3";

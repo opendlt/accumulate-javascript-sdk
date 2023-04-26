@@ -51,7 +51,7 @@ import { Envelope } from "../messaging";
 import { RpcClient } from "../rpc-client";
 import { signTransaction } from "../signing";
 import { PageSigner } from "../signing/signer";
-import { URL } from "../url";
+import { AccumulateURL as URL } from "../address/url";
 import { sleep } from "../util";
 
 /**
