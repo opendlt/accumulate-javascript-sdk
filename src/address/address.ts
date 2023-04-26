@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import { encode } from "multibase";
+import { sha256 } from "../common/crypto";
 import { Signature, SignatureType } from "../core";
-import { sha256 } from "../crypto";
 
 export namespace Address {
   export async function keyHash(type: SignatureType, publicKey: Uint8Array) {

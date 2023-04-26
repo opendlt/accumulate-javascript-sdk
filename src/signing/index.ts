@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { KeySignature, Transaction } from ".././core";
-import { encode } from ".././encoding";
-import { Envelope } from ".././messaging";
-import { sha256 } from "../crypto";
+import { sha256 } from "../common/crypto";
+import { KeySignature, Transaction } from "../core";
+import { encode } from "../encoding";
+import { Envelope } from "../messaging";
 import { PageSigner } from "./signer";
 
 export * from "./ed25519-keypair";
