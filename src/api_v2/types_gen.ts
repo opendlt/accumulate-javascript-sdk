@@ -1,4 +1,3 @@
-import BN from "bn.js";
 import { BlockFilterMode, BlockFilterModeArgs, TxFetchMode, TxFetchModeArgs } from ".";
 import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 import { AccumulateURL as URL, URLArgs } from "../address/url";
@@ -1330,12 +1329,12 @@ export class SyntheticTransactionRequest {
 
 export type TokenDepositArgs = {
   url?: URLArgs;
-  amount?: BN | string | number;
+  amount?: bigint | string | number;
   txid?: Uint8Array | string;
 };
 export class TokenDeposit {
   public url?: URL;
-  public amount?: BN;
+  public amount?: bigint;
   public txid?: Uint8Array;
 
   constructor(args: TokenDepositArgs) {
@@ -1343,9 +1342,9 @@ export class TokenDeposit {
     this.amount =
       args.amount == undefined
         ? undefined
-        : args.amount instanceof BN
+        : typeof args.amount === "bigint"
         ? args.amount
-        : new BN(args.amount);
+        : BigInt(args.amount);
     this.txid =
       args.txid == undefined
         ? undefined

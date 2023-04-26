@@ -1,5 +1,4 @@
-import BN from "bn.js";
-
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 export function fieldMarshalBinary(field: number, val: Uint8Array): Buffer {
   if (field < 1 || field > 32) {
     throw new Error(`Field number is out of range [1, 32]: ${field}`);
@@ -7,43 +6,60 @@ export function fieldMarshalBinary(field: number, val: Uint8Array): Buffer {
   return Buffer.concat([uvarintMarshalBinary(field), val]);
 }
 
-export function uvarintMarshalBinary(val: number | BN, field?: number): Buffer {
+export function uvarintMarshalBinary(val: number | bigint, field?: number): Buffer {
   if (typeof val === "number" && val > Number.MAX_SAFE_INTEGER) {
     throw new Error(
-      "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use `BN` class instead."
+      "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use bigint instead."
     );
   }
 
-  let x = new BN(val);
+  let x = BigInt(val);
   const buffer = [];
   let i = 0;
 
-  while (x.gte(new BN(0x80))) {
-    buffer[i] = x.maskn(8).or(new BN(0x80)).toNumber();
-    x = x.shrn(7);
+  while (x >= 0x80) {
+    buffer[i] = Number((x & 0xffn) | 0x80n);
+    x >>= 7n;
     i++;
   }
 
-  buffer[i] = x.maskn(8).toNumber();
+  buffer[i] = Number(x & 0xffn);
   const data = Buffer.from(buffer);
 
   return field ? fieldMarshalBinary(field, data) : data;
 }
 
-export function varintMarshalBinary(val: number | BN, field?: number): Buffer {
-  const x = new BN(val);
-
-  let ux = x.toTwos(64).shln(1);
-
-  if (x.isNeg()) {
-    ux = ux.notn(64);
+export function varintMarshalBinary(val: number | bigint, field?: number): Buffer {
+  if (typeof val === "number") {
+    if (val > Number.MAX_SAFE_INTEGER) {
+      throw new Error(
+        "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use bigint instead."
+      );
+    }
+    if (val < Number.MIN_SAFE_INTEGER) {
+      throw new Error(
+        "Cannot marshal binary number less than MIN_SAFE_INTEGER. Use bigint instead."
+      );
+    }
   }
 
+  const x = BigInt(val);
+  let ux = x << 1n;
+  if (x < 0) {
+    ux = ~ux;
+  }
   return uvarintMarshalBinary(ux, field);
 }
 
-export function bigNumberMarshalBinary(bn: BN, field?: number): Buffer {
-  const data = bytesMarshalBinary(bn.toArrayLike(Buffer, "be"));
+export function bigNumberMarshalBinary(bn: bigint, field?: number): Buffer {
+  if (bn < 0n) {
+    throw new Error("Cannot marshal a negative bigint");
+  }
+  let s = bn.toString(16);
+  if (s.length % 2 == 1) {
+    s = "0" + s;
+  }
+  const data = bytesMarshalBinary(Uint8Array.from(s.match(/../g)!.map((x) => parseInt(x, 16))));
   return withFieldNumber(data, field);
 }
 

@@ -1,4 +1,3 @@
-import BN from "bn.js";
 import {
   Account,
   AccountArgs,
@@ -251,7 +250,7 @@ export class AddAccountAuthorityOperation {
 
 export type AddCreditsArgs = {
   recipient?: URLArgs;
-  amount?: BN | string | number;
+  amount?: bigint | string | number;
   oracle?: number;
 };
 export type AddCreditsArgsWithType = AddCreditsArgs & {
@@ -263,7 +262,7 @@ export class AddCredits {
   @encodeAs.field(2).url
   public recipient?: URL;
   @encodeAs.field(3).bigInt
-  public amount?: BN;
+  public amount?: bigint;
   @encodeAs.field(4).uint
   public oracle?: number;
 
@@ -272,9 +271,9 @@ export class AddCredits {
     this.amount =
       args.amount == undefined
         ? undefined
-        : args.amount instanceof BN
+        : typeof args.amount === "bigint"
         ? args.amount
-        : new BN(args.amount);
+        : BigInt(args.amount);
     this.oracle = args.oracle == undefined ? undefined : args.oracle;
   }
 
@@ -293,7 +292,7 @@ export class AddCredits {
 }
 
 export type AddCreditsResultArgs = {
-  amount?: BN | string | number;
+  amount?: bigint | string | number;
   credits?: number;
   oracle?: number;
 };
@@ -304,7 +303,7 @@ export class AddCreditsResult {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.AddCredits;
   @encodeAs.field(2).bigInt
-  public amount?: BN;
+  public amount?: bigint;
   @encodeAs.field(3).uint
   public credits?: number;
   @encodeAs.field(4).uint
@@ -314,9 +313,9 @@ export class AddCreditsResult {
     this.amount =
       args.amount == undefined
         ? undefined
-        : args.amount instanceof BN
+        : typeof args.amount === "bigint"
         ? args.amount
-        : new BN(args.amount);
+        : BigInt(args.amount);
     this.credits = args.credits == undefined ? undefined : args.credits;
     this.oracle = args.oracle == undefined ? undefined : args.oracle;
   }
@@ -845,7 +844,7 @@ export type BlockValidatorAnchorArgs = {
   rootChainIndex?: number;
   rootChainAnchor?: Uint8Array | string;
   stateTreeAnchor?: Uint8Array | string;
-  acmeBurnt?: BN | string | number;
+  acmeBurnt?: bigint | string | number;
 };
 export type BlockValidatorAnchorArgsWithType = BlockValidatorAnchorArgs & {
   type: TransactionType.BlockValidatorAnchor | "blockValidatorAnchor";
@@ -866,7 +865,7 @@ export class BlockValidatorAnchor {
   @encodeAs.field(2, 6).hash
   public stateTreeAnchor?: Uint8Array;
   @encodeAs.field(3).bigInt
-  public acmeBurnt?: BN;
+  public acmeBurnt?: bigint;
 
   constructor(args: BlockValidatorAnchorArgs) {
     this.source = args.source == undefined ? undefined : URL.parse(args.source);
@@ -888,9 +887,9 @@ export class BlockValidatorAnchor {
     this.acmeBurnt =
       args.acmeBurnt == undefined
         ? undefined
-        : args.acmeBurnt instanceof BN
+        : typeof args.acmeBurnt === "bigint"
         ? args.acmeBurnt
-        : new BN(args.acmeBurnt);
+        : BigInt(args.acmeBurnt);
   }
 
   copy() {
@@ -940,7 +939,7 @@ export class BurnCredits {
 }
 
 export type BurnTokensArgs = {
-  amount?: BN | string | number;
+  amount?: bigint | string | number;
 };
 export type BurnTokensArgsWithType = BurnTokensArgs & {
   type: TransactionType.BurnTokens | "burnTokens";
@@ -949,15 +948,15 @@ export class BurnTokens {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = TransactionType.BurnTokens;
   @encodeAs.field(2).bigInt
-  public amount?: BN;
+  public amount?: bigint;
 
   constructor(args: BurnTokensArgs) {
     this.amount =
       args.amount == undefined
         ? undefined
-        : args.amount instanceof BN
+        : typeof args.amount === "bigint"
         ? args.amount
-        : new BN(args.amount);
+        : BigInt(args.amount);
   }
 
   copy() {
@@ -1215,7 +1214,7 @@ export type CreateTokenArgs = {
   symbol?: string;
   precision?: number;
   properties?: URLArgs;
-  supplyLimit?: BN | string | number;
+  supplyLimit?: bigint | string | number;
   authorities?: URLArgs[];
 };
 export type CreateTokenArgsWithType = CreateTokenArgs & {
@@ -1233,7 +1232,7 @@ export class CreateToken {
   @encodeAs.field(6).url
   public properties?: URL;
   @encodeAs.field(7).bigInt
-  public supplyLimit?: BN;
+  public supplyLimit?: bigint;
   @encodeAs.field(9).repeatable.url
   public authorities?: URL[];
 
@@ -1245,9 +1244,9 @@ export class CreateToken {
     this.supplyLimit =
       args.supplyLimit == undefined
         ? undefined
-        : args.supplyLimit instanceof BN
+        : typeof args.supplyLimit === "bigint"
         ? args.supplyLimit
-        : new BN(args.supplyLimit);
+        : BigInt(args.supplyLimit);
     this.authorities =
       args.authorities == undefined ? undefined : args.authorities.map((v) => URL.parse(v));
   }
@@ -1978,7 +1977,7 @@ export class InternalSignature {
 
 export type IssueTokensArgs = {
   recipient?: URLArgs;
-  amount?: BN | string | number;
+  amount?: bigint | string | number;
   to?: (TokenRecipient | TokenRecipientArgs)[];
 };
 export type IssueTokensArgsWithType = IssueTokensArgs & {
@@ -1990,7 +1989,7 @@ export class IssueTokens {
   @encodeAs.field(2).url
   public recipient?: URL;
   @encodeAs.field(3).bigInt
-  public amount?: BN;
+  public amount?: bigint;
   @encodeAs.field(4).repeatable.reference
   public to?: TokenRecipient[];
 
@@ -1999,9 +1998,9 @@ export class IssueTokens {
     this.amount =
       args.amount == undefined
         ? undefined
-        : args.amount instanceof BN
+        : typeof args.amount === "bigint"
         ? args.amount
-        : new BN(args.amount);
+        : BigInt(args.amount);
     this.to =
       args.to == undefined
         ? undefined
@@ -2352,7 +2351,7 @@ export class LiteIdentity {
 export type LiteTokenAccountArgs = {
   url?: URLArgs;
   tokenUrl?: URLArgs;
-  balance?: BN | string | number;
+  balance?: bigint | string | number;
   lockHeight?: number;
 };
 export type LiteTokenAccountArgsWithType = LiteTokenAccountArgs & {
@@ -2366,7 +2365,7 @@ export class LiteTokenAccount {
   @encodeAs.field(3).url
   public tokenUrl?: URL;
   @encodeAs.field(4).bigInt
-  public balance?: BN;
+  public balance?: bigint;
   @encodeAs.field(5).uint
   public lockHeight?: number;
 
@@ -2376,9 +2375,9 @@ export class LiteTokenAccount {
     this.balance =
       args.balance == undefined
         ? undefined
-        : args.balance instanceof BN
+        : typeof args.balance === "bigint"
         ? args.balance
-        : new BN(args.balance);
+        : BigInt(args.balance);
     this.lockHeight = args.lockHeight == undefined ? undefined : args.lockHeight;
   }
 
@@ -3329,7 +3328,7 @@ export type SyntheticBurnTokensArgs = {
   source?: URLArgs;
   initiator?: URLArgs;
   feeRefund?: number;
-  amount?: BN | string | number;
+  amount?: bigint | string | number;
   isRefund?: boolean;
 };
 export type SyntheticBurnTokensArgsWithType = SyntheticBurnTokensArgs & {
@@ -3347,7 +3346,7 @@ export class SyntheticBurnTokens {
   @encodeAs.field(2, 4).uint
   public feeRefund?: number;
   @encodeAs.field(3).bigInt
-  public amount?: BN;
+  public amount?: bigint;
   @encodeAs.field(4).bool
   public isRefund?: boolean;
 
@@ -3359,9 +3358,9 @@ export class SyntheticBurnTokens {
     this.amount =
       args.amount == undefined
         ? undefined
-        : args.amount instanceof BN
+        : typeof args.amount === "bigint"
         ? args.amount
-        : new BN(args.amount);
+        : BigInt(args.amount);
     this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
 
@@ -3437,7 +3436,7 @@ export type SyntheticDepositCreditsArgs = {
   initiator?: URLArgs;
   feeRefund?: number;
   amount?: number;
-  acmeRefundAmount?: BN | string | number;
+  acmeRefundAmount?: bigint | string | number;
   isRefund?: boolean;
 };
 export type SyntheticDepositCreditsArgsWithType = SyntheticDepositCreditsArgs & {
@@ -3457,7 +3456,7 @@ export class SyntheticDepositCredits {
   @encodeAs.field(3).uint
   public amount?: number;
   @encodeAs.field(4).bigInt
-  public acmeRefundAmount?: BN;
+  public acmeRefundAmount?: bigint;
   @encodeAs.field(5).bool
   public isRefund?: boolean;
 
@@ -3470,9 +3469,9 @@ export class SyntheticDepositCredits {
     this.acmeRefundAmount =
       args.acmeRefundAmount == undefined
         ? undefined
-        : args.acmeRefundAmount instanceof BN
+        : typeof args.acmeRefundAmount === "bigint"
         ? args.acmeRefundAmount
-        : new BN(args.acmeRefundAmount);
+        : BigInt(args.acmeRefundAmount);
     this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
 
@@ -3500,7 +3499,7 @@ export type SyntheticDepositTokensArgs = {
   initiator?: URLArgs;
   feeRefund?: number;
   token?: URLArgs;
-  amount?: BN | string | number;
+  amount?: bigint | string | number;
   isIssuer?: boolean;
   isRefund?: boolean;
 };
@@ -3521,7 +3520,7 @@ export class SyntheticDepositTokens {
   @encodeAs.field(3).url
   public token?: URL;
   @encodeAs.field(4).bigInt
-  public amount?: BN;
+  public amount?: bigint;
   @encodeAs.field(5).bool
   public isIssuer?: boolean;
   @encodeAs.field(6).bool
@@ -3536,9 +3535,9 @@ export class SyntheticDepositTokens {
     this.amount =
       args.amount == undefined
         ? undefined
-        : args.amount instanceof BN
+        : typeof args.amount === "bigint"
         ? args.amount
-        : new BN(args.amount);
+        : BigInt(args.amount);
     this.isIssuer = args.isIssuer == undefined ? undefined : args.isIssuer;
     this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
@@ -3744,7 +3743,7 @@ export type SystemLedgerArgs = {
   url?: URLArgs;
   index?: number;
   timestamp?: Date | string;
-  acmeBurnt?: BN | string | number;
+  acmeBurnt?: bigint | string | number;
   pendingUpdates?: (NetworkAccountUpdate | NetworkAccountUpdateArgs)[];
   anchor?: AnchorBody | AnchorBodyArgs;
   executorVersion?: ExecutorVersionArgs;
@@ -3762,7 +3761,7 @@ export class SystemLedger {
   @encodeAs.field(4).time
   public timestamp?: Date;
   @encodeAs.field(5).bigInt
-  public acmeBurnt?: BN;
+  public acmeBurnt?: bigint;
   @encodeAs.field(6).repeatable.reference
   public pendingUpdates?: NetworkAccountUpdate[];
   @encodeAs.field(7).union
@@ -3782,9 +3781,9 @@ export class SystemLedger {
     this.acmeBurnt =
       args.acmeBurnt == undefined
         ? undefined
-        : args.acmeBurnt instanceof BN
+        : typeof args.acmeBurnt === "bigint"
         ? args.acmeBurnt
-        : new BN(args.acmeBurnt);
+        : BigInt(args.acmeBurnt);
     this.pendingUpdates =
       args.pendingUpdates == undefined
         ? undefined
@@ -3853,7 +3852,7 @@ export type TokenAccountArgs = {
   url?: URLArgs;
   authorities?: (AuthorityEntry | AuthorityEntryArgs)[];
   tokenUrl?: URLArgs;
-  balance?: BN | string | number;
+  balance?: bigint | string | number;
 };
 export type TokenAccountArgsWithType = TokenAccountArgs & {
   type: AccountType.TokenAccount | "tokenAccount";
@@ -3868,7 +3867,7 @@ export class TokenAccount {
   @encodeAs.field(4).url
   public tokenUrl?: URL;
   @encodeAs.field(5).bigInt
-  public balance?: BN;
+  public balance?: bigint;
 
   constructor(args: TokenAccountArgs) {
     this.url = args.url == undefined ? undefined : URL.parse(args.url);
@@ -3880,9 +3879,9 @@ export class TokenAccount {
     this.balance =
       args.balance == undefined
         ? undefined
-        : args.balance instanceof BN
+        : typeof args.balance === "bigint"
         ? args.balance
-        : new BN(args.balance);
+        : BigInt(args.balance);
   }
 
   copy() {
@@ -3906,8 +3905,8 @@ export type TokenIssuerArgs = {
   symbol?: string;
   precision?: number;
   properties?: URLArgs;
-  issued?: BN | string | number;
-  supplyLimit?: BN | string | number;
+  issued?: bigint | string | number;
+  supplyLimit?: bigint | string | number;
 };
 export type TokenIssuerArgsWithType = TokenIssuerArgs & {
   type: AccountType.TokenIssuer | "tokenIssuer";
@@ -3926,9 +3925,9 @@ export class TokenIssuer {
   @encodeAs.field(6).url
   public properties?: URL;
   @encodeAs.field(7).bigInt
-  public issued?: BN;
+  public issued?: bigint;
   @encodeAs.field(8).bigInt
-  public supplyLimit?: BN;
+  public supplyLimit?: bigint;
 
   constructor(args: TokenIssuerArgs) {
     this.url = args.url == undefined ? undefined : URL.parse(args.url);
@@ -3942,15 +3941,15 @@ export class TokenIssuer {
     this.issued =
       args.issued == undefined
         ? undefined
-        : args.issued instanceof BN
+        : typeof args.issued === "bigint"
         ? args.issued
-        : new BN(args.issued);
+        : BigInt(args.issued);
     this.supplyLimit =
       args.supplyLimit == undefined
         ? undefined
-        : args.supplyLimit instanceof BN
+        : typeof args.supplyLimit === "bigint"
         ? args.supplyLimit
-        : new BN(args.supplyLimit);
+        : BigInt(args.supplyLimit);
   }
 
   copy() {
@@ -4010,22 +4009,22 @@ export class TokenIssuerProof {
 
 export type TokenRecipientArgs = {
   url?: URLArgs;
-  amount?: BN | string | number;
+  amount?: bigint | string | number;
 };
 export class TokenRecipient {
   @encodeAs.field(1).url
   public url?: URL;
   @encodeAs.field(2).bigInt
-  public amount?: BN;
+  public amount?: bigint;
 
   constructor(args: TokenRecipientArgs) {
     this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.amount =
       args.amount == undefined
         ? undefined
-        : args.amount instanceof BN
+        : typeof args.amount === "bigint"
         ? args.amount
-        : new BN(args.amount);
+        : BigInt(args.amount);
   }
 
   copy() {
