@@ -53,6 +53,8 @@ export enum Status {
   NoPeer = 506,
   /** PeerMisbehaved means a peer behaved incorrectly. */
   PeerMisbehaved = 507,
+  /** InvalidRecord means the database has one or more invalid records. */
+  InvalidRecord = 508,
 }
 
 export type StatusArgs = Status | string;
@@ -116,6 +118,8 @@ export namespace Status {
         return Status.NoPeer;
       case "peermisbehaved":
         return Status.PeerMisbehaved;
+      case "invalidrecord":
+        return Status.InvalidRecord;
       default:
         throw new Error(`Unknown Status '${name}'`);
     }
@@ -173,6 +177,8 @@ export namespace Status {
         return "noPeer";
       case Status.PeerMisbehaved:
         return "peerMisbehaved";
+      case Status.InvalidRecord:
+        return "invalidRecord";
       default:
         throw new Error(`Unknown Status ${v}`);
     }
