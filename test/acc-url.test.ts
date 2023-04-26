@@ -1,4 +1,4 @@
-import { URL } from "../src/url";
+import { URL } from "../src/address";
 
 test("should parse url", () => {
   const u = URL.parse("acc://authority/path");

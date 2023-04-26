@@ -1,17 +1,24 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
-import { BN, Client } from "../src";
+import { BN } from "../src";
+import { Client } from "../src/api_v2";
 import { SendTokens, Transaction, TransactionHeader } from "../src/core";
 import { Envelope } from "../src/messaging";
 import { LiteSigner, signTransaction } from "../src/signing";
 import { addCredits, randomLiteIdentity, startSim } from "./util";
 
-const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
+let client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let lid: LiteSigner;
 
 let sim: ChildProcess;
-beforeAll(async () => await startSim((p) => (sim = p)));
+beforeAll(
+  async () =>
+    await startSim((proc, port) => {
+      sim = proc;
+      client = new Client(`http://127.0.1.1:${port}/v2`);
+    })
+);
 afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Test manual transactions", () => {

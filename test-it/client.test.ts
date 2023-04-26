@@ -1,28 +1,36 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
-import { ACME_TOKEN_URL, BN, Client, RpcError } from "../src";
+import { BN } from "../src";
+import { Client, RpcError } from "../src/api_v2";
+import { sha256 } from "../src/common/crypto";
+import { constructIssuerProof } from "../src/common/util";
 import {
   AccountAuthOperationArgs,
   AccountAuthOperationType,
+  ACME_TOKEN_URL,
   CreateKeyPageArgs,
   KeyPageOperationArgs,
   KeyPageOperationType,
   TransactionType,
   WriteDataArgs,
 } from "../src/core";
-import { sha256 } from "../src/crypto";
 import { ED25519KeypairSigner, LiteSigner, PageSigner } from "../src/signing";
-import { constructIssuerProof } from "../src/util";
 import { addCredits, randomBuffer, randomLiteIdentity, randomString, startSim } from "./util";
 
-const client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
+let client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
 let lid: LiteSigner;
 let identityUrl: string;
 let identityKeyPageTxSigner: PageSigner;
 
 let sim: ChildProcess;
-beforeAll(async () => await startSim((p) => (sim = p)));
+beforeAll(
+  async () =>
+    await startSim((proc, port) => {
+      sim = proc;
+      client = new Client(`http://127.0.1.1:${port}/v2`);
+    })
+);
 afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Test Accumulate client", () => {

@@ -1,4 +1,4 @@
-import { hashTree } from "../src/crypto";
+import { hashTree } from "../src/common/crypto";
 
 test("should hash tree", async () => {
   let h = await hashTree([Buffer.from("00", "hex")]);
