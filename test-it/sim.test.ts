@@ -20,6 +20,12 @@ describe("API v2", () => {
 
 describe("API v3 JSON-RPC", () => {
   test("query dn.acme", async () => {
+    const x = client3.query("asdf", {
+      queryType: "pending",
+      range: { count: 10, expand: false },
+    });
+    console.log(x);
+
     const res = await client3.query("dn.acme");
     console.log(JSON.stringify(res.asObject(), null, "  "));
   });
