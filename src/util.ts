@@ -4,7 +4,7 @@ import { hashBody } from "./core/base";
 import { sha256 } from "./crypto";
 import { encode } from "./encoding";
 import { combineReceipts, Receipt, ReceiptArgs } from "./merkle";
-import { URL } from "./url";
+import { URL } from "./address";
 
 export async function sleep(millis: number) {
   return new Promise((resolve) => setTimeout(resolve, millis));
