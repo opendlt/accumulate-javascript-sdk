@@ -48,7 +48,7 @@ import {
 } from "../core";
 import { sha256 } from "../crypto";
 import { Envelope } from "../messaging";
-import { RpcClient } from "../rpc-client";
+import { RpcClient } from "./rpc-client";
 import { signTransaction } from "../signing";
 import { PageSigner } from "../signing/signer";
 import { AccumulateURL as URL } from "../address/url";

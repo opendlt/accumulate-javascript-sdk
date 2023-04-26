@@ -1,6 +1,6 @@
 import * as types from ".";
 import { errors, messaging, TxID, URLArgs } from "..";
-import { RpcClient, RpcError } from "../rpc-client";
+import { RpcClient, RpcError } from "../api_v2/rpc-client";
 import * as msg from "./msg";
 
 export const ERR_CODE_PROTOCOL = -33000;
