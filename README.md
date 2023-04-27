@@ -19,52 +19,52 @@ For more usage examples see the file `test-it/client.test.ts`.
 
 ### Quick start tutorial
 
-Demo of some of the main APIs of Accumualte:
+Demo of some of the main APIs of Accumulate:
 
 ```js
-import { Client, LiteSigner, PageSigner, ED25519KeypairSigner, sha256 } from "accumulate.js";
+import { api_v2, ED25519Key, Signer } from "accumulate.js";
 
-const client = new Client("https://mainnet.accumulatenetwork.io/v2");
+const client = new api_v2.Client("https://mainnet.accumulatenetwork.io/v2");
 
-// Generate a random LiteSigner (this is only local, until that account receive its first tokens)
-const lid = await LiteSigner.from(ED25519KeypairSigner.generate());
+// Generate a random Signer (this is only local, until that account receive its first tokens)
+const lid = await Signer.forLite(await ED25519Key.generate());
 // Request some ACME token to get started from the faucet
-let res = await client.faucet(lid.acmeTokenAccount);
+let res = await client.faucet(lid.url.join("ACME"));
 await client.waitOnTx(res.txid.toString());
 
 // check the ACME token balance
-console.log(await client.queryUrl(lid.acmeTokenAccount));
+console.log(await client.queryUrl(lid.url.join("ACME")));
 
 // Convert some tokens into credits necessary to perform operations on Accumulate
 const oracle = await client.queryAcmeOracle();
 const addCredits = {
-    recipient: lid.url,
-    amount: 1000 * 1e8,
-    oracle,
+  recipient: lid.url,
+  amount: 1000 * 1e8,
+  oracle,
 };
-res = await client.addCredits(lid.acmeTokenAccount, addCredits, lid);
+res = await client.addCredits(lid.url.join("ACME"), addCredits, lid);
 await client.waitOnTx(res.txid.toString());
 
 // check the credits balance
 console.log(await client.queryUrl(lid.url));
 
 // Send some tokens to another random Lite ACME token Account
-const recipient = await LiteSigner.from(ED25519KeypairSigner.generate());
-const sendTokens = { to: [{ url: recipient.acmeTokenAccount, amount: 12 }] };
-res = await client.sendTokens(lid.acmeTokenAccount, sendTokens, lid);
+const recipient = await Signer.forLite(await ED25519Key.generate());
+const sendTokens = { to: [{ url: recipient.url.join("ACME"), amount: 12 }] };
+res = await client.sendTokens(lid.url.join("ACME"), sendTokens, lid);
 await client.waitOnTx(res.txid.toString());
 
 // Now with the credits we can create an Accumulate Digital Identifier (ADI)
 // which is one of the fundamental feature of the network
 
-const identitySigner = ED25519KeypairSigner.generate(); // Root signer that will control the identity
+const identitySigner = await ED25519Key.generate(); // Root signer that will control the identity
 const identityUrl = "acc://my-own-identity.acme";
 const bookUrl = identityUrl + "/my-book";
 
 const createIdentity = {
-    url: identityUrl,
-    keyHash: await sha256(identitySigner.publicKey),
-    keyBookUrl: bookUrl,
+  url: identityUrl,
+  keyHash: identitySigner.address.publicKeyHash,
+  keyBookUrl: bookUrl,
 };
 
 res = await client.createIdentity(lid.url, createIdentity, lid);
@@ -77,13 +77,13 @@ console.log(await client.queryUrl(identityUrl));
 // (after receiving credits on the identity initial key page)
 const keyPageUrl = bookUrl + "/1";
 const addCredits2 = {
-    recipient: keyPageUrl,
-    amount: 1000 * 1e8,
-    oracle,
+  recipient: keyPageUrl,
+  amount: 1000 * 1e8,
+  oracle,
 };
-res = await client.addCredits(lid.acmeTokenAccount, addCredits2, lid);
+res = await client.addCredits(lid.url.join("ACME"), addCredits2, lid);
 await client.waitOnTx(res.txid.toString());
-const identityKeyPage = new PageSigner(keyPageUrl, identitySigner);
+const identityKeyPage = await Signer.forPage(keyPageUrl, identitySigner);
 ```
 
 ### Manually building and signing a transaction
@@ -91,27 +91,29 @@ const identityKeyPage = new PageSigner(keyPageUrl, identitySigner);
 ```js
 // You need to import the Payload class for the type of transaction you want to make.
 // Here we are building a SendTokens transaction.
+import { api_v2, ED25519Key, Signer } from "accumulate.js";
 import { SendTokens, Transaction, TransactionHeader } from "accumulate.js/core";
-import { Client, ED25519KeypairSigner, LiteSigner, signTransaction } from "accumulate.js";
+import { Envelope } from "accumulate.js/messaging";
 
-const sender = await LiteSigner.from(ED25519KeypairSigner.generate());
+const sender = await Signer.forLite(await ED25519Key.generate());
 
 // Build the Payload
-const recipient = await LiteSigner.from(ED25519KeypairSigner.generate());
+const recipient = await Signer.forLite(await ED25519Key.generate());
 const amount = 10;
-const body = new SendTokens({ to: [{ url: recipient.acmeTokenAccount, amount: amount }] });
+const body = new SendTokens({ to: [{ url: recipient.url.join("ACME"), amount: amount }] });
 // Build the transaction header with the transaction principal
 // and optionally a timestamp, memo or metadata.
-const header = new TransactionHeader({ principal: sender.acmeTokenAccount});
+const header = new TransactionHeader({ principal: sender.url.join("ACME") });
 
 // Finally build the (unsigned yet) transaction
 const tx = new Transaction({ body, header });
 
 // Sign with a key pair or manually sign with custom key store, Ledger, etc
-const env = await signTransaction(tx, sender, { timestamp: Date.now() });
+const sig = await sender.sign(tx, { timestamp: Date.now() });
+const env = new Envelope({ transaction: [tx], signatures: [sig] });
 
 // Submit the envelope
-const client = new Client("https://mainnet.accumulatenetwork.io/v2");
+const client = new api_v2.Client("https://mainnet.accumulatenetwork.io/v2");
 const res = await client.execute(env);
 await client.waitOnTx(res.txid.toString());
 ```
