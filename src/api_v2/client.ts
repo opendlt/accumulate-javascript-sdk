@@ -12,6 +12,7 @@ import {
   TxnQueryArgs,
   TxResponse,
 } from ".";
+import { TxID } from "../address";
 import { AccumulateURL as URL } from "../address/url";
 import { sha256 } from "../common/crypto";
 import { sleep } from "../common/util";
@@ -85,6 +86,8 @@ export class TxError extends Error {
     this.status = status;
   }
 }
+
+export type TxResponse2 = TxResponse & { txid: TxID };
 
 /**
  * Client to call Accumulate RPC APIs.
@@ -303,7 +306,7 @@ export class Client {
     principal: URL | string,
     addCredits: AddCreditsArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new AddCredits(addCredits), signer);
   }
 
@@ -311,7 +314,7 @@ export class Client {
     principal: URL | string,
     burnTokens: BurnTokensArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new BurnTokens(burnTokens), signer);
   }
 
@@ -319,7 +322,7 @@ export class Client {
     principal: URL | string,
     createDataAccount: CreateDataAccountArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateDataAccount(createDataAccount), signer);
   }
 
@@ -327,7 +330,7 @@ export class Client {
     principal: URL | string,
     createIdentity: CreateIdentityArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateIdentity(createIdentity), signer);
   }
 
@@ -335,7 +338,7 @@ export class Client {
     principal: URL | string,
     createKeyBook: CreateKeyBookArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateKeyBook(createKeyBook), signer);
   }
 
@@ -343,7 +346,7 @@ export class Client {
     principal: URL | string,
     createKeyPage: CreateKeyPageArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateKeyPage(createKeyPage), signer);
   }
 
@@ -351,7 +354,7 @@ export class Client {
     principal: URL | string,
     createToken: CreateTokenArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateToken(createToken), signer);
   }
 
@@ -359,7 +362,7 @@ export class Client {
     principal: URL | string,
     createTokenAccount: CreateTokenAccountArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateTokenAccount(createTokenAccount), signer);
   }
 
@@ -367,7 +370,7 @@ export class Client {
     principal: URL | string,
     issueTokens: IssueTokensArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new IssueTokens(issueTokens), signer);
   }
 
@@ -375,7 +378,7 @@ export class Client {
     principal: URL | string,
     sendTokens: SendTokensArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new SendTokens(sendTokens), signer);
   }
 
@@ -383,7 +386,7 @@ export class Client {
     principal: URL | string,
     operation: AccountAuthOperationArgs | AccountAuthOperationArgs[],
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     const operations = operation instanceof Array ? operation : [operation];
     return this._execute(URL.parse(principal), new UpdateAccountAuth({ operations }), signer);
   }
@@ -392,7 +395,7 @@ export class Client {
     principal: URL | string,
     updateKey: UpdateKeyArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new UpdateKey(updateKey), signer);
   }
 
@@ -400,7 +403,7 @@ export class Client {
     principal: URL | string,
     operation: KeyPageOperationArgs | KeyPageOperationArgs[],
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     const operations = operation instanceof Array ? operation : [operation];
     return this._execute(
       URL.parse(principal),
@@ -413,7 +416,7 @@ export class Client {
     principal: URL | string,
     writeData: WriteDataArgs,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new WriteData(writeData), signer);
   }
 
@@ -421,7 +424,7 @@ export class Client {
     principal: URL,
     payload: TransactionBody,
     signer: SignerWithVersion
-  ): Promise<any> {
+  ): Promise<TxResponse2> {
     const header = new TransactionHeader({ principal });
     const tx = new Transaction({ body: payload, header });
     const sig = await signer.sign(tx, { timestamp: Date.now() });
@@ -432,11 +435,11 @@ export class Client {
     return this.execute(env);
   }
 
-  async execute(env: Envelope): Promise<TxResponse> {
+  async execute(env: Envelope): Promise<TxResponse2> {
     const req: ExecuteRequestArgs = {
       envelope: env.asObject(),
     };
-    const res: TxResponse = await this.call("execute-direct", req);
+    const res: TxResponse2 = await this.call("execute-direct", req);
     if (res.result.error) {
       throw res.result.error;
     }
@@ -447,8 +450,8 @@ export class Client {
    * Others
    ******************/
 
-  async faucet(url: string | URL): Promise<TxResponse> {
-    const res: TxResponse = await this.call("faucet", {
+  async faucet(url: string | URL): Promise<TxResponse2> {
+    const res: TxResponse2 = await this.call("faucet", {
       url: url.toString(),
     });
     if (res.result.error) {

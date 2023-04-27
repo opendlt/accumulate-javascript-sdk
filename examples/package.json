@@ -1,0 +1,11 @@
+{
+  "name": "examples",
+  "version": "0.0.0",
+  "description": "Examples for Accumulate.js",
+  "dependencies": {
+    "accumulate.js": "file:../"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
