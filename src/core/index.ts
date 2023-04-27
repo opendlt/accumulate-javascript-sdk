@@ -25,6 +25,8 @@ import {
   BTCLegacySignatureArgsWithType,
   BTCSignature,
   BTCSignatureArgsWithType,
+  DelegatedSignature,
+  DelegatedSignatureArgsWithType,
   DirectoryAnchorArgsWithType,
   ED25519Signature,
   ED25519SignatureArgsWithType,
@@ -168,5 +170,18 @@ export type KeySignatureArgs =
 export namespace KeySignature {
   export function fromObject(obj: KeySignatureArgs): KeySignature {
     return <KeySignature>Signature.fromObject(obj);
+  }
+}
+
+export type UserSignature = KeySignature | DelegatedSignature;
+export type UserSignatureArgs =
+  | KeySignatureArgs
+  | DelegatedSignature
+  | DelegatedSignatureArgsWithType;
+
+/** @ignore */
+export namespace UserSignature {
+  export function fromObject(obj: UserSignatureArgs): UserSignature {
+    return <UserSignature>Signature.fromObject(obj);
   }
 }

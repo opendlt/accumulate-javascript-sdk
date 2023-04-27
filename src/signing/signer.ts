@@ -1,125 +1,51 @@
-import { URL } from "../address";
+import { URL, URLArgs } from "../address";
 import { sha256 } from "../common/crypto";
-import { ACME_TOKEN_URL, KeySignature, SignatureType } from "../core";
+import type { Transaction, UserSignature } from "../core";
+import type { Key, SignOptions } from "./key";
 
-export interface Signer {
-  signRaw(data: Uint8Array): Promise<Uint8Array>;
-  get publicKey(): Uint8Array;
-  get type(): SignatureType;
-  newSignature(): KeySignature;
-}
+export class Signer {
+  constructor(public readonly key: Key, public readonly url: URL) {}
 
-export type SignerInfo = {
-  type: SignatureType;
-  url: URL;
-  publicKey: Uint8Array;
-  version: number;
-};
-
-export type Signature = {
-  signerInfo: SignerInfo;
-  signature: Uint8Array;
-};
-
-/**
- * Class to sign Transactions using a Signer
- */
-abstract class TxSigner {
-  protected readonly _url: URL;
-  protected readonly _signer: Signer;
-  protected readonly _version: number;
-
-  constructor(url: string | URL, signer: Signer, version?: number) {
-    this._url = URL.parse(url);
-    this._signer = signer;
-    this._version = version ?? 1;
+  static forPage(url: URLArgs, key: Key) {
+    return Promise.resolve(new Signer(key, URL.parse(url)));
   }
 
-  get signer(): Signer {
-    return this._signer;
+  static async forLite(key: Key) {
+    const keyStr = Buffer.from(key.address.publicKeyHash.slice(0, 20)).toString("hex");
+    const checkSum = (await sha256(Buffer.from(keyStr, "utf-8"))) as Uint8Array;
+    const checkStr = Buffer.from(checkSum.slice(28)).toString("hex");
+    const url = URL.parse(keyStr + checkStr);
+    return new SignerWithVersion(key, url, 1);
   }
 
-  get url(): URL {
-    return this._url;
+  sign(
+    message: Uint8Array | Transaction,
+    opts: Omit<SignOptions, "signer">
+  ): Promise<UserSignature> {
+    return this.key.sign(message, {
+      ...opts,
+      signer: this.url,
+    });
   }
 
-  get publicKey(): Uint8Array {
-    return this._signer.publicKey;
-  }
-
-  get version(): number {
-    return this._version;
-  }
-
-  get info(): SignerInfo {
-    return {
-      url: this.url,
-      publicKey: this.publicKey,
-      version: this.version,
-      type: this._signer.type,
-    };
-  }
-
-  toString() {
-    return this._url.toString();
-  }
-
-  sign(hash: Uint8Array): Promise<Uint8Array> {
-    return this._signer.signRaw(hash);
-  }
-
-  makeSignature(opts: { timestamp?: number } = {}): KeySignature {
-    const sig = this._signer.newSignature();
-    sig.signer = this.url;
-    sig.signerVersion = this.version;
-    sig.timestamp = opts.timestamp;
-    return sig;
+  withVersion(version: number) {
+    return new SignerWithVersion(this.key, this.url, version);
   }
 }
 
-export class PageSigner extends TxSigner {
-  /**
-   * Helper to create a new instance of TxSigner with a new version
-   * while copying other TxSigner attributes
-   * @param signer original TxSigner
-   * @param version new version
-   * @returns
-   */
-  static withNewVersion(signer: PageSigner, version: number): PageSigner {
-    return new PageSigner(signer.info.url, signer.signer, version);
-  }
-}
-
-/**
- * A Lite Identity
- */
-export class LiteSigner extends TxSigner {
-  /**
-   * Construct a LiteIdentity controlled by the Signer.
-   * @param signer
-   */
-  static async from(signer: Signer) {
-    const hash = await sha256(signer.publicKey);
-    return new this(await this.computeUrl(hash), signer);
+export class SignerWithVersion extends Signer {
+  constructor(key: Key, url: URL, public readonly version: number) {
+    super(key, url);
   }
 
-  /**
-   * Helper method to get the ACME token account controled by the LiteIdentity.
-   */
-  get acmeTokenAccount(): URL {
-    return this._url.join(ACME_TOKEN_URL);
-  }
-
-  /**
-   * Compute a LiteIdentity URL based on public key hash
-   */
-  static async computeUrl(publicKeyHash: Uint8Array): Promise<URL> {
-    const pkHash = Buffer.from(publicKeyHash.slice(0, 20));
-    const checkSum = Uint8Array.prototype.slice.call(
-      await sha256(Buffer.from(pkHash.toString("hex"), "utf-8")),
-      28
-    );
-    const authority = Buffer.concat([pkHash, checkSum]).toString("hex");
-    return URL.parse(`acc://${authority}`);
+  sign(
+    message: Uint8Array | Transaction,
+    opts: Omit<SignOptions, "signer" | "signerVersion">
+  ): Promise<UserSignature> {
+    return this.key.sign(message, {
+      ...opts,
+      signer: this.url,
+      signerVersion: this.version,
+    });
   }
 }

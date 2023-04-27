@@ -60,7 +60,7 @@ export interface Address {
 
 // export class UnknownAddress {
 //   readonly type = SignatureType.Unknown;
-//   constructor(public value: Uint8Array, public encoding: string) {}
+//   constructor(public readonly value: Uint8Array, public readonly encoding: string) {}
 
 //   async format() {
 //     const base = Object.values(bases).find((x) => x.prefix == this.encoding);
@@ -71,7 +71,7 @@ export interface Address {
 
 // export class UnknownHashAddress implements Address {
 //   readonly type = SignatureType.Unknown;
-//   constructor(public publicKeyHash: Uint8Array) {}
+//   constructor(public readonly publicKeyHash: Uint8Array) {}
 
 //   async format() {
 //     return await formatMH(this.publicKeyHash);
@@ -79,7 +79,7 @@ export interface Address {
 // }
 
 export class PublicKeyHashAddress implements Address {
-  constructor(public type: SignatureType, public publicKeyHash: Uint8Array) {}
+  constructor(public readonly type: SignatureType, public readonly publicKeyHash: Uint8Array) {}
 
   async format() {
     switch (this.type) {
@@ -105,9 +105,9 @@ export class PublicKeyAddress extends PublicKeyHashAddress {
     return new this(type, await Address.keyHash(type, publicKey), publicKey);
   }
   protected constructor(
-    public type: SignatureType,
-    public publicKeyHash: Uint8Array,
-    public publicKey: Uint8Array
+    public readonly type: SignatureType,
+    public readonly publicKeyHash: Uint8Array,
+    public readonly publicKey: Uint8Array
   ) {
     super(type, publicKeyHash);
   }
@@ -118,10 +118,10 @@ export class PrivateKeyAddress extends PublicKeyHashAddress {
     return new this(type, await Address.keyHash(type, publicKey), publicKey, privateKey);
   }
   private constructor(
-    public type: SignatureType,
-    public publicKeyHash: Uint8Array,
-    public publicKey: Uint8Array,
-    public privateKey: Uint8Array
+    public readonly type: SignatureType,
+    public readonly publicKeyHash: Uint8Array,
+    public readonly publicKey: Uint8Array,
+    public readonly privateKey: Uint8Array
   ) {
     super(type, publicKeyHash);
   }

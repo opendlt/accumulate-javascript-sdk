@@ -50,8 +50,7 @@ import {
   WriteDataArgs,
 } from "../core";
 import { Envelope } from "../messaging";
-import { signTransaction } from "../signing";
-import { PageSigner } from "../signing/signer";
+import { Signer, SignerWithVersion } from "../signing";
 import { RpcClient } from "./rpc-client";
 
 /**
@@ -210,7 +209,7 @@ export class Client {
     });
   }
 
-  async querySignerVersion(signer: PageSigner | URL, publicKeyHash?: Uint8Array): Promise<number> {
+  async querySignerVersion(signer: Signer | URL, publicKeyHash?: Uint8Array): Promise<number> {
     let signerUrl: URL;
     let pkh: Uint8Array;
     if (signer instanceof URL) {
@@ -221,7 +220,7 @@ export class Client {
       pkh = publicKeyHash;
     } else {
       signerUrl = signer.url;
-      pkh = await sha256(signer.publicKey);
+      pkh = await sha256(signer.key.address.publicKey);
     }
 
     const {
@@ -303,7 +302,7 @@ export class Client {
   addCredits(
     principal: URL | string,
     addCredits: AddCreditsArgs,
-    signer: PageSigner
+    signer: SignerWithVersion
   ): Promise<any> {
     return this._execute(URL.parse(principal), new AddCredits(addCredits), signer);
   }
@@ -311,7 +310,7 @@ export class Client {
   burnTokens(
     principal: URL | string,
     burnTokens: BurnTokensArgs,
-    signer: PageSigner
+    signer: SignerWithVersion
   ): Promise<any> {
     return this._execute(URL.parse(principal), new BurnTokens(burnTokens), signer);
   }
@@ -319,7 +318,7 @@ export class Client {
   createDataAccount(
     principal: URL | string,
     createDataAccount: CreateDataAccountArgs,
-    signer: PageSigner
+    signer: SignerWithVersion
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateDataAccount(createDataAccount), signer);
   }
@@ -327,7 +326,7 @@ export class Client {
   createIdentity(
     principal: URL | string,
     createIdentity: CreateIdentityArgs,
-    signer: PageSigner
+    signer: SignerWithVersion
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateIdentity(createIdentity), signer);
   }
@@ -335,7 +334,7 @@ export class Client {
   createKeyBook(
     principal: URL | string,
     createKeyBook: CreateKeyBookArgs,
-    signer: PageSigner
+    signer: SignerWithVersion
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateKeyBook(createKeyBook), signer);
   }
@@ -343,7 +342,7 @@ export class Client {
   createKeyPage(
     principal: URL | string,
     createKeyPage: CreateKeyPageArgs,
-    signer: PageSigner
+    signer: SignerWithVersion
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateKeyPage(createKeyPage), signer);
   }
@@ -351,7 +350,7 @@ export class Client {
   createToken(
     principal: URL | string,
     createToken: CreateTokenArgs,
-    signer: PageSigner
+    signer: SignerWithVersion
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateToken(createToken), signer);
   }
@@ -359,9 +358,78 @@ export class Client {
   createTokenAccount(
     principal: URL | string,
     createTokenAccount: CreateTokenAccountArgs,
-    signer: PageSigner
+    signer: SignerWithVersion
   ): Promise<any> {
     return this._execute(URL.parse(principal), new CreateTokenAccount(createTokenAccount), signer);
+  }
+
+  issueTokens(
+    principal: URL | string,
+    issueTokens: IssueTokensArgs,
+    signer: SignerWithVersion
+  ): Promise<any> {
+    return this._execute(URL.parse(principal), new IssueTokens(issueTokens), signer);
+  }
+
+  sendTokens(
+    principal: URL | string,
+    sendTokens: SendTokensArgs,
+    signer: SignerWithVersion
+  ): Promise<any> {
+    return this._execute(URL.parse(principal), new SendTokens(sendTokens), signer);
+  }
+
+  updateAccountAuth(
+    principal: URL | string,
+    operation: AccountAuthOperationArgs | AccountAuthOperationArgs[],
+    signer: SignerWithVersion
+  ): Promise<any> {
+    const operations = operation instanceof Array ? operation : [operation];
+    return this._execute(URL.parse(principal), new UpdateAccountAuth({ operations }), signer);
+  }
+
+  updateKey(
+    principal: URL | string,
+    updateKey: UpdateKeyArgs,
+    signer: SignerWithVersion
+  ): Promise<any> {
+    return this._execute(URL.parse(principal), new UpdateKey(updateKey), signer);
+  }
+
+  updateKeyPage(
+    principal: URL | string,
+    operation: KeyPageOperationArgs | KeyPageOperationArgs[],
+    signer: SignerWithVersion
+  ): Promise<any> {
+    const operations = operation instanceof Array ? operation : [operation];
+    return this._execute(
+      URL.parse(principal),
+      new UpdateKeyPage({ operation: operations }),
+      signer
+    );
+  }
+
+  writeData(
+    principal: URL | string,
+    writeData: WriteDataArgs,
+    signer: SignerWithVersion
+  ): Promise<any> {
+    return this._execute(URL.parse(principal), new WriteData(writeData), signer);
+  }
+
+  private async _execute(
+    principal: URL,
+    payload: TransactionBody,
+    signer: SignerWithVersion
+  ): Promise<any> {
+    const header = new TransactionHeader({ principal });
+    const tx = new Transaction({ body: payload, header });
+    const sig = await signer.sign(tx, { timestamp: Date.now() });
+    const env = new Envelope({
+      transaction: [tx],
+      signatures: [sig],
+    });
+    return this.execute(env);
   }
 
   async execute(env: Envelope): Promise<TxResponse> {
@@ -373,66 +441,6 @@ export class Client {
       throw res.result.error;
     }
     return res;
-  }
-
-  issueTokens(
-    principal: URL | string,
-    issueTokens: IssueTokensArgs,
-    signer: PageSigner
-  ): Promise<any> {
-    return this._execute(URL.parse(principal), new IssueTokens(issueTokens), signer);
-  }
-
-  sendTokens(
-    principal: URL | string,
-    sendTokens: SendTokensArgs,
-    signer: PageSigner
-  ): Promise<any> {
-    return this._execute(URL.parse(principal), new SendTokens(sendTokens), signer);
-  }
-
-  updateAccountAuth(
-    principal: URL | string,
-    operation: AccountAuthOperationArgs | AccountAuthOperationArgs[],
-    signer: PageSigner
-  ): Promise<any> {
-    const operations = operation instanceof Array ? operation : [operation];
-    return this._execute(URL.parse(principal), new UpdateAccountAuth({ operations }), signer);
-  }
-
-  updateKey(principal: URL | string, updateKey: UpdateKeyArgs, signer: PageSigner): Promise<any> {
-    return this._execute(URL.parse(principal), new UpdateKey(updateKey), signer);
-  }
-
-  updateKeyPage(
-    principal: URL | string,
-    operation: KeyPageOperationArgs | KeyPageOperationArgs[],
-    signer: PageSigner
-  ): Promise<any> {
-    const operations = operation instanceof Array ? operation : [operation];
-    return this._execute(
-      URL.parse(principal),
-      new UpdateKeyPage({ operation: operations }),
-      signer
-    );
-  }
-
-  writeData(principal: URL | string, writeData: WriteDataArgs, signer: PageSigner): Promise<any> {
-    return this._execute(URL.parse(principal), new WriteData(writeData), signer);
-  }
-
-  private async _execute(
-    principal: URL,
-    payload: TransactionBody,
-    signer: PageSigner
-  ): Promise<any> {
-    const header = new TransactionHeader({ principal });
-    const tx = new Transaction({ body: payload, header });
-    const env = await signTransaction(tx, signer, {
-      timestamp: Date.now(),
-    });
-
-    return this.execute(env);
   }
 
   /******************
