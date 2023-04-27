@@ -5,9 +5,9 @@ import path from "path";
 import { randomBytes } from "tweetnacl";
 import { URL } from "../src";
 import { Client } from "../src/api_v2";
-import { ED25519KeypairSigner, LiteSigner } from "../src/signing";
-export function randomLiteIdentity(): Promise<LiteSigner> {
-  return LiteSigner.from(ED25519KeypairSigner.generate());
+import { ED25519Key, Signer, SignerWithVersion } from "../src/signing";
+export async function randomLiteIdentity(): Promise<SignerWithVersion> {
+  return Signer.forLite(await ED25519Key.generate());
 }
 
 export function randomBuffer(length = 12) {
@@ -22,7 +22,7 @@ export async function addCredits(
   client: Client,
   recipient: URL | string,
   creditAmount: number,
-  signer: LiteSigner
+  signer: SignerWithVersion
 ) {
   let res = await client.queryUrl(recipient);
   const originalBalance = BigInt(res.data.creditBalance || 0);
@@ -32,7 +32,7 @@ export async function addCredits(
     amount: (creditAmount * 1e8) / oracle,
     oracle,
   };
-  res = await client.addCredits(signer.acmeTokenAccount, addCredits, signer);
+  res = await client.addCredits(signer.url.join("ACME"), addCredits, signer);
   await client.waitOnTx(res.txid);
 
   res = await client.queryUrl(recipient);

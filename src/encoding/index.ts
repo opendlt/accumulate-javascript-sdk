@@ -169,7 +169,7 @@ interface Field {
 }
 
 class Encoding {
-  public fields: Field[] = [];
+  public readonly fields: Field[] = [];
 
   static get(target: any) {
     const proto = Object.getPrototypeOf(target);

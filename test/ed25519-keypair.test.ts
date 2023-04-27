@@ -1,15 +1,8 @@
-import { Ed25519Keypair } from "../src/signing/ed25519-keypair";
+import { ED25519Key } from "../src/signing";
 
-test("should copy keypair from constructor", () => {
-  const kp1 = Ed25519Keypair.generate();
-  const kp2 = new Ed25519Keypair(kp1);
+test("should create keypair from secret key", async () => {
+  const kp1 = await ED25519Key.generate();
+  const kp2 = await ED25519Key.from(kp1.address.privateKey);
 
-  expect(kp1.publicKey).toStrictEqual(kp2.publicKey);
-});
-
-test("should create keypair from secret key", () => {
-  const kp1 = Ed25519Keypair.generate();
-  const kp2 = Ed25519Keypair.fromSecretKey(kp1.secretKey);
-
-  expect(kp1.publicKey).toStrictEqual(kp2.publicKey);
+  expect(kp1.address.publicKey).toStrictEqual(kp2.address.publicKey);
 });

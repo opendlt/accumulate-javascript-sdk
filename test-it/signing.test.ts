@@ -3,7 +3,7 @@ import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
 import { Client } from "../src/api_v2";
 import { SignatureType } from "../src/core";
-import { LiteSigner, RCD1KeypairSigner } from "../src/signing";
+import { ED25519Key, RCD1Key, Signer } from "../src/signing";
 import { addCredits, startSim } from "./util";
 
 let client = new Client(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v2");
@@ -19,18 +19,33 @@ beforeAll(
 afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Test signing schemes", () => {
-  test.skip("should sign transaction using RCD1 hash", async () => {
-    const rcd1Account = await LiteSigner.from(RCD1KeypairSigner.generate());
+  test("should sign transaction using RCD1 hash", async () => {
+    const lite = await Signer.forLite(await RCD1Key.generate());
 
-    expect(rcd1Account.info.type).toStrictEqual(SignatureType.RCD1);
+    expect(lite.key.address.type).toStrictEqual(SignatureType.RCD1);
 
     // Get some ACME
-    const res = await client.faucet(rcd1Account.acmeTokenAccount);
+    const res = await client.faucet(lite.url.join("ACME"));
     await client.waitOnTx(res.txid!.toString(), { timeout: 5000 });
-    const { data } = await client.queryUrl(rcd1Account.acmeTokenAccount);
+    const { data } = await client.queryUrl(lite.url.join("ACME"));
     expect(data.type).toStrictEqual("liteTokenAccount");
 
     // Get some credits
-    await addCredits(client, rcd1Account.url, 10_000, rcd1Account);
+    await addCredits(client, lite.url, 10_000, lite);
+  });
+
+  test("should sign transaction using ED25519 hash", async () => {
+    const lite = await Signer.forLite(await ED25519Key.generate());
+
+    expect(lite.key.address.type).toStrictEqual(SignatureType.ED25519);
+
+    // Get some ACME
+    const res = await client.faucet(lite.url.join("ACME"));
+    await client.waitOnTx(res.txid!.toString(), { timeout: 5000 });
+    const { data } = await client.queryUrl(lite.url.join("ACME"));
+    expect(data.type).toStrictEqual("liteTokenAccount");
+
+    // Get some credits
+    await addCredits(client, lite.url, 10_000, lite);
   });
 });
