@@ -1,4 +1,4 @@
-import { PrivateKeyAddress, URLArgs } from "../address";
+import { Address, URLArgs } from "../address";
 import { sha256 } from "../common/crypto";
 import { DelegatedSignature, KeySignature, Transaction, UserSignature, VoteType } from "../core";
 import { encode } from "../encoding";
@@ -11,13 +11,19 @@ export type SignOptions = {
   delegators?: URLArgs[];
 };
 
+// From https://stackoverflow.com/a/69328045/762175
+export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+
+export type PublicKey = WithRequired<Address, "publicKey" | "publicKeyHash">;
+export type PrivateKey = WithRequired<PublicKey, "privateKey">;
+
 export interface Key {
-  address: PrivateKeyAddress;
+  address: PublicKey;
   sign(message: Uint8Array | Transaction, args: SignOptions): Promise<UserSignature>;
 }
 
 export abstract class BaseKey implements Key {
-  protected constructor(public readonly address: PrivateKeyAddress) {}
+  protected constructor(public readonly address: PublicKey) {}
 
   abstract signRaw(args: { message: Uint8Array; sigMdHash: Uint8Array }): Promise<Uint8Array>;
 
