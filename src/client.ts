@@ -197,6 +197,7 @@ export class Client {
 
         switch (status.code) {
           case "pending":
+          case "remote":
             await sleep(pollInterval);
             continue;
           case "delivered":
