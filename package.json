@@ -66,6 +66,17 @@
     "./merkle": "./lib/merkle/index.js",
     "./messaging": "./lib/messaging/index.js",
     "./network": "./lib/network/index.js",
-    "./signing": "./lib/signing/index.js"
+    "./signing": "./lib/signing/index.js",
+    "./lib/address": "./lib/address/index.js",
+    "./lib/api_v2": "./lib/api_v2/index.js",
+    "./lib/api_v3": "./lib/api_v3/index.js",
+    "./lib/common": "./lib/common/index.js",
+    "./lib/core": "./lib/core/index.js",
+    "./lib/encoding": "./lib/encoding/index.js",
+    "./lib/errors": "./lib/errors/index.js",
+    "./lib/merkle": "./lib/merkle/index.js",
+    "./lib/messaging": "./lib/messaging/index.js",
+    "./lib/network": "./lib/network/index.js",
+    "./lib/signing": "./lib/signing/index.js"
   }
 }
