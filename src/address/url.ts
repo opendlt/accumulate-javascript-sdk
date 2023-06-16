@@ -2,16 +2,23 @@ import { AccumulateTxID } from "./txid";
 
 export type URLArgs = AccumulateURL | URL | string;
 
-type URLObj = { scheme: string, hostname: string, username: string, pathname: string, search: string, hash: string };
+type URLObj = {
+  scheme: string;
+  hostname: string;
+  username: string;
+  pathname: string;
+  search: string;
+  hash: string;
+};
 
 function parseURL(input: string | URL): URLObj {
   // Deal with garbage browser implementations that break if the scheme isn't HTTP/HTTPS
   let scheme: string;
-  if (typeof input === 'string') {
-    const i = input.indexOf('://')
-    scheme = i <= 0 ? 'acc' : input.substring(0, i);
-    if (i > 0) input = input.substring(i+3);
-    input = new URL('http://' + input);
+  if (typeof input === "string") {
+    const i = input.indexOf("://");
+    scheme = i <= 0 ? "acc" : input.substring(0, i);
+    if (i > 0) input = input.substring(i + 3);
+    input = new URL("http://" + input);
   } else {
     scheme = input.protocol;
   }
@@ -99,12 +106,12 @@ export class AccumulateURL {
   }
 
   toString(): string {
-    let s = 'acc://';
-    if (this.username) s += this.username + '@'
+    let s = "acc://";
+    if (this.username) s += this.username + "@";
     s += this.authority;
     s += this.path;
-    if (this.query) s += '?' + this.query;
-    if (this.fragment) s += '#' + this.fragment;
+    if (this.query) s += "?" + this.query;
+    if (this.fragment) s += "#" + this.fragment;
     return s;
   }
 }
