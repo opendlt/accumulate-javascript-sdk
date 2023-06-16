@@ -2,30 +2,38 @@ import { AccumulateTxID } from "./txid";
 
 export type URLArgs = AccumulateURL | URL | string;
 
+type URLObj = { scheme: string, hostname: string, username: string, pathname: string, search: string, hash: string };
+
+function parseURL(input: string | URL): URLObj {
+  // Deal with garbage browser implementations that break if the scheme isn't HTTP/HTTPS
+  let scheme: string;
+  if (typeof input === 'string') {
+    const i = input.indexOf('://')
+    scheme = i <= 0 ? 'acc' : input.substring(0, i);
+    if (i > 0) input = input.substring(i+3);
+    input = new URL('http://' + input);
+  } else {
+    scheme = input.protocol;
+  }
+
+  const { hostname, username, pathname, search, hash } = input;
+
+  return { scheme, hostname, username, pathname, search, hash };
+}
+
 /**
  * An Accumulate URL (e.g: 'acc://my-identity/mydata')
  */
 export class AccumulateURL {
-  private readonly url: URL;
+  private readonly url: URLObj;
 
   constructor(input: URL | string) {
-    // eslint-disable-next-line no-useless-catch
-    try {
-      if (typeof input === "string") {
-        if (input.indexOf("://") < 0) {
-          input = "acc://" + input;
-        }
-        input = new URL(input);
-      }
-      if (input.protocol !== "acc:") {
-        throw new Error(`Invalid protocol: ${input.protocol}`);
-      }
-      if (!input.hostname) {
-        throw new Error("Missing authority");
-      }
-      this.url = input;
-    } catch (error) {
-      throw error;
+    this.url = parseURL(input);
+    if (this.url.scheme !== "acc") {
+      throw new Error(`Invalid scheme: ${this.url.scheme}`);
+    }
+    if (!this.url.hostname) {
+      throw new Error("Missing authority");
     }
   }
 
@@ -53,7 +61,7 @@ export class AccumulateURL {
    * @returns new AccumulateURL instance with appended path
    */
   join(...path: (string | AccumulateURL)[]): AccumulateURL {
-    let url = this.url.toString();
+    let url = this.toString();
     for (const elem of path) {
       const pathStr = elem.toString();
       if (pathStr.length > 0) {
@@ -91,6 +99,12 @@ export class AccumulateURL {
   }
 
   toString(): string {
-    return this.url.toString();
+    let s = 'acc://';
+    if (this.username) s += this.username + '@'
+    s += this.authority;
+    s += this.path;
+    if (this.query) s += '?' + this.query;
+    if (this.fragment) s += '#' + this.fragment;
+    return s;
   }
 }
