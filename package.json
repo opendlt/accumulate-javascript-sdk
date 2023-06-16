@@ -56,6 +56,7 @@
     "tweetnacl": "^1.0.3"
   },
   "exports": {
+    ".": "./lib/index.js",
     "./address": "./lib/address/index.js",
     "./api_v2": "./lib/api_v2/index.js",
     "./api_v3": "./lib/api_v3/index.js",
