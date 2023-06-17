@@ -1,4 +1,4 @@
-import { encode } from ".";
+import { consume, Consumer, encode } from ".";
 import * as url from "../address";
 import {
   bigNumberMarshalBinary as bigIntMarshalBinary,
@@ -12,8 +12,9 @@ import {
 } from "./encoding";
 
 export interface Encodable {
-  composite?: boolean;
+  embedding?: boolean;
   encode(value: any): Buffer;
+  consume?(value: any, consumer: Consumer): void;
   raw?(value: any): { length: Buffer; value: Buffer };
 }
 
@@ -119,12 +120,18 @@ export class Union {
   encode(value: any) {
     return bytesMarshalBinary(encode(value));
   }
+  consume(value: any, consumer: Consumer) {
+    consume(value, consumer);
+  }
 }
 
 export class Reference {
   composite = true;
   encode(value: any) {
     return bytesMarshalBinary(encode(value));
+  }
+  consume(value: any, consumer: Consumer) {
+    consume(value, consumer);
   }
 }
 
