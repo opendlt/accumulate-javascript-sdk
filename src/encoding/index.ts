@@ -90,18 +90,22 @@ export interface Field {
 }
 
 class Embedded {
+  embedding = true;
   constructor(private readonly field: Field) {}
 
   encode(value: any) {
     const parts: Buffer[] = [];
-    const consumer: Consumer = (field, value) => {
+    this.consume(value, (field, value) => {
       parts.push(uintMarshalBinary(field.number));
       parts.push(field.type.encode(value));
-    };
+    });
+    return bytesMarshalBinary(Buffer.concat(parts));
+  }
+
+  consume(value: any, consumer: Consumer) {
     for (const item of this.field.embedded!) {
       encodeField(value, item, consumer);
     }
-    return bytesMarshalBinary(Buffer.concat(parts));
   }
 }
 
