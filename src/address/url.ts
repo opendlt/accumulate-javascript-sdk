@@ -28,9 +28,9 @@ function parseURL(input: string | URL): URLObj {
 
   // eslint-disable-next-line prefer-const
   let { username, pathname, search, hash } = input;
-  if (pathname.endsWith('/')) pathname = pathname.substring(0, pathname.length-1);
-  if (search.startsWith('?')) search = search.substring(1);
-  if (hash.startsWith('#')) hash = hash.substring(1);
+  if (pathname.endsWith("/")) pathname = pathname.substring(0, pathname.length - 1);
+  if (search.startsWith("?")) search = search.substring(1);
+  if (hash.startsWith("#")) hash = hash.substring(1);
 
   return { scheme, hostname, username, pathname, search, hash };
 }
@@ -116,7 +116,7 @@ export class AccumulateURL {
     let s = "acc://";
     if (this.username) s += this.username + "@";
     s += this.authority;
-    if (this.path !== '/') s += this.path;
+    if (this.path !== "/") s += this.path;
     if (this.query) s += "?" + this.query;
     if (this.fragment) s += "#" + this.fragment;
     return s;
