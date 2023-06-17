@@ -129,7 +129,10 @@ export class Client {
     });
   }
 
-  queryTx(txId: string | URL | TxID, options?: Omit<TxnQueryArgs, "txid" | "txidUrl">): Promise<any> {
+  queryTx(
+    txId: string | URL | TxID,
+    options?: Omit<TxnQueryArgs, "txid" | "txidUrl">
+  ): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 

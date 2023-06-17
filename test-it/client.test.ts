@@ -356,7 +356,11 @@ describe("Test Accumulate client", () => {
       tokenUrl,
       proof: await constructIssuerProof(client, tokenUrl),
     };
-    txRes = await client.createTokenAccount(identityUrl, createTokenAccount, identityKeyPageTxSigner);
+    txRes = await client.createTokenAccount(
+      identityUrl,
+      createTokenAccount,
+      identityKeyPageTxSigner
+    );
 
     await client.waitOnTx(txRes.txid, { timeout: 10_000 });
 
