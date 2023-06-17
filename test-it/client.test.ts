@@ -91,7 +91,7 @@ describe("Test Accumulate client", () => {
     expect(res.txid).toStrictEqual(txid);
 
     // test query with just hash
-    res = await client.queryTx(txid.slice(6).split("@")[0]);
+    res = await client.queryTx(txid.toString().slice(6).split("@")[0]);
     expect(res.type).toStrictEqual("sendTokens");
     expect(res.txid).toStrictEqual(txid);
   });
@@ -117,14 +117,14 @@ describe("Test Accumulate client", () => {
       url: tokenAccountUrl,
       tokenUrl: ACME_TOKEN_URL,
     };
-    let res = await client.createTokenAccount(
+    const txRes = await client.createTokenAccount(
       identityUrl,
       createTokenAccount,
       identityKeyPageTxSigner
     );
-    await client.waitOnTx(res.txid!.toString());
+    await client.waitOnTx(txRes.txid!.toString());
 
-    res = await client.queryUrl(tokenAccountUrl);
+    const res = await client.queryUrl(tokenAccountUrl);
     expect(res.type).toStrictEqual("tokenAccount");
   });
 
@@ -137,10 +137,10 @@ describe("Test Accumulate client", () => {
       publicKeyHash: page1Signer.address.publicKeyHash,
     };
 
-    let res = await client.createKeyBook(identityUrl, createKeyBook, identityKeyPageTxSigner);
-    await client.waitOnTx(res.txid!.toString());
+    const txRes = await client.createKeyBook(identityUrl, createKeyBook, identityKeyPageTxSigner);
+    await client.waitOnTx(txRes.txid!.toString());
 
-    res = await client.queryUrl(newKeyBookUrl);
+    let res = await client.queryUrl(newKeyBookUrl);
     expect(res.type).toStrictEqual("keyBook");
 
     // verify page is part of the book
@@ -269,14 +269,14 @@ describe("Test Accumulate client", () => {
       url: dataAccountUrl,
     };
 
-    let res = await client.createDataAccount(
+    const txRes = await client.createDataAccount(
       identityUrl,
       createDataAccount,
       identityKeyPageTxSigner
     );
-    await client.waitOnTx(res.txid!.toString());
+    await client.waitOnTx(txRes.txid!.toString());
 
-    res = await client.queryUrl(dataAccountUrl);
+    let res = await client.queryUrl(dataAccountUrl);
     expect(res.type).toStrictEqual("dataAccount");
 
     // Write data
@@ -333,8 +333,8 @@ describe("Test Accumulate client", () => {
       precision: 0,
     };
 
-    let res = await client.createToken(identityUrl, createToken, identityKeyPageTxSigner);
-    const createTokenTxId = res.txid;
+    let txRes = await client.createToken(identityUrl, createToken, identityKeyPageTxSigner);
+    const createTokenTxId = txRes.txid;
     await client.waitOnTx(createTokenTxId);
 
     const recipient = (await Signer.forLite(await ED25519Key.generate())).url.join(tokenUrl);
@@ -343,8 +343,8 @@ describe("Test Accumulate client", () => {
       to: [{ url: recipient, amount }],
     };
 
-    res = await client.issueTokens(tokenUrl, issueToken, identityKeyPageTxSigner);
-    await client.waitOnTx(res.txid!.toString());
+    txRes = await client.issueTokens(tokenUrl, issueToken, identityKeyPageTxSigner);
+    await client.waitOnTx(txRes.txid!.toString());
 
     const { data } = await client.queryUrl(recipient);
     expect(BigInt(data.balance)).toStrictEqual(amount);
@@ -356,11 +356,11 @@ describe("Test Accumulate client", () => {
       tokenUrl,
       proof: await constructIssuerProof(client, tokenUrl),
     };
-    res = await client.createTokenAccount(identityUrl, createTokenAccount, identityKeyPageTxSigner);
+    txRes = await client.createTokenAccount(identityUrl, createTokenAccount, identityKeyPageTxSigner);
 
-    await client.waitOnTx(res.txid, { timeout: 10_000 });
+    await client.waitOnTx(txRes.txid, { timeout: 10_000 });
 
-    res = await client.queryUrl(tokenAccountUrl);
+    const res = await client.queryUrl(tokenAccountUrl);
     expect(res.type).toStrictEqual("tokenAccount");
   });
 
@@ -370,14 +370,14 @@ describe("Test Accumulate client", () => {
       newKeyHash: newKey.address.publicKeyHash,
     };
 
-    let res = await client.updateKey(
+    const txRes = await client.updateKey(
       identityKeyPageTxSigner.url,
       updateKey,
       identityKeyPageTxSigner
     );
-    await client.waitOnTx(res.txid!.toString());
+    await client.waitOnTx(txRes.txid!.toString());
 
-    res = await client.queryUrl(identityKeyPageTxSigner.url);
+    const res = await client.queryUrl(identityKeyPageTxSigner.url);
     expect(res.data.keys[0].publicKeyHash).toStrictEqual(
       Buffer.from(newKey.address.publicKeyHash).toString("hex")
     );

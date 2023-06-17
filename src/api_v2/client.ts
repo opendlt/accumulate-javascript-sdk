@@ -129,7 +129,7 @@ export class Client {
     });
   }
 
-  queryTx(txId: string | URL, options?: Omit<TxnQueryArgs, "txid" | "txidUrl">): Promise<any> {
+  queryTx(txId: string | URL | TxID, options?: Omit<TxnQueryArgs, "txid" | "txidUrl">): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
 
@@ -241,7 +241,9 @@ export class Client {
    * @param options
    * @returns void
    */
-  async waitOnTx(txId: string, options?: WaitTxOptions): Promise<void> {
+  async waitOnTx(txId: string | TxID, options?: WaitTxOptions): Promise<void> {
+    if (txId instanceof TxID) txId = txId.toString();
+
     // Options
     const to = options?.timeout ?? 30_000;
     const pollInterval = options?.pollInterval ?? 500;

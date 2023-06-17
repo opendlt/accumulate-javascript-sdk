@@ -9,7 +9,7 @@ test("should parse url", () => {
 });
 
 test("should throw on non Accumulate URL", () => {
-  expect(() => URL.parse("https://accumulatenetwork.io/")).toThrowError(/Invalid protocol/);
+  expect(() => URL.parse("https://accumulatenetwork.io/")).toThrowError(/Invalid scheme/);
 });
 
 test("should append path", () => {
