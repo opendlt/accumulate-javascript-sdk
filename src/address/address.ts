@@ -130,8 +130,7 @@ export class PrivateKeyAddress extends PublicKeyHashAddress {
 
 async function doChecksum(...parts: Uint8Array[]) {
   const c = await sha256(concat(parts));
-  const cc = await sha256(c);
-  return new Uint8Array(cc);
+  return await sha256(c);
 }
 
 // async function formatMH(

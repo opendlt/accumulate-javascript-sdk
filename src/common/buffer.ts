@@ -1,9 +1,15 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-undef */
 
-class Buffer extends Uint8Array {
-  static from(v, encoding) {
+type Encoding = "hex" | "utf-8" | "base64";
+
+export class Buffer extends Uint8Array {
+  static from(v: string | Iterable<number>, encoding?: Encoding) {
+    // @ts-ignore
     if (typeof globalThis?.Buffer === "function") {
-      return globalThis.Buffer.from(...arguments);
+      // @ts-ignore
+      return globalThis.Buffer.from(v, encoding);
     }
 
     if (typeof v !== "string") {
@@ -13,22 +19,22 @@ class Buffer extends Uint8Array {
     switch (encoding) {
       case "hex":
         if (v.length % 2 != 0) v = "0" + v;
-        return new this(Uint8Array.from(v.match(/.{2}/g).map((byte) => parseInt(byte, 16))));
+        return new this(Uint8Array.from(v.match(/.{2}/g)!.map((byte) => parseInt(byte, 16))));
 
       case "base64": {
         const b = new TextEncoder().encode(atob(v));
-        return new this(Uint8Array(b));
+        return new this(b);
       }
 
       default: {
         // Default to utf-8
-        const b = new TextEncoder("utf-8").encode(v);
-        return new this(Uint8Array(b));
+        const b = new TextEncoder().encode(v);
+        return new this(b);
       }
     }
   }
 
-  static concat(v) {
+  static concat(v: ArrayLike<number>[]) {
     const len = v.reduce((v, u) => v + u.length, 0);
     const merged = new Uint8Array(len);
     let offset = 0;
@@ -39,22 +45,20 @@ class Buffer extends Uint8Array {
     return merged;
   }
 
-  toString(encoding) {
+  // @ts-ignore
+  toString(encoding: Encoding) {
     switch (encoding) {
       case "hex":
         return this.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
       case "base64": {
-        return new TextDecoder().decode(btoa(v));
+        return btoa(new TextDecoder().decode(this));
       }
 
       default: {
         // Default to utf-8
-        return new TextDecoder("utf-8").decode(v);
+        return new TextDecoder("utf-8").decode(this);
       }
     }
   }
 }
-
-exports.Buffer = Buffer;
-exports.BufferCls = Buffer;

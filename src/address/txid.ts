@@ -10,7 +10,7 @@ export class AccumulateTxID {
   constructor(input: AccumulateURL | URL | string, hash?: Uint8Array | string) {
     if (hash) {
       if (typeof hash === "string") {
-        hash = Buffer.from(hash, "hex");
+        hash = Uint8Array.from(Buffer.from(hash, "hex"));
       }
       if (!(input instanceof AccumulateURL)) {
         input = new AccumulateURL(input);
