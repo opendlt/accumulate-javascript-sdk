@@ -1,5 +1,18 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Buffer } from "./buffer";
-import { hasher } from "./crypto_base";
+
+const hasher: Promise<(data: Uint8Array) => Promise<Uint8Array>> = (async () => {
+  if ("crypto" in globalThis) {
+    // Browser
+    // @ts-ignore
+    return async (data) => new Uint8Array(await crypto.subtle.digest("SHA-256", data));
+  }
+
+  // Node
+  // @ts-ignore
+  const { createHash } = await import("crypto");
+  return (data) => Promise.resolve(createHash("sha256").update(data).digest());
+})();
 
 export async function sha256(data: Uint8Array): Promise<Uint8Array> {
   return (await hasher)(data);
