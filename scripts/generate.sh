@@ -23,6 +23,7 @@ import { MessageType } from "./msg";
 import * as p2p from "./p2p";
 import { AccumulateURL as URL, URLArgs } from "../address/url";
 import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
+import { Buffer } from "../common/buffer";
 '
 gen types -l typescript-union -o ../src/api_v3/msg_unions_gen.ts --elide-package-type \
   pkg/api/v3/message/{messages,private}.yml \
@@ -30,6 +31,7 @@ gen types -l typescript-union -o ../src/api_v3/msg_unions_gen.ts --elide-package
   -x Addressed,MetricsRequest,MetricsResponse \
   --header='
 import * as types from "./msg";
+import { Buffer } from "../common/buffer";
 '
 
 gen enum -l typescript -o ../src/api_v3/enums_gen.ts pkg/api/v3/enums.yml
@@ -48,6 +50,7 @@ import { AccumulateURL as URL, URLArgs } from "../address/url";
 import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 import { EventType, QueryType, RecordType, ServiceType } from "./enums_gen";
 import * as p2p from "./p2p";
+import { Buffer } from "../common/buffer";
 '
 gen types -l typescript-union -o ../src/api_v3/unions_gen.ts  --long-union-discriminator \
   pkg/api/v3/{records,events,queries}.yml \
@@ -55,6 +58,7 @@ gen types -l typescript-union -o ../src/api_v3/unions_gen.ts  --long-union-discr
   --header='
 import * as types from ".";
 import * as messaging from "../messaging";
+import { Buffer } from "../common/buffer";
 '
 
 gen enum -l typescript -o ../src/api_v2/enums_gen.ts internal/api/v2/enums.yml
@@ -68,6 +72,7 @@ import * as core from "../network";
 import * as errors2 from "../errors";
 import { AccumulateURL as URL, URLArgs } from "../address/url";
 import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
+import { Buffer } from "../common/buffer";
 '
 
 gen enum -l typescript -o ../src/api_v2/config_enums_gen.ts internal/node/config/enums.yml
@@ -76,20 +81,24 @@ gen types -l typescript -o ../src/api_v2/config_types_gen.ts internal/node/confi
   --header='
 import * as protocol from "./protocol";
 import { NodeType, NodeTypeArgs } from "./config";
+import { Buffer } from "../common/buffer";
 '
 
 gen enum -l typescript -o ../src/errors/enums_gen.ts pkg/errors/status.yml
 gen types -l typescript -o ../src/errors/types_gen.ts pkg/errors/error.yml --header='
 import { Status, StatusArgs } from ".";
+import { Buffer } from "../common/buffer";
 '
 
 gen types -l typescript -o ../src/network/types_gen.ts pkg/types/network/types.yml --header='
 import * as protocol from "../core";
+import { Buffer } from "../common/buffer";
 '
 
 gen enum -l typescript -o ../src/merkle/enums_gen.ts pkg/types/merkle/enums.yml
 gen types -l typescript -o ../src/merkle/types_gen.ts pkg/types/merkle/types.yml --header='
 import { ChainType } from ".";
+import { Buffer } from "../common/buffer";
 '
 
 gen enum -l typescript -o ../src/messaging/enums_gen.ts pkg/types/messaging/enums.yml
@@ -97,6 +106,7 @@ gen types -l typescript-union -o ../src/messaging/unions_gen.ts pkg/types/messag
   -x BlockSummary \
   --header='
 import * as types from ".";
+import { Buffer } from "../common/buffer";
 '
 gen types -l typescript -o ../src/messaging/types_gen.ts pkg/types/messaging/messages.yml \
   -x BlockSummary,RecordUpdate,StateTreeUpdate \
@@ -105,6 +115,7 @@ import { Message, MessageArgs, MessageType } from ".";
 import * as protocol from "../core";
 import { AccumulateURL as URL, URLArgs } from "../address/url";
 import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
+import { Buffer } from "../common/buffer";
 '
 
 gen enum -l typescript -o ../src/core/enums_gen.ts protocol/enums.yml
@@ -112,6 +123,7 @@ gen types -l typescript-union -o ../src/core/unions_gen.ts \
     protocol/{accounts,account_auth_operations,general,key_page_operations,signatures,synthetic_transactions,system,transaction,transaction_results,user_transactions}.yml \
   --header='
 import * as types from ".";
+import { Buffer } from "../common/buffer";
 '
 
 gen types -l typescript -o ../src/core/types_gen.ts \
@@ -163,6 +175,7 @@ import {
   VoteType,
   VoteTypeArgs,
 } from ".";
+import { Buffer } from "../common/buffer";
 '
 
 # Change directory to REPO/, format everything

@@ -1,5 +1,6 @@
 import nacl from "tweetnacl";
 import { PrivateKeyAddress } from "../address";
+import { Buffer } from "../common/buffer";
 import { sha256 } from "../common/crypto";
 import { SignatureType } from "../core";
 import { BaseKey, PrivateKey, PublicKey } from "./key";

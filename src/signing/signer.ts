@@ -1,4 +1,5 @@
 import { URL, URLArgs } from "../address";
+import { Buffer } from "../common/buffer";
 import { sha256 } from "../common/crypto";
 import type { Transaction, UserSignature } from "../core";
 import type { Key, SignOptions } from "./key";

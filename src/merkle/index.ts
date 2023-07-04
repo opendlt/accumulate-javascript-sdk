@@ -3,6 +3,7 @@
 export * from "./enums_gen";
 export * from "./types_gen";
 
+import { Buffer } from "../common/buffer";
 import { Receipt } from "./types_gen";
 
 export function combineReceipts(r1: Receipt, r2: Receipt): Receipt {

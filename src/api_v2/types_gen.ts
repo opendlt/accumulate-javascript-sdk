@@ -1,6 +1,7 @@
 import { BlockFilterMode, BlockFilterModeArgs, TxFetchMode, TxFetchModeArgs } from ".";
 import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 import { AccumulateURL as URL, URLArgs } from "../address/url";
+import { Buffer } from "../common/buffer";
 import { encodeAs } from "../encoding";
 import * as errors2 from "../errors";
 import * as merkle from "../merkle";

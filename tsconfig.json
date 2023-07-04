@@ -16,10 +16,11 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "sourceMap": true,
+    "allowJs": true,
     "outDir": "./lib/",
-    "types": ["node", "jest"],
+    "types": ["jest"],
     "lib": ["ES2020", "DOM"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts","src/**/*.js"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

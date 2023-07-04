@@ -1,3 +1,4 @@
+import { Buffer } from "../src/common/buffer";
 import { ED25519Key, Signer } from "../src/signing";
 
 test("should compute correct lite ACME token account URL", async () => {

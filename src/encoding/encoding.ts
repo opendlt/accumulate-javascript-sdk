@@ -1,12 +1,14 @@
+import { Buffer } from "../common/buffer";
+
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-export function fieldMarshalBinary(field: number, val: Uint8Array): Buffer {
+export function fieldMarshalBinary(field: number, val: Uint8Array): Uint8Array {
   if (field < 1 || field > 32) {
     throw new Error(`Field number is out of range [1, 32]: ${field}`);
   }
   return Buffer.concat([uvarintMarshalBinary(field), val]);
 }
 
-export function uvarintMarshalBinary(val: number | bigint, field?: number): Buffer {
+export function uvarintMarshalBinary(val: number | bigint, field?: number): Uint8Array {
   if (typeof val === "number" && val > Number.MAX_SAFE_INTEGER) {
     throw new Error(
       "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use bigint instead."
@@ -24,12 +26,12 @@ export function uvarintMarshalBinary(val: number | bigint, field?: number): Buff
   }
 
   buffer[i] = Number(x & 0xffn);
-  const data = Buffer.from(buffer);
+  const data = Uint8Array.from(buffer);
 
   return field ? fieldMarshalBinary(field, data) : data;
 }
 
-export function varintMarshalBinary(val: number | bigint, field?: number): Buffer {
+export function varintMarshalBinary(val: number | bigint, field?: number): Uint8Array {
   if (typeof val === "number") {
     if (val > Number.MAX_SAFE_INTEGER) {
       throw new Error(
@@ -51,7 +53,7 @@ export function varintMarshalBinary(val: number | bigint, field?: number): Buffe
   return uvarintMarshalBinary(ux, field);
 }
 
-export function bigNumberMarshalBinary(bn: bigint, field?: number): Buffer {
+export function bigNumberMarshalBinary(bn: bigint, field?: number): Uint8Array {
   if (bn < 0n) {
     throw new Error("Cannot marshal a negative bigint");
   }
@@ -63,30 +65,29 @@ export function bigNumberMarshalBinary(bn: bigint, field?: number): Buffer {
   return withFieldNumber(data, field);
 }
 
-export function booleanMarshalBinary(b: boolean, field?: number): Buffer {
-  const data = b ? Buffer.from([1]) : Buffer.from([0]);
+export function booleanMarshalBinary(b: boolean, field?: number): Uint8Array {
+  const data = b ? Uint8Array.from([1]) : Uint8Array.from([0]);
   return withFieldNumber(data, field);
 }
 
-export function stringMarshalBinary(val: string, field?: number): Buffer {
+export function stringMarshalBinary(val: string, field?: number): Uint8Array {
   const data = bytesMarshalBinary(Buffer.from(val));
   return withFieldNumber(data, field);
 }
 
-export function bytesMarshalBinary(val: Uint8Array, field?: number): Buffer {
+export function bytesMarshalBinary(val: Uint8Array, field?: number): Uint8Array {
   const length = uvarintMarshalBinary(val.length);
   const data = Buffer.concat([length, val]);
   return withFieldNumber(data, field);
 }
 
-export function hashMarshalBinary(val: Uint8Array, field?: number): Buffer {
+export function hashMarshalBinary(val: Uint8Array, field?: number): Uint8Array {
   if (val.length != 32) {
     throw new Error(`Invalid length, value is not a hash`);
   }
-  const data = Buffer.from(val);
-  return withFieldNumber(data, field);
+  return withFieldNumber(val, field);
 }
 
-function withFieldNumber(data: Buffer, field?: number): Buffer {
+function withFieldNumber(data: Uint8Array, field?: number): Uint8Array {
   return field ? fieldMarshalBinary(field, data) : data;
 }
