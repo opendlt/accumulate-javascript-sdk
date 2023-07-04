@@ -2,7 +2,7 @@ import { AccumulateTxID } from "./txid";
 
 export type URLArgs = AccumulateURL | URL | string;
 
-type URLObj = {
+export type URLObj = {
   scheme: string;
   hostname: string;
   username: string;
@@ -11,7 +11,7 @@ type URLObj = {
   hash: string;
 };
 
-function parseURL(input: string | URL): URLObj {
+export function parseURL(input: string | URL): URLObj {
   // Deal with garbage browser implementations that break if the scheme isn't HTTP/HTTPS
   let scheme: string, hostname: string;
   if (typeof input === "string") {
@@ -112,9 +112,9 @@ export class AccumulateURL {
     return this.url.hash;
   }
 
-  toString(): string {
+  toString(opts?: { omitUser?: boolean }): string {
     let s = "acc://";
-    if (this.username) s += this.username + "@";
+    if (!opts?.omitUser && this.username) s += this.username + "@";
     s += this.authority;
     if (this.path !== "/") s += this.path;
     if (this.query) s += "?" + this.query;
