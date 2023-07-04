@@ -23,18 +23,15 @@ export class AccumulateTxID {
       return;
     }
 
-    if (input instanceof AccumulateURL || input instanceof URL) {
-      input = new URL(input.toString()); // copy
-    } else {
-      input = new URL(input);
+    if (!(input instanceof AccumulateURL)) {
+      input = new AccumulateURL(input);
     }
     if (!input.username) {
       throw new Error("URL is not a transaction ID: username is empty");
     }
 
     this.hash = Buffer.from(input.username, "hex");
-    input.username = "";
-    this.account = new AccumulateURL(input);
+    this.account = new AccumulateURL(input.toString({ omitUser: true }));
   }
 
   static parse(input: TxIDArgs) {
