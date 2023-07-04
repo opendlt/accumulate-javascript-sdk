@@ -2,6 +2,7 @@
 /* eslint-disable no-debugger */
 
 import "reflect-metadata";
+import { Buffer } from "../common/buffer";
 import {
   BigInt,
   Bool,
@@ -25,7 +26,7 @@ export const FieldNumber = new Uint();
 export const Length = new Uint();
 
 export function encode(target: any) {
-  const parts: Buffer[] = [];
+  const parts: Uint8Array[] = [];
   consume(target, (field, value) => {
     parts.push(uintMarshalBinary(field.number));
     parts.push(field.type.encode(value));
@@ -94,7 +95,7 @@ class Embedded {
   constructor(private readonly field: Field) {}
 
   encode(value: any) {
-    const parts: Buffer[] = [];
+    const parts: Uint8Array[] = [];
     this.consume(value, (field, value) => {
       parts.push(uintMarshalBinary(field.number));
       parts.push(field.type.encode(value));

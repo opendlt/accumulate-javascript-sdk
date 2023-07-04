@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import { encode } from "multibase";
+import { Buffer } from "../common/buffer";
 import { sha256 } from "../common/crypto";
 import { Signature, SignatureType } from "../core";
 

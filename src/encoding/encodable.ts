@@ -1,5 +1,6 @@
 import { consume, Consumer, encode } from ".";
 import * as url from "../address";
+import { Buffer } from "../common/buffer";
 import {
   bigNumberMarshalBinary as bigIntMarshalBinary,
   booleanMarshalBinary,
@@ -13,9 +14,9 @@ import {
 
 export interface Encodable {
   embedding?: boolean;
-  encode(value: any): Buffer;
+  encode(value: any): Uint8Array;
   consume?(value: any, consumer: Consumer): void;
-  raw?(value: any): { length: Buffer; value: Buffer };
+  raw?(value: any): { length: Uint8Array; value: Uint8Array };
 }
 
 export class Int {
@@ -82,7 +83,7 @@ export class Time {
 
 export class Duration {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  encode(_value: number): Buffer {
+  encode(_value: number): Uint8Array {
     throw new Error("cannot marshal duration to binary");
   }
 }
@@ -95,7 +96,7 @@ export class BigInt {
 
 export class Float {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  encode(_value: number): Buffer {
+  encode(_value: number): Uint8Array {
     throw new Error("cannot marshal float to binary");
   }
 }
@@ -150,7 +151,7 @@ export class RawJson {
 
 export class Any {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  encode(_value: any): Buffer {
+  encode(_value: any): Uint8Array {
     throw new Error("cannot marshal type any to binary");
   }
 }

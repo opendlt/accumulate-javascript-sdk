@@ -2,6 +2,7 @@
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
 import { Client, RpcError } from "../src/api_v2";
+import { Buffer } from "../src/common/buffer";
 import { constructIssuerProof } from "../src/common/util";
 import {
   AccountAuthOperationArgs,

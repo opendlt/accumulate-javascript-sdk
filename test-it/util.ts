@@ -5,7 +5,9 @@ import path from "path";
 import { randomBytes } from "tweetnacl";
 import { URL } from "../src";
 import { Client } from "../src/api_v2";
+import { Buffer } from "../src/common/buffer";
 import { ED25519Key, Signer, SignerWithVersion } from "../src/signing";
+
 export async function randomLiteIdentity(): Promise<SignerWithVersion> {
   return Signer.forLite(await ED25519Key.generate());
 }

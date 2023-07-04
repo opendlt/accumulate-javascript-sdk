@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Buffer } from "../src/common/buffer";
 import { combineReceipts, Receipt } from "../src/merkle";
 
 test("should clone receipt with string hashes", () => {

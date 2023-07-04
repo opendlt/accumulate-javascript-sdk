@@ -1,6 +1,7 @@
 import { Message, MessageArgs, MessageType } from ".";
 import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid";
 import { AccumulateURL as URL, URLArgs } from "../address/url";
+import { Buffer } from "../common/buffer";
 import * as protocol from "../core";
 import { encodeAs } from "../encoding";
 

@@ -1,3 +1,4 @@
+import { Buffer } from "../common/buffer";
 import { AccumulateURL } from "./url";
 
 export type TxIDArgs = AccumulateTxID | URL | string | AccumulateURL;
