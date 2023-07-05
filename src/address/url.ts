@@ -11,7 +11,11 @@ export type URLObj = {
   hash: string;
 };
 
-export function parseURL(input: string | URL): URLObj {
+export function parseURL(input: string | URL | URLObj): URLObj {
+  if (typeof input !== "string" && !(input instanceof URL)) {
+    return input;
+  }
+
   // Deal with garbage browser implementations that break if the scheme isn't HTTP/HTTPS
   let scheme: string, hostname: string;
   if (typeof input === "string") {
@@ -19,6 +23,7 @@ export function parseURL(input: string | URL): URLObj {
     scheme = i <= 0 ? "acc" : input.substring(0, i);
     if (i > 0) input = input.substring(i + 3);
     const u = new URL("http://" + input);
+    if (u.username.length) input = input.substring(u.username.length + 1);
     hostname = input.substring(0, u.hostname.length);
     input = u;
   } else {
@@ -41,7 +46,7 @@ export function parseURL(input: string | URL): URLObj {
 export class AccumulateURL {
   private readonly url: URLObj;
 
-  constructor(input: URL | string) {
+  constructor(input: URL | URLObj | string) {
     this.url = parseURL(input);
     if (this.url.scheme !== "acc") {
       throw new Error(`Invalid scheme: ${this.url.scheme}`);
@@ -64,7 +69,7 @@ export class AccumulateURL {
   }
 
   withTxID(hash: Uint8Array | string) {
-    const copy = new URL(this.toString());
+    const copy = parseURL(this.toString());
     copy.username = "";
     return new AccumulateTxID(copy, hash);
   }
