@@ -22,7 +22,7 @@ export function parseURL(input: string | URL): URLObj {
     hostname = input.substring(0, u.hostname.length);
     input = u;
   } else {
-    scheme = input.protocol;
+    scheme = input.protocol.replace(/:$/, '');
     hostname = input.hostname;
   }
 
