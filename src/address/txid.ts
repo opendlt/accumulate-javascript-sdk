@@ -1,5 +1,5 @@
 import { Buffer } from "../common/buffer";
-import { AccumulateURL } from "./url";
+import { AccumulateURL, parseURL, URLObj } from "./url";
 
 export type TxIDArgs = AccumulateTxID | URL | string | AccumulateURL;
 
@@ -7,7 +7,7 @@ export class AccumulateTxID {
   public readonly account: AccumulateURL;
   public readonly hash: Uint8Array;
 
-  constructor(input: AccumulateURL | URL | string, hash?: Uint8Array | string) {
+  constructor(input: AccumulateURL | URL | URLObj | string, hash?: Uint8Array | string) {
     if (hash) {
       if (typeof hash === "string") {
         hash = Uint8Array.from(Buffer.from(hash, "hex"));
@@ -40,7 +40,7 @@ export class AccumulateTxID {
   }
 
   asUrl() {
-    const copy = new URL(this.account.toString());
+    const copy = parseURL(this.account.toString());
     copy.username = Buffer.from(this.hash).toString("hex");
     return new AccumulateURL(copy);
   }
