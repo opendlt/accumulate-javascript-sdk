@@ -1,7 +1,7 @@
-import Transport from "@ledgerhq/hw-transport";
+import { Buffer } from "../common/buffer";
 import { AccumulateURL } from "../address/url";
 import { scan as rxScan } from "rxjs/operators";
-import { discoverDevices } from "./hw";
+import { discoverDevices, Transport } from "./hw";
 import {LedgerAddress, LedgerAppName, LedgerSignature, LedgerVersion, LedgerWalletInfo} from "./model/results";
 import {foreach, splitPath} from "./utils";
 import Bip32Path from "./common/bip32-path";
@@ -57,15 +57,15 @@ export default class LedgerApi {
   ): Promise<LedgerAddress> {
     const bipPath = BIPPath.fromString(path, false).toPathArray();
 
-    const buffer = Buffer.alloc(1 + bipPath.length * 4);
+    const buffer = new Writable(1 + bipPath.length * 4);
 
-    buffer.writeInt8(bipPath.length, 0);
+    buffer.writeUInt8(bipPath.length, 0);
     bipPath.forEach((segment, index) => {
       buffer.writeUInt32BE(segment, 1 + index * 4);
     });
     if (alias.length > 0) {
-      buffer.writeInt8(alias.length);
-      buffer.write(alias);
+      buffer.writeUInt8(alias.length);
+      buffer.write(Buffer.from(alias, 'utf-8'));
     }
     return this.transport
         .send(
@@ -79,15 +79,15 @@ export default class LedgerApi {
           const result = new LedgerAddress("","","");
           let offset = 0
           const publicKeyLength = response[offset++];
-          result.publicKey = response.subarray(offset, offset + publicKeyLength).toString("hex");
+          result.publicKey = Buffer.from(response.subarray(offset, offset + publicKeyLength)).toString("hex");
           offset += publicKeyLength
           const chainCodeLength = response[offset++];
-          result.chainCode = response.subarray(offset, offset + chainCodeLength).toString("hex")
+          result.chainCode = Buffer.from(response.subarray(offset, offset + chainCodeLength)).toString("hex")
           offset += chainCodeLength
           const addressLength = response[offset++];
-          result.address = response
-              .subarray(offset, offset + addressLength)
-              .toString("ascii");
+          result.address = Buffer.from(response
+              .subarray(offset, offset + addressLength))
+              .toString("utf-8");
 
           return result;
         });
@@ -106,7 +106,7 @@ export default class LedgerApi {
   ): Promise<LedgerSignature> {
     const paths = splitPath(path);
     let offset = 0;
-    const rawTransaction = new Buffer(unsignedEnvelopeHex, "hex");
+    const rawTransaction = Buffer.from(unsignedEnvelopeHex, "hex");
     const toSend = [];
     let response: any;
 
@@ -117,7 +117,7 @@ export default class LedgerApi {
           offset + maxChunkSize - headerLen > rawTransaction.length
               ? rawTransaction.length
               : maxChunkSize;
-      const buffer = new Buffer(offset === 0 ? 1 + paths.length * 4 /*+ chunkSize*/ : chunkSize);
+      const buffer = new Writable(offset === 0 ? 1 + paths.length * 4 /*+ chunkSize*/ : chunkSize);
       if (offset === 0) {
         buffer[0] = paths.length;
         paths.forEach((element, index) => {
@@ -127,7 +127,7 @@ export default class LedgerApi {
         //rawTransaction.copy(buffer, 1 + 4 * paths.length, offset, offset + chunkSize);
       } else {
         const start = offset - headerLen
-        rawTransaction.copy(buffer, 0, start, start + chunkSize);
+        buffer.set(rawTransaction.slice(start, start + chunkSize));
         offset += chunkSize;
       }
       toSend.push(buffer);
@@ -238,4 +238,25 @@ export async function queryHidWallets(): Promise<Array<LedgerWalletInfo>> {
   }
 
   return devices;
+}
+
+class Writable extends Uint8Array {
+  offset = 0;
+
+  writeUInt8(value: number, offset: number = this.offset) {
+    this[offset] = value & 0xFF;
+    this.offset = offset;
+  }
+
+  writeUInt32BE(value: number, offset: number = this.offset) {
+    for (let i = 0; i < 4; i++) {
+      this.writeUInt8(value >> (8*(3-i)), offset + i);
+    }
+  }
+
+  write(value: Uint8Array, offset: number = this.offset) {
+    if (offset + value.length > this.length)
+      throw new Error('insufficient space allocated');
+    this.set(value, offset);
+  }
 }
