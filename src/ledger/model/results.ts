@@ -1,4 +1,4 @@
-import { AccumulateURL } from "accumulate.js/lib/address/url";
+import { AccumulateURL } from "../../address/url";
 import { TransportModule } from "../hw";
 
 /**

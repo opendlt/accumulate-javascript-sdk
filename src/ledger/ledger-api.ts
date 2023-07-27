@@ -15,8 +15,6 @@ const ledgerOpSignTransaction = 0x06; // Returns specific wallet application con
 
 //P1 parameters
 const ledgerP1Display = 0x01;
-//const ledgerP1DirectlyFetchAddress    = 0x00 // Return address directly from the wallet
-//const ledgerP1InitTypedMessageData     = 0x00 // First chunk of Typed Message data
 const ledgerP1InitTransactionData = 0x00; // First transaction data block for signing
 const ledgerP1ContTransactionData = 0x01; // Subsequent transaction data block for signing
 
