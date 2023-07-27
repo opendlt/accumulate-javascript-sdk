@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Buffer } from "../common/buffer";
 import { AccumulateURL } from "../address/url";
 import { scan as rxScan } from "rxjs/operators";
@@ -26,7 +27,7 @@ const ledgerP2DiscardAddressChainCode = 0x00; // Do not return the chain code al
 /**
  * {@link LedgerApi}
  */
-export default class LedgerApi {
+export class LedgerApi {
   transport: Transport; //<*>;
 
   constructor(transport: Transport) {
@@ -65,6 +66,7 @@ export default class LedgerApi {
     });
     if (alias.length > 0) {
       buffer.writeUInt8(alias.length);
+      // @ts-ignore
       buffer.write(Buffer.from(alias, 'utf-8'));
     }
     return this.transport
