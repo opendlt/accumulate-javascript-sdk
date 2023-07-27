@@ -188,10 +188,11 @@ export class LedgerApi {
   }
 }
 /**
- * {@link queryWallets:function}
  * @returns LedgerWalletInfo array
  */
 export async function queryHidWallets(): Promise<Array<LedgerWalletInfo>> {
+  // This linked to {@link queryWallets:function}, but that function doesn't
+  // exist and typedoc does not like that
   const module = "hid";
   const devices = new Array<LedgerWalletInfo>();
 
