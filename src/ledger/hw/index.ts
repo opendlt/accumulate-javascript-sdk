@@ -2,7 +2,11 @@ import type { Observable } from "rxjs";
 import { EMPTY, merge } from "rxjs";
 import { catchError } from "rxjs/operators";
 
-// import Transport from "@ledgerhq/hw-transport";
+/**
+ * Transport is a shim for the actual Transport class from
+ * @ledgerhq/hw-transport since importing the actual type causes tsc to fail in
+ * unpleasant ways. Callers should use the actual Transport class instead.
+ */
 export interface Transport {
   /**
    * Send data to the device using the higher level API.
