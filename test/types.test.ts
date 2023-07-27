@@ -13,7 +13,7 @@ describe.each(transactionTests)("transactions", ({ name, cases }) => {
   }
 
   describe(name, () => {
-    it.each<typeof cases[0]>(cases)("should marshal correctly", ({ json, binary }) => {
+    it.each<(typeof cases)[0]>(cases)("should marshal correctly", ({ json, binary }) => {
       const { signatures, transaction } = json as any;
       const env = new Envelope({ signatures, transaction: transaction });
       expect(encode(env)).toStrictEqual(Uint8Array.from(Buffer.from(binary, "base64")));
@@ -27,7 +27,7 @@ describe.each(accountTests)("accounts", ({ name, cases }) => {
   }
 
   describe(name, () => {
-    it.each<typeof cases[0]>(cases)("should marshal correctly", ({ json, binary }) => {
+    it.each<(typeof cases)[0]>(cases)("should marshal correctly", ({ json, binary }) => {
       const account = Account.fromObject(json as any);
       expect(encode(account)).toStrictEqual(Uint8Array.from(Buffer.from(binary, "base64")));
     });

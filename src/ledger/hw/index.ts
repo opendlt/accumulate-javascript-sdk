@@ -20,7 +20,7 @@ export interface Transport {
     p1: number,
     p2: number,
     data?: Uint8Array,
-    statusList?: Array<number>,
+    statusList?: Array<number>
   ): Promise<Uint8Array>;
 
   /**
@@ -29,7 +29,11 @@ export interface Transport {
    */
   close(): Promise<void>;
 
-  decorateAppAPIMethods(self: Record<string, any>, methods: Array<string>, scrambleKey: string): void;
+  decorateAppAPIMethods(
+    self: Record<string, any>,
+    methods: Array<string>,
+    scrambleKey: string
+  ): void;
 }
 
 /**

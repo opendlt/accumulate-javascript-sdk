@@ -7,7 +7,7 @@ import { TransportModule } from "../hw";
  */
 export class LedgerAppName {
   constructor(name: string) {
-    this.name = name
+    this.name = name;
   }
   name: string;
 }
@@ -18,9 +18,9 @@ export class LedgerAppName {
  */
 export class LedgerVersion {
   constructor(major: number, minor: number, patch: number) {
-    this.major = major
-    this.minor = minor
-    this. patch = patch
+    this.major = major;
+    this.minor = minor;
+    this.patch = patch;
   }
   major: number;
   minor: number;
@@ -49,8 +49,8 @@ export declare class LedgerWalletInfo {
 export class LedgerAddress {
   constructor(publicKey: string, address: string, chainCode: string) {
     this.address = address;
-    this.publicKey = publicKey
-    this.chainCode = chainCode
+    this.publicKey = publicKey;
+    this.chainCode = chainCode;
   }
 
   publicKey: string;
@@ -60,44 +60,44 @@ export class LedgerAddress {
 
 export class rsvSig {
   constructor() {
-    this.r = new Uint8Array(32)
-    this.s = new Uint8Array(32)
-    this.v = new Uint8Array(1)
+    this.r = new Uint8Array(32);
+    this.s = new Uint8Array(32);
+    this.v = new Uint8Array(1);
   }
 
-  r: Uint8Array
-  s: Uint8Array
-  v: Uint8Array
+  r: Uint8Array;
+  s: Uint8Array;
+  v: Uint8Array;
 
   fromDER(signature: Uint8Array, parityOdd: boolean) {
     if (signature.length < 72) {
-      throw new Error("invalid signature length to convert der signature to rsv format")
+      throw new Error("invalid signature length to convert der signature to rsv format");
     }
     let offset = 0;
-    let xoffset = 4;  // point to r value
+    let xoffset = 4; // point to r value
     // copy r
     let xlength = signature[xoffset - 1];
     if (xlength == 33) {
       xlength = 32;
       xoffset++;
     }
-    this.r.set(signature.slice(offset + 32 - xlength, xoffset))
+    this.r.set(signature.slice(offset + 32 - xlength, xoffset));
 
     offset += 32;
-    xoffset += xlength + 2;  // move over rvalue and TagLEn
+    xoffset += xlength + 2; // move over rvalue and TagLEn
     // copy s value
     xlength = signature[xoffset - 1];
     if (xlength == 33) {
       xlength = 32;
       xoffset++;
     }
-    this.s.set(signature.slice(offset + 32 - xlength, xoffset))
+    this.s.set(signature.slice(offset + 32 - xlength, xoffset));
 
     // set v
     if (parityOdd == true) {
-      this.v[0] = 1
+      this.v[0] = 1;
     } else {
-      this.v[1] = 0
+      this.v[1] = 0;
     }
   }
 }
@@ -109,12 +109,11 @@ export class rsvSig {
 export class LedgerSignature {
   constructor(signature: string, v: boolean) {
     this.signature = signature;
-    this.parityIsOdd = v
+    this.parityIsOdd = v;
   }
 
   // the signature is 64 bytes for ED25519 (RCD & ACME types), ECDSA DER sig for eth and btc.  It is an exercise left
   // up to the user to reformat ETH ECDSA sig into the {r,s,v} format.  Parity is provided for the v
   signature: string;
-  parityIsOdd: boolean
+  parityIsOdd: boolean;
 }
-
