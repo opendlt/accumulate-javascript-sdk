@@ -159,11 +159,12 @@ export class LedgerApi {
     ).then(() => {
       const signatureLen = response[0];
       const ret = new LedgerSignature(
-        response.slice(1, signatureLen).toString("hex"),
+        response.slice(1, signatureLen+1).toString("hex"),
         response[1 + signatureLen] == 1
       );
 
-      //find out what signature type we used. if eth then return rsv
+      //for ecdsa it returns the DER format the user should converted to the rsv format if sigtype == eth
+      //for ed25519 and RCD (i.e. eddsa signing) it returns the simple 64-bit signature
 
       return ret;
     });
