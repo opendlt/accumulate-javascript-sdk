@@ -18,7 +18,7 @@
     "sourceMap": true,
     "allowJs": true,
     "outDir": "./lib/",
-    "types": ["node","jest"],
+    "types": ["jest"],
     "lib": ["ES2020", "DOM"]
   },
   "include": ["src/**/*.ts","src/**/*.js"],

@@ -1,8 +1,8 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { retry } from "./common/promise";
-import { registerTransportModule } from "./hw";
+import { retry } from "../src/ledger/common/promise";
+import { registerTransportModule } from "../src/ledger/hw";
 
 export function init() {
   console.log("Init!!");
@@ -21,8 +21,4 @@ export function init() {
     ),
     disconnect: () => Promise.resolve(),
   });
-}
-
-if (!process.env.CI) {
-  init();
 }

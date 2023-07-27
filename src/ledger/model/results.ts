@@ -69,7 +69,7 @@ export class rsvSig {
   s: Uint8Array
   v: Uint8Array
 
-  fromDER(signature: Buffer, parityOdd: boolean) {
+  fromDER(signature: Uint8Array, parityOdd: boolean) {
     if (signature.length < 72) {
       throw new Error("invalid signature length to convert der signature to rsv format")
     }
@@ -81,7 +81,7 @@ export class rsvSig {
       xlength = 32;
       xoffset++;
     }
-    signature.copy(this.r, 0, offset + 32 - xlength, xoffset)
+    this.r.set(signature.slice(offset + 32 - xlength, xoffset))
 
     offset += 32;
     xoffset += xlength + 2;  // move over rvalue and TagLEn
@@ -91,7 +91,7 @@ export class rsvSig {
       xlength = 32;
       xoffset++;
     }
-    signature.copy(this.s, 0, offset + 32 - xlength, xoffset)
+    this.s.set(signature.slice(offset + 32 - xlength, xoffset))
 
     // set v
     if (parityOdd == true) {
