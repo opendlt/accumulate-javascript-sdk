@@ -6,4 +6,5 @@ export * as errors from "./errors";
 export * as merkle from "./merkle";
 export * as messaging from "./messaging";
 export * as network from "./network";
+export * as ledger from "./ledger";
 export * from "./signing";
