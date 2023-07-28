@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import type Transport from "@ledgerhq/hw-transport";
 import { scan as rxScan } from "rxjs/operators";
 import { AccumulateURL } from "../address/url";
 import { Buffer } from "../common/buffer";
 import Bip32Path from "./common/bip32-path";
-import { discoverDevices, Transport } from "./hw";
+import { discoverDevices } from "./hw";
 import {
   LedgerAddress,
   LedgerAppName,
@@ -81,7 +82,7 @@ export class LedgerApi {
         ledgerOpGetPublicKey,
         boolDisplay || false ? ledgerP1Display : 0x00,
         boolChainCode || false ? ledgerP2DiscardAddressChainCode : 0x00,
-        buffer
+        buffer as any
       )
       .then((response) => {
         const result = new LedgerAddress("", "", "");
@@ -151,7 +152,7 @@ export class LedgerApi {
           ledgerOpSignTransaction,
           i === 0 ? ledgerP1InitTransactionData : ledgerP1ContTransactionData,
           i === toSend.length - 1 ? ledgerP2LastTransactionData : ledgerP2MoreTransactionData,
-          data
+          data as any
         )
         .then((apduResponse) => {
           response = apduResponse;
