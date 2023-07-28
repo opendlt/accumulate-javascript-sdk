@@ -332,8 +332,6 @@ export class LedgerKey extends BaseKey {
       transaction: [txn],
     });
 
-    console.log(env);
-
     const data = Buffer.from(encode(env)).toString("hex");
     const { signature } = await this.api.signTransaction(this.path, data);
     return Buffer.from(signature, "hex");
