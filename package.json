@@ -94,11 +94,5 @@
     "./lib/messaging": "./lib/messaging/index.js",
     "./lib/network": "./lib/network/index.js",
     "./lib/signing": "./lib/signing/index.js"
-  },
-  "jest": {
-    "preset": "react-native",
-    "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js"
-    }
   }
 }

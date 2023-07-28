@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type Transport from "@ledgerhq/hw-transport";
 import { scan as rxScan } from "rxjs/operators";
-import { AccumulateURL } from "../address/url";
+import { Address } from "../address";
+import { AccumulateURL, URLArgs } from "../address/url";
 import { Buffer } from "../common/buffer";
+import { Signature, SignatureType, Transaction } from "../core";
+import { encode } from "../encoding";
+import { Envelope } from "../messaging";
+import { BaseKey, PublicKey, Signer } from "../signing";
 import Bip32Path from "./common/bip32-path";
 import { discoverDevices } from "./hw";
 import {
@@ -46,6 +51,14 @@ export class LedgerApi {
     );
   }
 
+  async signerForLite(path: string) {
+    return Signer.forLite(await LedgerKey.load(this, path));
+  }
+
+  async signerForPage(page: URLArgs, path: string) {
+    return Signer.forPage(page, await LedgerKey.load(this, path));
+  }
+
   /**
    * get Factom address for a given BIP 32 path.
    * @param path a path in BIP 32 format (note: all paths muth be hardened (e.g. .../0'/0' )
@@ -59,9 +72,9 @@ export class LedgerApi {
    */
   getPublicKey(
     path: string,
-    boolDisplay: boolean,
-    boolChainCode: boolean,
-    alias: string
+    boolDisplay = false,
+    boolChainCode = false,
+    alias = ""
   ): Promise<LedgerAddress> {
     const bipPath = BIPPath.fromString(path, false).toPathArray();
 
@@ -275,5 +288,50 @@ class Writable extends Uint8Array {
   write(value: Uint8Array, offset: number = this.offset) {
     if (offset + value.length > this.length) throw new Error("insufficient space allocated");
     this.set(value, offset);
+  }
+}
+
+export class LedgerKey extends BaseKey {
+  static async load(api: LedgerApi, path: string) {
+    const { publicKey, chainCode } = await api.getPublicKey(path, false, true);
+    const pub = Buffer.from(publicKey, "hex");
+    let type: SignatureType;
+    switch (chainCode) {
+      case "131":
+        type = SignatureType.RCD1;
+        break;
+      case "281":
+        type = SignatureType.ED25519;
+        break;
+      default:
+        throw new Error(`unknown chain code ${chainCode}`);
+    }
+    const key = await Address.fromKey(type, pub);
+    return new this(api, path, key);
+  }
+
+  private constructor(
+    private readonly api: LedgerApi,
+    public readonly path: string,
+    publicKey: PublicKey
+  ) {
+    super(publicKey);
+  }
+
+  async signRaw(sig: Signature, _: Uint8Array, txn?: Transaction): Promise<Uint8Array> {
+    if (!txn) {
+      throw new Error(`The Ledger app does not support blind signing`);
+    }
+
+    const env = new Envelope({
+      signatures: [sig],
+      transaction: [txn],
+    });
+
+    console.log(env);
+
+    const data = Buffer.from(encode(env)).toString("hex");
+    const { signature } = await this.api.signTransaction(this.path, data);
+    return Buffer.from(signature, "hex");
   }
 }
