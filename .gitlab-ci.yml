@@ -19,7 +19,7 @@ build:
 
 test:
   stage: build
-  image: node:16
+  image: node:18
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   needs: []
