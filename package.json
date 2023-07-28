@@ -33,7 +33,7 @@
     "code-check": "yarn clean && yarn build && yarn format:check && yarn lint && yarn doc"
   },
   "devDependencies": {
-    "@ledgerhq/hw-transport-mocker": "^6.11.2",
+    "@ledgerhq/hw-transport-mocker": "^6.0.2",
     "@types/bn.js": "^5.1.1",
     "@types/jest": "^27.5.0",
     "@types/node": "^18.7.18",
@@ -52,7 +52,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@ledgerhq/logs": "^6.10.1",
+    "@ledgerhq/logs": "^6.0.2",
     "axios": "^0.27.2",
     "multibase": "^4.0.6",
     "reflect-metadata": "^0.1.13",
@@ -61,12 +61,12 @@
   "peerDependencies": {
     "@ledgerhq/devices": "^8.0.5",
     "@ledgerhq/errors": "^6.12.7",
-    "@ledgerhq/hw-transport": "^6.11.2",
-    "@ledgerhq/hw-transport-node-hid": "^6.11.2",
-    "@ledgerhq/hw-transport-node-hid-noevents": "^6.11.2",
-    "@ledgerhq/hw-transport-webhid": "^6.11.2",
-    "@ledgerhq/hw-transport-webusb": "^6.11.2",
-    "@ledgerhq/logs": "^6.10.1",
+    "@ledgerhq/hw-transport": "^6.0.2",
+    "@ledgerhq/hw-transport-node-hid": "^6.0.2",
+    "@ledgerhq/hw-transport-node-hid-noevents": "^6.0.2",
+    "@ledgerhq/hw-transport-webhid": "^6.0.2",
+    "@ledgerhq/hw-transport-webusb": "^6.0.2",
+    "@ledgerhq/logs": "^6.0.2",
     "lodash": "^4.17.21",
     "usb": "^1.7.0"
   },
