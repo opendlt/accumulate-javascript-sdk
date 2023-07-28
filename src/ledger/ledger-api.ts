@@ -293,20 +293,24 @@ class Writable extends Uint8Array {
 
 export class LedgerKey extends BaseKey {
   static async load(api: LedgerApi, path: string) {
-    const { publicKey, chainCode } = await api.getPublicKey(path, false, true);
-    const pub = Buffer.from(publicKey, "hex");
+    const { publicKey: pubHex } = await api.getPublicKey(path);
+    const pubBytes = Buffer.from(pubHex, "hex");
+
+    const bipPath = BIPPath.fromString(path, false).toPathArray();
+    if (bipPath[0] != 44) throw new Error(`unsupported key path ${path}`);
     let type: SignatureType;
-    switch (chainCode) {
-      case "131":
+    switch (bipPath[1]) {
+      case 131:
         type = SignatureType.RCD1;
         break;
-      case "281":
+      case 281:
         type = SignatureType.ED25519;
         break;
       default:
-        throw new Error(`unknown chain code ${chainCode}`);
+        throw new Error(`unsupported key path ${path}`);
     }
-    const key = await Address.fromKey(type, pub);
+
+    const key = await Address.fromKey(type, pubBytes);
     return new this(api, path, key);
   }
 
