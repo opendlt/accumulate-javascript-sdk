@@ -61,11 +61,11 @@
   "peerDependencies": {
     "@ledgerhq/devices": "^8.0.5",
     "@ledgerhq/errors": "^6.12.7",
-    "@ledgerhq/hw-transport": "^6.28.5",
-    "@ledgerhq/hw-transport-node-hid": "^6.27.19",
-    "@ledgerhq/hw-transport-node-hid-noevents": "^6.27.16",
-    "@ledgerhq/hw-transport-webhid": "^6.27.17",
-    "@ledgerhq/hw-transport-webusb": "^6.27.17",
+    "@ledgerhq/hw-transport": "^6.24.1",
+    "@ledgerhq/hw-transport-node-hid": "^6.24.1",
+    "@ledgerhq/hw-transport-node-hid-noevents": "^6.24.1",
+    "@ledgerhq/hw-transport-webhid": "^6.24.1",
+    "@ledgerhq/hw-transport-webusb": "^6.24.1",
     "@ledgerhq/logs": "^6.10.1",
     "lodash": "^4.17.21",
     "usb": "^1.7.0"
