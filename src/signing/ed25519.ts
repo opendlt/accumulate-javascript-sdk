@@ -2,7 +2,8 @@ import nacl from "tweetnacl";
 import { PrivateKeyAddress } from "../address";
 import { Buffer } from "../common/buffer";
 import { sha256 } from "../common/crypto";
-import { SignatureType } from "../core";
+import { Signature, SignatureType } from "../core";
+import { encode } from "../encoding";
 import { BaseKey, PrivateKey, PublicKey } from "./key";
 
 abstract class BaseED25519Key extends BaseKey {
@@ -27,8 +28,9 @@ abstract class BaseED25519Key extends BaseKey {
     return await PrivateKeyAddress.from(type, kp.publicKey, kp.secretKey);
   }
 
-  async signRaw(args: { message: Uint8Array; sigMdHash: Uint8Array }): Promise<Uint8Array> {
-    const hash = await sha256(Buffer.concat([args.sigMdHash, args.message]));
+  async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
+    const sigMdHash = await sha256(encode(signature));
+    const hash = await sha256(Buffer.concat([sigMdHash, message]));
     return nacl.sign.detached(hash, this.address.privateKey);
   }
 }
@@ -64,8 +66,9 @@ export class ExternalED22519Key extends BaseKey {
     }
   }
 
-  async signRaw(args: { message: Uint8Array; sigMdHash: Uint8Array }): Promise<Uint8Array> {
-    const hash = await sha256(Buffer.concat([args.sigMdHash, args.message]));
+  async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
+    const sigMdHash = await sha256(encode(signature));
+    const hash = await sha256(Buffer.concat([sigMdHash, message]));
     return this._sign(hash);
   }
 }
@@ -81,8 +84,9 @@ export class ExternalRCD1Key extends BaseKey {
     }
   }
 
-  async signRaw(args: { message: Uint8Array; sigMdHash: Uint8Array }): Promise<Uint8Array> {
-    const hash = await sha256(Buffer.concat([args.sigMdHash, args.message]));
+  async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
+    const sigMdHash = await sha256(encode(signature));
+    const hash = await sha256(Buffer.concat([sigMdHash, message]));
     return this._sign(hash);
   }
 }
