@@ -159,7 +159,7 @@ export class LedgerApi {
     ).then(() => {
       const signatureLen = response[0];
       const ret = new LedgerSignature(
-        response.slice(1, signatureLen+1).toString("hex"),
+        response.slice(1, signatureLen + 1).toString("hex"),
         response[1 + signatureLen] == 1
       );
 

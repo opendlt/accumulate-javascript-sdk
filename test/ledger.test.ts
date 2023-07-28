@@ -94,7 +94,8 @@ test("signTransaction for ACME type", async () => {
 
   const acme = new Accumulate(transport);
   const result = await acme.signTransaction("44'/281'/0'/0'/0'", env.toString("hex"));
-  const s = new LedgerSignature("50edaa8520374aa560845d797a35309caadd823427f4218c1ede364445b884d19671ab5546ab026c388887ec2986ef95e7eef71239bf1c5fc7e2eb040390dc0f",
+  const s = new LedgerSignature(
+    "50edaa8520374aa560845d797a35309caadd823427f4218c1ede364445b884d19671ab5546ab026c388887ec2986ef95e7eef71239bf1c5fc7e2eb040390dc0f",
     false
   );
   expect(result.signature).toEqual(s.signature);
