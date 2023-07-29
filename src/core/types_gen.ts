@@ -838,6 +838,28 @@ export class BlockLedger {
   }
 }
 
+export type BlockThresholdArgs = {
+  minorBlock?: number;
+};
+export class BlockThreshold {
+  @encodeAs.field(1).uint
+  public minorBlock?: number;
+
+  constructor(args: BlockThresholdArgs) {
+    this.minorBlock = args.minorBlock == undefined ? undefined : args.minorBlock;
+  }
+
+  copy() {
+    return new BlockThreshold(this.asObject());
+  }
+
+  asObject(): BlockThresholdArgs {
+    return {
+      minorBlock: this.minorBlock && this.minorBlock,
+    };
+  }
+}
+
 export type BlockValidatorAnchorArgs = {
   source?: URLArgs;
   majorBlockIndex?: number;
@@ -2572,6 +2594,8 @@ export type NetworkLimitsArgs = {
   bookPages?: number;
   pageEntries?: number;
   identityAccounts?: number;
+  pendingMajorBlocks?: number;
+  eventsPerBlock?: number;
 };
 export class NetworkLimits {
   @encodeAs.field(1).uint
@@ -2584,6 +2608,10 @@ export class NetworkLimits {
   public pageEntries?: number;
   @encodeAs.field(5).uint
   public identityAccounts?: number;
+  @encodeAs.field(6).uint
+  public pendingMajorBlocks?: number;
+  @encodeAs.field(7).uint
+  public eventsPerBlock?: number;
 
   constructor(args: NetworkLimitsArgs) {
     this.dataEntryParts = args.dataEntryParts == undefined ? undefined : args.dataEntryParts;
@@ -2592,6 +2620,9 @@ export class NetworkLimits {
     this.bookPages = args.bookPages == undefined ? undefined : args.bookPages;
     this.pageEntries = args.pageEntries == undefined ? undefined : args.pageEntries;
     this.identityAccounts = args.identityAccounts == undefined ? undefined : args.identityAccounts;
+    this.pendingMajorBlocks =
+      args.pendingMajorBlocks == undefined ? undefined : args.pendingMajorBlocks;
+    this.eventsPerBlock = args.eventsPerBlock == undefined ? undefined : args.eventsPerBlock;
   }
 
   copy() {
@@ -2605,6 +2636,8 @@ export class NetworkLimits {
       bookPages: this.bookPages && this.bookPages,
       pageEntries: this.pageEntries && this.pageEntries,
       identityAccounts: this.identityAccounts && this.identityAccounts,
+      pendingMajorBlocks: this.pendingMajorBlocks && this.pendingMajorBlocks,
+      eventsPerBlock: this.eventsPerBlock && this.eventsPerBlock,
     };
   }
 }
@@ -3238,6 +3271,64 @@ export class SendTokens {
       hash: this.hash && Buffer.from(this.hash).toString("hex"),
       meta: this.meta && this.meta,
       to: this.to && this.to?.map((v) => v.asObject()),
+    };
+  }
+}
+
+export type SetRejectThresholdKeyPageOperationArgs = {
+  threshold?: number;
+};
+export type SetRejectThresholdKeyPageOperationArgsWithType =
+  SetRejectThresholdKeyPageOperationArgs & {
+    type: KeyPageOperationType.SetRejectThreshold | "setRejectThreshold";
+  };
+export class SetRejectThresholdKeyPageOperation {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = KeyPageOperationType.SetRejectThreshold;
+  @encodeAs.field(2).uint
+  public threshold?: number;
+
+  constructor(args: SetRejectThresholdKeyPageOperationArgs) {
+    this.threshold = args.threshold == undefined ? undefined : args.threshold;
+  }
+
+  copy() {
+    return new SetRejectThresholdKeyPageOperation(this.asObject());
+  }
+
+  asObject(): SetRejectThresholdKeyPageOperationArgsWithType {
+    return {
+      type: "setRejectThreshold",
+      threshold: this.threshold && this.threshold,
+    };
+  }
+}
+
+export type SetResponseThresholdKeyPageOperationArgs = {
+  threshold?: number;
+};
+export type SetResponseThresholdKeyPageOperationArgsWithType =
+  SetResponseThresholdKeyPageOperationArgs & {
+    type: KeyPageOperationType.SetResponseThreshold | "setResponseThreshold";
+  };
+export class SetResponseThresholdKeyPageOperation {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = KeyPageOperationType.SetResponseThreshold;
+  @encodeAs.field(2).uint
+  public threshold?: number;
+
+  constructor(args: SetResponseThresholdKeyPageOperationArgs) {
+    this.threshold = args.threshold == undefined ? undefined : args.threshold;
+  }
+
+  copy() {
+    return new SetResponseThresholdKeyPageOperation(this.asObject());
+  }
+
+  asObject(): SetResponseThresholdKeyPageOperationArgsWithType {
+    return {
+      type: "setResponseThreshold",
+      threshold: this.threshold && this.threshold,
     };
   }
 }
@@ -4078,6 +4169,7 @@ export type TransactionHeaderArgs = {
   initiator?: Uint8Array | string;
   memo?: string;
   metadata?: Uint8Array | string;
+  holdUntil?: BlockThreshold | BlockThresholdArgs;
 };
 export class TransactionHeader {
   @encodeAs.field(1).url
@@ -4088,6 +4180,8 @@ export class TransactionHeader {
   public memo?: string;
   @encodeAs.field(4).bytes
   public metadata?: Uint8Array;
+  @encodeAs.field(5).reference
+  public holdUntil?: BlockThreshold;
 
   constructor(args: TransactionHeaderArgs) {
     this.principal = args.principal == undefined ? undefined : URL.parse(args.principal);
@@ -4104,6 +4198,12 @@ export class TransactionHeader {
         : args.metadata instanceof Uint8Array
         ? args.metadata
         : Buffer.from(args.metadata, "hex");
+    this.holdUntil =
+      args.holdUntil == undefined
+        ? undefined
+        : args.holdUntil instanceof BlockThreshold
+        ? args.holdUntil
+        : new BlockThreshold(args.holdUntil);
   }
 
   copy() {
@@ -4116,6 +4216,7 @@ export class TransactionHeader {
       initiator: this.initiator && Buffer.from(this.initiator).toString("hex"),
       memo: this.memo && this.memo,
       metadata: this.metadata && Buffer.from(this.metadata).toString("hex"),
+      holdUntil: this.holdUntil && this.holdUntil.asObject(),
     };
   }
 }
