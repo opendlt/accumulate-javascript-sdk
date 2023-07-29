@@ -21,7 +21,7 @@ export namespace EventType {
   }
 
   export function byName(name: string): EventType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "error":
         return EventType.Error;
       case "block":
@@ -82,7 +82,7 @@ export namespace QueryType {
   }
 
   export function byName(name: string): QueryType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "default":
         return QueryType.Default;
       case "chain":
@@ -177,7 +177,7 @@ export namespace RecordType {
   }
 
   export function byName(name: string): RecordType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "account":
         return RecordType.Account;
       case "chain":
@@ -272,7 +272,7 @@ export namespace ServiceType {
   }
 
   export function byName(name: string): ServiceType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return ServiceType.Unknown;
       case "node":

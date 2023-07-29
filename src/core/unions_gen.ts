@@ -445,6 +445,8 @@ export namespace AccountAuthOperation {
 export type KeyPageOperation =
   | types.AddKeyOperation
   | types.RemoveKeyOperation
+  | types.SetRejectThresholdKeyPageOperation
+  | types.SetResponseThresholdKeyPageOperation
   | types.SetThresholdKeyPageOperation
   | types.UpdateAllowedKeyPageOperation
   | types.UpdateKeyOperation;
@@ -454,6 +456,10 @@ export type KeyPageOperationArgs =
   | types.AddKeyOperationArgsWithType
   | types.RemoveKeyOperation
   | types.RemoveKeyOperationArgsWithType
+  | types.SetRejectThresholdKeyPageOperation
+  | types.SetRejectThresholdKeyPageOperationArgsWithType
+  | types.SetResponseThresholdKeyPageOperation
+  | types.SetResponseThresholdKeyPageOperationArgsWithType
   | types.SetThresholdKeyPageOperation
   | types.SetThresholdKeyPageOperationArgsWithType
   | types.UpdateAllowedKeyPageOperation
@@ -466,6 +472,8 @@ export namespace KeyPageOperation {
   export function fromObject(obj: KeyPageOperationArgs): KeyPageOperation {
     if (obj instanceof types.AddKeyOperation) return obj;
     if (obj instanceof types.RemoveKeyOperation) return obj;
+    if (obj instanceof types.SetRejectThresholdKeyPageOperation) return obj;
+    if (obj instanceof types.SetResponseThresholdKeyPageOperation) return obj;
     if (obj instanceof types.SetThresholdKeyPageOperation) return obj;
     if (obj instanceof types.UpdateAllowedKeyPageOperation) return obj;
     if (obj instanceof types.UpdateKeyOperation) return obj;
@@ -477,6 +485,12 @@ export namespace KeyPageOperation {
       case types.KeyPageOperationType.Remove:
       case "remove":
         return new types.RemoveKeyOperation(obj);
+      case types.KeyPageOperationType.SetRejectThreshold:
+      case "setRejectThreshold":
+        return new types.SetRejectThresholdKeyPageOperation(obj);
+      case types.KeyPageOperationType.SetResponseThreshold:
+      case "setResponseThreshold":
+        return new types.SetResponseThresholdKeyPageOperation(obj);
       case types.KeyPageOperationType.SetThreshold:
       case "setThreshold":
         return new types.SetThresholdKeyPageOperation(obj);

@@ -65,7 +65,7 @@ export namespace Type {
   }
 
   export function byName(name: string): Type {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "nodeinforequest":
         return Type.NodeInfoRequest;
       case "findservicerequest":
