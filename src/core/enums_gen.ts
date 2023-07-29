@@ -339,11 +339,11 @@ export namespace ExecutorVersion {
     switch (name.toLowerCase()) {
       case "v1":
         return ExecutorVersion.V1;
-      case "v1signatureanchoring":
+      case "v1-signatureanchoring":
         return ExecutorVersion.V1SignatureAnchoring;
-      case "v1doublehashentries":
+      case "v1-doublehashentries":
         return ExecutorVersion.V1DoubleHashEntries;
-      case "v1halt":
+      case "v1-halt":
         return ExecutorVersion.V1Halt;
       case "v2":
         return ExecutorVersion.V2;
@@ -357,11 +357,11 @@ export namespace ExecutorVersion {
       case ExecutorVersion.V1:
         return "v1";
       case ExecutorVersion.V1SignatureAnchoring:
-        return "v1SignatureAnchoring";
+        return "v1-signatureAnchoring";
       case ExecutorVersion.V1DoubleHashEntries:
-        return "v1DoubleHashEntries";
+        return "v1-doubleHashEntries";
       case ExecutorVersion.V1Halt:
-        return "v1Halt";
+        return "v1-halt";
       case ExecutorVersion.V2:
         return "v2";
       default:
