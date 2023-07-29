@@ -19,7 +19,7 @@ export namespace NodeType {
   }
 
   export function byName(name: string): NodeType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "validator":
         return NodeType.Validator;
       case "follower":
@@ -64,7 +64,7 @@ export namespace PortOffset {
   }
 
   export function byName(name: string): PortOffset {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "tendermintp2p":
         return PortOffset.TendermintP2P;
       case "tendermintrpc":

@@ -19,7 +19,7 @@ export namespace BlockFilterMode {
   }
 
   export function byName(name: string): BlockFilterMode {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "excludenone":
         return BlockFilterMode.ExcludeNone;
       case "excludeempty":
@@ -62,7 +62,7 @@ export namespace TxFetchMode {
   }
 
   export function byName(name: string): TxFetchMode {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "expand":
         return TxFetchMode.Expand;
       case "ids":

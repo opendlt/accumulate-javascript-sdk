@@ -23,7 +23,7 @@ export namespace ChainType {
   }
 
   export function byName(name: string): ChainType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return ChainType.Unknown;
       case "transaction":
