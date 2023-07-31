@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Examples for Accumulate.js",
   "dependencies": {
+    "@ledgerhq/hw-transport-node-hid": "^6.27.19",
     "accumulate.js": "file:../"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@ export * as api_v2 from "./api_v2";
 export * as api_v3 from "./api_v3";
 export * as core from "./core";
 export * as errors from "./errors";
+export * as ledger from "./ledger";
 export * as merkle from "./merkle";
 export * as messaging from "./messaging";
 export * as network from "./network";

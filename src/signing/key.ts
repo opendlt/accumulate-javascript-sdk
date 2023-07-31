@@ -1,6 +1,13 @@
 import { Address, URLArgs } from "../address";
 import { sha256 } from "../common/crypto";
-import { DelegatedSignature, KeySignature, Transaction, UserSignature, VoteType } from "../core";
+import {
+  DelegatedSignature,
+  KeySignature,
+  Signature,
+  Transaction,
+  UserSignature,
+  VoteType,
+} from "../core";
 import { encode } from "../encoding";
 
 export type SignOptions = {
@@ -25,7 +32,11 @@ export interface Key {
 export abstract class BaseKey implements Key {
   protected constructor(public readonly address: PublicKey) {}
 
-  abstract signRaw(args: { message: Uint8Array; sigMdHash: Uint8Array }): Promise<Uint8Array>;
+  abstract signRaw(
+    signature: Signature,
+    message: Uint8Array,
+    transaction?: Transaction
+  ): Promise<Uint8Array>;
 
   async sign(message: Uint8Array | Transaction, opts: SignOptions): Promise<UserSignature> {
     // Initialize the key signature
@@ -49,6 +60,8 @@ export abstract class BaseKey implements Key {
     const sigMdHash = await sha256(encode(sig));
 
     // Initiate if necessary
+    let hash: Uint8Array;
+    let transaction;
     if (message instanceof Transaction) {
       if (!message.header) throw new Error("transaction has no header");
       if (!message.header.initiator) {
@@ -56,15 +69,18 @@ export abstract class BaseKey implements Key {
         message.header.initiator = sigMdHash;
       }
 
-      message = await message.hash();
+      transaction = message;
+      hash = await message.hash();
+    } else {
+      hash = message;
     }
 
     // Calculate the raw signature
-    const rawSig = await this.signRaw({ message, sigMdHash });
+    const rawSig = await this.signRaw(sig, hash, transaction);
 
     // Finalize and return the key signature
     keySig.signature = rawSig;
-    keySig.transactionHash = message;
+    keySig.transactionHash = hash;
     return sig;
   }
 }
