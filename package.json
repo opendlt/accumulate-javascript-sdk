@@ -33,7 +33,7 @@
     "code-check": "yarn clean && yarn build && yarn format:check && yarn lint && yarn doc"
   },
   "devDependencies": {
-    "@ledgerhq/hw-transport-mocker": "^6.28.6",
+    "@ledgerhq/hw-transport-mocker": "^6.27.1",
     "@types/bn.js": "^5.1.1",
     "@types/jest": "^27.5.0",
     "@types/node": "^18.7.18",
@@ -59,13 +59,8 @@
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
-    "@ledgerhq/devices": "^8.0.5",
     "@ledgerhq/errors": "^6.12.7",
-    "@ledgerhq/hw-transport": "^6.28.6",
-    "@ledgerhq/hw-transport-node-hid": "^6.28.6",
-    "@ledgerhq/hw-transport-node-hid-noevents": "^6.28.6",
-    "@ledgerhq/hw-transport-webhid": "^6.28.6",
-    "@ledgerhq/hw-transport-webusb": "^6.28.6",
+    "@ledgerhq/hw-transport": "^6.27.1",
     "@ledgerhq/logs": "^6.10.1",
     "lodash": "^4.17.21",
     "usb": "^1.7.0"
