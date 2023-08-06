@@ -5,7 +5,23 @@
 type Encoding = "hex" | "utf-8" | "base64";
 
 export class Buffer extends Uint8Array {
-  static from(v: string | Iterable<number>, encoding?: Encoding) {
+  static from(v: string, encoding?: Encoding): Buffer;
+  static from(
+    v: Iterable<number> | ArrayLike<number>,
+    mapFn?: (v: number, k: number) => number,
+    thisArg?: any
+  ): Buffer;
+  static from(v: string, mapFn: (v: number, k: number) => number, thisArg?: any): never;
+  static from(
+    v: string | Iterable<number> | ArrayLike<number>,
+    encoding?: Encoding | ((v: number, k: number) => number)
+  ): Buffer {
+    if (typeof encoding === "function") {
+      // Let Uint8Array handle the runtime error if v is a string
+      // eslint-disable-next-line prefer-rest-params
+      return new this(Uint8Array.from.apply(this, Array.from(arguments) as any));
+    }
+
     // @ts-ignore
     if (typeof globalThis?.Buffer === "function") {
       // @ts-ignore
@@ -13,7 +29,7 @@ export class Buffer extends Uint8Array {
     }
 
     if (typeof v !== "string") {
-      return new this(Uint8Array.from(v));
+      return new this(Uint8Array.from(v as any));
     }
 
     switch (encoding) {
@@ -45,20 +61,25 @@ export class Buffer extends Uint8Array {
     return merged;
   }
 
-  // @ts-ignore
-  toString(encoding: Encoding) {
-    switch (encoding) {
+  toString(encoding?: Encoding) {
+    // Default to utf-8
+    if (!encoding) {
+      return new TextDecoder("utf-8").decode(this);
+    }
+
+    switch (encoding.toLowerCase()) {
       case "hex":
         return this.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
-      case "base64": {
+      case "base64":
         return btoa(new TextDecoder().decode(this));
-      }
 
-      default: {
-        // Default to utf-8
+      case "utf8":
+      case "utf-8":
         return new TextDecoder("utf-8").decode(this);
-      }
+
+      default:
+        throw new Error(`unknown encoding ${encoding}`);
     }
   }
 }

@@ -25,7 +25,7 @@ export namespace AccountAuthOperationType {
   }
 
   export function byName(name: string): AccountAuthOperationType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return AccountAuthOperationType.Unknown;
       case "enable":
@@ -102,7 +102,7 @@ export namespace AccountType {
   }
 
   export function byName(name: string): AccountType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return AccountType.Unknown;
       case "anchorledger":
@@ -195,7 +195,7 @@ export namespace AllowedTransactionBit {
   }
 
   export function byName(name: string): AllowedTransactionBit {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "updatekeypage":
         return AllowedTransactionBit.UpdateKeyPage;
       case "updateaccountauth":
@@ -236,7 +236,7 @@ export namespace BookType {
   }
 
   export function byName(name: string): BookType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "normal":
         return BookType.Normal;
       case "validator":
@@ -283,7 +283,7 @@ export namespace DataEntryType {
   }
 
   export function byName(name: string): DataEntryType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return DataEntryType.Unknown;
       case "factom":
@@ -336,14 +336,14 @@ export namespace ExecutorVersion {
   }
 
   export function byName(name: string): ExecutorVersion {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "v1":
         return ExecutorVersion.V1;
-      case "v1signatureanchoring":
+      case "v1-signatureanchoring":
         return ExecutorVersion.V1SignatureAnchoring;
-      case "v1doublehashentries":
+      case "v1-doublehashentries":
         return ExecutorVersion.V1DoubleHashEntries;
-      case "v1halt":
+      case "v1-halt":
         return ExecutorVersion.V1Halt;
       case "v2":
         return ExecutorVersion.V2;
@@ -357,11 +357,11 @@ export namespace ExecutorVersion {
       case ExecutorVersion.V1:
         return "v1";
       case ExecutorVersion.V1SignatureAnchoring:
-        return "v1SignatureAnchoring";
+        return "v1-signatureAnchoring";
       case ExecutorVersion.V1DoubleHashEntries:
-        return "v1DoubleHashEntries";
+        return "v1-doubleHashEntries";
       case ExecutorVersion.V1Halt:
-        return "v1Halt";
+        return "v1-halt";
       case ExecutorVersion.V2:
         return "v2";
       default:
@@ -383,6 +383,10 @@ export enum KeyPageOperationType {
   SetThreshold = 4,
   /** UpdateAllowed updates the transactions the key page is allowed to execute. */
   UpdateAllowed = 5,
+  /** SetRejectThreshold sets the rejection threshold. */
+  SetRejectThreshold = 6,
+  /** SetResponseThreshold sets the response threshold. */
+  SetResponseThreshold = 7,
 }
 
 export type KeyPageOperationTypeArgs = KeyPageOperationType | string;
@@ -395,7 +399,7 @@ export namespace KeyPageOperationType {
   }
 
   export function byName(name: string): KeyPageOperationType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return KeyPageOperationType.Unknown;
       case "update":
@@ -408,6 +412,10 @@ export namespace KeyPageOperationType {
         return KeyPageOperationType.SetThreshold;
       case "updateallowed":
         return KeyPageOperationType.UpdateAllowed;
+      case "setrejectthreshold":
+        return KeyPageOperationType.SetRejectThreshold;
+      case "setresponsethreshold":
+        return KeyPageOperationType.SetResponseThreshold;
       default:
         throw new Error(`Unknown KeyPageOperationType '${name}'`);
     }
@@ -427,6 +435,10 @@ export namespace KeyPageOperationType {
         return "setThreshold";
       case KeyPageOperationType.UpdateAllowed:
         return "updateAllowed";
+      case KeyPageOperationType.SetRejectThreshold:
+        return "setRejectThreshold";
+      case KeyPageOperationType.SetResponseThreshold:
+        return "setResponseThreshold";
       default:
         throw new Error(`Unknown KeyPageOperationType ${v}`);
     }
@@ -452,7 +464,7 @@ export namespace ObjectType {
   }
 
   export function byName(name: string): ObjectType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return ObjectType.Unknown;
       case "account":
@@ -497,7 +509,7 @@ export namespace PartitionType {
   }
 
   export function byName(name: string): PartitionType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "directory":
         return PartitionType.Directory;
       case "blockvalidator":
@@ -568,7 +580,7 @@ export namespace SignatureType {
   }
 
   export function byName(name: string): SignatureType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return SignatureType.Unknown;
       case "legacyed25519":
@@ -659,7 +671,7 @@ export namespace TransactionMax {
   }
 
   export function byName(name: string): TransactionMax {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "user":
         return TransactionMax.User;
       case "synthetic":
@@ -764,7 +776,7 @@ export namespace TransactionType {
   }
 
   export function byName(name: string): TransactionType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "unknown":
         return TransactionType.Unknown;
       case "createidentity":
@@ -933,7 +945,7 @@ export namespace VoteType {
   }
 
   export function byName(name: string): VoteType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "accept":
         return VoteType.Accept;
       case "reject":

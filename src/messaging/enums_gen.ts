@@ -31,7 +31,7 @@ export namespace MessageType {
   }
 
   export function byName(name: string): MessageType {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "transaction":
         return MessageType.Transaction;
       case "signature":
