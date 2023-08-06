@@ -1246,6 +1246,8 @@ export type NetworkStatusArgs = {
   network?: protocol.NetworkDefinition | protocol.NetworkDefinitionArgs;
   routing?: protocol.RoutingTable | protocol.RoutingTableArgs;
   executorVersion?: protocol.ExecutorVersionArgs;
+  directoryHeight?: number;
+  majorBlockHeight?: number;
 };
 export class NetworkStatus {
   @encodeAs.field(1).reference
@@ -1258,6 +1260,10 @@ export class NetworkStatus {
   public routing?: protocol.RoutingTable;
   @encodeAs.field(5).enum
   public executorVersion?: protocol.ExecutorVersion;
+  @encodeAs.field(6).uint
+  public directoryHeight?: number;
+  @encodeAs.field(7).uint
+  public majorBlockHeight?: number;
 
   constructor(args: NetworkStatusArgs) {
     this.oracle =
@@ -1288,6 +1294,8 @@ export class NetworkStatus {
       args.executorVersion == undefined
         ? undefined
         : protocol.ExecutorVersion.fromObject(args.executorVersion);
+    this.directoryHeight = args.directoryHeight == undefined ? undefined : args.directoryHeight;
+    this.majorBlockHeight = args.majorBlockHeight == undefined ? undefined : args.majorBlockHeight;
   }
 
   copy() {
@@ -1302,6 +1310,8 @@ export class NetworkStatus {
       routing: this.routing && this.routing.asObject(),
       executorVersion:
         this.executorVersion && protocol.ExecutorVersion.getName(this.executorVersion),
+      directoryHeight: this.directoryHeight && this.directoryHeight,
+      majorBlockHeight: this.majorBlockHeight && this.majorBlockHeight,
     };
   }
 }

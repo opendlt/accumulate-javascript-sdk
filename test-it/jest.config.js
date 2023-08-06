@@ -1,18 +1,24 @@
 module.exports = {
-  roots: ['<rootDir>'],
+  roots: [
+    '<rootDir>',
+  ],
   testMatch: [
-    "**/__tests__/**/*.+(ts|tsx|js)",
-    "**/?(*.)+(spec|test).+(ts|tsx|js)"
+    '**/?(*.)+(spec|test).+(ts|tsx|js)',
+    '**/__tests__/**/*.+(ts|tsx|js)',
   ],
   transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest"
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          types: [
+            'jest',
+            'node',
+          ],
+        },
+      },
+    ],
   },
   testTimeout: 120000,
-  globals: {
-    'ts-jest': {
-      tsConfig: {
-        types: ["jest", "node"]
-      }
-    }
-  }
+  preset: 'ts-jest',
 }

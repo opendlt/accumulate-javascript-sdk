@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import type Transport from "@ledgerhq/hw-transport";
 import { scan as rxScan } from "rxjs/operators";
-import { AccumulateURL } from "../address/url";
+import { Address } from "../address";
+import { URLArgs } from "../address/url";
 import { Buffer } from "../common/buffer";
+import { Signature, SignatureType, Transaction } from "../core";
+import { encode } from "../encoding";
+import { Envelope } from "../messaging";
+import { BaseKey, PublicKey, Signer } from "../signing";
 import Bip32Path from "./common/bip32-path";
-import { discoverDevices, Transport } from "./hw";
+import {discoverDevices} from "./hw";
 import {
   LedgerAddress,
   LedgerAppName,
   LedgerSignature,
   LedgerVersion,
-  LedgerWalletInfo,
+  LedgerDeviceInfo,
 } from "./model/results";
 import { foreach, splitPath } from "./utils";
 
@@ -45,6 +51,14 @@ export class LedgerApi {
     );
   }
 
+  async signerForLite(path: string) {
+    return Signer.forLite(await LedgerKey.load(this, path));
+  }
+
+  async signerForPage(page: URLArgs, path: string) {
+    return Signer.forPage(page, await LedgerKey.load(this, path));
+  }
+
   /**
    * get Factom address for a given BIP 32 path.
    * @param path a path in BIP 32 format (note: all paths muth be hardened (e.g. .../0'/0' )
@@ -58,9 +72,9 @@ export class LedgerApi {
    */
   getPublicKey(
     path: string,
-    boolDisplay: boolean,
-    boolChainCode: boolean,
-    alias: string
+    boolDisplay = false,
+    boolChainCode = false,
+    alias = ""
   ): Promise<LedgerAddress> {
     const bipPath = BIPPath.fromString(path, false).toPathArray();
 
@@ -81,7 +95,7 @@ export class LedgerApi {
         ledgerOpGetPublicKey,
         boolDisplay || false ? ledgerP1Display : 0x00,
         boolChainCode || false ? ledgerP2DiscardAddressChainCode : 0x00,
-        buffer
+        buffer as any
       )
       .then((response) => {
         const result = new LedgerAddress("", "", "");
@@ -151,7 +165,7 @@ export class LedgerApi {
           ledgerOpSignTransaction,
           i === 0 ? ledgerP1InitTransactionData : ledgerP1ContTransactionData,
           i === toSend.length - 1 ? ledgerP2LastTransactionData : ledgerP2MoreTransactionData,
-          data
+          data as any
         )
         .then((apduResponse) => {
           response = apduResponse;
@@ -189,21 +203,19 @@ export class LedgerApi {
   }
 }
 /**
- * @returns LedgerWalletInfo array
+ * @returns LedgerDeviceInfo array
  */
-export async function queryHidWallets(): Promise<Array<LedgerWalletInfo>> {
+export async function queryHidWallets(): Promise<Array<LedgerDeviceInfo>> {
   // This linked to {@link queryWallets:function}, but that function doesn't
   // exist and typedoc does not like that
   const module = "hid";
-  const devices = new Array<LedgerWalletInfo>();
+  const devices = new Array<LedgerDeviceInfo>();
+
+  let tm: any
 
   const events = discoverDevices((m) => {
-    console.log(m.id);
-
+    tm = m
     if (module.split(",").includes(m.id)) {
-      const wi = new LedgerWalletInfo();
-      wi.transportModule = m;
-      devices.push(wi);
       return true;
     }
 
@@ -231,28 +243,20 @@ export async function queryHidWallets(): Promise<Array<LedgerWalletInfo>> {
               id: value.id,
               name: value.name,
             });
+            const wi = new LedgerDeviceInfo();
+            wi.transportModule = tm;
+            wi.deviceId = value.id;
+            wi.name = value.name;
+            devices.push(wi);
           }
         }
 
         return copy;
       }, [])
     )
-    .subscribe((value) => {
-      console.log(value);
+    .subscribe((_value) => {
+      //console.log(value)
     });
-
-  for (let i = 0; i < devices.length; i++) {
-    const transportRet = await devices[i].transportModule.open(devices[i].transportModule.id);
-    if (typeof transportRet === "undefined" || !transportRet) {
-      continue;
-    }
-    const transport = transportRet as Transport;
-    const acc = new LedgerApi(transport);
-    devices[i].ledgerVersion = await acc.getVersion();
-    const addrRet = await acc.getPublicKey("m/44'/281'/0'/0'/0'", false, false, "");
-    const addr = addrRet as LedgerAddress;
-    devices[i].walletID = AccumulateURL.parse(addr.address);
-  }
 
   return devices;
 }
@@ -274,5 +278,52 @@ class Writable extends Uint8Array {
   write(value: Uint8Array, offset: number = this.offset) {
     if (offset + value.length > this.length) throw new Error("insufficient space allocated");
     this.set(value, offset);
+  }
+}
+
+export class LedgerKey extends BaseKey {
+  static async load(api: LedgerApi, path: string) {
+    const { publicKey: pubHex } = await api.getPublicKey(path);
+    const pubBytes = Buffer.from(pubHex, "hex");
+
+    const bipPath = BIPPath.fromString(path, false).toPathArray();
+    if (bipPath[0] != 0x8000002C) throw new Error(`unsupported key path ${path}`);
+    let type: SignatureType;
+    switch (bipPath[1]) {
+      case 0x80000083:
+        type = SignatureType.RCD1;
+        break;
+      case 0x80000119:
+        type = SignatureType.ED25519;
+        break;
+      default:
+        throw new Error(`unsupported key path ${path}`);
+    }
+
+    const key = await Address.fromKey(type, pubBytes);
+    return new this(api, path, key);
+  }
+
+  private constructor(
+    private readonly api: LedgerApi,
+    public readonly path: string,
+    publicKey: PublicKey
+  ) {
+    super(publicKey);
+  }
+
+  async signRaw(sig: Signature, _: Uint8Array, txn?: Transaction): Promise<Uint8Array> {
+    if (!txn) {
+      throw new Error(`The Ledger app does not support blind signing`);
+    }
+
+    const env = new Envelope({
+      signatures: [sig],
+      transaction: [txn],
+    });
+
+    const data = Buffer.from(encode(env)).toString("hex");
+    const { signature } = await this.api.signTransaction(this.path, data);
+    return Buffer.from(signature, "hex");
   }
 }

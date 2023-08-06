@@ -25,6 +25,10 @@ export enum Status {
   NotFound = 404,
   /** NotAllowed means the requested action could not be performed. */
   NotAllowed = 405,
+  /** Rejected is returned when a transaction is rejected. */
+  Rejected = 406,
+  /** Expired is returned when a transaction has expired. */
+  Expired = 407,
   /** Conflict means the request failed due to a conflict. */
   Conflict = 409,
   /** BadSignerVersion means the signer version does not match. */
@@ -67,7 +71,7 @@ export namespace Status {
   }
 
   export function byName(name: string): Status {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "ok":
         return Status.OK;
       case "delivered":
@@ -90,6 +94,10 @@ export namespace Status {
         return Status.NotFound;
       case "notallowed":
         return Status.NotAllowed;
+      case "rejected":
+        return Status.Rejected;
+      case "expired":
+        return Status.Expired;
       case "conflict":
         return Status.Conflict;
       case "badsignerversion":
@@ -149,6 +157,10 @@ export namespace Status {
         return "notFound";
       case Status.NotAllowed:
         return "notAllowed";
+      case Status.Rejected:
+        return "rejected";
+      case Status.Expired:
+        return "expired";
       case Status.Conflict:
         return "conflict";
       case Status.BadSignerVersion:
