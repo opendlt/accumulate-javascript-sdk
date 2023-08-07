@@ -23,7 +23,7 @@
     "test:unit": "jest --config=test/jest.config.js",
     "test:integration": "jest --config=test-it/jest.config.js",
     "test:all": "jest",
-    "test:update":"ts-jest config:migrate test-it/jest.config.js",
+    "test:update": "ts-jest config:migrate test-it/jest.config.js",
     "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --config .prettierrc 'src/**/*.ts' 'examples/**/*.ts' 'test/**/*.ts' 'test-it/**/*.ts' --write",
     "format:check": "prettier --config .prettierrc 'src/**/*.ts' 'examples/**/*.ts' 'test/**/*.ts' 'test-it/**/*.ts' --check",
@@ -34,6 +34,10 @@
     "code-check": "yarn clean && yarn build && yarn format:check && yarn lint && yarn doc"
   },
   "devDependencies": {
+    "@ledgerhq/hw-transport": "^6.27.1",
+    "@ledgerhq/hw-transport-mocker": "^6.27.1",
+    "@ledgerhq/hw-transport-node-hid": "^6.27.1",
+    "@ledgerhq/hw-transport-node-hid-noevents": "^6.27.1",
     "@types/bn.js": "^5.1.1",
     "@types/jest": "^29.5.3",
     "@types/node": "^18.17.2",
@@ -50,24 +54,26 @@
     "ts-node": "^10.9.1",
     "typedoc": "^0.24.8",
     "typedoc-plugin-missing-exports": "^2.0.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "usb": "^2.9.0"
   },
   "dependencies": {
-    "@ledgerhq/errors": "^6.12.7",
-    "@ledgerhq/hw-transport": "^6.27.1",
-    "@ledgerhq/hw-transport-mocker": "^6.27.1",
-    "@ledgerhq/hw-transport-node-hid": "^6.27.1",
     "@ledgerhq/logs": "^6.10.1",
     "@types/events": "^3.0.0",
     "axios": "^0.27.2",
     "events": "^3.3.0",
     "multibase": "^4.0.6",
     "reflect-metadata": "^0.1.13",
-    "tweetnacl": "^1.0.3",
-    "typedoc-plugin-missing-exports": "^2.0.1"
+    "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
+    "@ledgerhq/devices": "^8.0.5",
     "@ledgerhq/errors": "^6.12.7",
+    "@ledgerhq/hw-transport": "^6.27.1",
+    "@ledgerhq/hw-transport-node-hid": "^6.27.1",
+    "@ledgerhq/hw-transport-node-hid-noevents": "^6.27.1",
+    "@ledgerhq/hw-transport-webhid": "^6.27.1",
+    "@ledgerhq/hw-transport-webusb": "^6.27.1",
     "@ledgerhq/logs": "^6.10.1",
     "lodash": "^4.17.21",
     "usb": "^1.7.0"

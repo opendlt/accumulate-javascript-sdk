@@ -254,6 +254,7 @@ export async function queryHidWallets(): Promise<Array<LedgerDeviceInfo>> {
         return copy;
       }, [])
     )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .subscribe((_value) => {
       //console.log(value)
     });

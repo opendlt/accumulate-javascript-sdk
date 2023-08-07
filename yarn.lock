@@ -622,10 +622,25 @@
     rxjs "6"
     semver "^7.3.5"
 
-"@ledgerhq/errors@^6.12.7", "@ledgerhq/errors@^6.13.0":
+"@ledgerhq/devices@^8.0.6":
+  version "8.0.6"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-8.0.6.tgz#c318a3d5c756e20065370539a395f3024f0fac43"
+  integrity sha512-KWA68krUD9pFp6bJAhTe2nurhku4HnS5LwtHnCXg8PB0DbzWt27PTKgVOCKO7TEdJ3wu4eVcgP5RQrap22pQHQ==
+  dependencies:
+    "@ledgerhq/errors" "^6.13.1"
+    "@ledgerhq/logs" "^6.10.1"
+    rxjs "6"
+    semver "^7.3.5"
+
+"@ledgerhq/errors@^6.13.0":
   version "6.13.0"
   resolved "https://registry.npmjs.org/@ledgerhq/errors/-/errors-6.13.0.tgz"
   integrity sha512-cMFNX2AN6Gdj4RVIizI/7vWb+JYRu5na0rQSjybf7xGW5MSVdFVRcOg90VvqnDRsNfgFBbJzhpf7o4D7S3yFgg==
+
+"@ledgerhq/errors@^6.13.1":
+  version "6.13.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.13.1.tgz#fd9570c1806824de734aed21df1a3d643ba8ed0c"
+  integrity sha512-y5qOFiX7ILACF7GvCAB67S5nCABEP5rm8lxK66qKIBRApcLlTplbjUACDRfKQbAIwf0SJPuR31rtTKB92ykwKQ==
 
 "@ledgerhq/hw-transport-mocker@^6.27.1":
   version "6.27.17"
@@ -635,32 +650,41 @@
     "@ledgerhq/hw-transport" "^6.28.6"
     "@ledgerhq/logs" "^6.10.1"
 
-"@ledgerhq/hw-transport-node-hid-noevents@^6.27.17":
-  version "6.27.17"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid-noevents/-/hw-transport-node-hid-noevents-6.27.17.tgz#3df61993fa9aa7b55b7db4fdeef79bf254116a9e"
-  integrity sha512-QCuySuUgD8wAvTBO9jSwxZvjbfaRfoGNgr7JcDuu25D8pTTIn7S1mCtvVX8TwgMT9hIHsjfkbw6L23FPClvldg==
+"@ledgerhq/hw-transport-node-hid-noevents@^6.27.1", "@ledgerhq/hw-transport-node-hid-noevents@^6.27.18":
+  version "6.27.18"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid-noevents/-/hw-transport-node-hid-noevents-6.27.18.tgz#1fd1c9e9e28a4cd2361293a6fd40aff1f05907e3"
+  integrity sha512-duVDQUzjdZ+BmKnp68XHxd3/osB7OeYVIMc/uYmk7InPsHUexpEPuyGBQMGPZlvJ/N6YpArEWJHzcxbcXoCZ2A==
   dependencies:
-    "@ledgerhq/devices" "^8.0.5"
-    "@ledgerhq/errors" "^6.13.0"
-    "@ledgerhq/hw-transport" "^6.28.6"
+    "@ledgerhq/devices" "^8.0.6"
+    "@ledgerhq/errors" "^6.13.1"
+    "@ledgerhq/hw-transport" "^6.28.7"
     "@ledgerhq/logs" "^6.10.1"
     node-hid "^2.1.2"
 
 "@ledgerhq/hw-transport-node-hid@^6.27.1":
-  version "6.27.19"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid/-/hw-transport-node-hid-6.27.19.tgz#6da345d668bb6d1ce7c7f167e0522a642c3e4ffd"
-  integrity sha512-f8GZ5qpgFM4W8ndymlKPbmFVPIklle2mUDC9MGClFbo/BHb73Cz47AZSDsD++hQ3oX7xyHVUaRzubEBLD3TYVw==
+  version "6.27.20"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid/-/hw-transport-node-hid-6.27.20.tgz#83f77e5c942785814ecd5bf670f5a8214e6115b1"
+  integrity sha512-0uwngV37xxfkAcvXTrcJ2u6Rz/iswcDempY8LWVYJ8Vyh0nlNFmMenVAxeErBF+BPE9GqSxE9lQFsuBuDgfCOQ==
   dependencies:
-    "@ledgerhq/devices" "^8.0.5"
-    "@ledgerhq/errors" "^6.13.0"
-    "@ledgerhq/hw-transport" "^6.28.6"
-    "@ledgerhq/hw-transport-node-hid-noevents" "^6.27.17"
+    "@ledgerhq/devices" "^8.0.6"
+    "@ledgerhq/errors" "^6.13.1"
+    "@ledgerhq/hw-transport" "^6.28.7"
+    "@ledgerhq/hw-transport-node-hid-noevents" "^6.27.18"
     "@ledgerhq/logs" "^6.10.1"
     lodash "^4.17.21"
     node-hid "^2.1.2"
     usb "2.9.0"
 
-"@ledgerhq/hw-transport@^6.27.1", "@ledgerhq/hw-transport@^6.28.6":
+"@ledgerhq/hw-transport@^6.27.1", "@ledgerhq/hw-transport@^6.28.7":
+  version "6.28.7"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.28.7.tgz#17120f0ea8bdd34632010ed4e284a1c57f1bd41d"
+  integrity sha512-P6XWv/Blb3AvzNH/33ouqFvsUwjCsQN5iMTLuVJqxVKwj91QmdYZfYR9U9FB0gBKrIQ7BONUgTX/ko9EnDV6/g==
+  dependencies:
+    "@ledgerhq/devices" "^8.0.6"
+    "@ledgerhq/errors" "^6.13.1"
+    events "^3.3.0"
+
+"@ledgerhq/hw-transport@^6.28.6":
   version "6.28.6"
   resolved "https://registry.npmjs.org/@ledgerhq/hw-transport/-/hw-transport-6.28.6.tgz"
   integrity sha512-0VVB4jIG6ZTRtHusI5kO2jPcc1yFQ+iIcNKiTaaBHytsdGjTfhipje+W4vxo+nCdOKdrkOqB80GwykmKuNNXyA==
@@ -3263,7 +3287,7 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-usb@2.9.0:
+usb@2.9.0, usb@^2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/usb/-/usb-2.9.0.tgz#8ae3b175f93bee559400bff33491eee63406b6a2"
   integrity sha512-G0I/fPgfHUzWH8xo2KkDxTTFruUWfppgSFJ+bQxz/kVY2x15EQ/XDB7dqD1G432G4gBG4jYQuF3U7j/orSs5nw==
