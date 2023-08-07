@@ -52,13 +52,11 @@ export const registerTransportModule = (module: TransportModule) => {
  * {@link discoverDevices}
  */
 export const discoverDevices = (
-  accept: (module: TransportModule) => boolean = () => true
+  accept: (mod: TransportModule) => boolean = () => true
 ): Discovery => {
   const all: Discovery[] = [];
-
   for (let i = 0; i < modules.length; i++) {
     const m = modules[i];
-
     if (m.discovery && accept(m)) {
       all.push(m.discovery);
     }
