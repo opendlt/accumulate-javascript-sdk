@@ -5,26 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Run Simulator",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/accumulate/tools/cmd/gen-types",
+            "program": "${workspaceFolder}/accumulate/tools/cmd/simulator",
             "cwd": "${workspaceFolder}/accumulate",
             "args": [
-                "-l=typescript",
-                "-o=../src/api_v3/types_gen.ts",
-                "--long-union-discriminator",
-                "pkg/api/v3/responses.yml",
-                "pkg/api/v3/options.yml",
-                "pkg/api/v3/records.yml",
-                "pkg/api/v3/events.yml",
-                "pkg/api/v3/types.yml",
-                "pkg/api/v3/queries.yml",
-                "--reference",
-                "pkg/types/merkle/types.yml",
-                "protocol/general.yml",
-                "--header=\nimport * as protocol from \"../core\";\n",
+                "--step=10ms",
+                "--port=26660",
+                "--log=error;sim=info;executor=debug",
             ]
         }
     ]
