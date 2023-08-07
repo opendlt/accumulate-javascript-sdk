@@ -26,7 +26,10 @@ describe("Test manual transactions", () => {
 
     // Get some ACME
     const res = await client.faucet(lid.url.join("ACME"));
-    if (res.transactionHash as any !== '0100000000000000000000000000000000000000000000000000000000000000')
+    if (
+      (res.transactionHash as any) !==
+      "0100000000000000000000000000000000000000000000000000000000000000"
+    )
       await client.waitOnTx(res.txid!.toString());
 
     // Get some credits
