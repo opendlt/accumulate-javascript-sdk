@@ -25,7 +25,7 @@ describe("ledger", () => {
     const body = new SendTokens({ to: [{ url: recipient.url.join("ACME"), amount: amount }] });
 
     // Build the transaction header with the transaction principal and
-    // optionally a timestamp, memo or metadata.
+    // optionally a timestamp, memo or metadata
     const header = new TransactionHeader({ principal: signer.url });
 
     // Finally build the (unsigned yet) transaction
