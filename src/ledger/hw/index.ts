@@ -1,45 +1,7 @@
-import Transport from "@ledgerhq/hw-transport";
+import type Transport from "@ledgerhq/hw-transport";
 import type { Observable } from "rxjs";
 import { EMPTY, merge } from "rxjs";
 import { catchError } from "rxjs/operators";
-
-/**
- * Transport is a shim for the actual Transport class from
- * @ledgerhq/hw-transport since importing the actual type causes tsc to fail in
- * unpleasant ways. Callers should use the actual Transport class instead.
- */
-// export interface Transport {
-//   /**
-//    * Send data to the device using the higher level API.
-//    * @param {number} cla - The instruction class for the command.
-//    * @param {number} ins - The instruction code for the command.
-//    * @param {number} p1 - The first parameter for the instruction.
-//    * @param {number} p2 - The second parameter for the instruction.
-//    * @param {Buffer} data - The data to be sent. Defaults to an empty buffer.
-//    * @param {Array<number>} statusList - A list of acceptable status codes for the response. Defaults to [StatusCodes.OK].
-//    * @returns {Promise<Buffer>} A promise that resolves with the response data from the device.
-//    */
-//   send(
-//     cla: number,
-//     ins: number,
-//     p1: number,
-//     p2: number,
-//     data?: Uint8Array,
-//     statusList?: Array<number>
-//   ): Promise<Uint8Array>;
-//
-//   /**
-//    * Close the connection with the device.
-//    * @returns {Promise<void>} A promise that resolves when the transport is closed.
-//    */
-//   close(): Promise<void>;
-//
-//   decorateAppAPIMethods(
-//     self: Record<string, any>,
-//     methods: Array<string>,
-//     scrambleKey: string
-//   ): void;
-// }
 
 /**
  * @type Discovery
