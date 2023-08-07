@@ -24,13 +24,13 @@ registerTransportModule({
 });
 
 describe("ledger", () => {
-  it('query HID wallets', async () => {
+  it("query HID wallets", async () => {
     const wallets = await queryHidWallets();
     if (!wallets) return;
 
-    console.log(wallets)
+    console.log(wallets);
 
-    const wallet = wallets[0]
+    const wallet = wallets[0];
 
     const transport = await wallet.transportModule.open(wallet.deviceId);
     if (!transport) throw new Error("failed to connect to wallet");
