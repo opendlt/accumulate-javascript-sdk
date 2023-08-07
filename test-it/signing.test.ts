@@ -26,7 +26,8 @@ describe("Test signing schemes", () => {
 
     // Get some ACME
     const res = await client.faucet(lite.url.join("ACME"));
-    await client.waitOnTx(res.txid!.toString(), { timeout: 5000 });
+    if (res.transactionHash as any !== '0100000000000000000000000000000000000000000000000000000000000000')
+      await client.waitOnTx(res.txid!.toString(), { timeout: 5000 });
     const { data } = await client.queryUrl(lite.url.join("ACME"));
     expect(data.type).toStrictEqual("liteTokenAccount");
 
@@ -41,7 +42,8 @@ describe("Test signing schemes", () => {
 
     // Get some ACME
     const res = await client.faucet(lite.url.join("ACME"));
-    await client.waitOnTx(res.txid!.toString(), { timeout: 5000 });
+    if (res.transactionHash as any !== '0100000000000000000000000000000000000000000000000000000000000000')
+      await client.waitOnTx(res.txid!.toString(), { timeout: 5000 });
     const { data } = await client.queryUrl(lite.url.join("ACME"));
     expect(data.type).toStrictEqual("liteTokenAccount");
 

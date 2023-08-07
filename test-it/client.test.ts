@@ -39,7 +39,8 @@ describe("Test Accumulate client", () => {
      */
     lid = await randomLiteIdentity();
     const txres = await client.faucet(lid.url.join("ACME"));
-    await client.waitOnTx(txres.txid!.toString());
+    if (txres.transactionHash as any !== '0100000000000000000000000000000000000000000000000000000000000000')
+      await client.waitOnTx(txres.txid!.toString());
 
     // Assert lite identity and lite token account type
     let res = await client.queryUrl(lid.url);
