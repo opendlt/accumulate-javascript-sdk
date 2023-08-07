@@ -1,4 +1,3 @@
-import { AccumulateURL } from "../../address/url";
 import { TransportModule } from "../hw";
 
 /**
@@ -26,20 +25,14 @@ export class LedgerVersion {
   minor: number;
   patch: number;
 }
-
 /**
- * @class LedgerWalletInfo defines the Wallet info returned by the client
- * {@link LedgerWalletInfo:class}
+ * @class LedgerDeviceInfo defines the Device info returned by the client
+ * {@link LedgerDeviceInfo:class}
  */
-export declare class LedgerWalletInfo {
-  ledgerVersion: LedgerVersion;
-  vendorID: number;
-  manufacturer: string;
-  productID: number;
-  product: string;
-  status: string;
-  walletID: AccumulateURL;
-  transportModule: TransportModule;
+export class LedgerDeviceInfo {
+  deviceId!: string;
+  name!: string;
+  transportModule!: TransportModule;
 }
 
 /**

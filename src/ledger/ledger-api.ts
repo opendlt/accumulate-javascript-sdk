@@ -2,7 +2,7 @@
 import type Transport from "@ledgerhq/hw-transport";
 import { scan as rxScan } from "rxjs/operators";
 import { Address } from "../address";
-import { AccumulateURL, URLArgs } from "../address/url";
+import { URLArgs } from "../address/url";
 import { Buffer } from "../common/buffer";
 import { Signature, SignatureType, Transaction } from "../core";
 import { encode } from "../encoding";
@@ -13,9 +13,9 @@ import { discoverDevices } from "./hw";
 import {
   LedgerAddress,
   LedgerAppName,
+  LedgerDeviceInfo,
   LedgerSignature,
   LedgerVersion,
-  LedgerWalletInfo,
 } from "./model/results";
 import { foreach, splitPath } from "./utils";
 
@@ -203,21 +203,19 @@ export class LedgerApi {
   }
 }
 /**
- * @returns LedgerWalletInfo array
+ * @returns LedgerDeviceInfo array
  */
-export async function queryHidWallets(): Promise<Array<LedgerWalletInfo>> {
+export async function queryHidWallets(): Promise<Array<LedgerDeviceInfo>> {
   // This linked to {@link queryWallets:function}, but that function doesn't
   // exist and typedoc does not like that
   const module = "hid";
-  const devices = new Array<LedgerWalletInfo>();
+  const devices = new Array<LedgerDeviceInfo>();
+
+  let tm: any;
 
   const events = discoverDevices((m) => {
-    console.log(m.id);
-
+    tm = m;
     if (module.split(",").includes(m.id)) {
-      const wi = new LedgerWalletInfo();
-      wi.transportModule = m;
-      devices.push(wi);
       return true;
     }
 
@@ -245,28 +243,20 @@ export async function queryHidWallets(): Promise<Array<LedgerWalletInfo>> {
               id: value.id,
               name: value.name,
             });
+            const wi = new LedgerDeviceInfo();
+            wi.transportModule = tm;
+            wi.deviceId = value.id;
+            wi.name = value.name;
+            devices.push(wi);
           }
         }
 
         return copy;
       }, [])
     )
-    .subscribe((value) => {
-      console.log(value);
+    .subscribe((_value) => {
+      //console.log(value)
     });
-
-  for (let i = 0; i < devices.length; i++) {
-    const transportRet = await devices[i].transportModule.open(devices[i].transportModule.id);
-    if (typeof transportRet === "undefined" || !transportRet) {
-      continue;
-    }
-    const transport = transportRet as Transport;
-    const acc = new LedgerApi(transport);
-    devices[i].ledgerVersion = await acc.getVersion();
-    const addrRet = await acc.getPublicKey("m/44'/281'/0'/0'/0'", false, false, "");
-    const addr = addrRet as LedgerAddress;
-    devices[i].walletID = AccumulateURL.parse(addr.address);
-  }
 
   return devices;
 }
@@ -297,13 +287,13 @@ export class LedgerKey extends BaseKey {
     const pubBytes = Buffer.from(pubHex, "hex");
 
     const bipPath = BIPPath.fromString(path, false).toPathArray();
-    if (bipPath[0] != 44) throw new Error(`unsupported key path ${path}`);
+    if (bipPath[0] != 0x8000002c) throw new Error(`unsupported key path ${path}`);
     let type: SignatureType;
     switch (bipPath[1]) {
-      case 131:
+      case 0x80000083:
         type = SignatureType.RCD1;
         break;
-      case 281:
+      case 0x80000119:
         type = SignatureType.ED25519;
         break;
       default:
