@@ -30,8 +30,8 @@ export class LedgerVersion {
  * {@link LedgerDeviceInfo:class}
  */
 export class LedgerDeviceInfo {
-  deviceId!: string
-  name!: string
+  deviceId!: string;
+  name!: string;
   transportModule!: TransportModule;
 }
 

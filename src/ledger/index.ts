@@ -6,9 +6,9 @@ export * from "./ledger-api";
 export type {
   LedgerAddress,
   LedgerAppName,
+  LedgerDeviceInfo,
   LedgerSignature,
   LedgerVersion,
-  LedgerDeviceInfo,
 } from "./model/results";
 import { LedgerApi } from "./ledger-api";
 export default LedgerApi;

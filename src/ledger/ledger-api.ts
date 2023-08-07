@@ -9,13 +9,13 @@ import { encode } from "../encoding";
 import { Envelope } from "../messaging";
 import { BaseKey, PublicKey, Signer } from "../signing";
 import Bip32Path from "./common/bip32-path";
-import {discoverDevices} from "./hw";
+import { discoverDevices } from "./hw";
 import {
   LedgerAddress,
   LedgerAppName,
+  LedgerDeviceInfo,
   LedgerSignature,
   LedgerVersion,
-  LedgerDeviceInfo,
 } from "./model/results";
 import { foreach, splitPath } from "./utils";
 
@@ -211,10 +211,10 @@ export async function queryHidWallets(): Promise<Array<LedgerDeviceInfo>> {
   const module = "hid";
   const devices = new Array<LedgerDeviceInfo>();
 
-  let tm: any
+  let tm: any;
 
   const events = discoverDevices((m) => {
-    tm = m
+    tm = m;
     if (module.split(",").includes(m.id)) {
       return true;
     }
@@ -287,7 +287,7 @@ export class LedgerKey extends BaseKey {
     const pubBytes = Buffer.from(pubHex, "hex");
 
     const bipPath = BIPPath.fromString(path, false).toPathArray();
-    if (bipPath[0] != 0x8000002C) throw new Error(`unsupported key path ${path}`);
+    if (bipPath[0] != 0x8000002c) throw new Error(`unsupported key path ${path}`);
     let type: SignatureType;
     switch (bipPath[1]) {
       case 0x80000083:
