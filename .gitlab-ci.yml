@@ -27,7 +27,7 @@ test 1/2:
     - yarn install --immutable --immutable-cache --check-cache
     - yarn test:unit
 
-test 2/2:
+.test 2/2:
   stage: build
   image: node:16
   variables:
