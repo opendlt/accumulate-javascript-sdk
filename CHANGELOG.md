@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.9.0
+
+- Adds support for signing with a Ledger Nano.
+
+## v0.8.6
+
+- Removes dependence on Node, eliminating the need for browsers shims.
+- Fixes compatibility issues between Node and browser implementations of URL.
+
+## v0.8.5
+
+- Fixes a bug in the binary encoding of accounts.
+
+## v0.8.4
+
+- Improves support for browser-based environments.
+- Adds hooks to the binary encoder to support alternative uses.
+
+## v0.8.3
+
+- Fixes a compatibility issue with exports declared in package.json.
+
+## v0.8.2
+
+- Adds API v3 support.
+- Replaces third party bigint support with native implementation.
+- Refactors signing.
+
 ## v0.8.1
 
 - Implements AIP-001 address formatting.
