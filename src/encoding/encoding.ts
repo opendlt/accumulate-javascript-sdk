@@ -20,7 +20,8 @@ export function uvarintMarshalBinary(val: number | bigint, field?: number): Uint
   const buffer = [];
   let i = 0;
 
-  while (x >= 0x80) { // @ts-ignore
+  while (x >= 0x80) {
+    // @ts-ignore
     buffer[i] = Number((x & 0xffn) | 0x80n); // @ts-ignore
     x >>= 7n;
     i++;
@@ -55,7 +56,8 @@ export function varintMarshalBinary(val: number | bigint, field?: number): Uint8
   return uvarintMarshalBinary(ux, field);
 }
 
-export function bigNumberMarshalBinary(bn: bigint, field?: number): Uint8Array { // @ts-ignore
+export function bigNumberMarshalBinary(bn: bigint, field?: number): Uint8Array {
+  // @ts-ignore
   if (bn < 0n) {
     throw new Error("Cannot marshal a negative bigint");
   }
