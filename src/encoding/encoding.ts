@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Buffer } from "../common/buffer";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -19,12 +20,13 @@ export function uvarintMarshalBinary(val: number | bigint, field?: number): Uint
   const buffer = [];
   let i = 0;
 
-  while (x >= 0x80) {
-    buffer[i] = Number((x & 0xffn) | 0x80n);
+  while (x >= 0x80) { // @ts-ignore
+    buffer[i] = Number((x & 0xffn) | 0x80n); // @ts-ignore
     x >>= 7n;
     i++;
   }
 
+  // @ts-ignore
   buffer[i] = Number(x & 0xffn);
   const data = Uint8Array.from(buffer);
 
@@ -45,7 +47,7 @@ export function varintMarshalBinary(val: number | bigint, field?: number): Uint8
     }
   }
 
-  const x = BigInt(val);
+  const x = BigInt(val); // @ts-ignore
   let ux = x << 1n;
   if (x < 0) {
     ux = ~ux;
@@ -53,7 +55,7 @@ export function varintMarshalBinary(val: number | bigint, field?: number): Uint8
   return uvarintMarshalBinary(ux, field);
 }
 
-export function bigNumberMarshalBinary(bn: bigint, field?: number): Uint8Array {
+export function bigNumberMarshalBinary(bn: bigint, field?: number): Uint8Array { // @ts-ignore
   if (bn < 0n) {
     throw new Error("Cannot marshal a negative bigint");
   }
