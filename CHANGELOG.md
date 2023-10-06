@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.2
+
+- Fixes a bug in `ED25519.from` that caused signing to fail.
+
 ## v0.9.0
 
 - Adds support for signing with a Ledger Nano.
