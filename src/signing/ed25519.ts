@@ -18,7 +18,7 @@ abstract class BaseED25519Key extends BaseKey {
     } else if (seedOrKey.length == 64) {
       kp = {
         publicKey: seedOrKey.slice(32),
-        secretKey: seedOrKey.slice(0, 32),
+        secretKey: seedOrKey,
       };
     } else if (seedOrKey.length == 32) {
       kp = nacl.sign.keyPair.fromSeed(seedOrKey);
