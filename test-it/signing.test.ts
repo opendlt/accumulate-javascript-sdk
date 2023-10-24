@@ -2,7 +2,8 @@
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
 import { Client } from "../src/api_v2";
-import { SignatureType } from "../src/core";
+import { SignatureType, Transaction } from "../src/core";
+import { Envelope } from "../src/messaging";
 import { ED25519Key, RCD1Key, Signer } from "../src/signing";
 import { addCredits, startSim } from "./util";
 
@@ -55,5 +56,32 @@ describe("Test signing schemes", () => {
 
     // Get some credits
     await addCredits(client, lite.url, 10_000, lite);
+  });
+});
+
+describe("Multisig", () => {
+  test("should sign an existing transaction", async () => {
+    const lite = await Signer.forLite(await ED25519Key.generate());
+
+    // Get some ACME
+    const res = await client.faucet(lite.url.join("ACME"));
+    if (
+      (res.transactionHash as any) !==
+      "0100000000000000000000000000000000000000000000000000000000000000"
+    )
+      await client.waitOnTx(res.txid!.toString(), { timeout: 5000 });
+    const { data } = await client.queryUrl(lite.url.join("ACME"));
+    expect(data.type).toStrictEqual("liteTokenAccount");
+
+    // Get some credits
+    const txid = await addCredits(client, lite.url, 10_000, lite);
+
+    const tx = await client.queryTx(txid);
+    const transaction = new Transaction(tx.transaction);
+    const sig = await lite.sign(transaction, {});
+    console.log("sending envelope");
+    const env = new Envelope({ transaction: [transaction], signatures: [sig] });
+    const result = await client.execute(env);
+    console.log(JSON.stringify(result, null, 2));
   });
 });

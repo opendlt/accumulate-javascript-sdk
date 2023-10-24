@@ -39,6 +39,8 @@ export async function addCredits(
 
   res = await client.queryUrl(recipient);
   expect(BigInt(res.data.creditBalance)).toStrictEqual(originalBalance + BigInt(creditAmount));
+
+  return res.txid;
 }
 
 export async function startSim(fn: (proc: ChildProcess, port: number) => void) {
@@ -55,6 +57,7 @@ export async function startSim(fn: (proc: ChildProcess, port: number) => void) {
       "--step=10ms",
       `--port=${port}`,
       "--log=error;sim=info;executor=info",
+      "--log-format=json",
     ],
     { cwd: path.join(__dirname, "..", "accumulate") }
   );
@@ -69,7 +72,11 @@ export async function startSim(fn: (proc: ChildProcess, port: number) => void) {
       const s = c.toString("utf-8");
       console.log(s);
       out += s;
-      if (/\bNode HTTP up\b/.test(out)) {
+      const i = out.indexOf("\n");
+      if (i < 0) return;
+      const msg = JSON.parse(out.substring(0, i));
+      out = out.substring(i + 1);
+      if (msg.module === "sim" && msg.message === "Node HTTP up") {
         setTimeout(() => resolve(), 10);
       }
     };

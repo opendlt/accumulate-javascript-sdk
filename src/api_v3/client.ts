@@ -89,8 +89,8 @@ export class JsonRpcClient {
     );
   }
 
-  faucet(account: URLArgs, opts: types.FaucetOptionsArgs = {}): Promise<types.Submission[]> {
-    return this.typedCall2("faucet", { account, ...opts }, msg.FaucetRequest, types.Submission);
+  faucet(account: URLArgs, opts: types.FaucetOptionsArgs = {}): Promise<types.Submission> {
+    return this.typedCall("faucet", { account, ...opts }, msg.FaucetRequest, types.Submission);
   }
 
   /**
