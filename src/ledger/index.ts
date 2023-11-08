@@ -1,4 +1,3 @@
-export * as bip32 from "./common/bip32-path";
 export * as promise from "./common/promise";
 export { discoverDevices, registerTransportModule } from "./hw";
 export type { Discovery, TransportModule } from "./hw";
