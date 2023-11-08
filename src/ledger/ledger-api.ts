@@ -3,13 +3,14 @@ import type Transport from "@ledgerhq/hw-transport";
 import { scan as rxScan } from "rxjs/operators";
 import { Address } from "../address";
 import { URLArgs } from "../address/url";
+import * as BIPPath from "../common/bip44path";
 import { Buffer } from "../common/buffer";
 import { Signature, SignatureType, Transaction } from "../core";
 import { encode } from "../encoding";
 import { Envelope } from "../messaging";
 import { BaseKey, PublicKey, Signer } from "../signing";
-import Bip32Path from "./common/bip32-path";
 import { discoverDevices } from "./hw";
+
 import {
   LedgerAddress,
   LedgerAppName,
@@ -18,8 +19,6 @@ import {
   LedgerVersion,
 } from "./model/results";
 import { foreach, splitPath } from "./utils";
-
-const BIPPath = new Bip32Path();
 
 const ledgerOpGetApplicationVersion = 0x03; // Returns the application version
 const ledgerOpGetAppName = 0x04; // Signs a transaction after having the user validate the parameters
@@ -76,7 +75,7 @@ export class LedgerApi {
     boolChainCode = false,
     alias = ""
   ): Promise<LedgerAddress> {
-    const bipPath = BIPPath.fromString(path, false).toPathArray();
+    const bipPath = BIPPath.fromPath(path).toPathArray();
 
     const buffer = new Writable(1 + bipPath.length * 4);
 
@@ -287,7 +286,7 @@ export class LedgerKey extends BaseKey {
     const { publicKey: pubHex } = await api.getPublicKey(path);
     const pubBytes = Buffer.from(pubHex, "hex");
 
-    const bipPath = BIPPath.fromString(path, false).toPathArray();
+    const bipPath = BIPPath.fromPath(path).toPathArray();
     if (bipPath[0] != 0x8000002c) throw new Error(`unsupported key path ${path}`);
     let type: SignatureType;
     switch (bipPath[1]) {
