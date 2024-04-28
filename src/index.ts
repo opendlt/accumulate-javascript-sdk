@@ -4,7 +4,12 @@ export * as api_v3 from "./api_v3";
 export * from "./common";
 export * as core from "./core";
 export * as errors from "./errors";
-export * as ledger from "./ledger";
+// DO NOT IMPORT ledger UNCONDITIONALLY
+//
+// ./ledger/deferred intentionally A) only imports types and B) only
+// conditionally imports the actual code, to avoid pulling in dependencies to
+// rxjs and ledger libraries unless it's actually used.
+export * as ledger from "./ledger/deferred";
 export * as merkle from "./merkle";
 export * as messaging from "./messaging";
 export * as network from "./network";
