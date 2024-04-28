@@ -9,5 +9,7 @@ export type {
   LedgerSignature,
   LedgerVersion,
 } from "./model/results";
+export type { Transport };
+import type Transport from "@ledgerhq/hw-transport";
 import { LedgerApi } from "./ledger-api";
 export default LedgerApi;
