@@ -1,5 +1,7 @@
 import * as types from ".";
-import { errors, messaging, TxID, URLArgs } from "..";
+import { TxID, URLArgs } from "../address";
+import * as errors from "../errors";
+import * as messaging from "../messaging";
 import { RpcClient, RpcError } from "../api_v2/rpc-client";
 import * as msg from "./msg";
 
