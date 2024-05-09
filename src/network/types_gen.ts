@@ -14,6 +14,10 @@ export type GlobalValuesArgs = {
   network?: protocol.NetworkDefinition | protocol.NetworkDefinitionArgs;
   routing?: protocol.RoutingTable | protocol.RoutingTableArgs;
   executorVersion?: protocol.ExecutorVersionArgs;
+  bvnExecutorVersions?: (
+    | protocol.PartitionExecutorVersion
+    | protocol.PartitionExecutorVersionArgs
+  )[];
 };
 export class GlobalValues {
   @encodeAs.field(1).reference
@@ -26,6 +30,8 @@ export class GlobalValues {
   public routing?: protocol.RoutingTable;
   @encodeAs.field(5).enum
   public executorVersion?: protocol.ExecutorVersion;
+  @encodeAs.field(6).repeatable.reference
+  public bvnExecutorVersions?: protocol.PartitionExecutorVersion[];
 
   constructor(args: GlobalValuesArgs) {
     this.oracle =
@@ -56,6 +62,14 @@ export class GlobalValues {
       args.executorVersion == undefined
         ? undefined
         : protocol.ExecutorVersion.fromObject(args.executorVersion);
+    this.bvnExecutorVersions =
+      args.bvnExecutorVersions == undefined
+        ? undefined
+        : args.bvnExecutorVersions.map((v) =>
+            v instanceof protocol.PartitionExecutorVersion
+              ? v
+              : new protocol.PartitionExecutorVersion(v)
+          );
   }
 
   copy() {
@@ -70,6 +84,8 @@ export class GlobalValues {
       routing: this.routing && this.routing.asObject(),
       executorVersion:
         this.executorVersion && protocol.ExecutorVersion.getName(this.executorVersion),
+      bvnExecutorVersions:
+        this.bvnExecutorVersions && this.bvnExecutorVersions?.map((v) => v.asObject()),
     };
   }
 }

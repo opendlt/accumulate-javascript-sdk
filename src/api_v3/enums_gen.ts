@@ -47,6 +47,51 @@ export namespace EventType {
   }
 }
 
+export enum KnownPeerStatus {
+  /** Unknown . */
+  Unknown = 0,
+  /** Good . */
+  Good = 1,
+  /** Bad . */
+  Bad = 2,
+}
+
+export type KnownPeerStatusArgs = KnownPeerStatus | string;
+
+/** @ignore */
+export namespace KnownPeerStatus {
+  export function fromObject(obj: KnownPeerStatusArgs): KnownPeerStatus {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
+  export function byName(name: string): KnownPeerStatus {
+    switch (name.toLowerCase()) {
+      case "unknown":
+        return KnownPeerStatus.Unknown;
+      case "good":
+        return KnownPeerStatus.Good;
+      case "bad":
+        return KnownPeerStatus.Bad;
+      default:
+        throw new Error(`Unknown KnownPeerStatus '${name}'`);
+    }
+  }
+
+  export function getName(v: KnownPeerStatus) {
+    switch (v) {
+      case KnownPeerStatus.Unknown:
+        return "unknown";
+      case KnownPeerStatus.Good:
+        return "good";
+      case KnownPeerStatus.Bad:
+        return "bad";
+      default:
+        throw new Error(`Unknown KnownPeerStatus ${v}`);
+    }
+  }
+}
+
 export enum QueryType {
   /** Default . */
   Default = 0,
@@ -165,6 +210,8 @@ export enum RecordType {
   TxID = 130,
   /** IndexEntry . */
   IndexEntry = 131,
+  /** Error . */
+  Error = 143,
 }
 
 export type RecordTypeArgs = RecordType | string;
@@ -202,6 +249,8 @@ export namespace RecordType {
         return RecordType.TxID;
       case "indexentry":
         return RecordType.IndexEntry;
+      case "error":
+        return RecordType.Error;
       default:
         throw new Error(`Unknown RecordType '${name}'`);
     }
@@ -233,6 +282,8 @@ export namespace RecordType {
         return "txID";
       case RecordType.IndexEntry:
         return "indexEntry";
+      case RecordType.Error:
+        return "error";
       default:
         throw new Error(`Unknown RecordType ${v}`);
     }

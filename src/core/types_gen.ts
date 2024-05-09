@@ -21,6 +21,9 @@ import {
   KeyPageOperation,
   KeyPageOperationArgs,
   KeyPageOperationType,
+  NetworkMaintenanceOperation,
+  NetworkMaintenanceOperationArgs,
+  NetworkMaintenanceOperationType,
   PartitionType,
   PartitionTypeArgs,
   Signature,
@@ -564,6 +567,7 @@ export type AuthoritySignatureArgs = {
   txID?: TxIDArgs;
   cause?: TxIDArgs;
   delegator?: URLArgs[];
+  memo?: string;
 };
 export type AuthoritySignatureArgsWithType = AuthoritySignatureArgs & {
   type: SignatureType.Authority | "authority";
@@ -583,6 +587,8 @@ export class AuthoritySignature {
   public cause?: TxID;
   @encodeAs.field(7).repeatable.url
   public delegator?: URL[];
+  @encodeAs.field(8).string
+  public memo?: string;
 
   constructor(args: AuthoritySignatureArgs) {
     this.origin = args.origin == undefined ? undefined : URL.parse(args.origin);
@@ -592,6 +598,7 @@ export class AuthoritySignature {
     this.cause = args.cause == undefined ? undefined : TxID.parse(args.cause);
     this.delegator =
       args.delegator == undefined ? undefined : args.delegator.map((v) => URL.parse(v));
+    this.memo = args.memo == undefined ? undefined : args.memo;
   }
 
   copy() {
@@ -607,6 +614,7 @@ export class AuthoritySignature {
       txID: this.txID && this.txID.toString(),
       cause: this.cause && this.cause.toString(),
       delegator: this.delegator && this.delegator?.map((v) => v.toString()),
+      memo: this.memo && this.memo,
     };
   }
 }
@@ -619,6 +627,8 @@ export type BTCLegacySignatureArgs = {
   timestamp?: number;
   vote?: VoteTypeArgs;
   transactionHash?: Uint8Array | string;
+  memo?: string;
+  data?: Uint8Array | string;
 };
 export type BTCLegacySignatureArgsWithType = BTCLegacySignatureArgs & {
   type: SignatureType.BTCLegacy | "btclegacy";
@@ -640,6 +650,10 @@ export class BTCLegacySignature {
   public vote?: VoteType;
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
+  @encodeAs.field(9).string
+  public memo?: string;
+  @encodeAs.field(10).bytes
+  public data?: Uint8Array;
 
   constructor(args: BTCLegacySignatureArgs) {
     this.publicKey =
@@ -664,6 +678,13 @@ export class BTCLegacySignature {
         : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
+    this.memo = args.memo == undefined ? undefined : args.memo;
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -680,6 +701,8 @@ export class BTCLegacySignature {
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo && this.memo,
+      data: this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -692,6 +715,8 @@ export type BTCSignatureArgs = {
   timestamp?: number;
   vote?: VoteTypeArgs;
   transactionHash?: Uint8Array | string;
+  memo?: string;
+  data?: Uint8Array | string;
 };
 export type BTCSignatureArgsWithType = BTCSignatureArgs & { type: SignatureType.BTC | "btc" };
 export class BTCSignature {
@@ -711,6 +736,10 @@ export class BTCSignature {
   public vote?: VoteType;
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
+  @encodeAs.field(9).string
+  public memo?: string;
+  @encodeAs.field(10).bytes
+  public data?: Uint8Array;
 
   constructor(args: BTCSignatureArgs) {
     this.publicKey =
@@ -735,6 +764,13 @@ export class BTCSignature {
         : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
+    this.memo = args.memo == undefined ? undefined : args.memo;
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -751,6 +787,8 @@ export class BTCSignature {
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo && this.memo,
+      data: this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -834,28 +872,6 @@ export class BlockLedger {
       index: this.index && this.index,
       time: this.time && this.time,
       entries: this.entries && this.entries?.map((v) => v.asObject()),
-    };
-  }
-}
-
-export type BlockThresholdArgs = {
-  minorBlock?: number;
-};
-export class BlockThreshold {
-  @encodeAs.field(1).uint
-  public minorBlock?: number;
-
-  constructor(args: BlockThresholdArgs) {
-    this.minorBlock = args.minorBlock == undefined ? undefined : args.minorBlock;
-  }
-
-  copy() {
-    return new BlockThreshold(this.asObject());
-  }
-
-  asObject(): BlockThresholdArgs {
-    return {
-      minorBlock: this.minorBlock && this.minorBlock,
     };
   }
 }
@@ -1606,6 +1622,8 @@ export type ED25519SignatureArgs = {
   timestamp?: number;
   vote?: VoteTypeArgs;
   transactionHash?: Uint8Array | string;
+  memo?: string;
+  data?: Uint8Array | string;
 };
 export type ED25519SignatureArgsWithType = ED25519SignatureArgs & {
   type: SignatureType.ED25519 | "ed25519";
@@ -1627,6 +1645,10 @@ export class ED25519Signature {
   public vote?: VoteType;
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
+  @encodeAs.field(9).string
+  public memo?: string;
+  @encodeAs.field(10).bytes
+  public data?: Uint8Array;
 
   constructor(args: ED25519SignatureArgs) {
     this.publicKey =
@@ -1651,6 +1673,13 @@ export class ED25519Signature {
         : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
+    this.memo = args.memo == undefined ? undefined : args.memo;
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -1667,6 +1696,8 @@ export class ED25519Signature {
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo && this.memo,
+      data: this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -1679,6 +1710,8 @@ export type ETHSignatureArgs = {
   timestamp?: number;
   vote?: VoteTypeArgs;
   transactionHash?: Uint8Array | string;
+  memo?: string;
+  data?: Uint8Array | string;
 };
 export type ETHSignatureArgsWithType = ETHSignatureArgs & { type: SignatureType.ETH | "eth" };
 export class ETHSignature {
@@ -1698,6 +1731,10 @@ export class ETHSignature {
   public vote?: VoteType;
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
+  @encodeAs.field(9).string
+  public memo?: string;
+  @encodeAs.field(10).bytes
+  public data?: Uint8Array;
 
   constructor(args: ETHSignatureArgs) {
     this.publicKey =
@@ -1722,6 +1759,13 @@ export class ETHSignature {
         : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
+    this.memo = args.memo == undefined ? undefined : args.memo;
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -1738,6 +1782,8 @@ export class ETHSignature {
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo && this.memo,
+      data: this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -1785,6 +1831,33 @@ export class EnableAccountAuthOperation {
     return {
       type: "enable",
       authority: this.authority && this.authority.toString(),
+    };
+  }
+}
+
+export type ExpireOptionsArgs = {
+  atTime?: Date | string;
+};
+export class ExpireOptions {
+  @encodeAs.field(1).time
+  public atTime?: Date;
+
+  constructor(args: ExpireOptionsArgs) {
+    this.atTime =
+      args.atTime == undefined
+        ? undefined
+        : args.atTime instanceof Date
+        ? args.atTime
+        : new Date(args.atTime);
+  }
+
+  copy() {
+    return new ExpireOptions(this.asObject());
+  }
+
+  asObject(): ExpireOptionsArgs {
+    return {
+      atTime: this.atTime && this.atTime,
     };
   }
 }
@@ -1884,16 +1957,21 @@ export class FactomDataEntryWrapper {
 
 export type FeeScheduleArgs = {
   createIdentitySliding?: FeeArgs[];
+  createSubIdentity?: FeeArgs;
 };
 export class FeeSchedule {
   @encodeAs.field(1).repeatable.enum
   public createIdentitySliding?: Fee[];
+  @encodeAs.field(2).enum
+  public createSubIdentity?: Fee;
 
   constructor(args: FeeScheduleArgs) {
     this.createIdentitySliding =
       args.createIdentitySliding == undefined
         ? undefined
         : args.createIdentitySliding.map((v) => Fee.fromObject(v));
+    this.createSubIdentity =
+      args.createSubIdentity == undefined ? undefined : Fee.fromObject(args.createSubIdentity);
   }
 
   copy() {
@@ -1904,6 +1982,29 @@ export class FeeSchedule {
     return {
       createIdentitySliding:
         this.createIdentitySliding && this.createIdentitySliding?.map((v) => Fee.getName(v)),
+      createSubIdentity: this.createSubIdentity && Fee.getName(this.createSubIdentity),
+    };
+  }
+}
+
+export type HoldUntilOptionsArgs = {
+  minorBlock?: number;
+};
+export class HoldUntilOptions {
+  @encodeAs.field(1).uint
+  public minorBlock?: number;
+
+  constructor(args: HoldUntilOptionsArgs) {
+    this.minorBlock = args.minorBlock == undefined ? undefined : args.minorBlock;
+  }
+
+  copy() {
+    return new HoldUntilOptions(this.asObject());
+  }
+
+  asObject(): HoldUntilOptionsArgs {
+    return {
+      minorBlock: this.minorBlock && this.minorBlock,
     };
   }
 }
@@ -2642,6 +2743,37 @@ export class NetworkLimits {
   }
 }
 
+export type NetworkMaintenanceArgs = {
+  operations?: (NetworkMaintenanceOperation | NetworkMaintenanceOperationArgs)[];
+};
+export type NetworkMaintenanceArgsWithType = NetworkMaintenanceArgs & {
+  type: TransactionType.NetworkMaintenance | "networkMaintenance";
+};
+export class NetworkMaintenance {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = TransactionType.NetworkMaintenance;
+  @encodeAs.field(2).repeatable.union
+  public operations?: NetworkMaintenanceOperation[];
+
+  constructor(args: NetworkMaintenanceArgs) {
+    this.operations =
+      args.operations == undefined
+        ? undefined
+        : args.operations.map((v) => NetworkMaintenanceOperation.fromObject(v));
+  }
+
+  copy() {
+    return new NetworkMaintenance(this.asObject());
+  }
+
+  asObject(): NetworkMaintenanceArgsWithType {
+    return {
+      type: "networkMaintenance",
+      operations: this.operations && this.operations?.map((v) => v.asObject()),
+    };
+  }
+}
+
 export type PartitionAnchorArgs = {
   source?: URLArgs;
   majorBlockIndex?: number;
@@ -2732,6 +2864,33 @@ export class PartitionAnchorReceipt {
     return {
       anchor: this.anchor && this.anchor.asObject(),
       rootChainReceipt: this.rootChainReceipt && this.rootChainReceipt.asObject(),
+    };
+  }
+}
+
+export type PartitionExecutorVersionArgs = {
+  partition?: string;
+  version?: ExecutorVersionArgs;
+};
+export class PartitionExecutorVersion {
+  @encodeAs.field(1).string
+  public partition?: string;
+  @encodeAs.field(2).enum
+  public version?: ExecutorVersion;
+
+  constructor(args: PartitionExecutorVersionArgs) {
+    this.partition = args.partition == undefined ? undefined : args.partition;
+    this.version = args.version == undefined ? undefined : ExecutorVersion.fromObject(args.version);
+  }
+
+  copy() {
+    return new PartitionExecutorVersion(this.asObject());
+  }
+
+  asObject(): PartitionExecutorVersionArgs {
+    return {
+      partition: this.partition && this.partition,
+      version: this.version && ExecutorVersion.getName(this.version),
     };
   }
 }
@@ -2855,6 +3014,34 @@ export class PartitionSyntheticLedger {
   }
 }
 
+export type PendingTransactionGCOperationArgs = {
+  account?: URLArgs;
+};
+export type PendingTransactionGCOperationArgsWithType = PendingTransactionGCOperationArgs & {
+  type: NetworkMaintenanceOperationType.PendingTransactionGC | "pendingTransactionGC";
+};
+export class PendingTransactionGCOperation {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = NetworkMaintenanceOperationType.PendingTransactionGC;
+  @encodeAs.field(2).url
+  public account?: URL;
+
+  constructor(args: PendingTransactionGCOperationArgs) {
+    this.account = args.account == undefined ? undefined : URL.parse(args.account);
+  }
+
+  copy() {
+    return new PendingTransactionGCOperation(this.asObject());
+  }
+
+  asObject(): PendingTransactionGCOperationArgsWithType {
+    return {
+      type: "pendingTransactionGC",
+      account: this.account && this.account.toString(),
+    };
+  }
+}
+
 export type RCD1SignatureArgs = {
   publicKey?: Uint8Array | string;
   signature?: Uint8Array | string;
@@ -2863,6 +3050,8 @@ export type RCD1SignatureArgs = {
   timestamp?: number;
   vote?: VoteTypeArgs;
   transactionHash?: Uint8Array | string;
+  memo?: string;
+  data?: Uint8Array | string;
 };
 export type RCD1SignatureArgsWithType = RCD1SignatureArgs & { type: SignatureType.RCD1 | "rcd1" };
 export class RCD1Signature {
@@ -2882,6 +3071,10 @@ export class RCD1Signature {
   public vote?: VoteType;
   @encodeAs.field(8).hash
   public transactionHash?: Uint8Array;
+  @encodeAs.field(9).string
+  public memo?: string;
+  @encodeAs.field(10).bytes
+  public data?: Uint8Array;
 
   constructor(args: RCD1SignatureArgs) {
     this.publicKey =
@@ -2906,6 +3099,13 @@ export class RCD1Signature {
         : args.transactionHash instanceof Uint8Array
         ? args.transactionHash
         : Buffer.from(args.transactionHash, "hex");
+    this.memo = args.memo == undefined ? undefined : args.memo;
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -2922,6 +3122,8 @@ export class RCD1Signature {
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
       transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo && this.memo,
+      data: this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -3229,6 +3431,94 @@ export class RoutingTable {
   }
 }
 
+export type RsaSha256SignatureArgs = {
+  publicKey?: Uint8Array | string;
+  signature?: Uint8Array | string;
+  signer?: URLArgs;
+  signerVersion?: number;
+  timestamp?: number;
+  vote?: VoteTypeArgs;
+  transactionHash?: Uint8Array | string;
+  memo?: string;
+  data?: Uint8Array | string;
+};
+export type RsaSha256SignatureArgsWithType = RsaSha256SignatureArgs & {
+  type: SignatureType.RsaSha256 | "rsaSha256";
+};
+export class RsaSha256Signature {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = SignatureType.RsaSha256;
+  @encodeAs.field(2).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(3).bytes
+  public signature?: Uint8Array;
+  @encodeAs.field(4).url
+  public signer?: URL;
+  @encodeAs.field(5).uint
+  public signerVersion?: number;
+  @encodeAs.field(6).uint
+  public timestamp?: number;
+  @encodeAs.field(7).enum
+  public vote?: VoteType;
+  @encodeAs.field(8).hash
+  public transactionHash?: Uint8Array;
+  @encodeAs.field(9).string
+  public memo?: string;
+  @encodeAs.field(10).bytes
+  public data?: Uint8Array;
+
+  constructor(args: RsaSha256SignatureArgs) {
+    this.publicKey =
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
+    this.signature =
+      args.signature == undefined
+        ? undefined
+        : args.signature instanceof Uint8Array
+        ? args.signature
+        : Buffer.from(args.signature, "hex");
+    this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
+    this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
+    this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
+    this.transactionHash =
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
+        ? args.transactionHash
+        : Buffer.from(args.transactionHash, "hex");
+    this.memo = args.memo == undefined ? undefined : args.memo;
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
+  }
+
+  copy() {
+    return new RsaSha256Signature(this.asObject());
+  }
+
+  asObject(): RsaSha256SignatureArgsWithType {
+    return {
+      type: "rsaSha256",
+      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer && this.signer.toString(),
+      signerVersion: this.signerVersion && this.signerVersion,
+      timestamp: this.timestamp && this.timestamp,
+      vote: this.vote && VoteType.getName(this.vote),
+      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo && this.memo,
+      data: this.data && Buffer.from(this.data).toString("hex"),
+    };
+  }
+}
+
 export type SendTokensArgs = {
   hash?: Uint8Array | string;
   meta?: unknown;
@@ -3420,6 +3710,7 @@ export type SyntheticBurnTokensArgs = {
   source?: URLArgs;
   initiator?: URLArgs;
   feeRefund?: number;
+  index?: number;
   amount?: bigint | string | number;
   isRefund?: boolean;
 };
@@ -3437,6 +3728,8 @@ export class SyntheticBurnTokens {
   public initiator?: URL;
   @encodeAs.field(2, 4).uint
   public feeRefund?: number;
+  @encodeAs.field(2, 5).uint
+  public index?: number;
   @encodeAs.field(3).bigInt
   public amount?: bigint;
   @encodeAs.field(4).bool
@@ -3447,6 +3740,7 @@ export class SyntheticBurnTokens {
     this.source = args.source == undefined ? undefined : URL.parse(args.source);
     this.initiator = args.initiator == undefined ? undefined : URL.parse(args.initiator);
     this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.index = args.index == undefined ? undefined : args.index;
     this.amount =
       args.amount == undefined
         ? undefined
@@ -3467,6 +3761,7 @@ export class SyntheticBurnTokens {
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
       feeRefund: this.feeRefund && this.feeRefund,
+      index: this.index && this.index,
       amount: this.amount && this.amount.toString(),
       isRefund: this.isRefund && this.isRefund,
     };
@@ -3478,6 +3773,7 @@ export type SyntheticCreateIdentityArgs = {
   source?: URLArgs;
   initiator?: URLArgs;
   feeRefund?: number;
+  index?: number;
   accounts?: (Account | AccountArgs)[];
 };
 export type SyntheticCreateIdentityArgsWithType = SyntheticCreateIdentityArgs & {
@@ -3494,6 +3790,8 @@ export class SyntheticCreateIdentity {
   public initiator?: URL;
   @encodeAs.field(2, 4).uint
   public feeRefund?: number;
+  @encodeAs.field(2, 5).uint
+  public index?: number;
   @encodeAs.field(3).repeatable.union
   public accounts?: Account[];
 
@@ -3502,6 +3800,7 @@ export class SyntheticCreateIdentity {
     this.source = args.source == undefined ? undefined : URL.parse(args.source);
     this.initiator = args.initiator == undefined ? undefined : URL.parse(args.initiator);
     this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.index = args.index == undefined ? undefined : args.index;
     this.accounts =
       args.accounts == undefined ? undefined : args.accounts.map((v) => Account.fromObject(v));
   }
@@ -3517,6 +3816,7 @@ export class SyntheticCreateIdentity {
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
       feeRefund: this.feeRefund && this.feeRefund,
+      index: this.index && this.index,
       accounts: this.accounts && this.accounts?.map((v) => v.asObject()),
     };
   }
@@ -3527,6 +3827,7 @@ export type SyntheticDepositCreditsArgs = {
   source?: URLArgs;
   initiator?: URLArgs;
   feeRefund?: number;
+  index?: number;
   amount?: number;
   acmeRefundAmount?: bigint | string | number;
   isRefund?: boolean;
@@ -3545,6 +3846,8 @@ export class SyntheticDepositCredits {
   public initiator?: URL;
   @encodeAs.field(2, 4).uint
   public feeRefund?: number;
+  @encodeAs.field(2, 5).uint
+  public index?: number;
   @encodeAs.field(3).uint
   public amount?: number;
   @encodeAs.field(4).bigInt
@@ -3557,6 +3860,7 @@ export class SyntheticDepositCredits {
     this.source = args.source == undefined ? undefined : URL.parse(args.source);
     this.initiator = args.initiator == undefined ? undefined : URL.parse(args.initiator);
     this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.index = args.index == undefined ? undefined : args.index;
     this.amount = args.amount == undefined ? undefined : args.amount;
     this.acmeRefundAmount =
       args.acmeRefundAmount == undefined
@@ -3578,6 +3882,7 @@ export class SyntheticDepositCredits {
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
       feeRefund: this.feeRefund && this.feeRefund,
+      index: this.index && this.index,
       amount: this.amount && this.amount,
       acmeRefundAmount: this.acmeRefundAmount && this.acmeRefundAmount.toString(),
       isRefund: this.isRefund && this.isRefund,
@@ -3590,6 +3895,7 @@ export type SyntheticDepositTokensArgs = {
   source?: URLArgs;
   initiator?: URLArgs;
   feeRefund?: number;
+  index?: number;
   token?: URLArgs;
   amount?: bigint | string | number;
   isIssuer?: boolean;
@@ -3609,6 +3915,8 @@ export class SyntheticDepositTokens {
   public initiator?: URL;
   @encodeAs.field(2, 4).uint
   public feeRefund?: number;
+  @encodeAs.field(2, 5).uint
+  public index?: number;
   @encodeAs.field(3).url
   public token?: URL;
   @encodeAs.field(4).bigInt
@@ -3623,6 +3931,7 @@ export class SyntheticDepositTokens {
     this.source = args.source == undefined ? undefined : URL.parse(args.source);
     this.initiator = args.initiator == undefined ? undefined : URL.parse(args.initiator);
     this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.index = args.index == undefined ? undefined : args.index;
     this.token = args.token == undefined ? undefined : URL.parse(args.token);
     this.amount =
       args.amount == undefined
@@ -3645,6 +3954,7 @@ export class SyntheticDepositTokens {
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
       feeRefund: this.feeRefund && this.feeRefund,
+      index: this.index && this.index,
       token: this.token && this.token.toString(),
       amount: this.amount && this.amount.toString(),
       isIssuer: this.isIssuer && this.isIssuer,
@@ -3736,6 +4046,7 @@ export type SyntheticOriginArgs = {
   cause?: TxIDArgs;
   initiator?: URLArgs;
   feeRefund?: number;
+  index?: number;
 };
 export class SyntheticOrigin {
   @encodeAs.field(1).txid
@@ -3744,11 +4055,14 @@ export class SyntheticOrigin {
   public initiator?: URL;
   @encodeAs.field(4).uint
   public feeRefund?: number;
+  @encodeAs.field(5).uint
+  public index?: number;
 
   constructor(args: SyntheticOriginArgs) {
     this.cause = args.cause == undefined ? undefined : TxID.parse(args.cause);
     this.initiator = args.initiator == undefined ? undefined : URL.parse(args.initiator);
     this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.index = args.index == undefined ? undefined : args.index;
   }
 
   copy() {
@@ -3760,6 +4074,7 @@ export class SyntheticOrigin {
       cause: this.cause && this.cause.toString(),
       initiator: this.initiator && this.initiator.toString(),
       feeRefund: this.feeRefund && this.feeRefund,
+      index: this.index && this.index,
     };
   }
 }
@@ -3769,6 +4084,7 @@ export type SyntheticWriteDataArgs = {
   source?: URLArgs;
   initiator?: URLArgs;
   feeRefund?: number;
+  index?: number;
   entry?: DataEntry | DataEntryArgs;
 };
 export type SyntheticWriteDataArgsWithType = SyntheticWriteDataArgs & {
@@ -3785,6 +4101,8 @@ export class SyntheticWriteData {
   public initiator?: URL;
   @encodeAs.field(2, 4).uint
   public feeRefund?: number;
+  @encodeAs.field(2, 5).uint
+  public index?: number;
   @encodeAs.field(3).union
   public entry?: DataEntry;
 
@@ -3793,6 +4111,7 @@ export class SyntheticWriteData {
     this.source = args.source == undefined ? undefined : URL.parse(args.source);
     this.initiator = args.initiator == undefined ? undefined : URL.parse(args.initiator);
     this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.index = args.index == undefined ? undefined : args.index;
     this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
   }
 
@@ -3807,6 +4126,7 @@ export class SyntheticWriteData {
       source: this.source && this.source.toString(),
       initiator: this.initiator && this.initiator.toString(),
       feeRefund: this.feeRefund && this.feeRefund,
+      index: this.index && this.index,
       entry: this.entry && this.entry.asObject(),
     };
   }
@@ -3839,6 +4159,7 @@ export type SystemLedgerArgs = {
   pendingUpdates?: (NetworkAccountUpdate | NetworkAccountUpdateArgs)[];
   anchor?: AnchorBody | AnchorBodyArgs;
   executorVersion?: ExecutorVersionArgs;
+  bvnExecutorVersions?: (PartitionExecutorVersion | PartitionExecutorVersionArgs)[];
 };
 export type SystemLedgerArgsWithType = SystemLedgerArgs & {
   type: AccountType.SystemLedger | "systemLedger";
@@ -3860,6 +4181,8 @@ export class SystemLedger {
   public anchor?: AnchorBody;
   @encodeAs.field(8).enum
   public executorVersion?: ExecutorVersion;
+  @encodeAs.field(9).repeatable.reference
+  public bvnExecutorVersions?: PartitionExecutorVersion[];
 
   constructor(args: SystemLedgerArgs) {
     this.url = args.url == undefined ? undefined : URL.parse(args.url);
@@ -3887,6 +4210,12 @@ export class SystemLedger {
       args.executorVersion == undefined
         ? undefined
         : ExecutorVersion.fromObject(args.executorVersion);
+    this.bvnExecutorVersions =
+      args.bvnExecutorVersions == undefined
+        ? undefined
+        : args.bvnExecutorVersions.map((v) =>
+            v instanceof PartitionExecutorVersion ? v : new PartitionExecutorVersion(v)
+          );
   }
 
   copy() {
@@ -3903,6 +4232,8 @@ export class SystemLedger {
       pendingUpdates: this.pendingUpdates && this.pendingUpdates?.map((v) => v.asObject()),
       anchor: this.anchor && this.anchor.asObject(),
       executorVersion: this.executorVersion && ExecutorVersion.getName(this.executorVersion),
+      bvnExecutorVersions:
+        this.bvnExecutorVersions && this.bvnExecutorVersions?.map((v) => v.asObject()),
     };
   }
 }
@@ -4169,7 +4500,9 @@ export type TransactionHeaderArgs = {
   initiator?: Uint8Array | string;
   memo?: string;
   metadata?: Uint8Array | string;
-  holdUntil?: BlockThreshold | BlockThresholdArgs;
+  expire?: ExpireOptions | ExpireOptionsArgs;
+  holdUntil?: HoldUntilOptions | HoldUntilOptionsArgs;
+  authorities?: URLArgs[];
 };
 export class TransactionHeader {
   @encodeAs.field(1).url
@@ -4181,7 +4514,11 @@ export class TransactionHeader {
   @encodeAs.field(4).bytes
   public metadata?: Uint8Array;
   @encodeAs.field(5).reference
-  public holdUntil?: BlockThreshold;
+  public expire?: ExpireOptions;
+  @encodeAs.field(6).reference
+  public holdUntil?: HoldUntilOptions;
+  @encodeAs.field(7).repeatable.url
+  public authorities?: URL[];
 
   constructor(args: TransactionHeaderArgs) {
     this.principal = args.principal == undefined ? undefined : URL.parse(args.principal);
@@ -4198,12 +4535,20 @@ export class TransactionHeader {
         : args.metadata instanceof Uint8Array
         ? args.metadata
         : Buffer.from(args.metadata, "hex");
+    this.expire =
+      args.expire == undefined
+        ? undefined
+        : args.expire instanceof ExpireOptions
+        ? args.expire
+        : new ExpireOptions(args.expire);
     this.holdUntil =
       args.holdUntil == undefined
         ? undefined
-        : args.holdUntil instanceof BlockThreshold
+        : args.holdUntil instanceof HoldUntilOptions
         ? args.holdUntil
-        : new BlockThreshold(args.holdUntil);
+        : new HoldUntilOptions(args.holdUntil);
+    this.authorities =
+      args.authorities == undefined ? undefined : args.authorities.map((v) => URL.parse(v));
   }
 
   copy() {
@@ -4216,7 +4561,9 @@ export class TransactionHeader {
       initiator: this.initiator && Buffer.from(this.initiator).toString("hex"),
       memo: this.memo && this.memo,
       metadata: this.metadata && Buffer.from(this.metadata).toString("hex"),
+      expire: this.expire && this.expire.asObject(),
       holdUntil: this.holdUntil && this.holdUntil.asObject(),
+      authorities: this.authorities && this.authorities?.map((v) => v.toString()),
     };
   }
 }

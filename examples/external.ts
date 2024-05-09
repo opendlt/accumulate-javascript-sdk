@@ -1,16 +1,15 @@
 // You need to import the Payload class for the type of transaction you want to make.
 // Here we are building a SendTokens transaction.
-import {
-  api_v2,
-  BaseKey,
-  ED25519Key,
-  PublicKey,
-  PublicKeyAddress,
-  Signer,
-  URL,
-} from "accumulate.js";
+import { Address, api_v2, BaseKey, ED25519Key, PublicKey, Signer, URL } from "accumulate.js";
 import { sha256 } from "accumulate.js/lib/common/crypto";
-import { SendTokens, SignatureType, Transaction, TransactionHeader } from "accumulate.js/lib/core";
+import {
+  SendTokens,
+  Signature,
+  SignatureType,
+  Transaction,
+  TransactionHeader,
+} from "accumulate.js/lib/core";
+import { encode } from "accumulate.js/lib/encoding";
 import { Envelope } from "accumulate.js/lib/messaging";
 
 class ExternalETHKey extends BaseKey {
@@ -21,36 +20,43 @@ class ExternalETHKey extends BaseKey {
     }
   }
 
-  async signRaw(args: { message: Uint8Array; sigMdHash: Uint8Array }): Promise<Uint8Array> {
-    const hash = await sha256(Buffer.concat([args.sigMdHash, args.message]));
-    /*
-     * External signing hook/logic goes here
+  async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
+    const sigMdHash = await sha256(encode(signature));
+    const hash = await sha256(Buffer.concat([sigMdHash, message]));
+
+    /**
+     * External signing hook/logic goes here.
      */
-    throw new Error();
+    throw new Error(`TODO: Sign ${hash}`);
   }
 }
 
-async function main(ethKey: PublicKeyAddress) {
-  const sender = await Signer.forPage(URL.parse("me.acme/book/1"), new ExternalETHKey(ethKey));
-  const signerVersion = 5; // Hard code or retrieve via the API
+/**
+ * This is a placeholder and must be replaced with an actual Ethereum public
+ * key.
+ */
+const ethKeyHex = "c0ffeef00d";
 
-  // Build the Payload
-  const recipient = await Signer.forLite(await ED25519Key.generate());
-  const amount = 10;
-  const body = new SendTokens({ to: [{ url: recipient.url.join("ACME"), amount: amount }] });
-  // Build the transaction header with the transaction principal
-  // and optionally a timestamp, memo or metadata.
-  const header = new TransactionHeader({ principal: sender.url.join("ACME") });
+const ethKey = await Address.fromKey(SignatureType.ETH, Buffer.from(ethKeyHex, "hex"));
+const sender = await Signer.forPage(URL.parse("me.acme/book/1"), new ExternalETHKey(ethKey));
+const signerVersion = 5; // Hard code or retrieve via the API
 
-  // Finally build the (unsigned yet) transaction
-  const tx = new Transaction({ body, header });
+// Build the Payload
+const recipient = await Signer.forLite(await ED25519Key.generate());
+const amount = 10;
+const body = new SendTokens({ to: [{ url: recipient.url.join("ACME"), amount: amount }] });
+// Build the transaction header with the transaction principal
+// and optionally a timestamp, memo or metadata.
+const header = new TransactionHeader({ principal: sender.url.join("ACME") });
 
-  // Sign with a key pair or manually sign with custom key store, Ledger, etc
-  const sig = await sender.sign(tx, { timestamp: Date.now(), signerVersion });
-  const env = new Envelope({ transaction: [tx], signatures: [sig] });
+// Finally build the (unsigned yet) transaction
+const tx = new Transaction({ body, header });
 
-  // Submit the envelope
-  const client = new api_v2.Client("https://mainnet.accumulatenetwork.io/v2");
-  const res = await client.execute(env);
-  await client.waitOnTx(res.txid.toString());
-}
+// Sign with a key pair or manually sign with custom key store, Ledger, etc
+const sig = await sender.sign(tx, { timestamp: Date.now(), signerVersion });
+const env = new Envelope({ transaction: [tx], signatures: [sig] });
+
+// Submit the envelope
+const client = new api_v2.Client("https://mainnet.accumulatenetwork.io/v2");
+const res = await client.execute(env);
+await client.waitOnTx(res.txid.toString());

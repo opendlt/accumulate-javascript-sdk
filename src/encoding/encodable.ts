@@ -84,7 +84,7 @@ export class Time {
 export class Duration {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   encode(_value: number): Uint8Array {
-    throw new Error("cannot marshal duration to binary");
+    throw new Error("TODO: marshal duration to binary");
   }
 }
 
@@ -97,7 +97,7 @@ export class BigInt {
 export class Float {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   encode(_value: number): Uint8Array {
-    throw new Error("cannot marshal float to binary");
+    throw new Error("TODO: marshal float to binary");
   }
 }
 

@@ -12,6 +12,50 @@ import { encodeAs } from "../encoding";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 
+export type BadSyntheticMessageArgs = {
+  message?: Message | MessageArgs;
+  signature?: protocol.KeySignature | protocol.KeySignatureArgs;
+  proof?: protocol.AnnotatedReceipt | protocol.AnnotatedReceiptArgs;
+};
+export type BadSyntheticMessageArgsWithType = BadSyntheticMessageArgs & {
+  type: MessageType.BadSynthetic | "badSynthetic";
+};
+export class BadSyntheticMessage {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = MessageType.BadSynthetic;
+  @encodeAs.field(2).union
+  public message?: Message;
+  @encodeAs.field(3).union
+  public signature?: protocol.KeySignature;
+  @encodeAs.field(4).reference
+  public proof?: protocol.AnnotatedReceipt;
+
+  constructor(args: BadSyntheticMessageArgs) {
+    this.message = args.message == undefined ? undefined : Message.fromObject(args.message);
+    this.signature =
+      args.signature == undefined ? undefined : protocol.KeySignature.fromObject(args.signature);
+    this.proof =
+      args.proof == undefined
+        ? undefined
+        : args.proof instanceof protocol.AnnotatedReceipt
+        ? args.proof
+        : new protocol.AnnotatedReceipt(args.proof);
+  }
+
+  copy() {
+    return new BadSyntheticMessage(this.asObject());
+  }
+
+  asObject(): BadSyntheticMessageArgsWithType {
+    return {
+      type: "badSynthetic",
+      message: this.message && this.message.asObject(),
+      signature: this.signature && this.signature.asObject(),
+      proof: this.proof && this.proof.asObject(),
+    };
+  }
+}
+
 export type BlockAnchorArgs = {
   signature?: protocol.KeySignature | protocol.KeySignatureArgs;
   anchor?: Message | MessageArgs;
@@ -94,6 +138,40 @@ export class CreditPayment {
   }
 }
 
+export type DidUpdateExecutorVersionArgs = {
+  partition?: string;
+  version?: protocol.ExecutorVersionArgs;
+};
+export type DidUpdateExecutorVersionArgsWithType = DidUpdateExecutorVersionArgs & {
+  type: MessageType.DidUpdateExecutorVersion | "didUpdateExecutorVersion";
+};
+export class DidUpdateExecutorVersion {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = MessageType.DidUpdateExecutorVersion;
+  @encodeAs.field(2).string
+  public partition?: string;
+  @encodeAs.field(3).enum
+  public version?: protocol.ExecutorVersion;
+
+  constructor(args: DidUpdateExecutorVersionArgs) {
+    this.partition = args.partition == undefined ? undefined : args.partition;
+    this.version =
+      args.version == undefined ? undefined : protocol.ExecutorVersion.fromObject(args.version);
+  }
+
+  copy() {
+    return new DidUpdateExecutorVersion(this.asObject());
+  }
+
+  asObject(): DidUpdateExecutorVersionArgsWithType {
+    return {
+      type: "didUpdateExecutorVersion",
+      partition: this.partition && this.partition,
+      version: this.version && protocol.ExecutorVersion.getName(this.version),
+    };
+  }
+}
+
 export type EnvelopeArgs = {
   signatures?: (protocol.Signature | protocol.SignatureArgs)[];
   txHash?: Uint8Array | string;
@@ -141,6 +219,82 @@ export class Envelope {
       txHash: this.txHash && Buffer.from(this.txHash).toString("hex"),
       transaction: this.transaction && this.transaction?.map((v) => v.asObject()),
       messages: this.messages && this.messages?.map((v) => v.asObject()),
+    };
+  }
+}
+
+export type MakeMajorBlockArgs = {
+  majorBlockIndex?: number;
+  minorBlockIndex?: number;
+  majorBlockTime?: Date | string;
+};
+export type MakeMajorBlockArgsWithType = MakeMajorBlockArgs & {
+  type: MessageType.MakeMajorBlock | "makeMajorBlock";
+};
+export class MakeMajorBlock {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = MessageType.MakeMajorBlock;
+  @encodeAs.field(2).uint
+  public majorBlockIndex?: number;
+  @encodeAs.field(3).uint
+  public minorBlockIndex?: number;
+  @encodeAs.field(4).time
+  public majorBlockTime?: Date;
+
+  constructor(args: MakeMajorBlockArgs) {
+    this.majorBlockIndex = args.majorBlockIndex == undefined ? undefined : args.majorBlockIndex;
+    this.minorBlockIndex = args.minorBlockIndex == undefined ? undefined : args.minorBlockIndex;
+    this.majorBlockTime =
+      args.majorBlockTime == undefined
+        ? undefined
+        : args.majorBlockTime instanceof Date
+        ? args.majorBlockTime
+        : new Date(args.majorBlockTime);
+  }
+
+  copy() {
+    return new MakeMajorBlock(this.asObject());
+  }
+
+  asObject(): MakeMajorBlockArgsWithType {
+    return {
+      type: "makeMajorBlock",
+      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
+      minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
+      majorBlockTime: this.majorBlockTime && this.majorBlockTime,
+    };
+  }
+}
+
+export type NetworkUpdateArgs = {
+  accounts?: (protocol.NetworkAccountUpdate | protocol.NetworkAccountUpdateArgs)[];
+};
+export type NetworkUpdateArgsWithType = NetworkUpdateArgs & {
+  type: MessageType.NetworkUpdate | "networkUpdate";
+};
+export class NetworkUpdate {
+  @encodeAs.field(1).keepEmpty.enum
+  public readonly type = MessageType.NetworkUpdate;
+  @encodeAs.field(2).repeatable.reference
+  public accounts?: protocol.NetworkAccountUpdate[];
+
+  constructor(args: NetworkUpdateArgs) {
+    this.accounts =
+      args.accounts == undefined
+        ? undefined
+        : args.accounts.map((v) =>
+            v instanceof protocol.NetworkAccountUpdate ? v : new protocol.NetworkAccountUpdate(v)
+          );
+  }
+
+  copy() {
+    return new NetworkUpdate(this.asObject());
+  }
+
+  asObject(): NetworkUpdateArgsWithType {
+    return {
+      type: "networkUpdate",
+      accounts: this.accounts && this.accounts?.map((v) => v.asObject()),
     };
   }
 }
@@ -256,6 +410,41 @@ export class SignatureRequest {
       authority: this.authority && this.authority.toString(),
       txID: this.txID && this.txID.toString(),
       cause: this.cause && this.cause.toString(),
+    };
+  }
+}
+
+export type SynthFieldsArgs = {
+  message?: Message | MessageArgs;
+  signature?: protocol.KeySignature | protocol.KeySignatureArgs;
+  proof?: protocol.AnnotatedReceipt | protocol.AnnotatedReceiptArgs;
+};
+export class SynthFields {
+  public message?: Message;
+  public signature?: protocol.KeySignature;
+  public proof?: protocol.AnnotatedReceipt;
+
+  constructor(args: SynthFieldsArgs) {
+    this.message = args.message == undefined ? undefined : Message.fromObject(args.message);
+    this.signature =
+      args.signature == undefined ? undefined : protocol.KeySignature.fromObject(args.signature);
+    this.proof =
+      args.proof == undefined
+        ? undefined
+        : args.proof instanceof protocol.AnnotatedReceipt
+        ? args.proof
+        : new protocol.AnnotatedReceipt(args.proof);
+  }
+
+  copy() {
+    return new SynthFields(this.asObject());
+  }
+
+  asObject(): SynthFieldsArgs {
+    return {
+      message: this.message && this.message.asObject(),
+      signature: this.signature && this.signature.asObject(),
+      proof: this.proof && this.proof.asObject(),
     };
   }
 }

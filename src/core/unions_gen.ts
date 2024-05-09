@@ -177,6 +177,7 @@ export type TransactionBody =
   | types.DirectoryAnchor
   | types.IssueTokens
   | types.LockAccount
+  | types.NetworkMaintenance
   | types.RemoteTransaction
   | types.SendTokens
   | types.SyntheticBurnTokens
@@ -227,6 +228,8 @@ export type TransactionBodyArgs =
   | types.IssueTokensArgsWithType
   | types.LockAccount
   | types.LockAccountArgsWithType
+  | types.NetworkMaintenance
+  | types.NetworkMaintenanceArgsWithType
   | types.RemoteTransaction
   | types.RemoteTransactionArgsWithType
   | types.SendTokens
@@ -279,6 +282,7 @@ export namespace TransactionBody {
     if (obj instanceof types.DirectoryAnchor) return obj;
     if (obj instanceof types.IssueTokens) return obj;
     if (obj instanceof types.LockAccount) return obj;
+    if (obj instanceof types.NetworkMaintenance) return obj;
     if (obj instanceof types.RemoteTransaction) return obj;
     if (obj instanceof types.SendTokens) return obj;
     if (obj instanceof types.SyntheticBurnTokens) return obj;
@@ -345,6 +349,9 @@ export namespace TransactionBody {
       case types.TransactionType.LockAccount:
       case "lockAccount":
         return new types.LockAccount(obj);
+      case types.TransactionType.NetworkMaintenance:
+      case "networkMaintenance":
+        return new types.NetworkMaintenance(obj);
       case types.TransactionType.Remote:
       case "remote":
         return new types.RemoteTransaction(obj);
@@ -519,6 +526,7 @@ export type Signature =
   | types.RCD1Signature
   | types.ReceiptSignature
   | types.RemoteSignature
+  | types.RsaSha256Signature
   | types.SignatureSet;
 
 export type SignatureArgs =
@@ -546,6 +554,8 @@ export type SignatureArgs =
   | types.ReceiptSignatureArgsWithType
   | types.RemoteSignature
   | types.RemoteSignatureArgsWithType
+  | types.RsaSha256Signature
+  | types.RsaSha256SignatureArgsWithType
   | types.SignatureSet
   | types.SignatureSetArgsWithType;
 
@@ -564,6 +574,7 @@ export namespace Signature {
     if (obj instanceof types.RCD1Signature) return obj;
     if (obj instanceof types.ReceiptSignature) return obj;
     if (obj instanceof types.RemoteSignature) return obj;
+    if (obj instanceof types.RsaSha256Signature) return obj;
     if (obj instanceof types.SignatureSet) return obj;
 
     switch (obj.type) {
@@ -603,11 +614,35 @@ export namespace Signature {
       case types.SignatureType.Remote:
       case "remote":
         return new types.RemoteSignature(obj);
+      case types.SignatureType.RsaSha256:
+      case "rsaSha256":
+        return new types.RsaSha256Signature(obj);
       case types.SignatureType.Set:
       case "set":
         return new types.SignatureSet(obj);
       default:
         throw new Error(`Unknown signature '${(obj as any).type}'`);
+    }
+  }
+}
+
+export type NetworkMaintenanceOperation = types.PendingTransactionGCOperation;
+
+export type NetworkMaintenanceOperationArgs =
+  | types.PendingTransactionGCOperation
+  | types.PendingTransactionGCOperationArgsWithType;
+
+/** @ignore */
+export namespace NetworkMaintenanceOperation {
+  export function fromObject(obj: NetworkMaintenanceOperationArgs): NetworkMaintenanceOperation {
+    if (obj instanceof types.PendingTransactionGCOperation) return obj;
+
+    switch (obj.type) {
+      case types.NetworkMaintenanceOperationType.PendingTransactionGC:
+      case "pendingTransactionGC":
+        return new types.PendingTransactionGCOperation(obj);
+      default:
+        throw new Error(`Unknown network maintenance operation '${(obj as any).type}'`);
     }
   }
 }

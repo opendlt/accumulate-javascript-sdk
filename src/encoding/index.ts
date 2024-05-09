@@ -7,6 +7,7 @@ import {
   BigInt,
   Bool,
   Bytes,
+  Duration,
   Encodable,
   Enum,
   Hash,
@@ -244,9 +245,15 @@ export class Annotator {
       Encoding.set(target).addField(this.number, { name: key, type: new Time(), ...this.field });
     };
   }
-  // asDuration(target: any, key: PropertyKey) {
-  //   Encoding.set(target).addField(this.number, { name: key, type: new Duration, ...this.field });
-  // }
+  get duration() {
+    return (target: any, key: PropertyKey) => {
+      Encoding.set(target).addField(this.number, {
+        name: key,
+        type: new Duration(),
+        ...this.field,
+      });
+    };
+  }
   get bigInt() {
     return (target: any, key: PropertyKey) => {
       Encoding.set(target).addField(this.number, { name: key, type: new BigInt(), ...this.field });
