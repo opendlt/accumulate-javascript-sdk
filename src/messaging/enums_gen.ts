@@ -7,8 +7,8 @@ export enum MessageType {
   Transaction = 1,
   /** Signature is a signature. */
   Signature = 2,
-  /** Synthetic is a message produced by the protocol, requiring proof. */
-  Synthetic = 3,
+  /** BadSynthetic is deprecated. */
+  BadSynthetic = 3,
   /** BlockAnchor is a block anchor signed by validator. */
   BlockAnchor = 4,
   /** Sequenced is a message that is part of a sequence. */
@@ -19,6 +19,14 @@ export enum MessageType {
   CreditPayment = 7,
   /** BlockSummary is a summary of a block. */
   BlockSummary = 8,
+  /** Synthetic is a message produced by the protocol, requiring proof. */
+  Synthetic = 9,
+  /** NetworkUpdate is an update to network parameters. */
+  NetworkUpdate = 10,
+  /** MakeMajorBlock triggers a major block. */
+  MakeMajorBlock = 11,
+  /** DidUpdateExecutorVersion notifies the DN that a BVN updated the executor version. */
+  DidUpdateExecutorVersion = 12,
 }
 
 export type MessageTypeArgs = MessageType | string;
@@ -36,8 +44,8 @@ export namespace MessageType {
         return MessageType.Transaction;
       case "signature":
         return MessageType.Signature;
-      case "synthetic":
-        return MessageType.Synthetic;
+      case "badsynthetic":
+        return MessageType.BadSynthetic;
       case "blockanchor":
         return MessageType.BlockAnchor;
       case "sequenced":
@@ -48,6 +56,14 @@ export namespace MessageType {
         return MessageType.CreditPayment;
       case "blocksummary":
         return MessageType.BlockSummary;
+      case "synthetic":
+        return MessageType.Synthetic;
+      case "networkupdate":
+        return MessageType.NetworkUpdate;
+      case "makemajorblock":
+        return MessageType.MakeMajorBlock;
+      case "didupdateexecutorversion":
+        return MessageType.DidUpdateExecutorVersion;
       default:
         throw new Error(`Unknown MessageType '${name}'`);
     }
@@ -59,8 +75,8 @@ export namespace MessageType {
         return "transaction";
       case MessageType.Signature:
         return "signature";
-      case MessageType.Synthetic:
-        return "synthetic";
+      case MessageType.BadSynthetic:
+        return "badSynthetic";
       case MessageType.BlockAnchor:
         return "blockAnchor";
       case MessageType.Sequenced:
@@ -71,6 +87,14 @@ export namespace MessageType {
         return "creditPayment";
       case MessageType.BlockSummary:
         return "blockSummary";
+      case MessageType.Synthetic:
+        return "synthetic";
+      case MessageType.NetworkUpdate:
+        return "networkUpdate";
+      case MessageType.MakeMajorBlock:
+        return "makeMajorBlock";
+      case MessageType.DidUpdateExecutorVersion:
+        return "didUpdateExecutorVersion";
       default:
         throw new Error(`Unknown MessageType ${v}`);
     }

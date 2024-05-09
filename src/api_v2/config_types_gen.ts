@@ -12,7 +12,6 @@ import * as protocol from "./protocol";
 export type DescribeArgs = {
   networkType?: protocol.PartitionTypeArgs;
   partitionId?: string;
-  localAddress?: string;
   network?: Network | NetworkArgs;
 };
 export class Describe {
@@ -20,9 +19,7 @@ export class Describe {
   public networkType?: protocol.PartitionType;
   @encodeAs.field(2).string
   public partitionId?: string;
-  @encodeAs.field(3).string
-  public localAddress?: string;
-  @encodeAs.field(4).reference
+  @encodeAs.field(3).reference
   public network?: Network;
 
   constructor(args: DescribeArgs) {
@@ -31,7 +28,6 @@ export class Describe {
         ? undefined
         : protocol.PartitionType.fromObject(args.networkType);
     this.partitionId = args.partitionId == undefined ? undefined : args.partitionId;
-    this.localAddress = args.localAddress == undefined ? undefined : args.localAddress;
     this.network =
       args.network == undefined
         ? undefined
@@ -48,7 +44,6 @@ export class Describe {
     return {
       networkType: this.networkType && protocol.PartitionType.getName(this.networkType),
       partitionId: this.partitionId && this.partitionId,
-      localAddress: this.localAddress && this.localAddress,
       network: this.network && this.network.asObject(),
     };
   }
@@ -56,20 +51,13 @@ export class Describe {
 
 export type NetworkArgs = {
   id?: string;
-  partitions?: (Partition | PartitionArgs)[];
 };
 export class Network {
   @encodeAs.field(1).string
   public id?: string;
-  @encodeAs.field(2).repeatable.reference
-  public partitions?: Partition[];
 
   constructor(args: NetworkArgs) {
     this.id = args.id == undefined ? undefined : args.id;
-    this.partitions =
-      args.partitions == undefined
-        ? undefined
-        : args.partitions.map((v) => (v instanceof Partition ? v : new Partition(v)));
   }
 
   copy() {
@@ -79,7 +67,6 @@ export class Network {
   asObject(): NetworkArgs {
     return {
       id: this.id && this.id,
-      partitions: this.partitions && this.partitions?.map((v) => v.asObject()),
     };
   }
 }

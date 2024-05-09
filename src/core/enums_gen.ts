@@ -324,6 +324,12 @@ export enum ExecutorVersion {
   V1Halt = 4,
   /** V2 is the second version of the executor system. */
   V2 = 5,
+  /** V2Baikonur enables the Baikonur release. */
+  V2Baikonur = 6,
+  /** V2Vandenberg enables the Vandenberg release. */
+  V2Vandenberg = 7,
+  /** VNext is a placeholder for testing. DO NOT USE. */
+  VNext = 8,
 }
 
 export type ExecutorVersionArgs = ExecutorVersion | string;
@@ -347,6 +353,14 @@ export namespace ExecutorVersion {
         return ExecutorVersion.V1Halt;
       case "v2":
         return ExecutorVersion.V2;
+      case "v2baikonur":
+        return ExecutorVersion.V2Baikonur;
+      case "v2-baikonur":
+        return ExecutorVersion.V2Baikonur;
+      case "v2-vandenberg":
+        return ExecutorVersion.V2Vandenberg;
+      case "vnext":
+        return ExecutorVersion.VNext;
       default:
         throw new Error(`Unknown ExecutorVersion '${name}'`);
     }
@@ -364,6 +378,12 @@ export namespace ExecutorVersion {
         return "v1-halt";
       case ExecutorVersion.V2:
         return "v2";
+      case ExecutorVersion.V2Baikonur:
+        return "v2Baikonur";
+      case ExecutorVersion.V2Vandenberg:
+        return "v2-vandenberg";
+      case ExecutorVersion.VNext:
+        return "vnext";
       default:
         throw new Error(`Unknown ExecutorVersion ${v}`);
     }
@@ -445,6 +465,47 @@ export namespace KeyPageOperationType {
   }
 }
 
+export enum NetworkMaintenanceOperationType {
+  /** Unknown is used when the operation type is not known. */
+  Unknown = 0,
+  /** PendingTransactionGC removes pending transaction garbage. */
+  PendingTransactionGC = 1,
+}
+
+export type NetworkMaintenanceOperationTypeArgs = NetworkMaintenanceOperationType | string;
+
+/** @ignore */
+export namespace NetworkMaintenanceOperationType {
+  export function fromObject(
+    obj: NetworkMaintenanceOperationTypeArgs
+  ): NetworkMaintenanceOperationType {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
+  export function byName(name: string): NetworkMaintenanceOperationType {
+    switch (name.toLowerCase()) {
+      case "unknown":
+        return NetworkMaintenanceOperationType.Unknown;
+      case "pendingtransactiongc":
+        return NetworkMaintenanceOperationType.PendingTransactionGC;
+      default:
+        throw new Error(`Unknown NetworkMaintenanceOperationType '${name}'`);
+    }
+  }
+
+  export function getName(v: NetworkMaintenanceOperationType) {
+    switch (v) {
+      case NetworkMaintenanceOperationType.Unknown:
+        return "unknown";
+      case NetworkMaintenanceOperationType.PendingTransactionGC:
+        return "pendingTransactionGC";
+      default:
+        throw new Error(`Unknown NetworkMaintenanceOperationType ${v}`);
+    }
+  }
+}
+
 export enum ObjectType {
   /** Unknown is used when the object type is not known. */
   Unknown = 0,
@@ -497,6 +558,8 @@ export enum PartitionType {
   BlockValidator = 2,
   /** BlockSummary . */
   BlockSummary = 3,
+  /** Bootstrap . */
+  Bootstrap = 4,
 }
 
 export type PartitionTypeArgs = PartitionType | string;
@@ -520,6 +583,8 @@ export namespace PartitionType {
         return PartitionType.BlockSummary;
       case "block-summary":
         return PartitionType.BlockSummary;
+      case "bootstrap":
+        return PartitionType.Bootstrap;
       default:
         throw new Error(`Unknown PartitionType '${name}'`);
     }
@@ -533,6 +598,8 @@ export namespace PartitionType {
         return "blockValidator";
       case PartitionType.BlockSummary:
         return "blockSummary";
+      case PartitionType.Bootstrap:
+        return "bootstrap";
       default:
         throw new Error(`Unknown PartitionType ${v}`);
     }
@@ -568,6 +635,8 @@ export enum SignatureType {
   Internal = 12,
   /** Authority is a signature produced by an authority. */
   Authority = 13,
+  /** RsaSha256 represents an RSA signature of SHA256 hashed data. */
+  RsaSha256 = 14,
 }
 
 export type SignatureTypeArgs = SignatureType | string;
@@ -611,6 +680,8 @@ export namespace SignatureType {
         return SignatureType.Internal;
       case "authority":
         return SignatureType.Authority;
+      case "rsasha256":
+        return SignatureType.RsaSha256;
       default:
         throw new Error(`Unknown SignatureType '${name}'`);
     }
@@ -646,6 +717,8 @@ export namespace SignatureType {
         return "internal";
       case SignatureType.Authority:
         return "authority";
+      case SignatureType.RsaSha256:
+        return "rsaSha256";
       default:
         throw new Error(`Unknown SignatureType ${v}`);
     }
@@ -740,6 +813,8 @@ export enum TransactionType {
   UpdateAccountAuth = 21,
   /** UpdateKey update key for existing keys. */
   UpdateKey = 22,
+  /** NetworkMaintenance executes network maintenance operations. */
+  NetworkMaintenance = 46,
   /** ActivateProtocolVersion activates a new version of the protocol. */
   ActivateProtocolVersion = 47,
   /** Remote is used to sign a remote transaction. */
@@ -819,6 +894,8 @@ export namespace TransactionType {
         return TransactionType.UpdateAccountAuth;
       case "updatekey":
         return TransactionType.UpdateKey;
+      case "networkmaintenance":
+        return TransactionType.NetworkMaintenance;
       case "activateprotocolversion":
         return TransactionType.ActivateProtocolVersion;
       case "remote":
@@ -894,6 +971,8 @@ export namespace TransactionType {
         return "updateAccountAuth";
       case TransactionType.UpdateKey:
         return "updateKey";
+      case TransactionType.NetworkMaintenance:
+        return "networkMaintenance";
       case TransactionType.ActivateProtocolVersion:
         return "activateProtocolVersion";
       case TransactionType.Remote:

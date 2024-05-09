@@ -9,6 +9,7 @@ export type Record =
   | types.AccountRecord
   | types.ChainEntryRecord<Record>
   | types.ChainRecord
+  | types.ErrorRecord
   | types.IndexEntryRecord
   | types.KeyRecord
   | types.MajorBlockRecord
@@ -26,6 +27,8 @@ export type RecordArgs =
   | types.ChainEntryRecordArgsWithType<Record>
   | types.ChainRecord
   | types.ChainRecordArgsWithType
+  | types.ErrorRecord
+  | types.ErrorRecordArgsWithType
   | types.IndexEntryRecord
   | types.IndexEntryRecordArgsWithType
   | types.KeyRecord
@@ -51,6 +54,7 @@ export namespace Record {
     if (obj instanceof types.AccountRecord) return obj;
     if (obj instanceof types.ChainEntryRecord<Record>) return obj;
     if (obj instanceof types.ChainRecord) return obj;
+    if (obj instanceof types.ErrorRecord) return obj;
     if (obj instanceof types.IndexEntryRecord) return obj;
     if (obj instanceof types.KeyRecord) return obj;
     if (obj instanceof types.MajorBlockRecord) return obj;
@@ -71,6 +75,9 @@ export namespace Record {
       case types.RecordType.Chain:
       case "chain":
         return new types.ChainRecord(obj);
+      case types.RecordType.Error:
+      case "error":
+        return new types.ErrorRecord(obj);
       case types.RecordType.IndexEntry:
       case "indexEntry":
         return new types.IndexEntryRecord(obj);

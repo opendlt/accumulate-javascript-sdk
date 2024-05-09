@@ -91,6 +91,7 @@ export type ChainQueryResponseArgs = {
   data?: any;
   chainId?: Uint8Array | string;
   receipt?: GeneralReceipt | GeneralReceiptArgs;
+  lastBlockTime?: Date | string;
 };
 export class ChainQueryResponse {
   public type?: string;
@@ -99,6 +100,7 @@ export class ChainQueryResponse {
   public data?: any;
   public chainId?: Uint8Array;
   public receipt?: GeneralReceipt;
+  public lastBlockTime?: Date;
 
   constructor(args: ChainQueryResponseArgs) {
     this.type = args.type == undefined ? undefined : args.type;
@@ -125,6 +127,12 @@ export class ChainQueryResponse {
         : args.receipt instanceof GeneralReceipt
         ? args.receipt
         : new GeneralReceipt(args.receipt);
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -139,6 +147,7 @@ export class ChainQueryResponse {
       data: this.data && this.data,
       chainId: this.chainId && Buffer.from(this.chainId).toString("hex"),
       receipt: this.receipt && this.receipt.asObject(),
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }
@@ -220,6 +229,7 @@ export type DataEntryQueryResponseArgs = {
   entry?: protocol.DataEntry | protocol.DataEntryArgs;
   txId?: TxIDArgs;
   causeTxId?: TxIDArgs;
+  lastBlockTime?: Date | string;
 };
 export class DataEntryQueryResponse {
   @encodeAs.field(1).hash
@@ -230,6 +240,8 @@ export class DataEntryQueryResponse {
   public txId?: TxID;
   @encodeAs.field(4).txid
   public causeTxId?: TxID;
+  @encodeAs.field(5).time
+  public lastBlockTime?: Date;
 
   constructor(args: DataEntryQueryResponseArgs) {
     this.entryHash =
@@ -241,6 +253,12 @@ export class DataEntryQueryResponse {
     this.entry = args.entry == undefined ? undefined : protocol.DataEntry.fromObject(args.entry);
     this.txId = args.txId == undefined ? undefined : TxID.parse(args.txId);
     this.causeTxId = args.causeTxId == undefined ? undefined : TxID.parse(args.causeTxId);
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -253,6 +271,7 @@ export class DataEntryQueryResponse {
       entry: this.entry && this.entry.asObject(),
       txId: this.txId && this.txId.toString(),
       causeTxId: this.causeTxId && this.causeTxId.toString(),
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }
@@ -309,7 +328,7 @@ export class DataEntrySetQuery {
 export type DescriptionResponseArgs = {
   partitionId?: string;
   networkType?: protocol.PartitionTypeArgs;
-  network?: config.Network | config.NetworkArgs;
+  network?: NetworkDescription | NetworkDescriptionArgs;
   networkAnchor?: Uint8Array | string;
   values?: core.GlobalValues | core.GlobalValuesArgs;
   error?: errors2.Error | errors2.ErrorArgs;
@@ -317,7 +336,7 @@ export type DescriptionResponseArgs = {
 export class DescriptionResponse {
   public partitionId?: string;
   public networkType?: protocol.PartitionType;
-  public network?: config.Network;
+  public network?: NetworkDescription;
   public networkAnchor?: Uint8Array;
   public values?: core.GlobalValues;
   public error?: errors2.Error;
@@ -331,9 +350,9 @@ export class DescriptionResponse {
     this.network =
       args.network == undefined
         ? undefined
-        : args.network instanceof config.Network
+        : args.network instanceof NetworkDescription
         ? args.network
-        : new config.Network(args.network);
+        : new NetworkDescription(args.network);
     this.networkAnchor =
       args.networkAnchor == undefined
         ? undefined
@@ -631,11 +650,13 @@ export type MajorQueryResponseArgs = {
   majorBlockIndex?: number;
   majorBlockTime?: Date | string;
   minorBlocks?: (MinorBlock | MinorBlockArgs)[];
+  lastBlockTime?: Date | string;
 };
 export class MajorQueryResponse {
   public majorBlockIndex?: number;
   public majorBlockTime?: Date;
   public minorBlocks?: MinorBlock[];
+  public lastBlockTime?: Date;
 
   constructor(args: MajorQueryResponseArgs) {
     this.majorBlockIndex = args.majorBlockIndex == undefined ? undefined : args.majorBlockIndex;
@@ -649,6 +670,12 @@ export class MajorQueryResponse {
       args.minorBlocks == undefined
         ? undefined
         : args.minorBlocks.map((v) => (v instanceof MinorBlock ? v : new MinorBlock(v)));
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -660,6 +687,7 @@ export class MajorQueryResponse {
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
       majorBlockTime: this.majorBlockTime && this.majorBlockTime,
       minorBlocks: this.minorBlocks && this.minorBlocks?.map((v) => v.asObject()),
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }
@@ -815,6 +843,7 @@ export type MinorQueryResponseArgs = {
   txCount?: number;
   txIds?: (Uint8Array | string)[];
   transactions?: (TransactionQueryResponse | TransactionQueryResponseArgs)[];
+  lastBlockTime?: Date | string;
 };
 export class MinorQueryResponse {
   public blockIndex?: number;
@@ -822,6 +851,7 @@ export class MinorQueryResponse {
   public txCount?: number;
   public txIds?: Uint8Array[];
   public transactions?: TransactionQueryResponse[];
+  public lastBlockTime?: Date;
 
   constructor(args: MinorQueryResponseArgs) {
     this.blockIndex = args.blockIndex == undefined ? undefined : args.blockIndex;
@@ -842,6 +872,12 @@ export class MinorQueryResponse {
         : args.transactions.map((v) =>
             v instanceof TransactionQueryResponse ? v : new TransactionQueryResponse(v)
           );
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -855,6 +891,7 @@ export class MinorQueryResponse {
       txCount: this.txCount && this.txCount,
       txIds: this.txIds && this.txIds?.map((v) => Buffer.from(v).toString("hex")),
       transactions: this.transactions && this.transactions?.map((v) => v.asObject()),
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }
@@ -866,6 +903,7 @@ export type MultiResponseArgs = {
   count?: number;
   total?: number;
   otherItems?: any[];
+  lastBlockTime?: Date | string;
 };
 export class MultiResponse {
   public type?: string;
@@ -874,6 +912,7 @@ export class MultiResponse {
   public count?: number;
   public total?: number;
   public otherItems?: any[];
+  public lastBlockTime?: Date;
 
   constructor(args: MultiResponseArgs) {
     this.type = args.type == undefined ? undefined : args.type;
@@ -882,6 +921,12 @@ export class MultiResponse {
     this.count = args.count == undefined ? undefined : args.count;
     this.total = args.total == undefined ? undefined : args.total;
     this.otherItems = args.otherItems == undefined ? undefined : args.otherItems.map((v) => v);
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -896,6 +941,106 @@ export class MultiResponse {
       count: this.count && this.count,
       total: this.total && this.total,
       otherItems: this.otherItems && this.otherItems?.map((v) => v),
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+    };
+  }
+}
+
+export type NetworkDescriptionArgs = {
+  id?: string;
+  partitions?: (PartitionDescription | PartitionDescriptionArgs)[];
+};
+export class NetworkDescription {
+  @encodeAs.field(1).string
+  public id?: string;
+  @encodeAs.field(2).repeatable.reference
+  public partitions?: PartitionDescription[];
+
+  constructor(args: NetworkDescriptionArgs) {
+    this.id = args.id == undefined ? undefined : args.id;
+    this.partitions =
+      args.partitions == undefined
+        ? undefined
+        : args.partitions.map((v) =>
+            v instanceof PartitionDescription ? v : new PartitionDescription(v)
+          );
+  }
+
+  copy() {
+    return new NetworkDescription(this.asObject());
+  }
+
+  asObject(): NetworkDescriptionArgs {
+    return {
+      id: this.id && this.id,
+      partitions: this.partitions && this.partitions?.map((v) => v.asObject()),
+    };
+  }
+}
+
+export type NodeDescriptionArgs = {
+  address?: string;
+  type?: config.NodeTypeArgs;
+};
+export class NodeDescription {
+  @encodeAs.field(1).string
+  public address?: string;
+  @encodeAs.field(2).enum
+  public type?: config.NodeType;
+
+  constructor(args: NodeDescriptionArgs) {
+    this.address = args.address == undefined ? undefined : args.address;
+    this.type = args.type == undefined ? undefined : config.NodeType.fromObject(args.type);
+  }
+
+  copy() {
+    return new NodeDescription(this.asObject());
+  }
+
+  asObject(): NodeDescriptionArgs {
+    return {
+      address: this.address && this.address,
+      type: this.type && config.NodeType.getName(this.type),
+    };
+  }
+}
+
+export type PartitionDescriptionArgs = {
+  id?: string;
+  type?: protocol.PartitionTypeArgs;
+  basePort?: number;
+  nodes?: (NodeDescription | NodeDescriptionArgs)[];
+};
+export class PartitionDescription {
+  @encodeAs.field(1).string
+  public id?: string;
+  @encodeAs.field(2).enum
+  public type?: protocol.PartitionType;
+  @encodeAs.field(3).int
+  public basePort?: number;
+  @encodeAs.field(4).repeatable.reference
+  public nodes?: NodeDescription[];
+
+  constructor(args: PartitionDescriptionArgs) {
+    this.id = args.id == undefined ? undefined : args.id;
+    this.type = args.type == undefined ? undefined : protocol.PartitionType.fromObject(args.type);
+    this.basePort = args.basePort == undefined ? undefined : args.basePort;
+    this.nodes =
+      args.nodes == undefined
+        ? undefined
+        : args.nodes.map((v) => (v instanceof NodeDescription ? v : new NodeDescription(v)));
+  }
+
+  copy() {
+    return new PartitionDescription(this.asObject());
+  }
+
+  asObject(): PartitionDescriptionArgs {
+    return {
+      id: this.id && this.id,
+      type: this.type && protocol.PartitionType.getName(this.type),
+      basePort: this.basePort && this.basePort,
+      nodes: this.nodes && this.nodes?.map((v) => v.asObject()),
     };
   }
 }
@@ -967,6 +1112,7 @@ export type ResponseDataEntryArgs = {
   entry?: protocol.DataEntry | protocol.DataEntryArgs;
   txId?: TxIDArgs;
   causeTxId?: TxIDArgs;
+  lastBlockTime?: Date | string;
 };
 export class ResponseDataEntry {
   @encodeAs.field(1).hash
@@ -977,6 +1123,8 @@ export class ResponseDataEntry {
   public txId?: TxID;
   @encodeAs.field(4).txid
   public causeTxId?: TxID;
+  @encodeAs.field(5).time
+  public lastBlockTime?: Date;
 
   constructor(args: ResponseDataEntryArgs) {
     this.entryHash =
@@ -988,6 +1136,12 @@ export class ResponseDataEntry {
     this.entry = args.entry == undefined ? undefined : protocol.DataEntry.fromObject(args.entry);
     this.txId = args.txId == undefined ? undefined : TxID.parse(args.txId);
     this.causeTxId = args.causeTxId == undefined ? undefined : TxID.parse(args.causeTxId);
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1000,6 +1154,7 @@ export class ResponseDataEntry {
       entry: this.entry && this.entry.asObject(),
       txId: this.txId && this.txId.toString(),
       causeTxId: this.causeTxId && this.causeTxId.toString(),
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }
@@ -1007,12 +1162,15 @@ export class ResponseDataEntry {
 export type ResponseDataEntrySetArgs = {
   dataEntries?: (ResponseDataEntry | ResponseDataEntryArgs)[];
   total?: number;
+  lastBlockTime?: Date | string;
 };
 export class ResponseDataEntrySet {
   @encodeAs.field(1).repeatable.reference
   public dataEntries?: ResponseDataEntry[];
   @encodeAs.field(2).uint
   public total?: number;
+  @encodeAs.field(3).time
+  public lastBlockTime?: Date;
 
   constructor(args: ResponseDataEntrySetArgs) {
     this.dataEntries =
@@ -1022,6 +1180,12 @@ export class ResponseDataEntrySet {
             v instanceof ResponseDataEntry ? v : new ResponseDataEntry(v)
           );
     this.total = args.total == undefined ? undefined : args.total;
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1032,6 +1196,7 @@ export class ResponseDataEntrySet {
     return {
       dataEntries: this.dataEntries && this.dataEntries?.map((v) => v.asObject()),
       total: this.total && this.total,
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }
@@ -1040,6 +1205,7 @@ export type ResponseKeyPageIndexArgs = {
   authority?: URLArgs;
   signer?: URLArgs;
   index?: number;
+  lastBlockTime?: Date | string;
 };
 export class ResponseKeyPageIndex {
   @encodeAs.field(1).url
@@ -1048,11 +1214,19 @@ export class ResponseKeyPageIndex {
   public signer?: URL;
   @encodeAs.field(3).keepEmpty.uint
   public index?: number;
+  @encodeAs.field(4).time
+  public lastBlockTime?: Date;
 
   constructor(args: ResponseKeyPageIndexArgs) {
     this.authority = args.authority == undefined ? undefined : URL.parse(args.authority);
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.index = args.index == undefined ? undefined : args.index;
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1064,6 +1238,7 @@ export class ResponseKeyPageIndex {
       authority: this.authority && this.authority.toString(),
       signer: this.signer && this.signer.toString(),
       index: this.index && this.index,
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }
@@ -1408,6 +1583,7 @@ export type TransactionQueryResponseArgs = {
   produced?: TxIDArgs[];
   receipts?: (TxReceipt | TxReceiptArgs)[];
   signatureBooks?: (SignatureBook | SignatureBookArgs)[];
+  lastBlockTime?: Date | string;
 };
 export class TransactionQueryResponse {
   public type?: string;
@@ -1422,6 +1598,7 @@ export class TransactionQueryResponse {
   public produced?: TxID[];
   public receipts?: TxReceipt[];
   public signatureBooks?: SignatureBook[];
+  public lastBlockTime?: Date;
 
   constructor(args: TransactionQueryResponseArgs) {
     this.type = args.type == undefined ? undefined : args.type;
@@ -1466,6 +1643,12 @@ export class TransactionQueryResponse {
       args.signatureBooks == undefined
         ? undefined
         : args.signatureBooks.map((v) => (v instanceof SignatureBook ? v : new SignatureBook(v)));
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1486,6 +1669,7 @@ export class TransactionQueryResponse {
       produced: this.produced && this.produced?.map((v) => v.toString()),
       receipts: this.receipts && this.receipts?.map((v) => v.asObject()),
       signatureBooks: this.signatureBooks && this.signatureBooks?.map((v) => v.asObject()),
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }
@@ -1681,6 +1865,7 @@ export type TxResponseArgs = {
   message?: string;
   delivered?: boolean;
   result?: any;
+  lastBlockTime?: Date | string;
 };
 export class TxResponse {
   public transactionHash?: Uint8Array;
@@ -1691,6 +1876,7 @@ export class TxResponse {
   public message?: string;
   public delivered?: boolean;
   public result?: any;
+  public lastBlockTime?: Date;
 
   constructor(args: TxResponseArgs) {
     this.transactionHash =
@@ -1714,6 +1900,12 @@ export class TxResponse {
     this.message = args.message == undefined ? undefined : args.message;
     this.delivered = args.delivered == undefined ? undefined : args.delivered;
     this.result = args.result == undefined ? undefined : args.result;
+    this.lastBlockTime =
+      args.lastBlockTime == undefined
+        ? undefined
+        : args.lastBlockTime instanceof Date
+        ? args.lastBlockTime
+        : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1731,6 +1923,7 @@ export class TxResponse {
       message: this.message && this.message,
       delivered: this.delivered && this.delivered,
       result: this.result && this.result,
+      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
 }

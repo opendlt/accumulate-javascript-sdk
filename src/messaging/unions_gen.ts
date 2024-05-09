@@ -5,8 +5,12 @@ import * as types from ".";
 /* eslint-disable @typescript-eslint/no-namespace */
 
 export type Message =
+  | types.BadSyntheticMessage
   | types.BlockAnchor
   | types.CreditPayment
+  | types.DidUpdateExecutorVersion
+  | types.MakeMajorBlock
+  | types.NetworkUpdate
   | types.SequencedMessage
   | types.SignatureMessage
   | types.SignatureRequest
@@ -14,10 +18,18 @@ export type Message =
   | types.TransactionMessage;
 
 export type MessageArgs =
+  | types.BadSyntheticMessage
+  | types.BadSyntheticMessageArgsWithType
   | types.BlockAnchor
   | types.BlockAnchorArgsWithType
   | types.CreditPayment
   | types.CreditPaymentArgsWithType
+  | types.DidUpdateExecutorVersion
+  | types.DidUpdateExecutorVersionArgsWithType
+  | types.MakeMajorBlock
+  | types.MakeMajorBlockArgsWithType
+  | types.NetworkUpdate
+  | types.NetworkUpdateArgsWithType
   | types.SequencedMessage
   | types.SequencedMessageArgsWithType
   | types.SignatureMessage
@@ -32,8 +44,12 @@ export type MessageArgs =
 /** @ignore */
 export namespace Message {
   export function fromObject(obj: MessageArgs): Message {
+    if (obj instanceof types.BadSyntheticMessage) return obj;
     if (obj instanceof types.BlockAnchor) return obj;
     if (obj instanceof types.CreditPayment) return obj;
+    if (obj instanceof types.DidUpdateExecutorVersion) return obj;
+    if (obj instanceof types.MakeMajorBlock) return obj;
+    if (obj instanceof types.NetworkUpdate) return obj;
     if (obj instanceof types.SequencedMessage) return obj;
     if (obj instanceof types.SignatureMessage) return obj;
     if (obj instanceof types.SignatureRequest) return obj;
@@ -41,12 +57,24 @@ export namespace Message {
     if (obj instanceof types.TransactionMessage) return obj;
 
     switch (obj.type) {
+      case types.MessageType.BadSynthetic:
+      case "badSynthetic":
+        return new types.BadSyntheticMessage(obj);
       case types.MessageType.BlockAnchor:
       case "blockAnchor":
         return new types.BlockAnchor(obj);
       case types.MessageType.CreditPayment:
       case "creditPayment":
         return new types.CreditPayment(obj);
+      case types.MessageType.DidUpdateExecutorVersion:
+      case "didUpdateExecutorVersion":
+        return new types.DidUpdateExecutorVersion(obj);
+      case types.MessageType.MakeMajorBlock:
+      case "makeMajorBlock":
+        return new types.MakeMajorBlock(obj);
+      case types.MessageType.NetworkUpdate:
+      case "networkUpdate":
+        return new types.NetworkUpdate(obj);
       case types.MessageType.Sequenced:
       case "sequenced":
         return new types.SequencedMessage(obj);

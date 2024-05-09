@@ -105,6 +105,61 @@ export class ReceiptEntry {
   }
 }
 
+export type ReceiptListArgs = {
+  merkleState?: State | StateArgs;
+  elements?: (Uint8Array | string)[];
+  receipt?: Receipt | ReceiptArgs;
+  continuedReceipt?: Receipt | ReceiptArgs;
+};
+export class ReceiptList {
+  @encodeAs.field(1).reference
+  public merkleState?: State;
+  @encodeAs.field(2).repeatable.bytes
+  public elements?: Uint8Array[];
+  @encodeAs.field(3).reference
+  public receipt?: Receipt;
+  @encodeAs.field(4).reference
+  public continuedReceipt?: Receipt;
+
+  constructor(args: ReceiptListArgs) {
+    this.merkleState =
+      args.merkleState == undefined
+        ? undefined
+        : args.merkleState instanceof State
+        ? args.merkleState
+        : new State(args.merkleState);
+    this.elements =
+      args.elements == undefined
+        ? undefined
+        : args.elements.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+    this.receipt =
+      args.receipt == undefined
+        ? undefined
+        : args.receipt instanceof Receipt
+        ? args.receipt
+        : new Receipt(args.receipt);
+    this.continuedReceipt =
+      args.continuedReceipt == undefined
+        ? undefined
+        : args.continuedReceipt instanceof Receipt
+        ? args.continuedReceipt
+        : new Receipt(args.continuedReceipt);
+  }
+
+  copy() {
+    return new ReceiptList(this.asObject());
+  }
+
+  asObject(): ReceiptListArgs {
+    return {
+      merkleState: this.merkleState && this.merkleState.asObject(),
+      elements: this.elements && this.elements?.map((v) => Buffer.from(v).toString("hex")),
+      receipt: this.receipt && this.receipt.asObject(),
+      continuedReceipt: this.continuedReceipt && this.continuedReceipt.asObject(),
+    };
+  }
+}
+
 export type StateArgs = {
   count?: number;
   pending?: (Uint8Array | string)[];

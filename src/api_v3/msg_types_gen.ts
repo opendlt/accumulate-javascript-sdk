@@ -16,6 +16,8 @@ import * as p2p from "./p2p";
 export type ConsensusStatusRequestArgs = {
   nodeID?: string;
   partition?: string;
+  includePeers?: boolean;
+  includeAccumulate?: boolean;
 };
 export type ConsensusStatusRequestArgsWithType = ConsensusStatusRequestArgs & {
   type: MessageType.ConsensusStatusRequest | "consensusStatusRequest";
@@ -27,10 +29,17 @@ export class ConsensusStatusRequest {
   public nodeID?: string;
   @encodeAs.field(2, 2).string
   public partition?: string;
+  @encodeAs.field(2, 3).bool
+  public includePeers?: boolean;
+  @encodeAs.field(2, 4).bool
+  public includeAccumulate?: boolean;
 
   constructor(args: ConsensusStatusRequestArgs) {
     this.nodeID = args.nodeID == undefined ? undefined : args.nodeID;
     this.partition = args.partition == undefined ? undefined : args.partition;
+    this.includePeers = args.includePeers == undefined ? undefined : args.includePeers;
+    this.includeAccumulate =
+      args.includeAccumulate == undefined ? undefined : args.includeAccumulate;
   }
 
   copy() {
@@ -42,6 +51,8 @@ export class ConsensusStatusRequest {
       type: "consensusStatusRequest",
       nodeID: this.nodeID && this.nodeID,
       partition: this.partition && this.partition,
+      includePeers: this.includePeers && this.includePeers,
+      includeAccumulate: this.includeAccumulate && this.includeAccumulate,
     };
   }
 }
@@ -119,7 +130,7 @@ export type EventMessageArgsWithType = EventMessageArgs & { type: MessageType.Ev
 export class EventMessage {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.Event;
-  @encodeAs.field(2).repeatable.union
+  @encodeAs.field(2).repeatable.keepEmpty.union
   public value?: api.Event[];
 
   constructor(args: EventMessageArgs) {
@@ -208,6 +219,8 @@ export class FaucetResponse {
 export type FindServiceRequestArgs = {
   network?: string;
   service?: api.ServiceAddress | api.ServiceAddressArgs;
+  known?: boolean;
+  timeout?: number;
 };
 export type FindServiceRequestArgsWithType = FindServiceRequestArgs & {
   type: MessageType.FindServiceRequest | "findServiceRequest";
@@ -219,6 +232,10 @@ export class FindServiceRequest {
   public network?: string;
   @encodeAs.field(2, 2).reference
   public service?: api.ServiceAddress;
+  @encodeAs.field(2, 3).bool
+  public known?: boolean;
+  @encodeAs.field(2, 4).duration
+  public timeout?: number;
 
   constructor(args: FindServiceRequestArgs) {
     this.network = args.network == undefined ? undefined : args.network;
@@ -228,6 +245,8 @@ export class FindServiceRequest {
         : args.service instanceof api.ServiceAddress
         ? args.service
         : new api.ServiceAddress(args.service);
+    this.known = args.known == undefined ? undefined : args.known;
+    this.timeout = args.timeout == undefined ? undefined : args.timeout;
   }
 
   copy() {
@@ -239,6 +258,8 @@ export class FindServiceRequest {
       type: "findServiceRequest",
       network: this.network && this.network,
       service: this.service && this.service.asObject(),
+      known: this.known && this.known,
+      timeout: this.timeout && this.timeout,
     };
   }
 }
@@ -252,7 +273,7 @@ export type FindServiceResponseArgsWithType = FindServiceResponseArgs & {
 export class FindServiceResponse {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.FindServiceResponse;
-  @encodeAs.field(2).repeatable.reference
+  @encodeAs.field(2).repeatable.keepEmpty.reference
   public value?: api.FindServiceResult[];
 
   constructor(args: FindServiceResponseArgs) {
@@ -402,6 +423,7 @@ export type PrivateSequenceRequestArgs = {
   source?: URLArgs;
   destination?: URLArgs;
   sequenceNumber?: number;
+  nodeID?: p2p.PeerID | p2p.PeerIDArgs;
 };
 export type PrivateSequenceRequestArgsWithType = PrivateSequenceRequestArgs & {
   type: MessageType.PrivateSequenceRequest | "privateSequenceRequest";
@@ -415,11 +437,14 @@ export class PrivateSequenceRequest {
   public destination?: URL;
   @encodeAs.field(4).uint
   public sequenceNumber?: number;
+  @encodeAs.field(5, 1).union
+  public nodeID?: p2p.PeerID;
 
   constructor(args: PrivateSequenceRequestArgs) {
     this.source = args.source == undefined ? undefined : URL.parse(args.source);
     this.destination = args.destination == undefined ? undefined : URL.parse(args.destination);
     this.sequenceNumber = args.sequenceNumber == undefined ? undefined : args.sequenceNumber;
+    this.nodeID = args.nodeID == undefined ? undefined : p2p.PeerID.fromObject(args.nodeID);
   }
 
   copy() {
@@ -432,6 +457,7 @@ export class PrivateSequenceRequest {
       source: this.source && this.source.toString(),
       destination: this.destination && this.destination.toString(),
       sequenceNumber: this.sequenceNumber && this.sequenceNumber,
+      nodeID: this.nodeID && this.nodeID.asObject(),
     };
   }
 }
@@ -582,7 +608,7 @@ export type SubmitResponseArgsWithType = SubmitResponseArgs & {
 export class SubmitResponse {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.SubmitResponse;
-  @encodeAs.field(2).repeatable.reference
+  @encodeAs.field(2).repeatable.keepEmpty.reference
   public value?: api.Submission[];
 
   constructor(args: SubmitResponseArgs) {
@@ -705,7 +731,7 @@ export type ValidateResponseArgsWithType = ValidateResponseArgs & {
 export class ValidateResponse {
   @encodeAs.field(1).keepEmpty.enum
   public readonly type = MessageType.ValidateResponse;
-  @encodeAs.field(2).repeatable.reference
+  @encodeAs.field(2).repeatable.keepEmpty.reference
   public value?: api.Submission[];
 
   constructor(args: ValidateResponseArgs) {
