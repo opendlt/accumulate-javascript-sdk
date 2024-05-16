@@ -5,6 +5,8 @@ node_modules/
 /dist/
 /docs/
 .idea/*
+/public
+/vendor
 
 .DS_Store
 coverage
