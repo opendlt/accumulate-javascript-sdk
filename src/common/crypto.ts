@@ -14,8 +14,8 @@ const hasher: Promise<(data: Uint8Array) => Promise<Uint8Array>> = (async () => 
   return (data) => Promise.resolve(createHash("sha256").update(data).digest());
 })();
 
-export async function sha256(data: Uint8Array): Promise<Uint8Array> {
-  return (await hasher)(data);
+export async function sha256(data: Uint8Array): Promise<Buffer> {
+  return Buffer.from(await (await hasher)(data));
 }
 
 export async function hashTree(items: Uint8Array[]): Promise<Uint8Array> {
