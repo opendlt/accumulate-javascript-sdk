@@ -5,6 +5,7 @@
 type Encoding = "hex" | "utf-8" | "base64";
 
 export class Buffer extends Uint8Array {
+  static from(v?: null, encoding?: Encoding): undefined;
   static from(v: string, encoding?: Encoding): Buffer;
   static from(
     v: Iterable<number> | ArrayLike<number>,
@@ -13,9 +14,11 @@ export class Buffer extends Uint8Array {
   ): Buffer;
   static from(v: string, mapFn: (v: number, k: number) => number, thisArg?: any): never;
   static from(
-    v: string | Iterable<number> | ArrayLike<number>,
+    v?: string | Iterable<number> | ArrayLike<number> | null,
     encoding?: Encoding | ((v: number, k: number) => number)
-  ): Buffer {
+  ): Buffer | undefined {
+    if (!v) return;
+
     if (typeof encoding === "function") {
       // Let Uint8Array handle the runtime error if v is a string
       // eslint-disable-next-line prefer-rest-params
