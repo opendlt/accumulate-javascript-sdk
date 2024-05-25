@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.10.3
+
+- Fixes a bug that broke some chain queries.
+
+## v0.10.2
+
+- Exports SHA-256 helper.
+
+## v0.10.1
+
+- Improves support for pure JavaScript environments.
+- Updates type definitions to Accumulate 1.3.
+
+## v0.10.0
+
+- Adds support for BIP-44 key derivation.
+- Defers import of ledger modules to make accumulate.js usable in more
+  environments.
+
+## v0.9.3
+
+- Fixes the response type of the faucet.
+
 ## v0.9.2
 
 - Fixes a bug in `ED25519.from` that caused signing to fail.
