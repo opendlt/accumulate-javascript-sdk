@@ -1,4 +1,4 @@
-import { URL } from "../src/address";
+import { TxID, URL } from "../src/address";
 
 test("should parse url", () => {
   const u = URL.parse("acc://authority/path");
@@ -21,4 +21,21 @@ test("should append path", () => {
   expect(u.join(tokenURL).toString()).toStrictEqual(
     "acc://authority/105251bb367baa372c748930531ae63d6e143c9aa4470eff/my-token"
   );
+});
+
+describe("equality", () => {
+  describe("for a URL", () => {
+    it("should ignore case", () => {
+      const a = URL.parse("acc://x@foo/BAR");
+      const b = URL.parse("acc://X@FOO/bar");
+      expect(a.equals(b)).toStrictEqual(true);
+    });
+  });
+  describe("for a TxID", () => {
+    it("should ignore case", () => {
+      const a = TxID.parse("acc://x@foo/BAR");
+      const b = TxID.parse("acc://X@FOO/bar");
+      expect(a.equals(b)).toStrictEqual(true);
+    });
+  });
 });

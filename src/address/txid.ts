@@ -48,4 +48,9 @@ export class AccumulateTxID {
   toString() {
     return this.asUrl().toString();
   }
+
+  equals(u: TxIDArgs) {
+    u = AccumulateTxID.parse(u);
+    return this.toString().toLowerCase() === u.toString().toLowerCase();
+  }
 }

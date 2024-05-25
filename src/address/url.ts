@@ -126,4 +126,9 @@ export class AccumulateURL {
     if (this.fragment) s += "#" + this.fragment;
     return s;
   }
+
+  equals(u: URLArgs) {
+    u = AccumulateURL.parse(u);
+    return this.toString().toLowerCase() === u.toString().toLowerCase();
+  }
 }
