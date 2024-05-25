@@ -1,6 +1,6 @@
 {
   "name": "accumulate.js",
-  "version": "0.10.3",
+  "version": "0.10.5",
   "description": "Accumulate JS/TS SDK",
   "keywords": [
     "blockchain",
@@ -87,16 +87,36 @@
     "usb": "^1.7.0"
   },
   "peerDependenciesMeta": {
-    "@ledgerhq/devices": { "optional": true },
-    "@ledgerhq/errors": { "optional": true },
-    "@ledgerhq/hw-transport": { "optional": true },
-    "@ledgerhq/hw-transport-node-hid": { "optional": true },
-    "@ledgerhq/hw-transport-node-hid-noevents": { "optional": true },
-    "@ledgerhq/hw-transport-webhid": { "optional": true },
-    "@ledgerhq/hw-transport-webusb": { "optional": true },
-    "@ledgerhq/logs": { "optional": true },
-    "lodash": { "optional": true },
-    "usb": { "optional": true }
+    "@ledgerhq/devices": {
+      "optional": true
+    },
+    "@ledgerhq/errors": {
+      "optional": true
+    },
+    "@ledgerhq/hw-transport": {
+      "optional": true
+    },
+    "@ledgerhq/hw-transport-node-hid": {
+      "optional": true
+    },
+    "@ledgerhq/hw-transport-node-hid-noevents": {
+      "optional": true
+    },
+    "@ledgerhq/hw-transport-webhid": {
+      "optional": true
+    },
+    "@ledgerhq/hw-transport-webusb": {
+      "optional": true
+    },
+    "@ledgerhq/logs": {
+      "optional": true
+    },
+    "lodash": {
+      "optional": true
+    },
+    "usb": {
+      "optional": true
+    }
   },
   "exports": {
     ".": "./lib/index.js",
