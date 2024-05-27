@@ -51,8 +51,8 @@ export class ChainEntry {
   asObject(): ChainEntryArgs {
     return {
       height: this.height && this.height,
-      entry: this.entry && Buffer.from(this.entry).toString("hex"),
-      state: this.state && this.state?.map((v) => Buffer.from(v).toString("hex")),
+      entry: this.entry && this.entry && Buffer.from(this.entry).toString("hex"),
+      state: this.state && this.state?.map((v) => v && Buffer.from(v).toString("hex")),
       value: this.value && this.value,
     };
   }
@@ -79,7 +79,7 @@ export class ChainIdQuery {
 
   asObject(): ChainIdQueryArgs {
     return {
-      chainId: this.chainId && Buffer.from(this.chainId).toString("hex"),
+      chainId: this.chainId && this.chainId && Buffer.from(this.chainId).toString("hex"),
     };
   }
 }
@@ -145,7 +145,7 @@ export class ChainQueryResponse {
       mainChain: this.mainChain && this.mainChain.asObject(),
       chains: this.chains && this.chains?.map((v) => v.asObject()),
       data: this.data && this.data,
-      chainId: this.chainId && Buffer.from(this.chainId).toString("hex"),
+      chainId: this.chainId && this.chainId && Buffer.from(this.chainId).toString("hex"),
       receipt: this.receipt && this.receipt.asObject(),
       lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
@@ -187,7 +187,7 @@ export class ChainState {
       name: this.name && this.name,
       type: this.type && protocol.ChainType.getName(this.type),
       height: this.height && this.height,
-      roots: this.roots && this.roots?.map((v) => Buffer.from(v).toString("hex")),
+      roots: this.roots && this.roots?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
@@ -219,7 +219,7 @@ export class DataEntryQuery {
   asObject(): DataEntryQueryArgs {
     return {
       url: this.url && this.url.toString(),
-      entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      entryHash: this.entryHash && this.entryHash && Buffer.from(this.entryHash).toString("hex"),
     };
   }
 }
@@ -267,7 +267,7 @@ export class DataEntryQueryResponse {
 
   asObject(): DataEntryQueryResponseArgs {
     return {
-      entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      entryHash: this.entryHash && this.entryHash && Buffer.from(this.entryHash).toString("hex"),
       entry: this.entry && this.entry.asObject(),
       txId: this.txId && this.txId.toString(),
       causeTxId: this.causeTxId && this.causeTxId.toString(),
@@ -382,7 +382,8 @@ export class DescriptionResponse {
       partitionId: this.partitionId && this.partitionId,
       networkType: this.networkType && protocol.PartitionType.getName(this.networkType),
       network: this.network && this.network.asObject(),
-      networkAnchor: this.networkAnchor && Buffer.from(this.networkAnchor).toString("hex"),
+      networkAnchor:
+        this.networkAnchor && this.networkAnchor && Buffer.from(this.networkAnchor).toString("hex"),
       values: this.values && this.values.asObject(),
       error: this.error && this.error.asObject(),
     };
@@ -612,7 +613,7 @@ export class KeyPageIndexQuery {
   asObject(): KeyPageIndexQueryArgs {
     return {
       url: this.url && this.url.toString(),
-      key: this.key && Buffer.from(this.key).toString("hex"),
+      key: this.key && this.key && Buffer.from(this.key).toString("hex"),
     };
   }
 }
@@ -715,7 +716,7 @@ export class MerkleState {
   asObject(): MerkleStateArgs {
     return {
       height: this.height && this.height,
-      roots: this.roots && this.roots?.map((v) => Buffer.from(v).toString("hex")),
+      roots: this.roots && this.roots?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
@@ -889,7 +890,7 @@ export class MinorQueryResponse {
       blockIndex: this.blockIndex && this.blockIndex,
       blockTime: this.blockTime && this.blockTime,
       txCount: this.txCount && this.txCount,
-      txIds: this.txIds && this.txIds?.map((v) => Buffer.from(v).toString("hex")),
+      txIds: this.txIds && this.txIds?.map((v) => v && Buffer.from(v).toString("hex")),
       transactions: this.transactions && this.transactions?.map((v) => v.asObject()),
       lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
@@ -1150,7 +1151,7 @@ export class ResponseDataEntry {
 
   asObject(): ResponseDataEntryArgs {
     return {
-      entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      entryHash: this.entryHash && this.entryHash && Buffer.from(this.entryHash).toString("hex"),
       entry: this.entry && this.entry.asObject(),
       txId: this.txId && this.txId.toString(),
       causeTxId: this.causeTxId && this.causeTxId.toString(),
@@ -1343,7 +1344,7 @@ export class Signer {
 
   asObject(): SignerArgs {
     return {
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       timestamp: this.timestamp && this.timestamp,
       url: this.url && this.url.toString(),
       version: this.version && this.version,
@@ -1462,10 +1463,13 @@ export class StatusResponse {
       bvnTime: this.bvnTime && this.bvnTime,
       dnTime: this.dnTime && this.dnTime,
       lastDirectoryAnchorHeight: this.lastDirectoryAnchorHeight && this.lastDirectoryAnchorHeight,
-      bvnRootHash: this.bvnRootHash && Buffer.from(this.bvnRootHash).toString("hex"),
-      dnRootHash: this.dnRootHash && Buffer.from(this.dnRootHash).toString("hex"),
-      bvnBptHash: this.bvnBptHash && Buffer.from(this.bvnBptHash).toString("hex"),
-      dnBptHash: this.dnBptHash && Buffer.from(this.dnBptHash).toString("hex"),
+      bvnRootHash:
+        this.bvnRootHash && this.bvnRootHash && Buffer.from(this.bvnRootHash).toString("hex"),
+      dnRootHash:
+        this.dnRootHash && this.dnRootHash && Buffer.from(this.dnRootHash).toString("hex"),
+      bvnBptHash:
+        this.bvnBptHash && this.bvnBptHash && Buffer.from(this.bvnBptHash).toString("hex"),
+      dnBptHash: this.dnBptHash && this.dnBptHash && Buffer.from(this.dnBptHash).toString("hex"),
     };
   }
 }
@@ -1537,7 +1541,7 @@ export class TokenDeposit {
     return {
       url: this.url && this.url.toString(),
       amount: this.amount && this.amount.toString(),
-      txid: this.txid && Buffer.from(this.txid).toString("hex"),
+      txid: this.txid && this.txid && Buffer.from(this.txid).toString("hex"),
     };
   }
 }
@@ -1661,7 +1665,10 @@ export class TransactionQueryResponse {
       mainChain: this.mainChain && this.mainChain.asObject(),
       data: this.data && this.data,
       origin: this.origin && this.origin.toString(),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       txid: this.txid && this.txid.toString(),
       transaction: this.transaction && this.transaction.asObject(),
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
@@ -1846,12 +1853,12 @@ export class TxRequest {
       isEnvelope: this.isEnvelope && this.isEnvelope,
       origin: this.origin && this.origin.toString(),
       signer: this.signer && this.signer.asObject(),
-      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
       keyPage: this.keyPage && this.keyPage.asObject(),
-      txHash: this.txHash && Buffer.from(this.txHash).toString("hex"),
+      txHash: this.txHash && this.txHash && Buffer.from(this.txHash).toString("hex"),
       payload: this.payload && this.payload,
       memo: this.memo && this.memo,
-      metadata: this.metadata && Buffer.from(this.metadata).toString("hex"),
+      metadata: this.metadata && this.metadata && Buffer.from(this.metadata).toString("hex"),
     };
   }
 }
@@ -1914,11 +1921,16 @@ export class TxResponse {
 
   asObject(): TxResponseArgs {
     return {
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       txid: this.txid && this.txid.toString(),
       signatureHashes:
-        this.signatureHashes && this.signatureHashes?.map((v) => Buffer.from(v).toString("hex")),
-      simpleHash: this.simpleHash && Buffer.from(this.simpleHash).toString("hex"),
+        this.signatureHashes &&
+        this.signatureHashes?.map((v) => v && Buffer.from(v).toString("hex")),
+      simpleHash:
+        this.simpleHash && this.simpleHash && Buffer.from(this.simpleHash).toString("hex"),
       code: this.code && this.code,
       message: this.message && this.message,
       delivered: this.delivered && this.delivered,
@@ -1978,7 +1990,7 @@ export class TxnQuery {
       scratch: this.scratch && this.scratch,
       prove: this.prove && this.prove,
       includeRemote: this.includeRemote && this.includeRemote,
-      txid: this.txid && Buffer.from(this.txid).toString("hex"),
+      txid: this.txid && this.txid && Buffer.from(this.txid).toString("hex"),
       txIdUrl: this.txIdUrl && this.txIdUrl.toString(),
       wait: this.wait && this.wait,
       ignorePending: this.ignorePending && this.ignorePending,

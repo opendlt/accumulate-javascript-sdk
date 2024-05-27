@@ -216,7 +216,7 @@ export class Envelope {
   asObject(): EnvelopeArgs {
     return {
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
-      txHash: this.txHash && Buffer.from(this.txHash).toString("hex"),
+      txHash: this.txHash && this.txHash && Buffer.from(this.txHash).toString("hex"),
       transaction: this.transaction && this.transaction?.map((v) => v.asObject()),
       messages: this.messages && this.messages?.map((v) => v.asObject()),
     };

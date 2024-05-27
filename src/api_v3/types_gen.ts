@@ -131,7 +131,7 @@ export class AnchorSearchQuery {
   asObject(): AnchorSearchQueryArgsWithType {
     return {
       queryType: "anchorSearch",
-      anchor: this.anchor && Buffer.from(this.anchor).toString("hex"),
+      anchor: this.anchor && this.anchor && Buffer.from(this.anchor).toString("hex"),
       includeReceipt: this.includeReceipt && this.includeReceipt.asObject(),
     };
   }
@@ -336,10 +336,10 @@ export class ChainEntryRecord<T extends Record = Record> {
       name: this.name && this.name,
       type: this.type && merkle.ChainType.getName(this.type),
       index: this.index && this.index,
-      entry: this.entry && Buffer.from(this.entry).toString("hex"),
+      entry: this.entry && this.entry && Buffer.from(this.entry).toString("hex"),
       value: this.value && this.value.asObject(),
       receipt: this.receipt && this.receipt.asObject(),
-      state: this.state && this.state?.map((v) => Buffer.from(v).toString("hex")),
+      state: this.state && this.state?.map((v) => v && Buffer.from(v).toString("hex")),
       lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
@@ -399,7 +399,7 @@ export class ChainQuery {
       queryType: "chain",
       name: this.name && this.name,
       index: this.index && this.index,
-      entry: this.entry && Buffer.from(this.entry).toString("hex"),
+      entry: this.entry && this.entry && Buffer.from(this.entry).toString("hex"),
       range: this.range && this.range.asObject(),
       includeReceipt: this.includeReceipt && this.includeReceipt.asObject(),
     };
@@ -454,7 +454,7 @@ export class ChainRecord {
       name: this.name && this.name,
       type: this.type && merkle.ChainType.getName(this.type),
       count: this.count && this.count,
-      state: this.state && this.state?.map((v) => Buffer.from(v).toString("hex")),
+      state: this.state && this.state?.map((v) => v && Buffer.from(v).toString("hex")),
       lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
@@ -566,8 +566,12 @@ export class ConsensusStatus {
       lastBlock: this.lastBlock && this.lastBlock.asObject(),
       version: this.version && this.version,
       commit: this.commit && this.commit,
-      nodeKeyHash: this.nodeKeyHash && Buffer.from(this.nodeKeyHash).toString("hex"),
-      validatorKeyHash: this.validatorKeyHash && Buffer.from(this.validatorKeyHash).toString("hex"),
+      nodeKeyHash:
+        this.nodeKeyHash && this.nodeKeyHash && Buffer.from(this.nodeKeyHash).toString("hex"),
+      validatorKeyHash:
+        this.validatorKeyHash &&
+        this.validatorKeyHash &&
+        Buffer.from(this.validatorKeyHash).toString("hex"),
       partitionID: this.partitionID && this.partitionID,
       partitionType: this.partitionType && protocol.PartitionType.getName(this.partitionType),
       peers: this.peers && this.peers?.map((v) => v.asObject()),
@@ -653,7 +657,7 @@ export class DataQuery {
     return {
       queryType: "data",
       index: this.index && this.index,
-      entry: this.entry && Buffer.from(this.entry).toString("hex"),
+      entry: this.entry && this.entry && Buffer.from(this.entry).toString("hex"),
       range: this.range && this.range.asObject(),
     };
   }
@@ -1092,8 +1096,8 @@ export class LastBlock {
     return {
       height: this.height && this.height,
       time: this.time && this.time,
-      chainRoot: this.chainRoot && Buffer.from(this.chainRoot).toString("hex"),
-      stateRoot: this.stateRoot && Buffer.from(this.stateRoot).toString("hex"),
+      chainRoot: this.chainRoot && this.chainRoot && Buffer.from(this.chainRoot).toString("hex"),
+      stateRoot: this.stateRoot && this.stateRoot && Buffer.from(this.stateRoot).toString("hex"),
       directoryAnchorHeight: this.directoryAnchorHeight && this.directoryAnchorHeight,
     };
   }
@@ -1185,7 +1189,7 @@ export class MessageHashSearchQuery {
   asObject(): MessageHashSearchQueryArgsWithType {
     return {
       queryType: "messageHashSearch",
-      hash: this.hash && Buffer.from(this.hash).toString("hex"),
+      hash: this.hash && this.hash && Buffer.from(this.hash).toString("hex"),
     };
   }
 }
@@ -1629,7 +1633,8 @@ export class PublicKeyHashSearchQuery {
   asObject(): PublicKeyHashSearchQueryArgsWithType {
     return {
       queryType: "publicKeyHashSearch",
-      publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      publicKeyHash:
+        this.publicKeyHash && this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
     };
   }
 }
@@ -1666,7 +1671,7 @@ export class PublicKeySearchQuery {
   asObject(): PublicKeySearchQueryArgsWithType {
     return {
       queryType: "publicKeySearch",
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       type: this.type && protocol.SignatureType.getName(this.type),
     };
   }
@@ -1783,11 +1788,11 @@ export class Receipt {
 
   asObject(): ReceiptArgs {
     return {
-      start: this.start && Buffer.from(this.start).toString("hex"),
+      start: this.start && this.start && Buffer.from(this.start).toString("hex"),
       startIndex: this.startIndex && this.startIndex,
-      end: this.end && Buffer.from(this.end).toString("hex"),
+      end: this.end && this.end && Buffer.from(this.end).toString("hex"),
       endIndex: this.endIndex && this.endIndex,
-      anchor: this.anchor && Buffer.from(this.anchor).toString("hex"),
+      anchor: this.anchor && this.anchor && Buffer.from(this.anchor).toString("hex"),
       entries: this.entries && this.entries?.map((v) => v.asObject()),
       localBlock: this.localBlock && this.localBlock,
       localBlockTime: this.localBlockTime && this.localBlockTime,
