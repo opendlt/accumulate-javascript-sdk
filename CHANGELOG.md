@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.6
+
+- Fixes a bug that broke some chain queries.
+
 ## v0.10.5
 
 - Adds `equals` method to URL and TxID.
