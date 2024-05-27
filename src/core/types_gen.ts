@@ -141,7 +141,7 @@ export class AccumulateDataEntry {
   asObject(): AccumulateDataEntryArgsWithType {
     return {
       type: "accumulate",
-      data: this.data && this.data?.map((v) => Buffer.from(v).toString("hex")),
+      data: this.data && this.data?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
@@ -491,7 +491,7 @@ export class AnchorMetadata {
       index: this.index && this.index,
       sourceIndex: this.sourceIndex && this.sourceIndex,
       sourceBlock: this.sourceBlock && this.sourceBlock,
-      entry: this.entry && Buffer.from(this.entry).toString("hex"),
+      entry: this.entry && this.entry && Buffer.from(this.entry).toString("hex"),
     };
   }
 }
@@ -694,15 +694,18 @@ export class BTCLegacySignature {
   asObject(): BTCLegacySignatureArgsWithType {
     return {
       type: "btclegacy",
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       memo: this.memo && this.memo,
-      data: this.data && Buffer.from(this.data).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -780,15 +783,18 @@ export class BTCSignature {
   asObject(): BTCSignatureArgsWithType {
     return {
       type: "btc",
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       memo: this.memo && this.memo,
-      data: this.data && Buffer.from(this.data).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -942,8 +948,14 @@ export class BlockValidatorAnchor {
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
       minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
       rootChainIndex: this.rootChainIndex && this.rootChainIndex,
-      rootChainAnchor: this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
-      stateTreeAnchor: this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
+      rootChainAnchor:
+        this.rootChainAnchor &&
+        this.rootChainAnchor &&
+        Buffer.from(this.rootChainAnchor).toString("hex"),
+      stateTreeAnchor:
+        this.stateTreeAnchor &&
+        this.stateTreeAnchor &&
+        Buffer.from(this.stateTreeAnchor).toString("hex"),
       acmeBurnt: this.acmeBurnt && this.acmeBurnt.toString(),
     };
   }
@@ -1063,7 +1075,7 @@ export class ChainParams {
 
   asObject(): ChainParamsArgs {
     return {
-      data: this.data && Buffer.from(this.data).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
       isUpdate: this.isUpdate && this.isUpdate,
     };
   }
@@ -1145,7 +1157,7 @@ export class CreateIdentity {
     return {
       type: "createIdentity",
       url: this.url && this.url.toString(),
-      keyHash: this.keyHash && Buffer.from(this.keyHash).toString("hex"),
+      keyHash: this.keyHash && this.keyHash && Buffer.from(this.keyHash).toString("hex"),
       keyBookUrl: this.keyBookUrl && this.keyBookUrl.toString(),
       authorities: this.authorities && this.authorities?.map((v) => v.toString()),
     };
@@ -1190,7 +1202,8 @@ export class CreateKeyBook {
     return {
       type: "createKeyBook",
       url: this.url && this.url.toString(),
-      publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      publicKeyHash:
+        this.publicKeyHash && this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
       authorities: this.authorities && this.authorities?.map((v) => v.toString()),
     };
   }
@@ -1545,8 +1558,14 @@ export class DirectoryAnchor {
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
       minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
       rootChainIndex: this.rootChainIndex && this.rootChainIndex,
-      rootChainAnchor: this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
-      stateTreeAnchor: this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
+      rootChainAnchor:
+        this.rootChainAnchor &&
+        this.rootChainAnchor &&
+        Buffer.from(this.rootChainAnchor).toString("hex"),
+      stateTreeAnchor:
+        this.stateTreeAnchor &&
+        this.stateTreeAnchor &&
+        Buffer.from(this.stateTreeAnchor).toString("hex"),
       updates: this.updates && this.updates?.map((v) => v.asObject()),
       receipts: this.receipts && this.receipts?.map((v) => v.asObject()),
       makeMajorBlock: this.makeMajorBlock && this.makeMajorBlock,
@@ -1609,7 +1628,7 @@ export class DoubleHashDataEntry {
   asObject(): DoubleHashDataEntryArgsWithType {
     return {
       type: "doubleHash",
-      data: this.data && this.data?.map((v) => Buffer.from(v).toString("hex")),
+      data: this.data && this.data?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
@@ -1689,15 +1708,18 @@ export class ED25519Signature {
   asObject(): ED25519SignatureArgsWithType {
     return {
       type: "ed25519",
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       memo: this.memo && this.memo,
-      data: this.data && Buffer.from(this.data).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -1775,15 +1797,18 @@ export class ETHSignature {
   asObject(): ETHSignatureArgsWithType {
     return {
       type: "eth",
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       memo: this.memo && this.memo,
-      data: this.data && Buffer.from(this.data).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -1897,9 +1922,9 @@ export class FactomDataEntry {
 
   asObject(): FactomDataEntryArgs {
     return {
-      accountId: this.accountId && Buffer.from(this.accountId).toString("hex"),
-      data: this.data && Buffer.from(this.data).toString("hex"),
-      extIds: this.extIds && this.extIds?.map((v) => Buffer.from(v).toString("hex")),
+      accountId: this.accountId && this.accountId && Buffer.from(this.accountId).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+      extIds: this.extIds && this.extIds?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
@@ -1948,9 +1973,9 @@ export class FactomDataEntryWrapper {
   asObject(): FactomDataEntryWrapperArgsWithType {
     return {
       type: "factom",
-      accountId: this.accountId && Buffer.from(this.accountId).toString("hex"),
-      data: this.data && Buffer.from(this.data).toString("hex"),
-      extIds: this.extIds && this.extIds?.map((v) => Buffer.from(v).toString("hex")),
+      accountId: this.accountId && this.accountId && Buffer.from(this.accountId).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+      extIds: this.extIds && this.extIds?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
@@ -2093,8 +2118,11 @@ export class InternalSignature {
   asObject(): InternalSignatureArgsWithType {
     return {
       type: "internal",
-      cause: this.cause && Buffer.from(this.cause).toString("hex"),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      cause: this.cause && this.cause && Buffer.from(this.cause).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
@@ -2294,7 +2322,8 @@ export class KeySpec {
 
   asObject(): KeySpecArgs {
     return {
-      publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      publicKeyHash:
+        this.publicKeyHash && this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
       lastUsedOn: this.lastUsedOn && this.lastUsedOn,
       delegate: this.delegate && this.delegate.toString(),
     };
@@ -2327,7 +2356,7 @@ export class KeySpecParams {
 
   asObject(): KeySpecParamsArgs {
     return {
-      keyHash: this.keyHash && Buffer.from(this.keyHash).toString("hex"),
+      keyHash: this.keyHash && this.keyHash && Buffer.from(this.keyHash).toString("hex"),
       delegate: this.delegate && this.delegate.toString(),
     };
   }
@@ -2396,12 +2425,15 @@ export class LegacyED25519Signature {
     return {
       type: "legacyED25519",
       timestamp: this.timestamp && this.timestamp,
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       vote: this.vote && VoteType.getName(this.vote),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
@@ -2825,8 +2857,14 @@ export class PartitionAnchor {
       majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
       minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
       rootChainIndex: this.rootChainIndex && this.rootChainIndex,
-      rootChainAnchor: this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
-      stateTreeAnchor: this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
+      rootChainAnchor:
+        this.rootChainAnchor &&
+        this.rootChainAnchor &&
+        Buffer.from(this.rootChainAnchor).toString("hex"),
+      stateTreeAnchor:
+        this.stateTreeAnchor &&
+        this.stateTreeAnchor &&
+        Buffer.from(this.stateTreeAnchor).toString("hex"),
     };
   }
 }
@@ -2967,7 +3005,10 @@ export class PartitionSignature {
       sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
       destinationNetwork: this.destinationNetwork && this.destinationNetwork.toString(),
       sequenceNumber: this.sequenceNumber && this.sequenceNumber,
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
@@ -3115,15 +3156,18 @@ export class RCD1Signature {
   asObject(): RCD1SignatureArgsWithType {
     return {
       type: "rcd1",
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       memo: this.memo && this.memo,
-      data: this.data && Buffer.from(this.data).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -3199,7 +3243,10 @@ export class ReceiptSignature {
       type: "receipt",
       sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
       proof: this.proof && this.proof.asObject(),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
@@ -3240,7 +3287,7 @@ export class RemoteSignature {
       type: "remote",
       destination: this.destination && this.destination.toString(),
       signature: this.signature && this.signature.asObject(),
-      cause: this.cause && this.cause?.map((v) => Buffer.from(v).toString("hex")),
+      cause: this.cause && this.cause?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
@@ -3273,7 +3320,7 @@ export class RemoteTransaction {
   asObject(): RemoteTransactionArgsWithType {
     return {
       type: "remote",
-      hash: this.hash && Buffer.from(this.hash).toString("hex"),
+      hash: this.hash && this.hash && Buffer.from(this.hash).toString("hex"),
     };
   }
 }
@@ -3506,15 +3553,18 @@ export class RsaSha256Signature {
   asObject(): RsaSha256SignatureArgsWithType {
     return {
       type: "rsaSha256",
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && Buffer.from(this.signature).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
       signer: this.signer && this.signer.toString(),
       signerVersion: this.signerVersion && this.signerVersion,
       timestamp: this.timestamp && this.timestamp,
       vote: this.vote && VoteType.getName(this.vote),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       memo: this.memo && this.memo,
-      data: this.data && Buffer.from(this.data).toString("hex"),
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -3558,7 +3608,7 @@ export class SendTokens {
   asObject(): SendTokensArgsWithType {
     return {
       type: "sendTokens",
-      hash: this.hash && Buffer.from(this.hash).toString("hex"),
+      hash: this.hash && this.hash && Buffer.from(this.hash).toString("hex"),
       meta: this.meta && this.meta,
       to: this.to && this.to?.map((v) => v.asObject()),
     };
@@ -3698,7 +3748,10 @@ export class SignatureSet {
       type: "set",
       vote: this.vote && VoteType.getName(this.vote),
       signer: this.signer && this.signer.toString(),
-      transactionHash: this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
       signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
       authority: this.authority && this.authority.toString(),
     };
@@ -4558,9 +4611,9 @@ export class TransactionHeader {
   asObject(): TransactionHeaderArgs {
     return {
       principal: this.principal && this.principal.toString(),
-      initiator: this.initiator && Buffer.from(this.initiator).toString("hex"),
+      initiator: this.initiator && this.initiator && Buffer.from(this.initiator).toString("hex"),
       memo: this.memo && this.memo,
-      metadata: this.metadata && Buffer.from(this.metadata).toString("hex"),
+      metadata: this.metadata && this.metadata && Buffer.from(this.metadata).toString("hex"),
       expire: this.expire && this.expire.asObject(),
       holdUntil: this.holdUntil && this.holdUntil.asObject(),
       authorities: this.authorities && this.authorities?.map((v) => v.toString()),
@@ -4663,7 +4716,7 @@ export class TransactionStatus {
       gotDirectoryReceipt: this.gotDirectoryReceipt && this.gotDirectoryReceipt,
       proof: this.proof && this.proof.asObject(),
       anchorSigners:
-        this.anchorSigners && this.anchorSigners?.map((v) => Buffer.from(v).toString("hex")),
+        this.anchorSigners && this.anchorSigners?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
@@ -4876,7 +4929,8 @@ export class UpdateKey {
   asObject(): UpdateKeyArgsWithType {
     return {
       type: "updateKey",
-      newKeyHash: this.newKeyHash && Buffer.from(this.newKeyHash).toString("hex"),
+      newKeyHash:
+        this.newKeyHash && this.newKeyHash && Buffer.from(this.newKeyHash).toString("hex"),
     };
   }
 }
@@ -4999,8 +5053,9 @@ export class ValidatorInfo {
 
   asObject(): ValidatorInfoArgs {
     return {
-      publicKey: this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      publicKeyHash: this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      publicKeyHash:
+        this.publicKeyHash && this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
       operator: this.operator && this.operator.toString(),
       partitions: this.partitions && this.partitions?.map((v) => v.asObject()),
     };
@@ -5113,9 +5168,9 @@ export class WriteDataResult {
   asObject(): WriteDataResultArgsWithType {
     return {
       type: "writeData",
-      entryHash: this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      entryHash: this.entryHash && this.entryHash && Buffer.from(this.entryHash).toString("hex"),
       accountUrl: this.accountUrl && this.accountUrl.toString(),
-      accountID: this.accountID && Buffer.from(this.accountID).toString("hex"),
+      accountID: this.accountID && this.accountID && Buffer.from(this.accountID).toString("hex"),
     };
   }
 }

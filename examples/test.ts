@@ -2,5 +2,9 @@
 // Here we are building a SendTokens transaction.
 import { api_v3 } from "accumulate.js";
 
-const v3 = new api_v3.JsonRpcClient("https://mainnet.accumulatenetwork.io/v3");
-console.log(await v3.networkStatus());
+const mainnet = new api_v3.JsonRpcClient("https://mainnet.accumulatenetwork.io/v3");
+console.log(await mainnet.networkStatus());
+
+const kermit = new api_v3.JsonRpcClient("https://kermit.accumulatenetwork.io/v3");
+const r = await kermit.query("ethan.acme/data", { queryType: "chain", name: "main", range: {} });
+console.log(r.asObject());

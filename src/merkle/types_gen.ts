@@ -63,11 +63,11 @@ export class Receipt {
 
   asObject(): ReceiptArgs {
     return {
-      start: this.start && Buffer.from(this.start).toString("hex"),
+      start: this.start && this.start && Buffer.from(this.start).toString("hex"),
       startIndex: this.startIndex && this.startIndex,
-      end: this.end && Buffer.from(this.end).toString("hex"),
+      end: this.end && this.end && Buffer.from(this.end).toString("hex"),
       endIndex: this.endIndex && this.endIndex,
-      anchor: this.anchor && Buffer.from(this.anchor).toString("hex"),
+      anchor: this.anchor && this.anchor && Buffer.from(this.anchor).toString("hex"),
       entries: this.entries && this.entries?.map((v) => v.asObject()),
     };
   }
@@ -100,7 +100,7 @@ export class ReceiptEntry {
   asObject(): ReceiptEntryArgs {
     return {
       right: this.right && this.right,
-      hash: this.hash && Buffer.from(this.hash).toString("hex"),
+      hash: this.hash && this.hash && Buffer.from(this.hash).toString("hex"),
     };
   }
 }
@@ -153,7 +153,7 @@ export class ReceiptList {
   asObject(): ReceiptListArgs {
     return {
       merkleState: this.merkleState && this.merkleState.asObject(),
-      elements: this.elements && this.elements?.map((v) => Buffer.from(v).toString("hex")),
+      elements: this.elements && this.elements?.map((v) => v && Buffer.from(v).toString("hex")),
       receipt: this.receipt && this.receipt.asObject(),
       continuedReceipt: this.continuedReceipt && this.continuedReceipt.asObject(),
     };
@@ -189,8 +189,8 @@ export class State {
   asObject(): StateArgs {
     return {
       count: this.count && this.count,
-      pending: this.pending && this.pending?.map((v) => Buffer.from(v).toString("hex")),
-      hashList: this.hashList && this.hashList?.map((v) => Buffer.from(v).toString("hex")),
+      pending: this.pending && this.pending?.map((v) => v && Buffer.from(v).toString("hex")),
+      hashList: this.hashList && this.hashList?.map((v) => v && Buffer.from(v).toString("hex")),
     };
   }
 }
