@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.8
+
+- Fixes a bug calculating the hash of empty entries.
+
 ## v0.10.7
 
 - Adds a `hash` method to data entries.
