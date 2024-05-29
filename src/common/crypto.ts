@@ -6,14 +6,14 @@ async function makeSHA(size: number): Promise<(data: Uint8Array) => Promise<Uint
     // Browser
     // @ts-ignore
     return async (data: Uint8Array) =>
-      new Uint8Array(await crypto.subtle.digest(`SHA-${size}`, data));
+      new Uint8Array(await crypto.subtle.digest(`SHA-${size}`, data || new Uint8Array()));
   }
 
   // Node
   // @ts-ignore
   const { createHash } = await import("crypto");
   const hash = createHash(`sha${size}`);
-  return (data) => Promise.resolve(hash.update(data).digest());
+  return (data) => Promise.resolve(hash.update(data || new Uint8Array()).digest());
 }
 
 const hSHA256: Promise<(data: Uint8Array) => Promise<Uint8Array>> = makeSHA(256);

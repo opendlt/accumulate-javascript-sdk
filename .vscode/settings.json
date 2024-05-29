@@ -1,5 +1,8 @@
 {
     "search.exclude": {
         "accumulate": true
+    },
+    "[typescript]": {
+        "editor.formatOnSave": true
     }
 }

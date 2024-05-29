@@ -10,5 +10,5 @@ const kermit = new api_v3.JsonRpcClient("https://kermit.accumulatenetwork.io/v3"
 const r = await kermit.query("ethan.acme/data", { queryType: "chain", name: "main", range: {} });
 console.log(r.asObject());
 
-const x = new AccumulateDataEntry({ data: ["deadbeef"] });
+const x = new AccumulateDataEntry({ data: ["", "deadbeef"] });
 console.log(Buffer.from(await x.hash()).toString("hex"));
