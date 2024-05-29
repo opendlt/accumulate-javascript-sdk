@@ -2,6 +2,62 @@ export * from "./enums_gen";
 export * from "./types_gen";
 export * from "./unions_gen";
 
+declare module "./types_gen" {
+  export interface AccumulateDataEntry {
+    hash(): Promise<Uint8Array>;
+  }
+
+  export interface DoubleHashDataEntry {
+    hash(): Promise<Uint8Array>;
+  }
+
+  export interface FactomDataEntryWrapper {
+    hash(): Promise<Uint8Array>;
+    asBinary(): Uint8Array;
+  }
+}
+
+import { Buffer } from "../common/buffer";
+import { AccumulateDataEntry, DoubleHashDataEntry, FactomDataEntryWrapper } from "./types_gen";
+
+AccumulateDataEntry.prototype.hash = async function () {
+  if (!this.data) {
+    return new Uint8Array();
+  }
+  return await hashTree(this.data);
+};
+
+DoubleHashDataEntry.prototype.hash = async function () {
+  if (!this.data) {
+    return new Uint8Array();
+  }
+  return await sha256(await hashTree(this.data));
+};
+
+FactomDataEntryWrapper.prototype.asBinary = function () {
+  const len2buf = (x: number) => new Uint8Array([x >> 8, x]);
+  const extIds = Buffer.concat(
+    (this.extIds || []).map((x) => {
+      return Buffer.concat([len2buf(x.length || 0), x || new Uint8Array()]);
+    })
+  );
+
+  return Buffer.concat([
+    Buffer.from([0]),
+    Buffer.from(this.accountId || new Uint8Array(32)),
+    len2buf(extIds.length),
+    extIds,
+    this.data || new Uint8Array(),
+  ]);
+};
+
+FactomDataEntryWrapper.prototype.hash = async function () {
+  const data = this.asBinary();
+  const sum = await sha512(data);
+  const salted = Buffer.concat([sum, data]);
+  return await sha256(salted);
+};
+
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import {
@@ -18,6 +74,7 @@ import {
   WriteDataResult,
 } from ".";
 import { AccumulateURL as URL } from "../address/url";
+import { hashTree, sha256, sha512 } from "../common/crypto";
 import {
   AddCreditsResultArgsWithType,
   BlockValidatorAnchorArgsWithType,

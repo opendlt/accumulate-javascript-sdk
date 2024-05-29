@@ -1,21 +1,30 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Buffer } from "./buffer";
 
-const hasher: Promise<(data: Uint8Array) => Promise<Uint8Array>> = (async () => {
+async function makeSHA(size: number): Promise<(data: Uint8Array) => Promise<Uint8Array>> {
   if ("crypto" in globalThis) {
     // Browser
     // @ts-ignore
-    return async (data) => new Uint8Array(await crypto.subtle.digest("SHA-256", data));
+    return async (data: Uint8Array) =>
+      new Uint8Array(await crypto.subtle.digest(`SHA-${size}`, data));
   }
 
   // Node
   // @ts-ignore
   const { createHash } = await import("crypto");
-  return (data) => Promise.resolve(createHash("sha256").update(data).digest());
-})();
+  const hash = createHash(`sha${size}`);
+  return (data) => Promise.resolve(hash.update(data).digest());
+}
+
+const hSHA256: Promise<(data: Uint8Array) => Promise<Uint8Array>> = makeSHA(256);
+const hSHA512: Promise<(data: Uint8Array) => Promise<Uint8Array>> = makeSHA(512);
 
 export async function sha256(data: Uint8Array): Promise<Buffer> {
-  return Buffer.from(await (await hasher)(data));
+  return Buffer.from(await (await hSHA256)(data));
+}
+
+export async function sha512(data: Uint8Array): Promise<Buffer> {
+  return Buffer.from(await (await hSHA512)(data));
 }
 
 export async function hashTree(items: Uint8Array[]): Promise<Uint8Array> {

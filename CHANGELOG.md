@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.7
+
+- Adds a `hash` method to data entries.
+
 ## v0.10.6
 
 - Fixes a bug that broke some chain queries.

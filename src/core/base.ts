@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Buffer } from "../common/buffer";
-import { hashTree, sha256 } from "../common/crypto";
+import { sha256 } from "../common/crypto";
 import { encode } from "../encoding";
-import { DataEntryType, TransactionType } from "./enums_gen";
+import { TransactionType } from "./enums_gen";
 import { TransactionHeader } from "./types_gen";
 import { TransactionBody } from "./unions_gen";
 
@@ -36,21 +36,9 @@ export async function hashBody(body: TransactionBody) {
       const copy = body.copy();
       delete copy.entry;
 
-      switch (body.entry.type) {
-        case DataEntryType.Accumulate:
-          return await sha256(
-            Buffer.concat([await sha256(encode(copy)), await hashTree(body.entry.data)])
-          );
-        case DataEntryType.DoubleHash:
-          return await sha256(
-            Buffer.concat([
-              await sha256(encode(copy)),
-              await sha256(await hashTree(body.entry.data)),
-            ])
-          );
-        default:
-          throw new Error(`cannot hash ${body.type}: ${body.entry.type} entries are not supported`);
-      }
+      const withoutEntry = await sha256(encode(copy));
+      const entryHash = await body.entry.hash();
+      return await sha256(Buffer.concat([withoutEntry, entryHash]));
     }
 
     default:
