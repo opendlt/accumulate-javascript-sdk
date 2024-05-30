@@ -1,4 +1,4 @@
-import nacl from "tweetnacl";
+import * as nacl from "tweetnacl";
 import { PrivateKeyAddress } from "../address";
 import { Buffer } from "../common/buffer";
 import { sha256 } from "../common/crypto";

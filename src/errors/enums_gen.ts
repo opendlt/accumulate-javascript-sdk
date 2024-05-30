@@ -59,6 +59,8 @@ export enum Status {
   PeerMisbehaved = 507,
   /** InvalidRecord means the database has one or more invalid records. */
   InvalidRecord = 508,
+  /** StreamAborted is equivalent to [io.ErrUnexpectedEOF]. */
+  StreamAborted = 509,
 }
 
 export type StatusArgs = Status | string;
@@ -128,6 +130,8 @@ export namespace Status {
         return Status.PeerMisbehaved;
       case "invalidrecord":
         return Status.InvalidRecord;
+      case "streamaborted":
+        return Status.StreamAborted;
       default:
         throw new Error(`Unknown Status '${name}'`);
     }
@@ -191,6 +195,8 @@ export namespace Status {
         return "peerMisbehaved";
       case Status.InvalidRecord:
         return "invalidRecord";
+      case Status.StreamAborted:
+        return "streamAborted";
       default:
         throw new Error(`Unknown Status ${v}`);
     }

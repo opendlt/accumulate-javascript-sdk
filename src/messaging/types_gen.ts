@@ -21,7 +21,7 @@ export type BadSyntheticMessageArgsWithType = BadSyntheticMessageArgs & {
   type: MessageType.BadSynthetic | "badSynthetic";
 };
 export class BadSyntheticMessage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.BadSynthetic;
   @encodeAs.field(2).union
   public message?: Message;
@@ -64,7 +64,7 @@ export type BlockAnchorArgsWithType = BlockAnchorArgs & {
   type: MessageType.BlockAnchor | "blockAnchor";
 };
 export class BlockAnchor {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.BlockAnchor;
   @encodeAs.field(2).union
   public signature?: protocol.KeySignature;
@@ -101,7 +101,7 @@ export type CreditPaymentArgsWithType = CreditPaymentArgs & {
   type: MessageType.CreditPayment | "creditPayment";
 };
 export class CreditPayment {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.CreditPayment;
   @encodeAs.field(2).enum
   public paid?: protocol.Fee;
@@ -146,7 +146,7 @@ export type DidUpdateExecutorVersionArgsWithType = DidUpdateExecutorVersionArgs 
   type: MessageType.DidUpdateExecutorVersion | "didUpdateExecutorVersion";
 };
 export class DidUpdateExecutorVersion {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.DidUpdateExecutorVersion;
   @encodeAs.field(2).string
   public partition?: string;
@@ -232,7 +232,7 @@ export type MakeMajorBlockArgsWithType = MakeMajorBlockArgs & {
   type: MessageType.MakeMajorBlock | "makeMajorBlock";
 };
 export class MakeMajorBlock {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.MakeMajorBlock;
   @encodeAs.field(2).uint
   public majorBlockIndex?: number;
@@ -273,7 +273,7 @@ export type NetworkUpdateArgsWithType = NetworkUpdateArgs & {
   type: MessageType.NetworkUpdate | "networkUpdate";
 };
 export class NetworkUpdate {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.NetworkUpdate;
   @encodeAs.field(2).repeatable.reference
   public accounts?: protocol.NetworkAccountUpdate[];
@@ -309,7 +309,7 @@ export type SequencedMessageArgsWithType = SequencedMessageArgs & {
   type: MessageType.Sequenced | "sequenced";
 };
 export class SequencedMessage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.Sequenced;
   @encodeAs.field(2).union
   public message?: Message;
@@ -350,7 +350,7 @@ export type SignatureMessageArgsWithType = SignatureMessageArgs & {
   type: MessageType.Signature | "signature";
 };
 export class SignatureMessage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.Signature;
   @encodeAs.field(2).union
   public signature?: protocol.Signature;
@@ -385,7 +385,7 @@ export type SignatureRequestArgsWithType = SignatureRequestArgs & {
   type: MessageType.SignatureRequest | "signatureRequest";
 };
 export class SignatureRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.SignatureRequest;
   @encodeAs.field(2).url
   public authority?: URL;
@@ -458,7 +458,7 @@ export type SyntheticMessageArgsWithType = SyntheticMessageArgs & {
   type: MessageType.Synthetic | "synthetic";
 };
 export class SyntheticMessage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.Synthetic;
   @encodeAs.field(2).union
   public message?: Message;
@@ -500,7 +500,7 @@ export type TransactionMessageArgsWithType = TransactionMessageArgs & {
   type: MessageType.Transaction | "transaction";
 };
 export class TransactionMessage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.Transaction;
   @encodeAs.field(2).reference
   public transaction?: protocol.Transaction;

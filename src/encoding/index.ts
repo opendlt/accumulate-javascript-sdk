@@ -23,6 +23,8 @@ import {
 } from "./encodable";
 import { bytesMarshalBinary, uvarintMarshalBinary as uintMarshalBinary } from "./encoding";
 
+export * from "./encodable";
+export * from "./encoding";
 export const FieldNumber = new Uint();
 export const Length = new Uint();
 
@@ -111,13 +113,19 @@ class Embedded {
   }
 }
 
-class Encoding {
+export class Encoding {
   public readonly fields: Field[] = [];
 
   static get(target: any) {
     const proto = Object.getPrototypeOf(target);
     if (Reflect.hasOwnMetadata("encoding", proto))
       return <Encoding>Reflect.getMetadata("encoding", proto);
+    return;
+  }
+
+  static forClass<T, C extends abstract new (...args: any) => T>(target: C) {
+    if (Reflect.hasOwnMetadata("encoding", target.prototype))
+      return <Encoding>Reflect.getMetadata("encoding", target.prototype);
     return;
   }
 
@@ -186,9 +194,15 @@ export class Annotator {
   }
 
   get enum() {
-    return (target: any, key: PropertyKey) => {
-      Encoding.set(target).addField(this.number, { name: key, type: new Enum(), ...this.field });
-    };
+    const add = (target: any, key: PropertyKey, type?: any) =>
+      Encoding.set(target).addField(this.number, {
+        name: key,
+        type: new Enum(type),
+        ...this.field,
+      });
+    const annotator = (target: any, key: PropertyKey) => add(target, key);
+    annotator.of = (type: any) => (target: any, key: PropertyKey) => add(target, key, type);
+    return annotator;
   }
   get reference() {
     return (target: any, key: PropertyKey) => {

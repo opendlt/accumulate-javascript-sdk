@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.10.9
+
+- Modifies data type annotations to allow recovering the type of an enum field.
+
 ## v0.10.8
 
 - Fixes a bug calculating the hash of empty entries.

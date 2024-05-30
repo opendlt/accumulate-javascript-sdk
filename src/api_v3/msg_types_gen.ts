@@ -23,7 +23,7 @@ export type ConsensusStatusRequestArgsWithType = ConsensusStatusRequestArgs & {
   type: MessageType.ConsensusStatusRequest | "consensusStatusRequest";
 };
 export class ConsensusStatusRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.ConsensusStatusRequest;
   @encodeAs.field(2, 1).string
   public nodeID?: string;
@@ -64,7 +64,7 @@ export type ConsensusStatusResponseArgsWithType = ConsensusStatusResponseArgs & 
   type: MessageType.ConsensusStatusResponse | "consensusStatusResponse";
 };
 export class ConsensusStatusResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.ConsensusStatusResponse;
   @encodeAs.field(2).reference
   public value?: api.ConsensusStatus;
@@ -97,7 +97,7 @@ export type ErrorResponseArgsWithType = ErrorResponseArgs & {
   type: MessageType.ErrorResponse | "errorResponse";
 };
 export class ErrorResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.ErrorResponse;
   @encodeAs.field(2).reference
   public error?: errors2.Error;
@@ -128,7 +128,7 @@ export type EventMessageArgs = {
 };
 export type EventMessageArgsWithType = EventMessageArgs & { type: MessageType.Event | "event" };
 export class EventMessage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.Event;
   @encodeAs.field(2).repeatable.keepEmpty.union
   public value?: api.Event[];
@@ -158,7 +158,7 @@ export type FaucetRequestArgsWithType = FaucetRequestArgs & {
   type: MessageType.FaucetRequest | "faucetRequest";
 };
 export class FaucetRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.FaucetRequest;
   @encodeAs.field(2).url
   public account?: URL;
@@ -190,7 +190,7 @@ export type FaucetResponseArgsWithType = FaucetResponseArgs & {
   type: MessageType.FaucetResponse | "faucetResponse";
 };
 export class FaucetResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.FaucetResponse;
   @encodeAs.field(2).reference
   public value?: api.Submission;
@@ -226,7 +226,7 @@ export type FindServiceRequestArgsWithType = FindServiceRequestArgs & {
   type: MessageType.FindServiceRequest | "findServiceRequest";
 };
 export class FindServiceRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.FindServiceRequest;
   @encodeAs.field(2, 1).string
   public network?: string;
@@ -271,7 +271,7 @@ export type FindServiceResponseArgsWithType = FindServiceResponseArgs & {
   type: MessageType.FindServiceResponse | "findServiceResponse";
 };
 export class FindServiceResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.FindServiceResponse;
   @encodeAs.field(2).repeatable.keepEmpty.reference
   public value?: api.FindServiceResult[];
@@ -304,7 +304,7 @@ export type NetworkStatusRequestArgsWithType = NetworkStatusRequestArgs & {
   type: MessageType.NetworkStatusRequest | "networkStatusRequest";
 };
 export class NetworkStatusRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.NetworkStatusRequest;
   @encodeAs.field(2, 1).string
   public partition?: string;
@@ -332,7 +332,7 @@ export type NetworkStatusResponseArgsWithType = NetworkStatusResponseArgs & {
   type: MessageType.NetworkStatusResponse | "networkStatusResponse";
 };
 export class NetworkStatusResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.NetworkStatusResponse;
   @encodeAs.field(2).reference
   public value?: api.NetworkStatus;
@@ -365,7 +365,7 @@ export type NodeInfoRequestArgsWithType = NodeInfoRequestArgs & {
   type: MessageType.NodeInfoRequest | "nodeInfoRequest";
 };
 export class NodeInfoRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.NodeInfoRequest;
   @encodeAs.field(2, 1).union
   public peerID?: p2p.PeerID;
@@ -393,7 +393,7 @@ export type NodeInfoResponseArgsWithType = NodeInfoResponseArgs & {
   type: MessageType.NodeInfoResponse | "nodeInfoResponse";
 };
 export class NodeInfoResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.NodeInfoResponse;
   @encodeAs.field(2).reference
   public value?: api.NodeInfo;
@@ -429,7 +429,7 @@ export type PrivateSequenceRequestArgsWithType = PrivateSequenceRequestArgs & {
   type: MessageType.PrivateSequenceRequest | "privateSequenceRequest";
 };
 export class PrivateSequenceRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.PrivateSequenceRequest;
   @encodeAs.field(2).url
   public source?: URL;
@@ -469,7 +469,7 @@ export type PrivateSequenceResponseArgsWithType = PrivateSequenceResponseArgs & 
   type: MessageType.PrivateSequenceResponse | "privateSequenceResponse";
 };
 export class PrivateSequenceResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.PrivateSequenceResponse;
   @encodeAs.field(2).reference
   public value?: api.MessageRecord<messaging.Message>;
@@ -503,7 +503,7 @@ export type QueryRequestArgsWithType = QueryRequestArgs & {
   type: MessageType.QueryRequest | "queryRequest";
 };
 export class QueryRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.QueryRequest;
   @encodeAs.field(2).url
   public scope?: URL;
@@ -535,7 +535,7 @@ export type RecordResponseArgsWithType = RecordResponseArgs & {
   type: MessageType.RecordResponse | "recordResponse";
 };
 export class RecordResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.RecordResponse;
   @encodeAs.field(2).union
   public value?: api.Record;
@@ -565,7 +565,7 @@ export type SubmitRequestArgsWithType = SubmitRequestArgs & {
   type: MessageType.SubmitRequest | "submitRequest";
 };
 export class SubmitRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.SubmitRequest;
   @encodeAs.field(2).reference
   public envelope?: messaging.Envelope;
@@ -606,7 +606,7 @@ export type SubmitResponseArgsWithType = SubmitResponseArgs & {
   type: MessageType.SubmitResponse | "submitResponse";
 };
 export class SubmitResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.SubmitResponse;
   @encodeAs.field(2).repeatable.keepEmpty.reference
   public value?: api.Submission[];
@@ -638,7 +638,7 @@ export type SubscribeRequestArgsWithType = SubscribeRequestArgs & {
   type: MessageType.SubscribeRequest | "subscribeRequest";
 };
 export class SubscribeRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.SubscribeRequest;
   @encodeAs.field(2, 1).string
   public partition?: string;
@@ -668,7 +668,7 @@ export type SubscribeResponseArgsWithType = {
   type: MessageType.SubscribeResponse | "subscribeResponse";
 };
 export class SubscribeResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.SubscribeResponse;
 
   constructor(_: SubscribeResponseArgs) {}
@@ -692,7 +692,7 @@ export type ValidateRequestArgsWithType = ValidateRequestArgs & {
   type: MessageType.ValidateRequest | "validateRequest";
 };
 export class ValidateRequest {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.ValidateRequest;
   @encodeAs.field(2).reference
   public envelope?: messaging.Envelope;
@@ -729,7 +729,7 @@ export type ValidateResponseArgsWithType = ValidateResponseArgs & {
   type: MessageType.ValidateResponse | "validateResponse";
 };
 export class ValidateResponse {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.ValidateResponse;
   @encodeAs.field(2).repeatable.keepEmpty.reference
   public value?: api.Submission[];
