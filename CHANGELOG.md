@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.10.10
+
+- Adds support for batch API requests.
+- Fixes API v3 query overloads.
+
 ## v0.10.9
 
 - Modifies data type annotations to allow recovering the type of an enum field.

@@ -7,6 +7,19 @@ import * as msg from "./msg";
 
 export const ERR_CODE_PROTOCOL = -33000;
 
+/**
+ * QueryWith defines a specific subset of a query type with the specified fields
+ * marked as required and optional. The `queryType` field is always marked as
+ * required.
+ */
+export type QueryWith<
+  Base extends types.QueryArgs,
+  Required extends keyof Base = never,
+  Optional extends keyof Base = never
+> = {
+  [K in Required | "queryType"]-?: Base[K];
+} & { [K in Optional]?: Base[K] };
+
 export class JsonRpcClient {
   private readonly _rpcClient: RpcClient;
 
@@ -19,9 +32,14 @@ export class JsonRpcClient {
    * @param method RPC method
    * @param params method parameters
    */
-  async call<V = any>(method: string, params?: any): Promise<V> {
+  async call<V = any>(method: string, params: any): Promise<V>;
+  async call<V = any>(requests: { method: string; params: any }[]): Promise<V[]>;
+  async call(method: string | { method: string; params: any }[], params?: any): Promise<any> {
     try {
-      return await this._rpcClient.call(method, params);
+      if (typeof method === "string") {
+        return await this._rpcClient.call(method, params);
+      }
+      return await this._rpcClient.call(method);
     } catch (error) {
       if (!(error instanceof RpcError) || error.code > ERR_CODE_PROTOCOL) throw error;
       try {
@@ -114,7 +132,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.ChainQueryArgsWithType, "queryType">
+    query: QueryWith<types.ChainQueryArgsWithType>
   ): Promise<types.RecordRange<types.ChainRecord>>;
 
   /**
@@ -125,7 +143,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.ChainQueryArgsWithType, "queryType" | "name">
+    query: QueryWith<types.ChainQueryArgsWithType, "name">
   ): Promise<types.ChainRecord>;
 
   /**
@@ -136,7 +154,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.ChainQueryArgsWithType, "queryType" | "name" | "index" | "includeReceipt">
+    query: QueryWith<types.ChainQueryArgsWithType, "name" | "index", "includeReceipt">
   ): Promise<types.ChainEntryRecord>;
 
   /**
@@ -147,7 +165,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.ChainQueryArgsWithType, "queryType" | "name" | "entry" | "includeReceipt">
+    query: QueryWith<types.ChainQueryArgsWithType, "name" | "entry", "includeReceipt">
   ): Promise<types.ChainEntryRecord>;
 
   /**
@@ -158,7 +176,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.ChainQueryArgsWithType, "queryType" | "name" | "range" | "includeReceipt">
+    query: QueryWith<types.ChainQueryArgsWithType, "name" | "range", "includeReceipt">
   ): Promise<types.RecordRange<types.ChainEntryRecord>>;
 
   /**
@@ -169,7 +187,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.DataQueryArgsWithType, "queryType">
+    query: QueryWith<types.DataQueryArgsWithType>
   ): Promise<types.ChainEntryRecord<types.MessageRecord<messaging.TransactionMessage>>>;
 
   /**
@@ -180,7 +198,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.DataQueryArgsWithType, "queryType" | "index">
+    query: QueryWith<types.DataQueryArgsWithType, "index">
   ): Promise<types.ChainEntryRecord<types.MessageRecord<messaging.TransactionMessage>>>;
 
   /**
@@ -191,7 +209,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.DataQueryArgsWithType, "queryType" | "entry">
+    query: QueryWith<types.DataQueryArgsWithType, "entry">
   ): Promise<types.ChainEntryRecord<types.MessageRecord<messaging.TransactionMessage>>>;
 
   /**
@@ -202,7 +220,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.DataQueryArgsWithType, "queryType" | "range">
+    query: QueryWith<types.DataQueryArgsWithType, "range">
   ): Promise<
     types.RecordRange<types.ChainEntryRecord<types.MessageRecord<messaging.TransactionMessage>>>
   >;
@@ -215,7 +233,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.DirectoryQueryArgsWithType, "queryType" | "range"> & {
+    query: QueryWith<types.DirectoryQueryArgsWithType, "range"> & {
       range: { expand?: false };
     }
   ): Promise<types.RecordRange<types.UrlRecord>>;
@@ -228,7 +246,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.DirectoryQueryArgsWithType, "queryType" | "range"> & {
+    query: QueryWith<types.DirectoryQueryArgsWithType, "range"> & {
       range: { expand: true };
     }
   ): Promise<types.RecordRange<types.AccountRecord>>;
@@ -241,7 +259,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.PendingQueryArgsWithType, "queryType" | "range"> & {
+    query: QueryWith<types.PendingQueryArgsWithType, "range"> & {
       range: { expand?: false };
     }
   ): Promise<types.RecordRange<types.TxIDRecord>>;
@@ -254,7 +272,9 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.PendingQueryArgsWithType, "queryType" | "range"> & { range: { expand: true } }
+    query: QueryWith<types.PendingQueryArgsWithType, "range"> & {
+      range: { expand: true };
+    }
   ): Promise<types.RecordRange<types.MessageRecord<messaging.TransactionMessage>>>;
 
   /**
@@ -265,7 +285,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.BlockQueryArgsWithType, "queryType" | "minor" | "entryRange" | "omitEmpty">
+    query: QueryWith<types.BlockQueryArgsWithType, "minor", "entryRange" | "omitEmpty">
   ): Promise<types.MinorBlockRecord>;
 
   /**
@@ -276,9 +296,10 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<
+    query: QueryWith<
       types.BlockQueryArgsWithType,
-      "queryType" | "major" | "minorRange" | "entryRange" | "omitEmpty"
+      "major",
+      "minorRange" | "entryRange" | "omitEmpty"
     >
   ): Promise<types.MajorBlockRecord>;
 
@@ -290,7 +311,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.BlockQueryArgsWithType, "queryType" | "minorRange" | "omitEmpty">
+    query: QueryWith<types.BlockQueryArgsWithType, "minorRange", "omitEmpty">
   ): Promise<types.RecordRange<types.MinorBlockRecord>>;
 
   /**
@@ -301,7 +322,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.BlockQueryArgsWithType, "queryType" | "majorRange" | "omitEmpty">
+    query: QueryWith<types.BlockQueryArgsWithType, "majorRange", "omitEmpty">
   ): Promise<types.RecordRange<types.MajorBlockRecord>>;
 
   /**
@@ -312,7 +333,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.AnchorSearchQueryArgsWithType, "queryType" | "anchor" | "includeReceipt">
+    query: QueryWith<types.AnchorSearchQueryArgsWithType, "anchor", "includeReceipt">
   ): Promise<types.RecordRange<types.ChainEntryRecord<never>>>;
 
   /**
@@ -325,7 +346,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.PublicKeySearchQueryArgsWithType, "queryType" | "publicKey" | "type">
+    query: QueryWith<types.PublicKeySearchQueryArgsWithType, "publicKey" | "type">
   ): Promise<types.RecordRange<types.KeyRecord>>;
 
   /**
@@ -338,7 +359,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.PublicKeyHashSearchQueryArgsWithType, "queryType" | "publicKeyHash">
+    query: QueryWith<types.PublicKeyHashSearchQueryArgsWithType, "publicKeyHash">
   ): Promise<types.RecordRange<types.KeyRecord>>;
 
   /**
@@ -351,7 +372,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.DelegateSearchQueryArgsWithType, "queryType" | "delegate">
+    query: QueryWith<types.DelegateSearchQueryArgsWithType, "delegate">
   ): Promise<types.RecordRange<types.KeyRecord>>;
 
   /**
@@ -362,7 +383,7 @@ export class JsonRpcClient {
    */
   query(
     scope: URLArgs,
-    query: Pick<types.MessageHashSearchQueryArgsWithType, "queryType" | "hash">
+    query: QueryWith<types.MessageHashSearchQueryArgsWithType, "hash">
   ): Promise<types.RecordRange<types.MessageRecord>>;
 
   /**
