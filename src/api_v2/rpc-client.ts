@@ -30,22 +30,35 @@ export class RpcClient {
     this._idCounter = 0;
   }
 
-  async call(method: string, params: any): Promise<any> {
-    const request = {
+  async call(method: string, params: any): Promise<any>;
+  async call(requests: { method: string; params: any }[]): Promise<any[]>;
+  async call(method: string | { method: string; params: any }[], params?: any): Promise<any> {
+    const single = typeof method === "string";
+    const requests = (single ? [{ method, params }] : method).map(({ method, params }) => ({
       jsonrpc: "2.0",
       id: this._idCounter++,
-      method: method,
-      params: params,
-    };
+      method,
+      params,
+    }));
+    if (requests.length == 0) {
+      return [];
+    }
 
-    const {
-      data: { error, result },
-    } = await this._httpCli.post(this._endpoint, request);
-
-    if (error) {
-      return Promise.reject(new RpcError(error));
-    } else {
+    const { data } = await this._httpCli.post(this._endpoint, single ? requests[0] : requests);
+    if (single) {
+      const { error, result } = data;
+      if (error) {
+        return Promise.reject(new RpcError(error));
+      }
       return result;
     }
+    const results = [];
+    for (const { error, result } of data) {
+      if (error) {
+        return Promise.reject(new RpcError(error));
+      }
+      results.push(result);
+    }
+    return results;
   }
 }
