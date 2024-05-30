@@ -36,7 +36,7 @@ export type AccountRecordArgsWithType = AccountRecordArgs & {
   recordType: RecordType.Account | "account";
 };
 export class AccountRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.Account;
   @encodeAs.field(2).union
   public account?: protocol.Account;
@@ -102,7 +102,7 @@ export type AnchorSearchQueryArgsWithType = AnchorSearchQueryArgs & {
   queryType: QueryType.AnchorSearch | "anchorSearch";
 };
 export class AnchorSearchQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.AnchorSearch;
   @encodeAs.field(2).bytes
   public anchor?: Uint8Array;
@@ -146,7 +146,7 @@ export type BlockEventArgs = {
 };
 export type BlockEventArgsWithType = BlockEventArgs & { eventType: EventType.Block | "block" };
 export class BlockEvent {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(EventType)
   public readonly eventType = EventType.Block;
   @encodeAs.field(2).string
   public partition?: string;
@@ -203,7 +203,7 @@ export type BlockQueryArgs = {
 };
 export type BlockQueryArgsWithType = BlockQueryArgs & { queryType: QueryType.Block | "block" };
 export class BlockQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.Block;
   @encodeAs.field(2).uint
   public minor?: number;
@@ -274,7 +274,7 @@ export type ChainEntryRecordArgsWithType<T extends Record = Record> = ChainEntry
   recordType: RecordType.ChainEntry | "chainEntry";
 };
 export class ChainEntryRecord<T extends Record = Record> {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.ChainEntry;
   @encodeAs.field(2).url
   public account?: URL;
@@ -354,7 +354,7 @@ export type ChainQueryArgs = {
 };
 export type ChainQueryArgsWithType = ChainQueryArgs & { queryType: QueryType.Chain | "chain" };
 export class ChainQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.Chain;
   @encodeAs.field(2).string
   public name?: string;
@@ -415,7 +415,7 @@ export type ChainRecordArgs = {
 };
 export type ChainRecordArgsWithType = ChainRecordArgs & { recordType: RecordType.Chain | "chain" };
 export class ChainRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.Chain;
   @encodeAs.field(2).string
   public name?: string;
@@ -624,7 +624,7 @@ export type DataQueryArgs = {
 };
 export type DataQueryArgsWithType = DataQueryArgs & { queryType: QueryType.Data | "data" };
 export class DataQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.Data;
   @encodeAs.field(2).uint
   public index?: number;
@@ -670,7 +670,7 @@ export type DefaultQueryArgsWithType = DefaultQueryArgs & {
   queryType: QueryType.Default | "default";
 };
 export class DefaultQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.Default;
   @encodeAs.field(2).reference
   public includeReceipt?: ReceiptOptions;
@@ -703,7 +703,7 @@ export type DelegateSearchQueryArgsWithType = DelegateSearchQueryArgs & {
   queryType: QueryType.DelegateSearch | "delegateSearch";
 };
 export class DelegateSearchQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.DelegateSearch;
   @encodeAs.field(2).url
   public delegate?: URL;
@@ -731,7 +731,7 @@ export type DirectoryQueryArgsWithType = DirectoryQueryArgs & {
   queryType: QueryType.Directory | "directory";
 };
 export class DirectoryQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.Directory;
   @encodeAs.field(2).reference
   public range?: RangeOptions;
@@ -762,7 +762,7 @@ export type ErrorEventArgs = {
 };
 export type ErrorEventArgsWithType = ErrorEventArgs & { eventType: EventType.Error | "error" };
 export class ErrorEvent {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(EventType)
   public readonly eventType = EventType.Error;
   @encodeAs.field(2).reference
   public err?: errors2.Error;
@@ -793,7 +793,7 @@ export type ErrorRecordArgs = {
 };
 export type ErrorRecordArgsWithType = ErrorRecordArgs & { recordType: RecordType.Error | "error" };
 export class ErrorRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.Error;
   @encodeAs.field(2).reference
   public value?: errors2.Error;
@@ -926,7 +926,7 @@ export type GlobalsEventArgsWithType = GlobalsEventArgs & {
   eventType: EventType.Globals | "globals";
 };
 export class GlobalsEvent {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(EventType)
   public readonly eventType = EventType.Globals;
   @encodeAs.field(2).reference
   public old?: core.GlobalValues;
@@ -968,7 +968,7 @@ export type IndexEntryRecordArgsWithType = IndexEntryRecordArgs & {
   recordType: RecordType.IndexEntry | "indexEntry";
 };
 export class IndexEntryRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.IndexEntry;
   @encodeAs.field(2).reference
   public value?: protocol.IndexEntry;
@@ -1003,7 +1003,7 @@ export type KeyRecordArgs = {
 };
 export type KeyRecordArgsWithType = KeyRecordArgs & { recordType: RecordType.Key | "key" };
 export class KeyRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.Key;
   @encodeAs.field(2).url
   public authority?: URL;
@@ -1113,7 +1113,7 @@ export type MajorBlockRecordArgsWithType = MajorBlockRecordArgs & {
   recordType: RecordType.MajorBlock | "majorBlock";
 };
 export class MajorBlockRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.MajorBlock;
   @encodeAs.field(2).uint
   public index?: number;
@@ -1168,7 +1168,7 @@ export type MessageHashSearchQueryArgsWithType = MessageHashSearchQueryArgs & {
   queryType: QueryType.MessageHashSearch | "messageHashSearch";
 };
 export class MessageHashSearchQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.MessageHashSearch;
   @encodeAs.field(2).hash
   public hash?: Uint8Array;
@@ -1212,7 +1212,7 @@ export type MessageRecordArgs<T extends messaging.Message = messaging.Message> =
 export type MessageRecordArgsWithType<T extends messaging.Message = messaging.Message> =
   MessageRecordArgs<T> & { recordType: RecordType.Message | "message" };
 export class MessageRecord<T extends messaging.Message = messaging.Message> {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.Message;
   @encodeAs.field(2).txid
   public id?: TxID;
@@ -1330,7 +1330,7 @@ export type MinorBlockRecordArgsWithType = MinorBlockRecordArgs & {
   recordType: RecordType.MinorBlock | "minorBlock";
 };
 export class MinorBlockRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.MinorBlock;
   @encodeAs.field(2).uint
   public index?: number;
@@ -1579,7 +1579,7 @@ export type PendingQueryArgsWithType = PendingQueryArgs & {
   queryType: QueryType.Pending | "pending";
 };
 export class PendingQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.Pending;
   @encodeAs.field(2).reference
   public range?: RangeOptions;
@@ -1612,7 +1612,7 @@ export type PublicKeyHashSearchQueryArgsWithType = PublicKeyHashSearchQueryArgs 
   queryType: QueryType.PublicKeyHashSearch | "publicKeyHashSearch";
 };
 export class PublicKeyHashSearchQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.PublicKeyHashSearch;
   @encodeAs.field(2).bytes
   public publicKeyHash?: Uint8Array;
@@ -1647,7 +1647,7 @@ export type PublicKeySearchQueryArgsWithType = PublicKeySearchQueryArgs & {
   queryType: QueryType.PublicKeySearch | "publicKeySearch";
 };
 export class PublicKeySearchQuery {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(QueryType)
   public readonly queryType = QueryType.PublicKeySearch;
   @encodeAs.field(2).bytes
   public publicKey?: Uint8Array;
@@ -1838,7 +1838,7 @@ export type RecordRangeArgsWithType<T extends Record = Record> = RecordRangeArgs
   recordType: RecordType.Range | "range";
 };
 export class RecordRange<T extends Record = Record> {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.Range;
   @encodeAs.field(2).repeatable.union
   public records?: T[];
@@ -1914,7 +1914,7 @@ export type SignatureSetRecordArgsWithType = SignatureSetRecordArgs & {
   recordType: RecordType.SignatureSet | "signatureSet";
 };
 export class SignatureSetRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.SignatureSet;
   @encodeAs.field(2).union
   public account?: protocol.Account;
@@ -2041,7 +2041,7 @@ export type TxIDRecordArgs = {
 };
 export type TxIDRecordArgsWithType = TxIDRecordArgs & { recordType: RecordType.TxID | "txID" };
 export class TxIDRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.TxID;
   @encodeAs.field(2).txid
   public value?: TxID;
@@ -2067,7 +2067,7 @@ export type UrlRecordArgs = {
 };
 export type UrlRecordArgsWithType = UrlRecordArgs & { recordType: RecordType.Url | "url" };
 export class UrlRecord {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.Url;
   @encodeAs.field(2).url
   public value?: URL;

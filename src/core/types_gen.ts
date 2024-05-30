@@ -62,7 +62,7 @@ export type ADIArgs = {
 };
 export type ADIArgsWithType = ADIArgs & { type: AccountType.Identity | "identity" };
 export class ADI {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.Identity;
   @encodeAs.field(2).url
   public url?: URL;
@@ -122,7 +122,7 @@ export type AccumulateDataEntryArgsWithType = AccumulateDataEntryArgs & {
   type: DataEntryType.Accumulate | "accumulate";
 };
 export class AccumulateDataEntry {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(DataEntryType)
   public readonly type = DataEntryType.Accumulate;
   @encodeAs.field(2).repeatable.bytes
   public data?: Uint8Array[];
@@ -153,7 +153,7 @@ export type AcmeFaucetArgsWithType = AcmeFaucetArgs & {
   type: TransactionType.AcmeFaucet | "acmeFaucet";
 };
 export class AcmeFaucet {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.AcmeFaucet;
   @encodeAs.field(2).url
   public url?: URL;
@@ -203,7 +203,7 @@ export type ActivateProtocolVersionArgsWithType = ActivateProtocolVersionArgs & 
   type: TransactionType.ActivateProtocolVersion | "activateProtocolVersion";
 };
 export class ActivateProtocolVersion {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.ActivateProtocolVersion;
   @encodeAs.field(2).enum
   public version?: ExecutorVersion;
@@ -231,7 +231,7 @@ export type AddAccountAuthorityOperationArgsWithType = AddAccountAuthorityOperat
   type: AccountAuthOperationType.AddAuthority | "addAuthority";
 };
 export class AddAccountAuthorityOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType)
   public readonly type = AccountAuthOperationType.AddAuthority;
   @encodeAs.field(2).url
   public authority?: URL;
@@ -261,7 +261,7 @@ export type AddCreditsArgsWithType = AddCreditsArgs & {
   type: TransactionType.AddCredits | "addCredits";
 };
 export class AddCredits {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.AddCredits;
   @encodeAs.field(2).url
   public recipient?: URL;
@@ -304,7 +304,7 @@ export type AddCreditsResultArgsWithType = AddCreditsResultArgs & {
   type: TransactionType.AddCredits | "addCredits";
 };
 export class AddCreditsResult {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.AddCredits;
   @encodeAs.field(2).bigInt
   public amount?: bigint;
@@ -345,7 +345,7 @@ export type AddKeyOperationArgsWithType = AddKeyOperationArgs & {
   type: KeyPageOperationType.Add | "add";
 };
 export class AddKeyOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
   public readonly type = KeyPageOperationType.Add;
   @encodeAs.field(2).reference
   public entry?: KeySpecParams;
@@ -383,7 +383,7 @@ export type AnchorLedgerArgsWithType = AnchorLedgerArgs & {
   type: AccountType.AnchorLedger | "anchorLedger";
 };
 export class AnchorLedger {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.AnchorLedger;
   @encodeAs.field(2).url
   public url?: URL;
@@ -573,7 +573,7 @@ export type AuthoritySignatureArgsWithType = AuthoritySignatureArgs & {
   type: SignatureType.Authority | "authority";
 };
 export class AuthoritySignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.Authority;
   @encodeAs.field(2).url
   public origin?: URL;
@@ -634,7 +634,7 @@ export type BTCLegacySignatureArgsWithType = BTCLegacySignatureArgs & {
   type: SignatureType.BTCLegacy | "btclegacy";
 };
 export class BTCLegacySignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.BTCLegacy;
   @encodeAs.field(2).bytes
   public publicKey?: Uint8Array;
@@ -723,7 +723,7 @@ export type BTCSignatureArgs = {
 };
 export type BTCSignatureArgsWithType = BTCSignatureArgs & { type: SignatureType.BTC | "btc" };
 export class BTCSignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.BTC;
   @encodeAs.field(2).bytes
   public publicKey?: Uint8Array;
@@ -841,7 +841,7 @@ export type BlockLedgerArgsWithType = BlockLedgerArgs & {
   type: AccountType.BlockLedger | "blockLedger";
 };
 export class BlockLedger {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.BlockLedger;
   @encodeAs.field(2).url
   public url?: URL;
@@ -895,7 +895,7 @@ export type BlockValidatorAnchorArgsWithType = BlockValidatorAnchorArgs & {
   type: TransactionType.BlockValidatorAnchor | "blockValidatorAnchor";
 };
 export class BlockValidatorAnchor {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.BlockValidatorAnchor;
   @encodeAs.field(2, 1).url
   public source?: URL;
@@ -968,7 +968,7 @@ export type BurnCreditsArgsWithType = BurnCreditsArgs & {
   type: TransactionType.BurnCredits | "burnCredits";
 };
 export class BurnCredits {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.BurnCredits;
   @encodeAs.field(2).uint
   public amount?: number;
@@ -996,7 +996,7 @@ export type BurnTokensArgsWithType = BurnTokensArgs & {
   type: TransactionType.BurnTokens | "burnTokens";
 };
 export class BurnTokens {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.BurnTokens;
   @encodeAs.field(2).bigInt
   public amount?: bigint;
@@ -1089,7 +1089,7 @@ export type CreateDataAccountArgsWithType = CreateDataAccountArgs & {
   type: TransactionType.CreateDataAccount | "createDataAccount";
 };
 export class CreateDataAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.CreateDataAccount;
   @encodeAs.field(2).url
   public url?: URL;
@@ -1125,7 +1125,7 @@ export type CreateIdentityArgsWithType = CreateIdentityArgs & {
   type: TransactionType.CreateIdentity | "createIdentity";
 };
 export class CreateIdentity {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.CreateIdentity;
   @encodeAs.field(2).url
   public url?: URL;
@@ -1173,7 +1173,7 @@ export type CreateKeyBookArgsWithType = CreateKeyBookArgs & {
   type: TransactionType.CreateKeyBook | "createKeyBook";
 };
 export class CreateKeyBook {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.CreateKeyBook;
   @encodeAs.field(2).url
   public url?: URL;
@@ -1216,7 +1216,7 @@ export type CreateKeyPageArgsWithType = CreateKeyPageArgs & {
   type: TransactionType.CreateKeyPage | "createKeyPage";
 };
 export class CreateKeyPage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.CreateKeyPage;
   @encodeAs.field(2).repeatable.reference
   public keys?: KeySpecParams[];
@@ -1245,7 +1245,7 @@ export type CreateLiteTokenAccountArgsWithType = {
   type: TransactionType.CreateLiteTokenAccount | "createLiteTokenAccount";
 };
 export class CreateLiteTokenAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.CreateLiteTokenAccount;
 
   constructor(_: CreateLiteTokenAccountArgs) {}
@@ -1273,7 +1273,7 @@ export type CreateTokenArgsWithType = CreateTokenArgs & {
   type: TransactionType.CreateToken | "createToken";
 };
 export class CreateToken {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.CreateToken;
   @encodeAs.field(2).url
   public url?: URL;
@@ -1330,7 +1330,7 @@ export type CreateTokenAccountArgsWithType = CreateTokenAccountArgs & {
   type: TransactionType.CreateTokenAccount | "createTokenAccount";
 };
 export class CreateTokenAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.CreateTokenAccount;
   @encodeAs.field(2).url
   public url?: URL;
@@ -1405,7 +1405,7 @@ export type DataAccountArgsWithType = DataAccountArgs & {
   type: AccountType.DataAccount | "dataAccount";
 };
 export class DataAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.DataAccount;
   @encodeAs.field(2).url
   public url?: URL;
@@ -1445,7 +1445,7 @@ export type DelegatedSignatureArgsWithType = DelegatedSignatureArgs & {
   type: SignatureType.Delegated | "delegated";
 };
 export class DelegatedSignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.Delegated;
   @encodeAs.field(2).union
   public signature?: Signature;
@@ -1486,7 +1486,7 @@ export type DirectoryAnchorArgsWithType = DirectoryAnchorArgs & {
   type: TransactionType.DirectoryAnchor | "directoryAnchor";
 };
 export class DirectoryAnchor {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.DirectoryAnchor;
   @encodeAs.field(2, 1).url
   public source?: URL;
@@ -1581,7 +1581,7 @@ export type DisableAccountAuthOperationArgsWithType = DisableAccountAuthOperatio
   type: AccountAuthOperationType.Disable | "disable";
 };
 export class DisableAccountAuthOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType)
   public readonly type = AccountAuthOperationType.Disable;
   @encodeAs.field(2).url
   public authority?: URL;
@@ -1609,7 +1609,7 @@ export type DoubleHashDataEntryArgsWithType = DoubleHashDataEntryArgs & {
   type: DataEntryType.DoubleHash | "doubleHash";
 };
 export class DoubleHashDataEntry {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(DataEntryType)
   public readonly type = DataEntryType.DoubleHash;
   @encodeAs.field(2).repeatable.bytes
   public data?: Uint8Array[];
@@ -1648,7 +1648,7 @@ export type ED25519SignatureArgsWithType = ED25519SignatureArgs & {
   type: SignatureType.ED25519 | "ed25519";
 };
 export class ED25519Signature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.ED25519;
   @encodeAs.field(2).bytes
   public publicKey?: Uint8Array;
@@ -1737,7 +1737,7 @@ export type ETHSignatureArgs = {
 };
 export type ETHSignatureArgsWithType = ETHSignatureArgs & { type: SignatureType.ETH | "eth" };
 export class ETHSignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.ETH;
   @encodeAs.field(2).bytes
   public publicKey?: Uint8Array;
@@ -1816,7 +1816,7 @@ export class ETHSignature {
 export type EmptyResultArgs = {};
 export type EmptyResultArgsWithType = { type: TransactionType.Unknown | "unknown" };
 export class EmptyResult {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.Unknown;
 
   constructor(_: EmptyResultArgs) {}
@@ -1839,7 +1839,7 @@ export type EnableAccountAuthOperationArgsWithType = EnableAccountAuthOperationA
   type: AccountAuthOperationType.Enable | "enable";
 };
 export class EnableAccountAuthOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType)
   public readonly type = AccountAuthOperationType.Enable;
   @encodeAs.field(2).url
   public authority?: URL;
@@ -1938,7 +1938,7 @@ export type FactomDataEntryWrapperArgsWithType = FactomDataEntryWrapperArgs & {
   type: DataEntryType.Factom | "factom";
 };
 export class FactomDataEntryWrapper {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(DataEntryType)
   public readonly type = DataEntryType.Factom;
   @encodeAs.field(2, 1).hash
   public accountId?: Uint8Array;
@@ -1983,12 +1983,15 @@ export class FactomDataEntryWrapper {
 export type FeeScheduleArgs = {
   createIdentitySliding?: FeeArgs[];
   createSubIdentity?: FeeArgs;
+  bareIdentityDiscount?: FeeArgs;
 };
 export class FeeSchedule {
   @encodeAs.field(1).repeatable.enum
   public createIdentitySliding?: Fee[];
   @encodeAs.field(2).enum
   public createSubIdentity?: Fee;
+  @encodeAs.field(3).enum
+  public bareIdentityDiscount?: Fee;
 
   constructor(args: FeeScheduleArgs) {
     this.createIdentitySliding =
@@ -1997,6 +2000,10 @@ export class FeeSchedule {
         : args.createIdentitySliding.map((v) => Fee.fromObject(v));
     this.createSubIdentity =
       args.createSubIdentity == undefined ? undefined : Fee.fromObject(args.createSubIdentity);
+    this.bareIdentityDiscount =
+      args.bareIdentityDiscount == undefined
+        ? undefined
+        : Fee.fromObject(args.bareIdentityDiscount);
   }
 
   copy() {
@@ -2008,6 +2015,7 @@ export class FeeSchedule {
       createIdentitySliding:
         this.createIdentitySliding && this.createIdentitySliding?.map((v) => Fee.getName(v)),
       createSubIdentity: this.createSubIdentity && Fee.getName(this.createSubIdentity),
+      bareIdentityDiscount: this.bareIdentityDiscount && Fee.getName(this.bareIdentityDiscount),
     };
   }
 }
@@ -2089,7 +2097,7 @@ export type InternalSignatureArgsWithType = InternalSignatureArgs & {
   type: SignatureType.Internal | "internal";
 };
 export class InternalSignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.Internal;
   @encodeAs.field(2).hash
   public cause?: Uint8Array;
@@ -2136,7 +2144,7 @@ export type IssueTokensArgsWithType = IssueTokensArgs & {
   type: TransactionType.IssueTokens | "issueTokens";
 };
 export class IssueTokens {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.IssueTokens;
   @encodeAs.field(2).url
   public recipient?: URL;
@@ -2181,7 +2189,7 @@ export type KeyBookArgs = {
 };
 export type KeyBookArgsWithType = KeyBookArgs & { type: AccountType.KeyBook | "keyBook" };
 export class KeyBook {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.KeyBook;
   @encodeAs.field(2).url
   public url?: URL;
@@ -2230,7 +2238,7 @@ export type KeyPageArgs = {
 };
 export type KeyPageArgsWithType = KeyPageArgs & { type: AccountType.KeyPage | "keyPage" };
 export class KeyPage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.KeyPage;
   @encodeAs.field(2).url
   public url?: URL;
@@ -2375,7 +2383,7 @@ export type LegacyED25519SignatureArgsWithType = LegacyED25519SignatureArgs & {
   type: SignatureType.LegacyED25519 | "legacyED25519";
 };
 export class LegacyED25519Signature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.LegacyED25519;
   @encodeAs.field(2).uint
   public timestamp?: number;
@@ -2445,7 +2453,7 @@ export type LiteDataAccountArgsWithType = LiteDataAccountArgs & {
   type: AccountType.LiteDataAccount | "liteDataAccount";
 };
 export class LiteDataAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.LiteDataAccount;
   @encodeAs.field(2).url
   public url?: URL;
@@ -2475,7 +2483,7 @@ export type LiteIdentityArgsWithType = LiteIdentityArgs & {
   type: AccountType.LiteIdentity | "liteIdentity";
 };
 export class LiteIdentity {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.LiteIdentity;
   @encodeAs.field(2).url
   public url?: URL;
@@ -2514,7 +2522,7 @@ export type LiteTokenAccountArgsWithType = LiteTokenAccountArgs & {
   type: AccountType.LiteTokenAccount | "liteTokenAccount";
 };
 export class LiteTokenAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.LiteTokenAccount;
   @encodeAs.field(2).url
   public url?: URL;
@@ -2559,7 +2567,7 @@ export type LockAccountArgsWithType = LockAccountArgs & {
   type: TransactionType.LockAccount | "lockAccount";
 };
 export class LockAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.LockAccount;
   @encodeAs.field(2).uint
   public height?: number;
@@ -2782,7 +2790,7 @@ export type NetworkMaintenanceArgsWithType = NetworkMaintenanceArgs & {
   type: TransactionType.NetworkMaintenance | "networkMaintenance";
 };
 export class NetworkMaintenance {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.NetworkMaintenance;
   @encodeAs.field(2).repeatable.union
   public operations?: NetworkMaintenanceOperation[];
@@ -2970,7 +2978,7 @@ export type PartitionSignatureArgsWithType = PartitionSignatureArgs & {
   type: SignatureType.Partition | "partition";
 };
 export class PartitionSignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.Partition;
   @encodeAs.field(2).url
   public sourceNetwork?: URL;
@@ -3062,7 +3070,7 @@ export type PendingTransactionGCOperationArgsWithType = PendingTransactionGCOper
   type: NetworkMaintenanceOperationType.PendingTransactionGC | "pendingTransactionGC";
 };
 export class PendingTransactionGCOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(NetworkMaintenanceOperationType)
   public readonly type = NetworkMaintenanceOperationType.PendingTransactionGC;
   @encodeAs.field(2).url
   public account?: URL;
@@ -3096,7 +3104,7 @@ export type RCD1SignatureArgs = {
 };
 export type RCD1SignatureArgsWithType = RCD1SignatureArgs & { type: SignatureType.RCD1 | "rcd1" };
 export class RCD1Signature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.RCD1;
   @encodeAs.field(2).bytes
   public publicKey?: Uint8Array;
@@ -3208,7 +3216,7 @@ export type ReceiptSignatureArgsWithType = ReceiptSignatureArgs & {
   type: SignatureType.Receipt | "receipt";
 };
 export class ReceiptSignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.Receipt;
   @encodeAs.field(2).url
   public sourceNetwork?: URL;
@@ -3260,7 +3268,7 @@ export type RemoteSignatureArgsWithType = RemoteSignatureArgs & {
   type: SignatureType.Remote | "remote";
 };
 export class RemoteSignature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.Remote;
   @encodeAs.field(2).url
   public destination?: URL;
@@ -3299,7 +3307,7 @@ export type RemoteTransactionArgsWithType = RemoteTransactionArgs & {
   type: TransactionType.Remote | "remote";
 };
 export class RemoteTransaction {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.Remote;
   @encodeAs.field(2).hash
   public hash?: Uint8Array;
@@ -3332,7 +3340,7 @@ export type RemoveAccountAuthorityOperationArgsWithType = RemoveAccountAuthority
   type: AccountAuthOperationType.RemoveAuthority | "removeAuthority";
 };
 export class RemoveAccountAuthorityOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType)
   public readonly type = AccountAuthOperationType.RemoveAuthority;
   @encodeAs.field(2).url
   public authority?: URL;
@@ -3360,7 +3368,7 @@ export type RemoveKeyOperationArgsWithType = RemoveKeyOperationArgs & {
   type: KeyPageOperationType.Remove | "remove";
 };
 export class RemoveKeyOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
   public readonly type = KeyPageOperationType.Remove;
   @encodeAs.field(2).reference
   public entry?: KeySpecParams;
@@ -3493,7 +3501,7 @@ export type RsaSha256SignatureArgsWithType = RsaSha256SignatureArgs & {
   type: SignatureType.RsaSha256 | "rsaSha256";
 };
 export class RsaSha256Signature {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.RsaSha256;
   @encodeAs.field(2).bytes
   public publicKey?: Uint8Array;
@@ -3578,7 +3586,7 @@ export type SendTokensArgsWithType = SendTokensArgs & {
   type: TransactionType.SendTokens | "sendTokens";
 };
 export class SendTokens {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SendTokens;
   @encodeAs.field(2).hash
   public hash?: Uint8Array;
@@ -3623,7 +3631,7 @@ export type SetRejectThresholdKeyPageOperationArgsWithType =
     type: KeyPageOperationType.SetRejectThreshold | "setRejectThreshold";
   };
 export class SetRejectThresholdKeyPageOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
   public readonly type = KeyPageOperationType.SetRejectThreshold;
   @encodeAs.field(2).uint
   public threshold?: number;
@@ -3652,7 +3660,7 @@ export type SetResponseThresholdKeyPageOperationArgsWithType =
     type: KeyPageOperationType.SetResponseThreshold | "setResponseThreshold";
   };
 export class SetResponseThresholdKeyPageOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
   public readonly type = KeyPageOperationType.SetResponseThreshold;
   @encodeAs.field(2).uint
   public threshold?: number;
@@ -3680,7 +3688,7 @@ export type SetThresholdKeyPageOperationArgsWithType = SetThresholdKeyPageOperat
   type: KeyPageOperationType.SetThreshold | "setThreshold";
 };
 export class SetThresholdKeyPageOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
   public readonly type = KeyPageOperationType.SetThreshold;
   @encodeAs.field(2).uint
   public threshold?: number;
@@ -3710,7 +3718,7 @@ export type SignatureSetArgs = {
 };
 export type SignatureSetArgsWithType = SignatureSetArgs & { type: SignatureType.Set | "set" };
 export class SignatureSet {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
   public readonly type = SignatureType.Set;
   @encodeAs.field(2).enum
   public vote?: VoteType;
@@ -3771,7 +3779,7 @@ export type SyntheticBurnTokensArgsWithType = SyntheticBurnTokensArgs & {
   type: TransactionType.SyntheticBurnTokens | "syntheticBurnTokens";
 };
 export class SyntheticBurnTokens {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SyntheticBurnTokens;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
@@ -3833,7 +3841,7 @@ export type SyntheticCreateIdentityArgsWithType = SyntheticCreateIdentityArgs & 
   type: TransactionType.SyntheticCreateIdentity | "syntheticCreateIdentity";
 };
 export class SyntheticCreateIdentity {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SyntheticCreateIdentity;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
@@ -3889,7 +3897,7 @@ export type SyntheticDepositCreditsArgsWithType = SyntheticDepositCreditsArgs & 
   type: TransactionType.SyntheticDepositCredits | "syntheticDepositCredits";
 };
 export class SyntheticDepositCredits {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SyntheticDepositCredits;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
@@ -3958,7 +3966,7 @@ export type SyntheticDepositTokensArgsWithType = SyntheticDepositTokensArgs & {
   type: TransactionType.SyntheticDepositTokens | "syntheticDepositTokens";
 };
 export class SyntheticDepositTokens {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SyntheticDepositTokens;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
@@ -4024,7 +4032,7 @@ export type SyntheticForwardTransactionArgsWithType = SyntheticForwardTransactio
   type: TransactionType.SyntheticForwardTransaction | "syntheticForwardTransaction";
 };
 export class SyntheticForwardTransaction {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SyntheticForwardTransaction;
   @encodeAs.field(2).repeatable.reference
   public signatures?: RemoteSignature[];
@@ -4065,7 +4073,7 @@ export type SyntheticLedgerArgsWithType = SyntheticLedgerArgs & {
   type: AccountType.SyntheticLedger | "syntheticLedger";
 };
 export class SyntheticLedger {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.SyntheticLedger;
   @encodeAs.field(2).url
   public url?: URL;
@@ -4144,7 +4152,7 @@ export type SyntheticWriteDataArgsWithType = SyntheticWriteDataArgs & {
   type: TransactionType.SyntheticWriteData | "syntheticWriteData";
 };
 export class SyntheticWriteData {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SyntheticWriteData;
   @encodeAs.field(2, 1).txid
   public cause?: TxID;
@@ -4188,7 +4196,7 @@ export class SyntheticWriteData {
 export type SystemGenesisArgs = {};
 export type SystemGenesisArgsWithType = { type: TransactionType.SystemGenesis | "systemGenesis" };
 export class SystemGenesis {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SystemGenesis;
 
   constructor(_: SystemGenesisArgs) {}
@@ -4218,7 +4226,7 @@ export type SystemLedgerArgsWithType = SystemLedgerArgs & {
   type: AccountType.SystemLedger | "systemLedger";
 };
 export class SystemLedger {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.SystemLedger;
   @encodeAs.field(2).url
   public url?: URL;
@@ -4299,7 +4307,7 @@ export type SystemWriteDataArgsWithType = SystemWriteDataArgs & {
   type: TransactionType.SystemWriteData | "systemWriteData";
 };
 export class SystemWriteData {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.SystemWriteData;
   @encodeAs.field(2).union
   public entry?: DataEntry;
@@ -4334,7 +4342,7 @@ export type TokenAccountArgsWithType = TokenAccountArgs & {
   type: AccountType.TokenAccount | "tokenAccount";
 };
 export class TokenAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.TokenAccount;
   @encodeAs.field(2).url
   public url?: URL;
@@ -4388,7 +4396,7 @@ export type TokenIssuerArgsWithType = TokenIssuerArgs & {
   type: AccountType.TokenIssuer | "tokenIssuer";
 };
 export class TokenIssuer {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.TokenIssuer;
   @encodeAs.field(2).url
   public url?: URL;
@@ -4728,7 +4736,7 @@ export type TransferCreditsArgsWithType = TransferCreditsArgs & {
   type: TransactionType.TransferCredits | "transferCredits";
 };
 export class TransferCredits {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.TransferCredits;
   @encodeAs.field(2).repeatable.reference
   public to?: CreditRecipient[];
@@ -4781,7 +4789,7 @@ export type UnknownAccountArgsWithType = UnknownAccountArgs & {
   type: AccountType.Unknown | "unknown";
 };
 export class UnknownAccount {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.Unknown;
   @encodeAs.field(2).url
   public url?: URL;
@@ -4810,7 +4818,7 @@ export type UnknownSignerArgsWithType = UnknownSignerArgs & {
   type: AccountType.UnknownSigner | "unknownSigner";
 };
 export class UnknownSigner {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
   public readonly type = AccountType.UnknownSigner;
   @encodeAs.field(2).url
   public url?: URL;
@@ -4842,7 +4850,7 @@ export type UpdateAccountAuthArgsWithType = UpdateAccountAuthArgs & {
   type: TransactionType.UpdateAccountAuth | "updateAccountAuth";
 };
 export class UpdateAccountAuth {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.UpdateAccountAuth;
   @encodeAs.field(2).repeatable.union
   public operations?: AccountAuthOperation[];
@@ -4874,7 +4882,7 @@ export type UpdateAllowedKeyPageOperationArgsWithType = UpdateAllowedKeyPageOper
   type: KeyPageOperationType.UpdateAllowed | "updateAllowed";
 };
 export class UpdateAllowedKeyPageOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
   public readonly type = KeyPageOperationType.UpdateAllowed;
   @encodeAs.field(2).repeatable.enum
   public allow?: TransactionType[];
@@ -4908,7 +4916,7 @@ export type UpdateKeyArgsWithType = UpdateKeyArgs & {
   type: TransactionType.UpdateKey | "updateKey";
 };
 export class UpdateKey {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.UpdateKey;
   @encodeAs.field(2).bytes
   public newKeyHash?: Uint8Array;
@@ -4943,7 +4951,7 @@ export type UpdateKeyOperationArgsWithType = UpdateKeyOperationArgs & {
   type: KeyPageOperationType.Update | "update";
 };
 export class UpdateKeyOperation {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
   public readonly type = KeyPageOperationType.Update;
   @encodeAs.field(2).reference
   public oldEntry?: KeySpecParams;
@@ -4985,7 +4993,7 @@ export type UpdateKeyPageArgsWithType = UpdateKeyPageArgs & {
   type: TransactionType.UpdateKeyPage | "updateKeyPage";
 };
 export class UpdateKeyPage {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.UpdateKeyPage;
   @encodeAs.field(2).repeatable.union
   public operation?: KeyPageOperation[];
@@ -5098,7 +5106,7 @@ export type WriteDataArgsWithType = WriteDataArgs & {
   type: TransactionType.WriteData | "writeData";
 };
 export class WriteData {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.WriteData;
   @encodeAs.field(2).union
   public entry?: DataEntry;
@@ -5136,7 +5144,7 @@ export type WriteDataResultArgsWithType = WriteDataResultArgs & {
   type: TransactionType.WriteData | "writeData";
 };
 export class WriteDataResult {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.WriteData;
   @encodeAs.field(2).hash
   public entryHash?: Uint8Array;
@@ -5183,7 +5191,7 @@ export type WriteDataToArgsWithType = WriteDataToArgs & {
   type: TransactionType.WriteDataTo | "writeDataTo";
 };
 export class WriteDataTo {
-  @encodeAs.field(1).keepEmpty.enum
+  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
   public readonly type = TransactionType.WriteDataTo;
   @encodeAs.field(2).url
   public recipient?: URL;

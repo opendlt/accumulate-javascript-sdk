@@ -111,6 +111,7 @@ export class TxID {
 }
 
 export class Enum {
+  constructor(public readonly type?: any) {}
   encode(value: number) {
     return uintMarshalBinary(value);
   }
