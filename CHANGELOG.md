@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.11.0
+
+- Adds SHA-256, SHA-512, and Keccak implementations.
+- Removes async/await rendered unnecessary by the built-in hash implementations.
+- Fixes formatting of ETH addresses.
+
 ## v0.10.10
 
 - Adds support for batch API requests.
