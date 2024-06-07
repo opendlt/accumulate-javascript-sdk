@@ -16,9 +16,7 @@ export abstract class TransactionBase {
     if (!this.header) throw new Error(`invalid transaction: missing header`);
     if (!this.body) throw new Error(`invalid transaction: missing body`);
 
-    this._hash = sha256(
-      Buffer.concat([sha256(encode(this.header)), hashBody(this.body)])
-    );
+    this._hash = sha256(Buffer.concat([sha256(encode(this.header)), hashBody(this.body)]));
     return this._hash;
   }
 }
