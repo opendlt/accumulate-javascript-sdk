@@ -14,7 +14,7 @@ describe("addresses", () => {
 
     it.each(cases)("should format $name correctly", ({ address, pubHash, type }) => {
       const addr = Address.fromKeyHash(type, pubHash);
-      expect(addr.format()).toStrictEqual(address);
+      expect(addr.toString()).toStrictEqual(address);
     });
   });
 
@@ -24,6 +24,6 @@ describe("addresses", () => {
       "hex"
     );
     const addr = Address.fromKey(SignatureType.ETH, pub);
-    expect(addr.format()).toStrictEqual("0xf7e8538b1333c6f6fb95e650f04e16dc840703e4");
+    expect(addr.toString()).toStrictEqual("0xf7e8538b1333c6f6fb95e650f04e16dc840703e4");
   });
 });

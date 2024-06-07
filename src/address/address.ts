@@ -72,14 +72,14 @@ export interface Address {
   publicKey?: Uint8Array;
   publicKeyHash?: Uint8Array;
   privateKey?: Uint8Array;
-  format(): string;
+  toString(): string;
 }
 
 // export class UnknownAddress {
 //   readonly type = SignatureType.Unknown;
 //   constructor(public readonly value: Uint8Array, public readonly encoding: string) {}
 
-//   format() {
+//   toString() {
 //     const base = Object.values(bases).find((x) => x.prefix == this.encoding);
 //     if (!base) throw new Error(`unknown multibase encoding '${this.encoding}'`);
 //     return formatMH(this.value, base);
@@ -90,7 +90,7 @@ export interface Address {
 //   readonly type = SignatureType.Unknown;
 //   constructor(public readonly publicKeyHash: Uint8Array) {}
 
-//   format() {
+//   toString() {
 //     return formatMH(this.publicKeyHash);
 //   }
 // }
@@ -98,7 +98,7 @@ export interface Address {
 export class PublicKeyHashAddress implements Address {
   constructor(public readonly type: SignatureType, public readonly publicKeyHash: Uint8Array) {}
 
-  format() {
+  toString() {
     switch (this.type) {
       case SignatureType.ED25519:
       case SignatureType.LegacyED25519:
