@@ -6,10 +6,6 @@ import { encode } from "../encoding";
 import { combineReceipts, Receipt, ReceiptArgs } from "../merkle";
 import { Buffer, sha256 } from "./index";
 
-export async function sleep(millis: number) {
-  return new Promise((resolve) => setTimeout(resolve, millis));
-}
-
 export async function constructIssuerProof(
   client: Client,
   issuer: string | URL

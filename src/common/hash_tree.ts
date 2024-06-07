@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Buffer } from "./buffer";
 import { sha256 } from "./sha256";
 

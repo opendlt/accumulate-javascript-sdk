@@ -15,7 +15,6 @@ import {
 import { TxID } from "../address";
 import { AccumulateURL as URL } from "../address/url";
 import { Buffer, sha256 } from "../common";
-import { sleep } from "../common/util";
 import {
   AccountAuthOperationArgs,
   AddCredits,
@@ -483,4 +482,8 @@ export class Client {
       duration,
     });
   }
+}
+
+async function sleep(millis: number) {
+  return new Promise((resolve) => setTimeout(resolve, millis));
 }
