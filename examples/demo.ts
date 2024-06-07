@@ -9,7 +9,7 @@ const waitTime = 500;
 const waitLimit = 30_000 / waitTime;
 
 // Generate a random Signer (this is only local, until that account receive its first tokens)
-const lid = await Signer.forLite(await ED25519Key.generate());
+const lid = Signer.forLite(ED25519Key.generate());
 const lta = lid.url.join("ACME");
 console.log(lta.toString());
 
@@ -53,7 +53,7 @@ console.log(await client.query(lid.url));
 // Now with the credits we can create an Accumulate Digital Identifier (ADI)
 // which is one of the fundamental feature of the network
 
-const identitySigner = await ED25519Key.generate(); // Root signer that will control the identity
+const identitySigner = ED25519Key.generate(); // Root signer that will control the identity
 const identityUrl = "acc://my-own-identity123.acme";
 const bookUrl = identityUrl + "/my-book";
 

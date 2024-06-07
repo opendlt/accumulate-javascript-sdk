@@ -1,7 +1,6 @@
 import * as nacl from "tweetnacl";
 import { PrivateKeyAddress } from "../address";
-import { Buffer } from "../common/buffer";
-import { sha256 } from "../common/crypto";
+import { Buffer, sha256 } from "../common";
 import { Signature, SignatureType } from "../core";
 import { encode } from "../encoding";
 import { BaseKey, PrivateKey, PublicKey } from "./key";
@@ -11,7 +10,7 @@ abstract class BaseED25519Key extends BaseKey {
     super(address);
   }
 
-  protected static async make(type: SignatureType, seedOrKey?: Uint8Array) {
+  protected static make(type: SignatureType, seedOrKey?: Uint8Array) {
     let kp: nacl.SignKeyPair;
     if (!seedOrKey) {
       kp = nacl.sign.keyPair();
@@ -25,33 +24,33 @@ abstract class BaseED25519Key extends BaseKey {
     } else {
       throw new Error(`invalid key: expected 64 or 32 bytes, got ${seedOrKey.length}`);
     }
-    return await PrivateKeyAddress.from(type, kp.publicKey, kp.secretKey);
+    return PrivateKeyAddress.from(type, kp.publicKey, kp.secretKey);
   }
 
   async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
-    const sigMdHash = await sha256(encode(signature));
-    const hash = await sha256(Buffer.concat([sigMdHash, message]));
+    const sigMdHash = sha256(encode(signature));
+    const hash = sha256(Buffer.concat([sigMdHash, message]));
     return nacl.sign.detached(hash, this.address.privateKey);
   }
 }
 
 export class ED25519Key extends BaseED25519Key {
-  static async generate() {
-    return new this(await this.make(SignatureType.ED25519));
+  static generate() {
+    return new this(this.make(SignatureType.ED25519));
   }
 
-  static async from(seedOrKey: Uint8Array) {
-    return new this(await this.make(SignatureType.ED25519, seedOrKey));
+  static from(seedOrKey: Uint8Array) {
+    return new this(this.make(SignatureType.ED25519, seedOrKey));
   }
 }
 
 export class RCD1Key extends BaseED25519Key {
-  static async generate() {
-    return new this(await this.make(SignatureType.RCD1));
+  static generate() {
+    return new this(this.make(SignatureType.RCD1));
   }
 
-  static async from(seedOrKey: Uint8Array) {
-    return new this(await this.make(SignatureType.RCD1, seedOrKey));
+  static from(seedOrKey: Uint8Array) {
+    return new this(this.make(SignatureType.RCD1, seedOrKey));
   }
 }
 
@@ -67,8 +66,8 @@ export class ExternalED22519Key extends BaseKey {
   }
 
   async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
-    const sigMdHash = await sha256(encode(signature));
-    const hash = await sha256(Buffer.concat([sigMdHash, message]));
+    const sigMdHash = sha256(encode(signature));
+    const hash = sha256(Buffer.concat([sigMdHash, message]));
     return this._sign(hash);
   }
 }
@@ -85,8 +84,8 @@ export class ExternalRCD1Key extends BaseKey {
   }
 
   async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
-    const sigMdHash = await sha256(encode(signature));
-    const hash = await sha256(Buffer.concat([sigMdHash, message]));
+    const sigMdHash = sha256(encode(signature));
+    const hash = sha256(Buffer.concat([sigMdHash, message]));
     return this._sign(hash);
   }
 }

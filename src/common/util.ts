@@ -4,8 +4,7 @@ import { CreateToken, Transaction, TransactionHeader } from "../core";
 import { hashBody } from "../core/base";
 import { encode } from "../encoding";
 import { combineReceipts, Receipt, ReceiptArgs } from "../merkle";
-import { Buffer } from "./buffer";
-import { sha256 } from "./crypto";
+import { Buffer, sha256 } from "./index";
 
 export async function sleep(millis: number) {
   return new Promise((resolve) => setTimeout(resolve, millis));

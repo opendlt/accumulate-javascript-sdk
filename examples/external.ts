@@ -1,7 +1,7 @@
 // You need to import the Payload class for the type of transaction you want to make.
 // Here we are building a SendTokens transaction.
 import { Address, api_v2, BaseKey, ED25519Key, PublicKey, Signer, URL } from "accumulate.js";
-import { sha256 } from "accumulate.js/lib/common/crypto";
+import { sha256 } from "accumulate.js/lib/common";
 import {
   SendTokens,
   Signature,
@@ -21,8 +21,8 @@ class ExternalETHKey extends BaseKey {
   }
 
   async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
-    const sigMdHash = await sha256(encode(signature));
-    const hash = await sha256(Buffer.concat([sigMdHash, message]));
+    const sigMdHash = sha256(encode(signature));
+    const hash = sha256(Buffer.concat([sigMdHash, message]));
 
     /**
      * External signing hook/logic goes here.
@@ -37,12 +37,12 @@ class ExternalETHKey extends BaseKey {
  */
 const ethKeyHex = "c0ffeef00d";
 
-const ethKey = await Address.fromKey(SignatureType.ETH, Buffer.from(ethKeyHex, "hex"));
-const sender = await Signer.forPage(URL.parse("me.acme/book/1"), new ExternalETHKey(ethKey));
+const ethKey = Address.fromKey(SignatureType.ETH, Buffer.from(ethKeyHex, "hex"));
+const sender = Signer.forPage(URL.parse("me.acme/book/1"), new ExternalETHKey(ethKey));
 const signerVersion = 5; // Hard code or retrieve via the API
 
 // Build the Payload
-const recipient = await Signer.forLite(await ED25519Key.generate());
+const recipient = Signer.forLite(ED25519Key.generate());
 const amount = 10;
 const body = new SendTokens({ to: [{ url: recipient.url.join("ACME"), amount: amount }] });
 // Build the transaction header with the transaction principal

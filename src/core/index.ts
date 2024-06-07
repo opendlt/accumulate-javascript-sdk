@@ -4,15 +4,15 @@ export * from "./unions_gen";
 
 declare module "./types_gen" {
   export interface AccumulateDataEntry {
-    hash(): Promise<Uint8Array>;
+    hash(): Uint8Array;
   }
 
   export interface DoubleHashDataEntry {
-    hash(): Promise<Uint8Array>;
+    hash(): Uint8Array;
   }
 
   export interface FactomDataEntryWrapper {
-    hash(): Promise<Uint8Array>;
+    hash(): Uint8Array;
     asBinary(): Uint8Array;
   }
 }
@@ -20,18 +20,18 @@ declare module "./types_gen" {
 import { Buffer } from "../common/buffer";
 import { AccumulateDataEntry, DoubleHashDataEntry, FactomDataEntryWrapper } from "./types_gen";
 
-AccumulateDataEntry.prototype.hash = async function () {
+AccumulateDataEntry.prototype.hash = function () {
   if (!this.data) {
     return new Uint8Array();
   }
-  return await hashTree(this.data);
+  return hashTree(this.data);
 };
 
-DoubleHashDataEntry.prototype.hash = async function () {
+DoubleHashDataEntry.prototype.hash = function () {
   if (!this.data) {
     return new Uint8Array();
   }
-  return await sha256(await hashTree(this.data));
+  return sha256(hashTree(this.data));
 };
 
 FactomDataEntryWrapper.prototype.asBinary = function () {
@@ -51,11 +51,11 @@ FactomDataEntryWrapper.prototype.asBinary = function () {
   ]);
 };
 
-FactomDataEntryWrapper.prototype.hash = async function () {
+FactomDataEntryWrapper.prototype.hash = function () {
   const data = this.asBinary();
-  const sum = await sha512(data);
+  const sum = sha512(data);
   const salted = Buffer.concat([sum, data]);
-  return await sha256(salted);
+  return sha256(salted);
 };
 
 /* eslint-disable @typescript-eslint/no-namespace */
@@ -74,7 +74,7 @@ import {
   WriteDataResult,
 } from ".";
 import { AccumulateURL as URL } from "../address/url";
-import { hashTree, sha256, sha512 } from "../common/crypto";
+import { hashTree, sha256, sha512 } from "../common";
 import {
   AddCreditsResultArgsWithType,
   BlockValidatorAnchorArgsWithType,

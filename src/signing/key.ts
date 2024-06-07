@@ -1,5 +1,5 @@
 import { Address, URLArgs } from "../address";
-import { sha256 } from "../common/crypto";
+import { sha256 } from "../common";
 import {
   DelegatedSignature,
   KeySignature,
@@ -26,6 +26,7 @@ export type PrivateKey = WithRequired<PublicKey, "privateKey">;
 
 export interface Key {
   address: PublicKey;
+  // This is async to allow asynchronous implementations such as hardware
   sign(message: Uint8Array | Transaction, args: SignOptions): Promise<UserSignature>;
 }
 
@@ -57,7 +58,7 @@ export abstract class BaseKey implements Key {
 
     // The signature MUST be encoded before setting the signature or
     // transaction hash fields
-    const sigMdHash = await sha256(encode(sig));
+    const sigMdHash = sha256(encode(sig));
 
     // Initiate if necessary
     let hash: Uint8Array;
@@ -70,7 +71,7 @@ export abstract class BaseKey implements Key {
       }
 
       transaction = message;
-      hash = await message.hash();
+      hash = message.hash();
     } else {
       hash = message;
     }
