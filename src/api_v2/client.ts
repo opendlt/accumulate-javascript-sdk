@@ -14,8 +14,7 @@ import {
 } from ".";
 import { TxID } from "../address";
 import { AccumulateURL as URL } from "../address/url";
-import { Buffer } from "../common/buffer";
-import { sha256 } from "../common/crypto";
+import { Buffer, sha256 } from "../common";
 import { sleep } from "../common/util";
 import {
   AccountAuthOperationArgs,

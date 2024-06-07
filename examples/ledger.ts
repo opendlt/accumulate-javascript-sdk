@@ -43,7 +43,7 @@ registerTransportModule({
   const signer = await Ledger.signerForPage("acc://lite-token-account.acme", "44'/281'/0'/0'/0'");
 
   // Build the Payload
-  const recipient = await Signer.forLite(await ED25519Key.generate());
+  const recipient = Signer.forLite(ED25519Key.generate());
   const amount = 10;
   const body = new SendTokens({ to: [{ url: recipient.url.join("ACME"), amount: amount }] });
 

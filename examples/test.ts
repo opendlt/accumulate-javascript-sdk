@@ -11,4 +11,4 @@ const r = await kermit.query("ethan.acme/data", { queryType: "chain", name: "mai
 console.log(r.asObject());
 
 const x = new AccumulateDataEntry({ data: ["", "deadbeef"] });
-console.log(Buffer.from(await x.hash()).toString("hex"));
+console.log(Buffer.from(x.hash()).toString("hex"));

@@ -1,6 +1,5 @@
 import { URL, URLArgs } from "../address";
-import { Buffer } from "../common/buffer";
-import { sha256 } from "../common/crypto";
+import { Buffer, sha256 } from "../common";
 import type { Transaction, UserSignature } from "../core";
 import type { Key, SignOptions } from "./key";
 
@@ -8,12 +7,12 @@ export class Signer {
   constructor(public readonly key: Key, public readonly url: URL) {}
 
   static forPage(url: URLArgs, key: Key) {
-    return Promise.resolve(new Signer(key, URL.parse(url)));
+    return new Signer(key, URL.parse(url));
   }
 
-  static async forLite(key: Key) {
+  static forLite(key: Key) {
     const keyStr = Buffer.from(key.address.publicKeyHash.slice(0, 20)).toString("hex");
-    const checkSum = (await sha256(Buffer.from(keyStr, "utf-8"))) as Uint8Array;
+    const checkSum = sha256(Buffer.from(keyStr, "utf-8"));
     const checkStr = Buffer.from(checkSum.slice(28)).toString("hex");
     const url = URL.parse(keyStr + checkStr);
     return new SignerWithVersion(key, url, 1);
