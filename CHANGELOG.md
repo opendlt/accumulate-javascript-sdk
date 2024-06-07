@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.11.2
+
+- Don't export BIP44 because it breaks browser apps.
+
 ## v0.11.1
 
 - Export keccak and other utilities.

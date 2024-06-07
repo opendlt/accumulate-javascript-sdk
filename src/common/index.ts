@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-export * as bip44 from "./bip44all";
 export * from "./buffer";
 export * from "./hash_tree";
 export * from "./keccak";
