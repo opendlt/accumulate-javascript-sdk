@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.11.1
+
+- Export keccak and other utilities.
+
 ## v0.11.0
 
 - Adds SHA-256, SHA-512, and Keccak implementations.

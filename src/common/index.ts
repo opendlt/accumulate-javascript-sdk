@@ -1,4 +1,8 @@
-export { Buffer } from "./buffer";
-export { hashTree } from "./crypto";
-export { sha256 } from "./sha256";
-export { sha512 } from "./sha512";
+/* eslint-disable @typescript-eslint/no-namespace */
+export * as bip44 from "./bip44all";
+export * from "./buffer";
+export * from "./hash_tree";
+export * from "./keccak";
+export * from "./sha256";
+export * from "./sha512";
+export * from "./util";
