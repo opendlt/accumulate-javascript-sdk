@@ -80,7 +80,8 @@ export function stringMarshalBinary(val: string, field?: number): Uint8Array {
 }
 
 export function bytesMarshalBinary(val: Uint8Array, field?: number): Uint8Array {
-  const length = uvarintMarshalBinary(val.length);
+  if (!val) val = new Uint8Array();
+  const length = uvarintMarshalBinary(val?.length);
   const data = Buffer.concat([length, val]);
   return withFieldNumber(data, field);
 }
