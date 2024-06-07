@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import { Buffer, sha256 } from "../common";
+import { keccak256 } from "../common/keccak";
 import { Signature, SignatureType } from "../core";
 import { uvarintMarshalBinary } from "../encoding/encoding";
 
@@ -10,10 +11,26 @@ export namespace Address {
     switch (type) {
       case SignatureType.ED25519:
       case SignatureType.LegacyED25519:
+        if (publicKey.length != 32) {
+          throw new Error(`Invalid public key length: want 32, got ${publicKey.length}`);
+        }
         return sha256(publicKey);
+
       case SignatureType.RCD1:
+        if (publicKey.length != 32) {
+          throw new Error(`Invalid public key length: want 32, got ${publicKey.length}`);
+        }
         return sha256(sha256(concat([new Uint8Array([1]), publicKey])));
+
       case SignatureType.ETH:
+        if (publicKey[0] == 0x04) {
+          publicKey = publicKey.subarray(1);
+        }
+        if (publicKey.length != 64) {
+          throw new Error(`Invalid public key length: want 64, got ${publicKey.length}`);
+        }
+        return keccak256(publicKey);
+
       case SignatureType.BTC:
       case SignatureType.BTCLegacy:
         throw new Error(`${type} keys are not currently supported`);
@@ -147,7 +164,7 @@ function formatBTC(hash: Uint8Array) {
 
 function formatETH(hash: Uint8Array) {
   if (hash.length > 20) {
-    hash = hash.slice(0, 20);
+    hash = hash.slice(-20);
   }
   return "0x" + bytes2hex(hash);
 }
