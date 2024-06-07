@@ -1,4 +1,4 @@
-import { sha256 } from "../src/common/crypto";
+import { sha256 } from "../src/common";
 import { ED25519Signature } from "../src/core";
 import { ED25519Key } from "../src/signing";
 
