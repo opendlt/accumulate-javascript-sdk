@@ -392,6 +392,8 @@ export class JsonRpcClient {
    * @param query The query
    * @returns A record
    */
+  query(scope: URLArgs | TxID, query: types.QueryArgs): Promise<types.Record>;
+
   query(
     scope: URLArgs | TxID,
     query: types.QueryArgs = { queryType: "default" }
