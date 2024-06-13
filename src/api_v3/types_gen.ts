@@ -142,7 +142,7 @@ export type BlockEventArgs = {
   index?: number;
   time?: Date | string;
   major?: number;
-  entries?: (ChainEntryRecord<Record> | ChainEntryRecordArgs<Record>)[];
+  entries?: (ChainEntryRecord<Record> | ChainEntryRecordArgs<Record> | undefined)[];
 };
 export type BlockEventArgsWithType = BlockEventArgs & { eventType: EventType.Block | "block" };
 export class BlockEvent {
@@ -157,7 +157,7 @@ export class BlockEvent {
   @encodeAs.field(5).uint
   public major?: number;
   @encodeAs.field(6).repeatable.reference
-  public entries?: ChainEntryRecord<Record>[];
+  public entries?: (ChainEntryRecord<Record> | undefined)[];
 
   constructor(args: BlockEventArgs) {
     this.partition = args.partition == undefined ? undefined : args.partition;
@@ -173,7 +173,11 @@ export class BlockEvent {
       args.entries == undefined
         ? undefined
         : args.entries.map((v) =>
-            v instanceof ChainEntryRecord<Record> ? v : new ChainEntryRecord<Record>(v)
+            v == undefined
+              ? undefined
+              : v instanceof ChainEntryRecord<Record>
+              ? v
+              : new ChainEntryRecord<Record>(v)
           );
   }
 
@@ -188,7 +192,8 @@ export class BlockEvent {
       index: this.index && this.index,
       time: this.time && this.time,
       major: this.major && this.major,
-      entries: this.entries && this.entries?.map((v) => v.asObject()),
+      entries:
+        this.entries && this.entries?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -267,7 +272,7 @@ export type ChainEntryRecordArgs<T extends Record = Record> = {
   entry?: Uint8Array | string;
   value?: T | RecordArgs /* TODO RecordArgs is too broad */;
   receipt?: Receipt | ReceiptArgs;
-  state?: (Uint8Array | string)[];
+  state?: (Uint8Array | string | undefined)[];
   lastBlockTime?: Date | string;
 };
 export type ChainEntryRecordArgsWithType<T extends Record = Record> = ChainEntryRecordArgs<T> & {
@@ -291,7 +296,7 @@ export class ChainEntryRecord<T extends Record = Record> {
   @encodeAs.field(8).reference
   public receipt?: Receipt;
   @encodeAs.field(9).repeatable.bytes
-  public state?: Uint8Array[];
+  public state?: (Uint8Array | undefined)[];
   @encodeAs.field(10).time
   public lastBlockTime?: Date;
 
@@ -316,7 +321,9 @@ export class ChainEntryRecord<T extends Record = Record> {
     this.state =
       args.state == undefined
         ? undefined
-        : args.state.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+        : args.state.map((v) =>
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+          );
     this.lastBlockTime =
       args.lastBlockTime == undefined
         ? undefined
@@ -339,7 +346,9 @@ export class ChainEntryRecord<T extends Record = Record> {
       entry: this.entry && this.entry && Buffer.from(this.entry).toString("hex"),
       value: this.value && this.value.asObject(),
       receipt: this.receipt && this.receipt.asObject(),
-      state: this.state && this.state?.map((v) => v && Buffer.from(v).toString("hex")),
+      state:
+        this.state &&
+        this.state?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
       lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
@@ -410,7 +419,7 @@ export type ChainRecordArgs = {
   name?: string;
   type?: merkle.ChainTypeArgs;
   count?: number;
-  state?: (Uint8Array | string)[];
+  state?: (Uint8Array | string | undefined)[];
   lastBlockTime?: Date | string;
 };
 export type ChainRecordArgsWithType = ChainRecordArgs & { recordType: RecordType.Chain | "chain" };
@@ -424,7 +433,7 @@ export class ChainRecord {
   @encodeAs.field(4).uint
   public count?: number;
   @encodeAs.field(5).repeatable.bytes
-  public state?: Uint8Array[];
+  public state?: (Uint8Array | undefined)[];
   @encodeAs.field(6).time
   public lastBlockTime?: Date;
 
@@ -435,7 +444,9 @@ export class ChainRecord {
     this.state =
       args.state == undefined
         ? undefined
-        : args.state.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+        : args.state.map((v) =>
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+          );
     this.lastBlockTime =
       args.lastBlockTime == undefined
         ? undefined
@@ -454,7 +465,9 @@ export class ChainRecord {
       name: this.name && this.name,
       type: this.type && merkle.ChainType.getName(this.type),
       count: this.count && this.count,
-      state: this.state && this.state?.map((v) => v && Buffer.from(v).toString("hex")),
+      state:
+        this.state &&
+        this.state?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
       lastBlockTime: this.lastBlockTime && this.lastBlockTime,
     };
   }
@@ -501,7 +514,7 @@ export type ConsensusStatusArgs = {
   validatorKeyHash?: Uint8Array | string;
   partitionID?: string;
   partitionType?: protocol.PartitionTypeArgs;
-  peers?: (ConsensusPeerInfo | ConsensusPeerInfoArgs)[];
+  peers?: (ConsensusPeerInfo | ConsensusPeerInfoArgs | undefined)[];
 };
 export class ConsensusStatus {
   @encodeAs.field(1).bool
@@ -521,7 +534,7 @@ export class ConsensusStatus {
   @encodeAs.field(8).enum
   public partitionType?: protocol.PartitionType;
   @encodeAs.field(9).repeatable.reference
-  public peers?: ConsensusPeerInfo[];
+  public peers?: (ConsensusPeerInfo | undefined)[];
 
   constructor(args: ConsensusStatusArgs) {
     this.ok = args.ok == undefined ? undefined : args.ok;
@@ -553,7 +566,13 @@ export class ConsensusStatus {
     this.peers =
       args.peers == undefined
         ? undefined
-        : args.peers.map((v) => (v instanceof ConsensusPeerInfo ? v : new ConsensusPeerInfo(v)));
+        : args.peers.map((v) =>
+            v == undefined
+              ? undefined
+              : v instanceof ConsensusPeerInfo
+              ? v
+              : new ConsensusPeerInfo(v)
+          );
   }
 
   copy() {
@@ -574,7 +593,7 @@ export class ConsensusStatus {
         Buffer.from(this.validatorKeyHash).toString("hex"),
       partitionID: this.partitionID && this.partitionID,
       partitionType: this.partitionType && protocol.PartitionType.getName(this.partitionType),
-      peers: this.peers && this.peers?.map((v) => v.asObject()),
+      peers: this.peers && this.peers?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -886,7 +905,7 @@ export class FindServiceOptions {
 export type FindServiceResultArgs = {
   peerID?: p2p.PeerID | p2p.PeerIDArgs;
   status?: KnownPeerStatusArgs;
-  addresses?: (p2p.Multiaddr | p2p.MultiaddrArgs)[];
+  addresses?: (p2p.Multiaddr | p2p.MultiaddrArgs | undefined)[];
 };
 export class FindServiceResult {
   @encodeAs.field(1).union
@@ -894,7 +913,7 @@ export class FindServiceResult {
   @encodeAs.field(2).enum
   public status?: KnownPeerStatus;
   @encodeAs.field(3).repeatable.union
-  public addresses?: p2p.Multiaddr[];
+  public addresses?: (p2p.Multiaddr | undefined)[];
 
   constructor(args: FindServiceResultArgs) {
     this.peerID = args.peerID == undefined ? undefined : p2p.PeerID.fromObject(args.peerID);
@@ -902,7 +921,7 @@ export class FindServiceResult {
     this.addresses =
       args.addresses == undefined
         ? undefined
-        : args.addresses.map((v) => p2p.Multiaddr.fromObject(v));
+        : args.addresses.map((v) => (v == undefined ? undefined : p2p.Multiaddr.fromObject(v)));
   }
 
   copy() {
@@ -913,7 +932,8 @@ export class FindServiceResult {
     return {
       peerID: this.peerID && this.peerID.asObject(),
       status: this.status && KnownPeerStatus.getName(this.status),
-      addresses: this.addresses && this.addresses?.map((v) => v.asObject()),
+      addresses:
+        this.addresses && this.addresses?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -1402,6 +1422,7 @@ export type NetworkStatusArgs = {
   bvnExecutorVersions?: (
     | protocol.PartitionExecutorVersion
     | protocol.PartitionExecutorVersionArgs
+    | undefined
   )[];
 };
 export class NetworkStatus {
@@ -1420,7 +1441,7 @@ export class NetworkStatus {
   @encodeAs.field(7).uint
   public majorBlockHeight?: number;
   @encodeAs.field(8).repeatable.reference
-  public bvnExecutorVersions?: protocol.PartitionExecutorVersion[];
+  public bvnExecutorVersions?: (protocol.PartitionExecutorVersion | undefined)[];
 
   constructor(args: NetworkStatusArgs) {
     this.oracle =
@@ -1457,7 +1478,9 @@ export class NetworkStatus {
       args.bvnExecutorVersions == undefined
         ? undefined
         : args.bvnExecutorVersions.map((v) =>
-            v instanceof protocol.PartitionExecutorVersion
+            v == undefined
+              ? undefined
+              : v instanceof protocol.PartitionExecutorVersion
               ? v
               : new protocol.PartitionExecutorVersion(v)
           );
@@ -1478,7 +1501,8 @@ export class NetworkStatus {
       directoryHeight: this.directoryHeight && this.directoryHeight,
       majorBlockHeight: this.majorBlockHeight && this.majorBlockHeight,
       bvnExecutorVersions:
-        this.bvnExecutorVersions && this.bvnExecutorVersions?.map((v) => v.asObject()),
+        this.bvnExecutorVersions &&
+        this.bvnExecutorVersions?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -1508,7 +1532,7 @@ export class NetworkStatusOptions {
 export type NodeInfoArgs = {
   peerID?: p2p.PeerID | p2p.PeerIDArgs;
   network?: string;
-  services?: (ServiceAddress | ServiceAddressArgs)[];
+  services?: (ServiceAddress | ServiceAddressArgs | undefined)[];
   version?: string;
   commit?: string;
 };
@@ -1518,7 +1542,7 @@ export class NodeInfo {
   @encodeAs.field(2).string
   public network?: string;
   @encodeAs.field(3).repeatable.reference
-  public services?: ServiceAddress[];
+  public services?: (ServiceAddress | undefined)[];
   @encodeAs.field(4).string
   public version?: string;
   @encodeAs.field(5).string
@@ -1530,7 +1554,9 @@ export class NodeInfo {
     this.services =
       args.services == undefined
         ? undefined
-        : args.services.map((v) => (v instanceof ServiceAddress ? v : new ServiceAddress(v)));
+        : args.services.map((v) =>
+            v == undefined ? undefined : v instanceof ServiceAddress ? v : new ServiceAddress(v)
+          );
     this.version = args.version == undefined ? undefined : args.version;
     this.commit = args.commit == undefined ? undefined : args.commit;
   }
@@ -1543,7 +1569,8 @@ export class NodeInfo {
     return {
       peerID: this.peerID && this.peerID.asObject(),
       network: this.network && this.network,
-      services: this.services && this.services?.map((v) => v.asObject()),
+      services:
+        this.services && this.services?.map((v) => (v == undefined ? undefined : v.asObject())),
       version: this.version && this.version,
       commit: this.commit && this.commit,
     };
@@ -1720,7 +1747,7 @@ export type ReceiptArgs = {
   end?: Uint8Array | string;
   endIndex?: number;
   anchor?: Uint8Array | string;
-  entries?: (merkle.ReceiptEntry | merkle.ReceiptEntryArgs)[];
+  entries?: (merkle.ReceiptEntry | merkle.ReceiptEntryArgs | undefined)[];
   localBlock?: number;
   localBlockTime?: Date | string;
   majorBlock?: number;
@@ -1737,7 +1764,7 @@ export class Receipt {
   @encodeAs.field(1, 5).bytes
   public anchor?: Uint8Array;
   @encodeAs.field(1, 6).repeatable.reference
-  public entries?: merkle.ReceiptEntry[];
+  public entries?: (merkle.ReceiptEntry | undefined)[];
   @encodeAs.field(2).uint
   public localBlock?: number;
   @encodeAs.field(3).time
@@ -1770,7 +1797,11 @@ export class Receipt {
       args.entries == undefined
         ? undefined
         : args.entries.map((v) =>
-            v instanceof merkle.ReceiptEntry ? v : new merkle.ReceiptEntry(v)
+            v == undefined
+              ? undefined
+              : v instanceof merkle.ReceiptEntry
+              ? v
+              : new merkle.ReceiptEntry(v)
           );
     this.localBlock = args.localBlock == undefined ? undefined : args.localBlock;
     this.localBlockTime =
@@ -1793,7 +1824,8 @@ export class Receipt {
       end: this.end && this.end && Buffer.from(this.end).toString("hex"),
       endIndex: this.endIndex && this.endIndex,
       anchor: this.anchor && this.anchor && Buffer.from(this.anchor).toString("hex"),
-      entries: this.entries && this.entries?.map((v) => v.asObject()),
+      entries:
+        this.entries && this.entries?.map((v) => (v == undefined ? undefined : v.asObject())),
       localBlock: this.localBlock && this.localBlock,
       localBlockTime: this.localBlockTime && this.localBlockTime,
       majorBlock: this.majorBlock && this.majorBlock,
@@ -1829,7 +1861,7 @@ export class ReceiptOptions {
 }
 
 export type RecordRangeArgs<T extends Record = Record> = {
-  records?: (T | RecordArgs) /* TODO RecordArgs is too broad */[];
+  records?: (T | RecordArgs /* TODO RecordArgs is too broad */ | undefined)[];
   start?: number;
   total?: number;
   lastBlockTime?: Date | string;
@@ -1841,7 +1873,7 @@ export class RecordRange<T extends Record = Record> {
   @encodeAs.field(1).keepEmpty.enum.of(RecordType)
   public readonly recordType = RecordType.Range;
   @encodeAs.field(2).repeatable.union
-  public records?: T[];
+  public records?: (T | undefined)[];
   @encodeAs.field(3).keepEmpty.uint
   public start?: number;
   @encodeAs.field(4).keepEmpty.uint
@@ -1851,7 +1883,9 @@ export class RecordRange<T extends Record = Record> {
 
   constructor(args: RecordRangeArgs<T>) {
     this.records =
-      args.records == undefined ? undefined : args.records.map((v) => <T>Record.fromObject(v));
+      args.records == undefined
+        ? undefined
+        : args.records.map((v) => (v == undefined ? undefined : <T>Record.fromObject(v)));
     this.start = args.start == undefined ? undefined : args.start;
     this.total = args.total == undefined ? undefined : args.total;
     this.lastBlockTime =
@@ -1869,7 +1903,8 @@ export class RecordRange<T extends Record = Record> {
   asObject(): RecordRangeArgsWithType<T> {
     return {
       recordType: "range",
-      records: this.records && this.records?.map((v) => v.asObject()),
+      records:
+        this.records && this.records?.map((v) => (v == undefined ? undefined : v.asObject())),
       start: this.start && this.start,
       total: this.total && this.total,
       lastBlockTime: this.lastBlockTime && this.lastBlockTime,

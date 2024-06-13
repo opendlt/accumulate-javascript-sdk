@@ -635,8 +635,10 @@ export enum SignatureType {
   Internal = 12,
   /** Authority is a signature produced by an authority. */
   Authority = 13,
-  /** RsaSha256 represents an RSA signature of SHA256 hashed data. */
+  /** RsaSha256 represents an RSA signature of SHA256 hashed data (PKCS#1 encoding). */
   RsaSha256 = 14,
+  /** EcdsaSha256 represents a signature of SHA256 hashed data from an ecdsa algorithm with supported standard curves from NIST, SECG, and Brainpool typically (SEC, ANS.1 enocding). */
+  EcdsaSha256 = 15,
 }
 
 export type SignatureTypeArgs = SignatureType | string;
@@ -682,6 +684,8 @@ export namespace SignatureType {
         return SignatureType.Authority;
       case "rsasha256":
         return SignatureType.RsaSha256;
+      case "ecdsasha256":
+        return SignatureType.EcdsaSha256;
       default:
         throw new Error(`Unknown SignatureType '${name}'`);
     }
@@ -719,6 +723,8 @@ export namespace SignatureType {
         return "authority";
       case SignatureType.RsaSha256:
         return "rsaSha256";
+      case SignatureType.EcdsaSha256:
+        return "ecdsaSha256";
       default:
         throw new Error(`Unknown SignatureType ${v}`);
     }

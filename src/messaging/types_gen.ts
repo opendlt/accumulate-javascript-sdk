@@ -173,26 +173,28 @@ export class DidUpdateExecutorVersion {
 }
 
 export type EnvelopeArgs = {
-  signatures?: (protocol.Signature | protocol.SignatureArgs)[];
+  signatures?: (protocol.Signature | protocol.SignatureArgs | undefined)[];
   txHash?: Uint8Array | string;
-  transaction?: (protocol.Transaction | protocol.TransactionArgs)[];
-  messages?: (Message | MessageArgs)[];
+  transaction?: (protocol.Transaction | protocol.TransactionArgs | undefined)[];
+  messages?: (Message | MessageArgs | undefined)[];
 };
 export class Envelope {
   @encodeAs.field(1).repeatable.union
-  public signatures?: protocol.Signature[];
+  public signatures?: (protocol.Signature | undefined)[];
   @encodeAs.field(2).bytes
   public txHash?: Uint8Array;
   @encodeAs.field(3).repeatable.reference
-  public transaction?: protocol.Transaction[];
+  public transaction?: (protocol.Transaction | undefined)[];
   @encodeAs.field(4).repeatable.union
-  public messages?: Message[];
+  public messages?: (Message | undefined)[];
 
   constructor(args: EnvelopeArgs) {
     this.signatures =
       args.signatures == undefined
         ? undefined
-        : args.signatures.map((v) => protocol.Signature.fromObject(v));
+        : args.signatures.map((v) =>
+            v == undefined ? undefined : protocol.Signature.fromObject(v)
+          );
     this.txHash =
       args.txHash == undefined
         ? undefined
@@ -203,10 +205,16 @@ export class Envelope {
       args.transaction == undefined
         ? undefined
         : args.transaction.map((v) =>
-            v instanceof protocol.Transaction ? v : new protocol.Transaction(v)
+            v == undefined
+              ? undefined
+              : v instanceof protocol.Transaction
+              ? v
+              : new protocol.Transaction(v)
           );
     this.messages =
-      args.messages == undefined ? undefined : args.messages.map((v) => Message.fromObject(v));
+      args.messages == undefined
+        ? undefined
+        : args.messages.map((v) => (v == undefined ? undefined : Message.fromObject(v)));
   }
 
   copy() {
@@ -215,10 +223,14 @@ export class Envelope {
 
   asObject(): EnvelopeArgs {
     return {
-      signatures: this.signatures && this.signatures?.map((v) => v.asObject()),
+      signatures:
+        this.signatures && this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
       txHash: this.txHash && this.txHash && Buffer.from(this.txHash).toString("hex"),
-      transaction: this.transaction && this.transaction?.map((v) => v.asObject()),
-      messages: this.messages && this.messages?.map((v) => v.asObject()),
+      transaction:
+        this.transaction &&
+        this.transaction?.map((v) => (v == undefined ? undefined : v.asObject())),
+      messages:
+        this.messages && this.messages?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -267,7 +279,7 @@ export class MakeMajorBlock {
 }
 
 export type NetworkUpdateArgs = {
-  accounts?: (protocol.NetworkAccountUpdate | protocol.NetworkAccountUpdateArgs)[];
+  accounts?: (protocol.NetworkAccountUpdate | protocol.NetworkAccountUpdateArgs | undefined)[];
 };
 export type NetworkUpdateArgsWithType = NetworkUpdateArgs & {
   type: MessageType.NetworkUpdate | "networkUpdate";
@@ -276,14 +288,18 @@ export class NetworkUpdate {
   @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.NetworkUpdate;
   @encodeAs.field(2).repeatable.reference
-  public accounts?: protocol.NetworkAccountUpdate[];
+  public accounts?: (protocol.NetworkAccountUpdate | undefined)[];
 
   constructor(args: NetworkUpdateArgs) {
     this.accounts =
       args.accounts == undefined
         ? undefined
         : args.accounts.map((v) =>
-            v instanceof protocol.NetworkAccountUpdate ? v : new protocol.NetworkAccountUpdate(v)
+            v == undefined
+              ? undefined
+              : v instanceof protocol.NetworkAccountUpdate
+              ? v
+              : new protocol.NetworkAccountUpdate(v)
           );
   }
 
@@ -294,7 +310,8 @@ export class NetworkUpdate {
   asObject(): NetworkUpdateArgsWithType {
     return {
       type: "networkUpdate",
-      accounts: this.accounts && this.accounts?.map((v) => v.asObject()),
+      accounts:
+        this.accounts && this.accounts?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }

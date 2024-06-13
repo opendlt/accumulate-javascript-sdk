@@ -102,7 +102,7 @@ export type PartitionArgs = {
   id?: string;
   type?: protocol.PartitionTypeArgs;
   basePort?: number;
-  nodes?: (Node | NodeArgs)[];
+  nodes?: (Node | NodeArgs | undefined)[];
 };
 export class Partition {
   @encodeAs.field(1).string
@@ -112,7 +112,7 @@ export class Partition {
   @encodeAs.field(3).int
   public basePort?: number;
   @encodeAs.field(4).repeatable.reference
-  public nodes?: Node[];
+  public nodes?: (Node | undefined)[];
 
   constructor(args: PartitionArgs) {
     this.id = args.id == undefined ? undefined : args.id;
@@ -121,7 +121,7 @@ export class Partition {
     this.nodes =
       args.nodes == undefined
         ? undefined
-        : args.nodes.map((v) => (v instanceof Node ? v : new Node(v)));
+        : args.nodes.map((v) => (v == undefined ? undefined : v instanceof Node ? v : new Node(v)));
   }
 
   copy() {
@@ -133,7 +133,7 @@ export class Partition {
       id: this.id && this.id,
       type: this.type && protocol.PartitionType.getName(this.type),
       basePort: this.basePort && this.basePort,
-      nodes: this.nodes && this.nodes?.map((v) => v.asObject()),
+      nodes: this.nodes && this.nodes?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }

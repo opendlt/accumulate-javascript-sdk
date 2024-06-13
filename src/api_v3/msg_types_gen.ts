@@ -124,18 +124,20 @@ export class ErrorResponse {
 }
 
 export type EventMessageArgs = {
-  value?: (api.Event | api.EventArgs)[];
+  value?: (api.Event | api.EventArgs | undefined)[];
 };
 export type EventMessageArgsWithType = EventMessageArgs & { type: MessageType.Event | "event" };
 export class EventMessage {
   @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.Event;
   @encodeAs.field(2).repeatable.keepEmpty.union
-  public value?: api.Event[];
+  public value?: (api.Event | undefined)[];
 
   constructor(args: EventMessageArgs) {
     this.value =
-      args.value == undefined ? undefined : args.value.map((v) => api.Event.fromObject(v));
+      args.value == undefined
+        ? undefined
+        : args.value.map((v) => (v == undefined ? undefined : api.Event.fromObject(v)));
   }
 
   copy() {
@@ -145,7 +147,7 @@ export class EventMessage {
   asObject(): EventMessageArgsWithType {
     return {
       type: "event",
-      value: this.value && this.value?.map((v) => v.asObject()),
+      value: this.value && this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -265,7 +267,7 @@ export class FindServiceRequest {
 }
 
 export type FindServiceResponseArgs = {
-  value?: (api.FindServiceResult | api.FindServiceResultArgs)[];
+  value?: (api.FindServiceResult | api.FindServiceResultArgs | undefined)[];
 };
 export type FindServiceResponseArgsWithType = FindServiceResponseArgs & {
   type: MessageType.FindServiceResponse | "findServiceResponse";
@@ -274,14 +276,18 @@ export class FindServiceResponse {
   @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.FindServiceResponse;
   @encodeAs.field(2).repeatable.keepEmpty.reference
-  public value?: api.FindServiceResult[];
+  public value?: (api.FindServiceResult | undefined)[];
 
   constructor(args: FindServiceResponseArgs) {
     this.value =
       args.value == undefined
         ? undefined
         : args.value.map((v) =>
-            v instanceof api.FindServiceResult ? v : new api.FindServiceResult(v)
+            v == undefined
+              ? undefined
+              : v instanceof api.FindServiceResult
+              ? v
+              : new api.FindServiceResult(v)
           );
   }
 
@@ -292,7 +298,7 @@ export class FindServiceResponse {
   asObject(): FindServiceResponseArgsWithType {
     return {
       type: "findServiceResponse",
-      value: this.value && this.value?.map((v) => v.asObject()),
+      value: this.value && this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -600,7 +606,7 @@ export class SubmitRequest {
 }
 
 export type SubmitResponseArgs = {
-  value?: (api.Submission | api.SubmissionArgs)[];
+  value?: (api.Submission | api.SubmissionArgs | undefined)[];
 };
 export type SubmitResponseArgsWithType = SubmitResponseArgs & {
   type: MessageType.SubmitResponse | "submitResponse";
@@ -609,13 +615,15 @@ export class SubmitResponse {
   @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.SubmitResponse;
   @encodeAs.field(2).repeatable.keepEmpty.reference
-  public value?: api.Submission[];
+  public value?: (api.Submission | undefined)[];
 
   constructor(args: SubmitResponseArgs) {
     this.value =
       args.value == undefined
         ? undefined
-        : args.value.map((v) => (v instanceof api.Submission ? v : new api.Submission(v)));
+        : args.value.map((v) =>
+            v == undefined ? undefined : v instanceof api.Submission ? v : new api.Submission(v)
+          );
   }
 
   copy() {
@@ -625,7 +633,7 @@ export class SubmitResponse {
   asObject(): SubmitResponseArgsWithType {
     return {
       type: "submitResponse",
-      value: this.value && this.value?.map((v) => v.asObject()),
+      value: this.value && this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -723,7 +731,7 @@ export class ValidateRequest {
 }
 
 export type ValidateResponseArgs = {
-  value?: (api.Submission | api.SubmissionArgs)[];
+  value?: (api.Submission | api.SubmissionArgs | undefined)[];
 };
 export type ValidateResponseArgsWithType = ValidateResponseArgs & {
   type: MessageType.ValidateResponse | "validateResponse";
@@ -732,13 +740,15 @@ export class ValidateResponse {
   @encodeAs.field(1).keepEmpty.enum.of(MessageType)
   public readonly type = MessageType.ValidateResponse;
   @encodeAs.field(2).repeatable.keepEmpty.reference
-  public value?: api.Submission[];
+  public value?: (api.Submission | undefined)[];
 
   constructor(args: ValidateResponseArgs) {
     this.value =
       args.value == undefined
         ? undefined
-        : args.value.map((v) => (v instanceof api.Submission ? v : new api.Submission(v)));
+        : args.value.map((v) =>
+            v == undefined ? undefined : v instanceof api.Submission ? v : new api.Submission(v)
+          );
   }
 
   copy() {
@@ -748,7 +758,7 @@ export class ValidateResponse {
   asObject(): ValidateResponseArgsWithType {
     return {
       type: "validateResponse",
-      value: this.value && this.value?.map((v) => v.asObject()),
+      value: this.value && this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
