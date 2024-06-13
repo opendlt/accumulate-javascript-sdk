@@ -17,6 +17,7 @@ export type GlobalValuesArgs = {
   bvnExecutorVersions?: (
     | protocol.PartitionExecutorVersion
     | protocol.PartitionExecutorVersionArgs
+    | undefined
   )[];
 };
 export class GlobalValues {
@@ -31,7 +32,7 @@ export class GlobalValues {
   @encodeAs.field(5).enum
   public executorVersion?: protocol.ExecutorVersion;
   @encodeAs.field(6).repeatable.reference
-  public bvnExecutorVersions?: protocol.PartitionExecutorVersion[];
+  public bvnExecutorVersions?: (protocol.PartitionExecutorVersion | undefined)[];
 
   constructor(args: GlobalValuesArgs) {
     this.oracle =
@@ -66,7 +67,9 @@ export class GlobalValues {
       args.bvnExecutorVersions == undefined
         ? undefined
         : args.bvnExecutorVersions.map((v) =>
-            v instanceof protocol.PartitionExecutorVersion
+            v == undefined
+              ? undefined
+              : v instanceof protocol.PartitionExecutorVersion
               ? v
               : new protocol.PartitionExecutorVersion(v)
           );
@@ -85,7 +88,8 @@ export class GlobalValues {
       executorVersion:
         this.executorVersion && protocol.ExecutorVersion.getName(this.executorVersion),
       bvnExecutorVersions:
-        this.bvnExecutorVersions && this.bvnExecutorVersions?.map((v) => v.asObject()),
+        this.bvnExecutorVersions &&
+        this.bvnExecutorVersions?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }

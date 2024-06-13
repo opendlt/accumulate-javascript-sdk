@@ -520,6 +520,7 @@ export type Signature =
   | types.DelegatedSignature
   | types.ED25519Signature
   | types.ETHSignature
+  | types.EcdsaSha256Signature
   | types.InternalSignature
   | types.LegacyED25519Signature
   | types.PartitionSignature
@@ -542,6 +543,8 @@ export type SignatureArgs =
   | types.ED25519SignatureArgsWithType
   | types.ETHSignature
   | types.ETHSignatureArgsWithType
+  | types.EcdsaSha256Signature
+  | types.EcdsaSha256SignatureArgsWithType
   | types.InternalSignature
   | types.InternalSignatureArgsWithType
   | types.LegacyED25519Signature
@@ -568,6 +571,7 @@ export namespace Signature {
     if (obj instanceof types.DelegatedSignature) return obj;
     if (obj instanceof types.ED25519Signature) return obj;
     if (obj instanceof types.ETHSignature) return obj;
+    if (obj instanceof types.EcdsaSha256Signature) return obj;
     if (obj instanceof types.InternalSignature) return obj;
     if (obj instanceof types.LegacyED25519Signature) return obj;
     if (obj instanceof types.PartitionSignature) return obj;
@@ -596,6 +600,9 @@ export namespace Signature {
       case types.SignatureType.ETH:
       case "eth":
         return new types.ETHSignature(obj);
+      case types.SignatureType.EcdsaSha256:
+      case "ecdsaSha256":
+        return new types.EcdsaSha256Signature(obj);
       case types.SignatureType.Internal:
       case "internal":
         return new types.InternalSignature(obj);

@@ -22,7 +22,7 @@ export function combineReceipts(r1: Receipt, r2: Receipt): Receipt {
   if (!result.entries) result.entries = [];
   result.anchor = Buffer.from(r2.anchor);
 
-  r2.entries?.forEach((e) => result.entries!.push(e.copy()));
+  r2.entries?.forEach((e) => e && result.entries!.push(e.copy()));
 
   return result;
 }

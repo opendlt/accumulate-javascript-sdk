@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.11.3
+
+- Fixes nil value handling in API responses.
+
 ## v0.11.2
 
 - Don't export BIP44 because it breaks browser apps.

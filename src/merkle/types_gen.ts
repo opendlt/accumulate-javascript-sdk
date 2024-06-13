@@ -14,7 +14,7 @@ export type ReceiptArgs = {
   end?: Uint8Array | string;
   endIndex?: number;
   anchor?: Uint8Array | string;
-  entries?: (ReceiptEntry | ReceiptEntryArgs)[];
+  entries?: (ReceiptEntry | ReceiptEntryArgs | undefined)[];
 };
 export class Receipt {
   @encodeAs.field(1).bytes
@@ -28,7 +28,7 @@ export class Receipt {
   @encodeAs.field(5).bytes
   public anchor?: Uint8Array;
   @encodeAs.field(6).repeatable.reference
-  public entries?: ReceiptEntry[];
+  public entries?: (ReceiptEntry | undefined)[];
 
   constructor(args: ReceiptArgs) {
     this.start =
@@ -54,7 +54,9 @@ export class Receipt {
     this.entries =
       args.entries == undefined
         ? undefined
-        : args.entries.map((v) => (v instanceof ReceiptEntry ? v : new ReceiptEntry(v)));
+        : args.entries.map((v) =>
+            v == undefined ? undefined : v instanceof ReceiptEntry ? v : new ReceiptEntry(v)
+          );
   }
 
   copy() {
@@ -68,7 +70,8 @@ export class Receipt {
       end: this.end && this.end && Buffer.from(this.end).toString("hex"),
       endIndex: this.endIndex && this.endIndex,
       anchor: this.anchor && this.anchor && Buffer.from(this.anchor).toString("hex"),
-      entries: this.entries && this.entries?.map((v) => v.asObject()),
+      entries:
+        this.entries && this.entries?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -107,7 +110,7 @@ export class ReceiptEntry {
 
 export type ReceiptListArgs = {
   merkleState?: State | StateArgs;
-  elements?: (Uint8Array | string)[];
+  elements?: (Uint8Array | string | undefined)[];
   receipt?: Receipt | ReceiptArgs;
   continuedReceipt?: Receipt | ReceiptArgs;
 };
@@ -115,7 +118,7 @@ export class ReceiptList {
   @encodeAs.field(1).reference
   public merkleState?: State;
   @encodeAs.field(2).repeatable.bytes
-  public elements?: Uint8Array[];
+  public elements?: (Uint8Array | undefined)[];
   @encodeAs.field(3).reference
   public receipt?: Receipt;
   @encodeAs.field(4).reference
@@ -131,7 +134,9 @@ export class ReceiptList {
     this.elements =
       args.elements == undefined
         ? undefined
-        : args.elements.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+        : args.elements.map((v) =>
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+          );
     this.receipt =
       args.receipt == undefined
         ? undefined
@@ -153,7 +158,11 @@ export class ReceiptList {
   asObject(): ReceiptListArgs {
     return {
       merkleState: this.merkleState && this.merkleState.asObject(),
-      elements: this.elements && this.elements?.map((v) => v && Buffer.from(v).toString("hex")),
+      elements:
+        this.elements &&
+        this.elements?.map((v) =>
+          v == undefined ? undefined : v && Buffer.from(v).toString("hex")
+        ),
       receipt: this.receipt && this.receipt.asObject(),
       continuedReceipt: this.continuedReceipt && this.continuedReceipt.asObject(),
     };
@@ -162,24 +171,28 @@ export class ReceiptList {
 
 export type StateArgs = {
   count?: number;
-  pending?: (Uint8Array | string)[];
-  hashList?: (Uint8Array | string)[];
+  pending?: (Uint8Array | string | undefined)[];
+  hashList?: (Uint8Array | string | undefined)[];
 };
 export class State {
   public count?: number;
-  public pending?: Uint8Array[];
-  public hashList?: Uint8Array[];
+  public pending?: (Uint8Array | undefined)[];
+  public hashList?: (Uint8Array | undefined)[];
 
   constructor(args: StateArgs) {
     this.count = args.count == undefined ? undefined : args.count;
     this.pending =
       args.pending == undefined
         ? undefined
-        : args.pending.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+        : args.pending.map((v) =>
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+          );
     this.hashList =
       args.hashList == undefined
         ? undefined
-        : args.hashList.map((v) => (v instanceof Uint8Array ? v : Buffer.from(v, "hex")));
+        : args.hashList.map((v) =>
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+          );
   }
 
   copy() {
@@ -189,8 +202,16 @@ export class State {
   asObject(): StateArgs {
     return {
       count: this.count && this.count,
-      pending: this.pending && this.pending?.map((v) => v && Buffer.from(v).toString("hex")),
-      hashList: this.hashList && this.hashList?.map((v) => v && Buffer.from(v).toString("hex")),
+      pending:
+        this.pending &&
+        this.pending?.map((v) =>
+          v == undefined ? undefined : v && Buffer.from(v).toString("hex")
+        ),
+      hashList:
+        this.hashList &&
+        this.hashList?.map((v) =>
+          v == undefined ? undefined : v && Buffer.from(v).toString("hex")
+        ),
     };
   }
 }

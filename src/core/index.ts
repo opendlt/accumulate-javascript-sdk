@@ -24,21 +24,21 @@ AccumulateDataEntry.prototype.hash = function () {
   if (!this.data) {
     return new Uint8Array();
   }
-  return hashTree(this.data);
+  return hashTree(this.data.map((v) => v || new Uint8Array()));
 };
 
 DoubleHashDataEntry.prototype.hash = function () {
   if (!this.data) {
     return new Uint8Array();
   }
-  return sha256(hashTree(this.data));
+  return sha256(hashTree(this.data.map((v) => v || new Uint8Array())));
 };
 
 FactomDataEntryWrapper.prototype.asBinary = function () {
   const len2buf = (x: number) => new Uint8Array([x >> 8, x]);
   const extIds = Buffer.concat(
     (this.extIds || []).map((x) => {
-      return Buffer.concat([len2buf(x.length || 0), x || new Uint8Array()]);
+      return Buffer.concat([len2buf(x?.length || 0), x || new Uint8Array()]);
     })
   );
 
