@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.11.4
+
+- Removes unnecessary dependency on `readable-stream`.
+
 ## v0.11.3
 
 - Fixes nil value handling in API responses.
