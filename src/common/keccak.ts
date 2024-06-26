@@ -23,8 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import { Transform } from "readable-stream";
-
 const P1600_ROUND_CONSTANTS = [
   1, 0, 32898, 0, 32906, 2147483648, 2147516416, 2147483648, 32907, 0, 2147483649, 0, 2147516545,
   2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0, 2147483658, 0, 2147516555, 0, 139,
@@ -284,7 +282,7 @@ class Keccak {
 }
 
 const createKeccak = (KeccakState: any) =>
-  class Keccak extends Transform {
+  class Keccak {
     _rate: any;
     _capacity: any;
     _delimitedSuffix: any;
@@ -293,8 +291,6 @@ const createKeccak = (KeccakState: any) =>
     _state: any;
     _finalized: boolean;
     constructor(rate: any, capacity: any, delimitedSuffix: any, hashBitLength: any, options: any) {
-      super(options);
-
       this._rate = rate;
       this._capacity = capacity;
       this._delimitedSuffix = delimitedSuffix;
