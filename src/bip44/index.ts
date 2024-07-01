@@ -1,10 +1,11 @@
-import { BIP32Factory } from "bip32";
+import { BIP32API, BIP32Factory, TinySecp256k1Interface } from "bip32";
 import * as bip39 from "bip39";
 import { derivePath } from "ed25519-hd-key";
-import * as ecc from "tiny-secp256k1";
 import { SignatureType } from "../core";
-import * as bip44path from "./bip44path";
-const bip32secp256k1 = BIP32Factory(ecc);
+import * as bip44path from "./path";
+
+export * from "./path";
+export { BIP44, HDWallet, randomMnemonic, validMnemonic };
 
 const HDSigCoin: Map<SignatureType, bip44path.CoinType> = new Map([
   [SignatureType.RCD1, bip44path.CoinType.FactomFactoids],
@@ -19,8 +20,6 @@ const HDCoinSig: Map<bip44path.CoinType, SignatureType> = new Map([
   [bip44path.CoinType.Bitcoin, SignatureType.BTC],
   [bip44path.CoinType.Ether, SignatureType.ETH],
 ]);
-
-export { BIP44, HDWallet, randomMnemonic, validMnemonic };
 
 function randomMnemonic(): string {
   return bip39.generateMnemonic();
@@ -38,8 +37,10 @@ declare type Key = {
 class HDWallet {
   signatureType: SignatureType;
   private seed: Buffer;
+  readonly bip32: BIP32API;
 
   constructor(options: {
+    secp256k1: TinySecp256k1Interface;
     mnemonic?: string;
     passphrase?: string;
     seed?: string | Buffer;
@@ -50,6 +51,7 @@ class HDWallet {
       throw new Error("Options must be provided and must be an object");
     }
 
+    this.bip32 = BIP32Factory(options.secp256k1);
     this.signatureType = options.signatureType;
     this.seed = Buffer.alloc(0);
     if (options.mnemonic) {
@@ -84,7 +86,7 @@ class HDWallet {
       };
     } else {
       //for all other secp256k1 derivations:
-      const hdWallet = bip32secp256k1.fromSeed(this.seed);
+      const hdWallet = this.bip32.fromSeed(this.seed);
       const bipkey = hdWallet.derivePath(path);
       return {
         privateKey: bipkey.privateKey as Buffer,
@@ -95,8 +97,13 @@ class HDWallet {
 }
 
 class BIP44 extends HDWallet {
-  constructor(signatureType: SignatureType, mnemonic: string, passphrase?: string) {
-    super({ mnemonic, passphrase, signatureType });
+  constructor(
+    secp256k1: TinySecp256k1Interface,
+    signatureType: SignatureType,
+    mnemonic: string,
+    passphrase?: string
+  ) {
+    super({ secp256k1, mnemonic, passphrase, signatureType });
   }
 
   //getKey: account will be hardened if it isn't. Change and Address will be hardened only if slip-10 derivation is needed
@@ -143,9 +150,10 @@ export function GetSigTypeFromCoinType(coin: number | bip44path.CoinType): Signa
 }
 
 export function NewWalletFromMnemonic(
+  secp256k1: TinySecp256k1Interface,
   mnemonic: string,
   coin: bip44path.CoinType,
   passphrase?: string
 ): BIP44 {
-  return new BIP44(GetSigTypeFromCoinType(coin), mnemonic, passphrase);
+  return new BIP44(secp256k1, GetSigTypeFromCoinType(coin), mnemonic, passphrase);
 }

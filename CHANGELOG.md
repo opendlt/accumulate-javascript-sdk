@@ -3,6 +3,8 @@
 ## v0.11.4
 
 - Removes unnecessary dependency on `readable-stream`.
+- Removes dependency on `tiny-secp256k1`, requiring the caller to provide it.
+- Exports bip44.
 
 ## v0.11.3
 
