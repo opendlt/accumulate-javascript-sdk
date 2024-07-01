@@ -3,7 +3,7 @@ import type Transport from "@ledgerhq/hw-transport";
 import { scan as rxScan } from "rxjs/operators";
 import { Address } from "../address";
 import { URLArgs } from "../address/url";
-import * as BIPPath from "../common/bip44path";
+import * as BIPPath from "../bip44/path";
 import { Buffer } from "../common/buffer";
 import { Signature, SignatureType, Transaction } from "../core";
 import { encode } from "../encoding";
