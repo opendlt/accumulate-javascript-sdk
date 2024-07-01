@@ -3,9 +3,9 @@ import * as bip39 from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import { SignatureType } from "../core";
 import * as bip44path from "./path";
-
 export * from "./path";
-export { BIP44, HDWallet, randomMnemonic, validMnemonic };
+
+// DO NOT IMPORT tiny-secp256k1. Doing so will break browser apps.
 
 const HDSigCoin: Map<SignatureType, bip44path.CoinType> = new Map([
   [SignatureType.RCD1, bip44path.CoinType.FactomFactoids],
@@ -21,11 +21,11 @@ const HDCoinSig: Map<bip44path.CoinType, SignatureType> = new Map([
   [bip44path.CoinType.Ether, SignatureType.ETH],
 ]);
 
-function randomMnemonic(): string {
+export function randomMnemonic(): string {
   return bip39.generateMnemonic();
 }
 
-function validMnemonic(mnemonic: string): boolean {
+export function validMnemonic(mnemonic: string): boolean {
   return bip39.validateMnemonic(mnemonic);
 }
 
@@ -34,12 +34,15 @@ declare type Key = {
   signatureType: SignatureType;
 };
 
-class HDWallet {
+export class HDWallet {
   signatureType: SignatureType;
   private seed: Buffer;
   readonly bip32: BIP32API;
 
   constructor(options: {
+    // Require the caller to provide the Secp256k1 implementation. This allows
+    // browsers to work around the issues caused by WASM implementations like
+    // tiny-secp256k1.
     secp256k1: TinySecp256k1Interface;
     mnemonic?: string;
     passphrase?: string;
@@ -96,7 +99,11 @@ class HDWallet {
   }
 }
 
-class BIP44 extends HDWallet {
+/**
+ * The caller must provide the Secp256k1 implementation. This allows browsers to
+ * work around the issues caused by WASM implementations like tiny-secp256k1.
+ */
+export class BIP44 extends HDWallet {
   constructor(
     secp256k1: TinySecp256k1Interface,
     signatureType: SignatureType,
