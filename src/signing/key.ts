@@ -23,25 +23,21 @@ export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 export type PublicKey = WithRequired<Address, "publicKey" | "publicKeyHash">;
 export type PrivateKey = WithRequired<PublicKey, "privateKey">;
+export type Signable = { hash(): Uint8Array };
 
 export interface Key {
   address: PublicKey;
   // This is async to allow asynchronous implementations such as hardware
-  sign(message: Uint8Array | Transaction, args: SignOptions): Promise<UserSignature>;
+  sign(message: Signable, args: SignOptions): Promise<UserSignature>;
 }
 
 export abstract class BaseKey implements Key {
   protected constructor(public readonly address: PublicKey) {}
 
-  abstract signRaw(
-    signature: Signature,
-    message: Uint8Array,
-    transaction?: Transaction
-  ): Promise<Uint8Array>;
+  abstract signRaw(signature: Signature, message: Signable): Promise<Uint8Array>;
 
-  async sign(message: Uint8Array | Transaction, opts: SignOptions): Promise<UserSignature> {
-    // Initialize the key signature
-    const keySig = KeySignature.fromObject({
+  protected initSignature(_: Signable, opts: SignOptions) {
+    return KeySignature.fromObject({
       type: this.address.type as any,
       publicKey: this.address.publicKey,
       signer: opts.signer,
@@ -49,6 +45,11 @@ export abstract class BaseKey implements Key {
       timestamp: opts.timestamp,
       vote: opts.vote,
     });
+  }
+
+  async sign(message: Signable, opts: SignOptions): Promise<UserSignature> {
+    // Initialize the key signature
+    const keySig = this.initSignature(message, opts);
 
     // Apply delegators
     let sig: KeySignature | DelegatedSignature = keySig;
@@ -61,27 +62,35 @@ export abstract class BaseKey implements Key {
     const sigMdHash = sha256(encode(sig));
 
     // Initiate if necessary
-    let hash: Uint8Array;
-    let transaction;
-    if (message instanceof Transaction) {
-      if (!message.header) throw new Error("transaction has no header");
-      if (!message.header.initiator) {
+    const transaction = message instanceof Transaction ? message : undefined;
+    if (transaction) {
+      if (!transaction.header) throw new Error("transaction has no header");
+      if (!transaction.header.initiator) {
         if (!opts.timestamp) throw new Error("cannot initiate without a timestamp");
-        message.header.initiator = sigMdHash;
+        transaction.header.initiator = sigMdHash;
       }
-
-      transaction = message;
-      hash = message.hash();
-    } else {
-      hash = message;
     }
 
     // Calculate the raw signature
-    const rawSig = await this.signRaw(sig, hash, transaction);
+    const rawSig = await this.signRaw(sig, message);
 
     // Finalize and return the key signature
     keySig.signature = rawSig;
-    keySig.transactionHash = hash;
+    keySig.transactionHash = message.hash();
     return sig;
+  }
+}
+
+export class SimpleExternalKey extends BaseKey {
+  readonly #sign: (hash: Uint8Array) => Promise<Uint8Array>;
+  constructor(address: PublicKey, sign: (hash: Uint8Array) => Promise<Uint8Array>) {
+    super(address);
+    this.#sign = sign;
+  }
+
+  async signRaw(signature: Signature, message: Signable): Promise<Uint8Array> {
+    const sigMdHash = sha256(encode(signature));
+    const hash = sha256(Buffer.concat([sigMdHash, message.hash()]));
+    return this.#sign(hash);
   }
 }

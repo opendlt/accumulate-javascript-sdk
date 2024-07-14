@@ -1,8 +1,19 @@
 // You need to import the Payload class for the type of transaction you want to make.
 // Here we are building a SendTokens transaction.
-import { Address, api_v2, BaseKey, ED25519Key, PublicKey, Signer, URL } from "accumulate.js";
+import {
+  Address,
+  api_v2,
+  BaseKey,
+  ED25519Key,
+  PublicKey,
+  Signable,
+  Signer,
+  SignOptions,
+  URL,
+} from "accumulate.js";
 import { sha256 } from "accumulate.js/lib/common";
 import {
+  ETHSignature,
   SendTokens,
   Signature,
   SignatureType,
@@ -18,6 +29,16 @@ class ExternalETHKey extends BaseKey {
     if (address.type != SignatureType.ETH) {
       throw new Error(`address is ${address.type}, not ETH`);
     }
+  }
+
+  protected initSignature(_: Signable, opts: SignOptions) {
+    return new ETHSignature({
+      publicKey: this.address.publicKey,
+      signer: opts.signer,
+      signerVersion: opts.signerVersion,
+      timestamp: opts.timestamp,
+      vote: opts.vote,
+    });
   }
 
   async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {

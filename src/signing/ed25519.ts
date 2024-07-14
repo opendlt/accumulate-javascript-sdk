@@ -3,7 +3,7 @@ import { PrivateKeyAddress } from "../address";
 import { Buffer, sha256 } from "../common";
 import { Signature, SignatureType } from "../core";
 import { encode } from "../encoding";
-import { BaseKey, PrivateKey, PublicKey } from "./key";
+import { BaseKey, PrivateKey, PublicKey, Signable, SimpleExternalKey } from "./key";
 
 abstract class BaseED25519Key extends BaseKey {
   protected constructor(public readonly address: PrivateKey) {
@@ -27,9 +27,9 @@ abstract class BaseED25519Key extends BaseKey {
     return PrivateKeyAddress.from(type, kp.publicKey, kp.secretKey);
   }
 
-  async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
+  async signRaw(signature: Signature, message: Signable): Promise<Uint8Array> {
     const sigMdHash = sha256(encode(signature));
-    const hash = sha256(Buffer.concat([sigMdHash, message]));
+    const hash = sha256(Buffer.concat([sigMdHash, message.hash()]));
     return nacl.sign.detached(hash, this.address.privateKey);
   }
 }
@@ -54,38 +54,26 @@ export class RCD1Key extends BaseED25519Key {
   }
 }
 
-export class ExternalED22519Key extends BaseKey {
-  constructor(
-    address: PublicKey,
-    private readonly _sign: (hash: Uint8Array) => Promise<Uint8Array>
-  ) {
-    super(address);
+/**
+ * @deprecated Use {@link SimpleExternalKey}
+ */
+export class ExternalED22519Key extends SimpleExternalKey {
+  constructor(address: PublicKey, sign: (hash: Uint8Array) => Promise<Uint8Array>) {
+    super(address, sign);
     if (address.type != SignatureType.ED25519) {
       throw new Error(`address is ${address.type}, not ED25519`);
     }
   }
-
-  async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
-    const sigMdHash = sha256(encode(signature));
-    const hash = sha256(Buffer.concat([sigMdHash, message]));
-    return this._sign(hash);
-  }
 }
 
-export class ExternalRCD1Key extends BaseKey {
-  constructor(
-    address: PublicKey,
-    private readonly _sign: (hash: Uint8Array) => Promise<Uint8Array>
-  ) {
-    super(address);
+/**
+ * @deprecated Use {@link SimpleExternalKey}
+ */
+export class ExternalRCD1Key extends SimpleExternalKey {
+  constructor(address: PublicKey, sign: (hash: Uint8Array) => Promise<Uint8Array>) {
+    super(address, sign);
     if (address.type != SignatureType.RCD1) {
       throw new Error(`address is ${address.type}, not RCD1`);
     }
-  }
-
-  async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
-    const sigMdHash = sha256(encode(signature));
-    const hash = sha256(Buffer.concat([sigMdHash, message]));
-    return this._sign(hash);
   }
 }
