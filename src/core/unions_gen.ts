@@ -528,7 +528,8 @@ export type Signature =
   | types.ReceiptSignature
   | types.RemoteSignature
   | types.RsaSha256Signature
-  | types.SignatureSet;
+  | types.SignatureSet
+  | types.TypedDataSignature;
 
 export type SignatureArgs =
   | types.AuthoritySignature
@@ -560,7 +561,9 @@ export type SignatureArgs =
   | types.RsaSha256Signature
   | types.RsaSha256SignatureArgsWithType
   | types.SignatureSet
-  | types.SignatureSetArgsWithType;
+  | types.SignatureSetArgsWithType
+  | types.TypedDataSignature
+  | types.TypedDataSignatureArgsWithType;
 
 /** @ignore */
 export namespace Signature {
@@ -580,6 +583,7 @@ export namespace Signature {
     if (obj instanceof types.RemoteSignature) return obj;
     if (obj instanceof types.RsaSha256Signature) return obj;
     if (obj instanceof types.SignatureSet) return obj;
+    if (obj instanceof types.TypedDataSignature) return obj;
 
     switch (obj.type) {
       case types.SignatureType.Authority:
@@ -627,6 +631,9 @@ export namespace Signature {
       case types.SignatureType.Set:
       case "set":
         return new types.SignatureSet(obj);
+      case types.SignatureType.TypedData:
+      case "typedData":
+        return new types.TypedDataSignature(obj);
       default:
         throw new Error(`Unknown signature '${(obj as any).type}'`);
     }

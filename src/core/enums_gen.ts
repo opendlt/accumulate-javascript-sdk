@@ -639,6 +639,8 @@ export enum SignatureType {
   RsaSha256 = 14,
   /** EcdsaSha256 represents a signature of SHA256 hashed data from an ecdsa algorithm with supported standard curves from NIST, SECG, and Brainpool typically (SEC, ANS.1 enocding). */
   EcdsaSha256 = 15,
+  /** TypedData implements EIP-712 sign typed data specification. */
+  TypedData = 16,
 }
 
 export type SignatureTypeArgs = SignatureType | string;
@@ -686,6 +688,8 @@ export namespace SignatureType {
         return SignatureType.RsaSha256;
       case "ecdsasha256":
         return SignatureType.EcdsaSha256;
+      case "typeddata":
+        return SignatureType.TypedData;
       default:
         throw new Error(`Unknown SignatureType '${name}'`);
     }
@@ -725,6 +729,8 @@ export namespace SignatureType {
         return "rsaSha256";
       case SignatureType.EcdsaSha256:
         return "ecdsaSha256";
+      case SignatureType.TypedData:
+        return "typedData";
       default:
         throw new Error(`Unknown SignatureType ${v}`);
     }
