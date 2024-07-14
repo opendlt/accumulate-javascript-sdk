@@ -75,30 +75,7 @@ import {
 } from ".";
 import { AccumulateURL as URL } from "../address/url";
 import { hashTree, sha256, sha512 } from "../common";
-import {
-  AddCreditsResultArgsWithType,
-  BlockValidatorAnchorArgsWithType,
-  BTCLegacySignature,
-  BTCLegacySignatureArgsWithType,
-  BTCSignature,
-  BTCSignatureArgsWithType,
-  DelegatedSignature,
-  DelegatedSignatureArgsWithType,
-  DirectoryAnchorArgsWithType,
-  ED25519Signature,
-  ED25519SignatureArgsWithType,
-  EmptyResultArgsWithType,
-  ETHSignature,
-  ETHSignatureArgsWithType,
-  KeyPageArgsWithType,
-  LegacyED25519Signature,
-  LegacyED25519SignatureArgsWithType,
-  LiteIdentityArgsWithType,
-  RCD1Signature,
-  RCD1SignatureArgsWithType,
-  UnknownSignerArgsWithType,
-  WriteDataResultArgsWithType,
-} from "./types_gen";
+import { DelegatedSignature } from "./types_gen";
 import { Signature } from "./unions_gen";
 
 /**
@@ -143,12 +120,10 @@ export namespace AllowedTransactions {
   }
 }
 
+type AsObject<T> = T extends { asObject(): infer P } ? P : never;
+
 export type AnchorBody = DirectoryAnchor | BlockValidatorAnchor;
-export type AnchorBodyArgs =
-  | DirectoryAnchor
-  | BlockValidatorAnchor
-  | DirectoryAnchorArgsWithType
-  | BlockValidatorAnchorArgsWithType;
+export type AnchorBodyArgs = AnchorBody | AsObject<AnchorBody>;
 
 /** @ignore */
 export namespace AnchorBody {
@@ -158,13 +133,7 @@ export namespace AnchorBody {
 }
 
 export type Signer = LiteIdentity | KeyPage | UnknownSigner;
-export type SignerArgs =
-  | LiteIdentity
-  | KeyPage
-  | UnknownSigner
-  | LiteIdentityArgsWithType
-  | KeyPageArgsWithType
-  | UnknownSignerArgsWithType;
+export type SignerArgs = Signer | AsObject<Signer>;
 
 /** @ignore */
 export namespace Signer {
@@ -174,13 +143,7 @@ export namespace Signer {
 }
 
 export type TransactionResult = AddCreditsResult | EmptyResult | WriteDataResult;
-export type TransactionResultArgs =
-  | AddCreditsResult
-  | EmptyResult
-  | WriteDataResult
-  | AddCreditsResultArgsWithType
-  | EmptyResultArgsWithType
-  | WriteDataResultArgsWithType;
+export type TransactionResultArgs = TransactionResult | AsObject<TransactionResult>;
 
 /** @ignore */
 export namespace TransactionResult {
@@ -202,26 +165,8 @@ export namespace TransactionResult {
   }
 }
 
-export type KeySignature =
-  | BTCLegacySignature
-  | BTCSignature
-  | ED25519Signature
-  | ETHSignature
-  | LegacyED25519Signature
-  | RCD1Signature;
-export type KeySignatureArgs =
-  | BTCLegacySignature
-  | BTCSignature
-  | ED25519Signature
-  | ETHSignature
-  | LegacyED25519Signature
-  | RCD1Signature
-  | BTCLegacySignatureArgsWithType
-  | BTCSignatureArgsWithType
-  | ED25519SignatureArgsWithType
-  | ETHSignatureArgsWithType
-  | LegacyED25519SignatureArgsWithType
-  | RCD1SignatureArgsWithType;
+export type KeySignature = Extract<Signature, { publicKey?: Uint8Array }>;
+export type KeySignatureArgs = KeySignature | AsObject<KeySignature>;
 
 /** @ignore */
 export namespace KeySignature {
@@ -231,10 +176,7 @@ export namespace KeySignature {
 }
 
 export type UserSignature = KeySignature | DelegatedSignature;
-export type UserSignatureArgs =
-  | KeySignatureArgs
-  | DelegatedSignature
-  | DelegatedSignatureArgsWithType;
+export type UserSignatureArgs = UserSignature | AsObject<UserSignature>;
 
 /** @ignore */
 export namespace UserSignature {
