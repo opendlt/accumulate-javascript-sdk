@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.11.6
+
+- Improvements for external signing.
+
 ## v0.11.5
 
 - Fixes (updates) `KeySignature` and `UserSignature`.

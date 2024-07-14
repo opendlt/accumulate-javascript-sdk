@@ -8,7 +8,7 @@ import { Buffer } from "../common/buffer";
 import { Signature, SignatureType, Transaction } from "../core";
 import { encode } from "../encoding";
 import { Envelope } from "../messaging";
-import { BaseKey, PublicKey, Signer } from "../signing";
+import { BaseKey, PublicKey, Signable, Signer } from "../signing";
 import { discoverDevices } from "./hw";
 
 import {
@@ -312,14 +312,14 @@ export class LedgerKey extends BaseKey {
     super(publicKey);
   }
 
-  async signRaw(sig: Signature, _: Uint8Array, txn?: Transaction): Promise<Uint8Array> {
-    if (!txn) {
-      throw new Error(`The Ledger app does not support blind signing`);
+  async signRaw(sig: Signature, msg: Signable): Promise<Uint8Array> {
+    if (!(msg instanceof Transaction)) {
+      throw new Error(`The Ledger app does not support blind signing or non-transactions`);
     }
 
     const env = new Envelope({
       signatures: [sig],
-      transaction: [txn],
+      transaction: [msg],
     });
 
     const data = Buffer.from(encode(env)).toString("hex");

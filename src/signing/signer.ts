@@ -1,7 +1,7 @@
 import { URL, URLArgs } from "../address";
 import { Buffer, sha256 } from "../common";
-import type { Transaction, UserSignature } from "../core";
-import type { Key, SignOptions } from "./key";
+import type { UserSignature } from "../core";
+import type { Key, Signable, SignOptions } from "./key";
 
 export class Signer {
   constructor(public readonly key: Key, public readonly url: URL) {}
@@ -18,10 +18,7 @@ export class Signer {
     return new SignerWithVersion(key, url, 1);
   }
 
-  sign(
-    message: Uint8Array | Transaction,
-    opts: Omit<SignOptions, "signer">
-  ): Promise<UserSignature> {
+  sign(message: Signable, opts: Omit<SignOptions, "signer">): Promise<UserSignature> {
     return this.key.sign(message, {
       ...opts,
       signer: this.url,
@@ -39,7 +36,7 @@ export class SignerWithVersion extends Signer {
   }
 
   sign(
-    message: Uint8Array | Transaction,
+    message: Signable,
     opts: Omit<SignOptions, "signer" | "signerVersion">
   ): Promise<UserSignature> {
     return this.key.sign(message, {
