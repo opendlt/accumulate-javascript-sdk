@@ -36,20 +36,22 @@ export abstract class BaseKey implements Key {
 
   abstract signRaw(signature: Signature, message: Signable): Promise<Uint8Array>;
 
-  protected initSignature(_: Signable, opts: SignOptions) {
-    return KeySignature.fromObject({
-      type: this.address.type as any,
-      publicKey: this.address.publicKey,
-      signer: opts.signer,
-      signerVersion: opts.signerVersion,
-      timestamp: opts.timestamp,
-      vote: opts.vote,
-    });
+  protected initSignature(_: Signable, opts: SignOptions): Promise<KeySignature> {
+    return Promise.resolve(
+      KeySignature.fromObject({
+        type: this.address.type as any,
+        publicKey: this.address.publicKey,
+        signer: opts.signer,
+        signerVersion: opts.signerVersion,
+        timestamp: opts.timestamp,
+        vote: opts.vote,
+      })
+    );
   }
 
   async sign(message: Signable, opts: SignOptions): Promise<UserSignature> {
     // Initialize the key signature
-    const keySig = this.initSignature(message, opts);
+    const keySig = await this.initSignature(message, opts);
 
     // Apply delegators
     let sig: KeySignature | DelegatedSignature = keySig;
