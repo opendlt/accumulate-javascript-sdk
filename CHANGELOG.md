@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.11.5
+
+- Fixes (updates) `KeySignature` and `UserSignature`.
+- Adds `TypedDataSignature` (EIP-712).
+
 ## v0.11.4
 
 - Removes unnecessary dependency on `readable-stream`.

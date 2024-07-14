@@ -5027,6 +5027,107 @@ export class TxIdSet {
   }
 }
 
+export type TypedDataSignatureArgs = {
+  publicKey?: Uint8Array | string;
+  signature?: Uint8Array | string;
+  signer?: URLArgs;
+  signerVersion?: number;
+  timestamp?: number;
+  vote?: VoteTypeArgs;
+  transactionHash?: Uint8Array | string;
+  memo?: string;
+  data?: Uint8Array | string;
+  chainID?: bigint | string | number;
+};
+export type TypedDataSignatureArgsWithType = TypedDataSignatureArgs & {
+  type: SignatureType.TypedData | "typedData";
+};
+export class TypedDataSignature {
+  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  public readonly type = SignatureType.TypedData;
+  @encodeAs.field(2).bytes
+  public publicKey?: Uint8Array;
+  @encodeAs.field(3).bytes
+  public signature?: Uint8Array;
+  @encodeAs.field(4).url
+  public signer?: URL;
+  @encodeAs.field(5).uint
+  public signerVersion?: number;
+  @encodeAs.field(6).uint
+  public timestamp?: number;
+  @encodeAs.field(7).enum
+  public vote?: VoteType;
+  @encodeAs.field(8).hash
+  public transactionHash?: Uint8Array;
+  @encodeAs.field(9).string
+  public memo?: string;
+  @encodeAs.field(10).bytes
+  public data?: Uint8Array;
+  @encodeAs.field(11).bigInt
+  public chainID?: bigint;
+
+  constructor(args: TypedDataSignatureArgs) {
+    this.publicKey =
+      args.publicKey == undefined
+        ? undefined
+        : args.publicKey instanceof Uint8Array
+        ? args.publicKey
+        : Buffer.from(args.publicKey, "hex");
+    this.signature =
+      args.signature == undefined
+        ? undefined
+        : args.signature instanceof Uint8Array
+        ? args.signature
+        : Buffer.from(args.signature, "hex");
+    this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
+    this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
+    this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
+    this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
+    this.transactionHash =
+      args.transactionHash == undefined
+        ? undefined
+        : args.transactionHash instanceof Uint8Array
+        ? args.transactionHash
+        : Buffer.from(args.transactionHash, "hex");
+    this.memo = args.memo == undefined ? undefined : args.memo;
+    this.data =
+      args.data == undefined
+        ? undefined
+        : args.data instanceof Uint8Array
+        ? args.data
+        : Buffer.from(args.data, "hex");
+    this.chainID =
+      args.chainID == undefined
+        ? undefined
+        : typeof args.chainID === "bigint"
+        ? args.chainID
+        : BigInt(args.chainID);
+  }
+
+  copy() {
+    return new TypedDataSignature(this.asObject());
+  }
+
+  asObject(): TypedDataSignatureArgsWithType {
+    return {
+      type: "typedData",
+      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer && this.signer.toString(),
+      signerVersion: this.signerVersion && this.signerVersion,
+      timestamp: this.timestamp && this.timestamp,
+      vote: this.vote && VoteType.getName(this.vote),
+      transactionHash:
+        this.transactionHash &&
+        this.transactionHash &&
+        Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo && this.memo,
+      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+      chainID: this.chainID && this.chainID.toString(),
+    };
+  }
+}
+
 export type UnknownAccountArgs = {
   url?: URLArgs;
 };
