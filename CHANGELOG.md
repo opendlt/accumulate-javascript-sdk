@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.11.7
+
+- Bug fix for API v2 client
+
 ## v0.11.6
 
 - Improvements for external signing.
