@@ -116,7 +116,7 @@ export class Client {
   }
 
   queryAnchor(anchor: string): Promise<any> {
-    return this.queryUrl(ANCHORS_URL.join(`#anchor/${anchor}`));
+    return this.queryUrl(ANCHORS_URL.join(`#anchor/${anchor}`), { prove: true });
   }
 
   queryUrl(url: string | URL, options?: Omit<GeneralQueryArgs, "url">): Promise<any> {
