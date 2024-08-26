@@ -1,56 +1,8 @@
 // You need to import the Payload class for the type of transaction you want to make.
 // Here we are building a SendTokens transaction.
-import {
-  Address,
-  api_v2,
-  BaseKey,
-  ED25519Key,
-  PublicKey,
-  Signable,
-  Signer,
-  SignOptions,
-  URL,
-} from "accumulate.js";
-import { sha256 } from "accumulate.js/lib/common";
-import {
-  ETHSignature,
-  SendTokens,
-  Signature,
-  SignatureType,
-  Transaction,
-  TransactionHeader,
-} from "accumulate.js/lib/core";
-import { encode } from "accumulate.js/lib/encoding";
+import { Address, api_v2, ED25519Key, Signer, SimpleExternalKey, URL } from "accumulate.js";
+import { SendTokens, SignatureType, Transaction, TransactionHeader } from "accumulate.js/lib/core";
 import { Envelope } from "accumulate.js/lib/messaging";
-
-class ExternalETHKey extends BaseKey {
-  constructor(address: PublicKey) {
-    super(address);
-    if (address.type != SignatureType.ETH) {
-      throw new Error(`address is ${address.type}, not ETH`);
-    }
-  }
-
-  protected initSignature(_: Signable, opts: SignOptions) {
-    return new ETHSignature({
-      publicKey: this.address.publicKey,
-      signer: opts.signer,
-      signerVersion: opts.signerVersion,
-      timestamp: opts.timestamp,
-      vote: opts.vote,
-    });
-  }
-
-  async signRaw(signature: Signature, message: Uint8Array): Promise<Uint8Array> {
-    const sigMdHash = sha256(encode(signature));
-    const hash = sha256(Buffer.concat([sigMdHash, message]));
-
-    /**
-     * External signing hook/logic goes here.
-     */
-    throw new Error(`TODO: Sign ${hash}`);
-  }
-}
 
 /**
  * This is a placeholder and must be replaced with an actual Ethereum public
@@ -58,8 +10,19 @@ class ExternalETHKey extends BaseKey {
  */
 const ethKeyHex = "c0ffeef00d";
 
+/**
+ * This is a placeholder and must be replaced with the actual external signing
+ * hook/logic.
+ */
+const signExternal = (hash: Uint8Array): Promise<Uint8Array> => {
+  throw new Error(`TODO: Sign ${hash}`);
+};
+
 const ethKey = Address.fromKey(SignatureType.ETH, Buffer.from(ethKeyHex, "hex"));
-const sender = Signer.forPage(URL.parse("me.acme/book/1"), new ExternalETHKey(ethKey));
+const sender = Signer.forPage(
+  URL.parse("me.acme/book/1"),
+  new SimpleExternalKey(ethKey, signExternal)
+);
 const signerVersion = 5; // Hard code or retrieve via the API
 
 // Build the Payload
