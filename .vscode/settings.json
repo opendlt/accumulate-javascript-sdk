@@ -3,6 +3,7 @@
         "accumulate": true
     },
     "[typescript]": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "files.autoSave": "off",
     }
 }
