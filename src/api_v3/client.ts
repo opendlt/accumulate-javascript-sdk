@@ -27,6 +27,10 @@ export class JsonRpcClient {
     this._rpcClient = new RpcClient(endpoint);
   }
 
+  set debug(v: boolean) {
+    this._rpcClient.debug = v;
+  }
+
   /**
    * Direct RPC call.
    * @param method RPC method

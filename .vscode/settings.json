@@ -5,5 +5,6 @@
     "[typescript]": {
         "editor.formatOnSave": true,
         "files.autoSave": "off",
-    }
+    },
+    "jest.runMode": "on-demand",
 }

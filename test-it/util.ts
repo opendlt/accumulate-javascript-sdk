@@ -3,9 +3,21 @@ import { ChildProcess, spawn } from "child_process";
 import { createServer } from "net";
 import path from "path";
 import { randomBytes } from "tweetnacl";
-import { URL } from "../src";
-import { Client } from "../src/api_v2";
+import { TxID, URL, URLArgs } from "../src";
+import { Client, RpcError } from "../src/api_v2";
+import { JsonRpcClient, MessageRecord, Submission, TxIDRecord } from "../src/api_v3";
 import { Buffer } from "../src/common/buffer";
+import {
+  AddCredits,
+  AddCreditsArgs,
+  Signature,
+  Transaction,
+  TransactionBody,
+  TransactionHeader,
+  TransactionStatus,
+} from "../src/core";
+import { Status } from "../src/errors";
+import { TransactionMessage } from "../src/messaging";
 import { ED25519Key, Signer, SignerWithVersion } from "../src/signing";
 
 export async function randomLiteIdentity(): Promise<SignerWithVersion> {
@@ -112,4 +124,125 @@ async function getPortFree(): Promise<number> {
       srv.close((err) => (err ? reject(err) : resolve(port)));
     });
   });
+}
+
+export async function addCredits2({
+  amount,
+  oracle,
+  ...args
+}: AddCreditsArgs & { amount: number; oracle: number }) {
+  // Do the math to convert a number of credits to a number of ACME for the
+  // given oracle value
+  const oraclePrecision = 1e2;
+  const acmePrecision = 1e8;
+  return new AddCredits({
+    amount: (amount / (oracle / oraclePrecision)) * acmePrecision,
+    oracle,
+    ...args,
+  });
+}
+
+export async function sign(principal: URLArgs, body: TransactionBody, signer: SignerWithVersion) {
+  const header = new TransactionHeader({ principal });
+  const txn = new Transaction({ body, header });
+  const sig = await signer.sign(txn, { timestamp: Date.now() });
+  return { txn, sig };
+}
+
+export async function signAndSubmit(
+  client: JsonRpcClient,
+  principal: URLArgs,
+  body: TransactionBody,
+  signer: SignerWithVersion,
+  wait: boolean | "signatures" = false
+) {
+  const { txn, sig } = await sign(principal, body, signer);
+  return await submit(client, txn, sig, wait);
+}
+
+export async function submit(
+  client: JsonRpcClient,
+  txn: Transaction,
+  sig: Signature,
+  wait: boolean | "signatures" = false
+) {
+  const subs = await client.submit({ transaction: [txn], signatures: [sig] });
+  for (const sub of subs) {
+    if (sub?.status?.error) {
+      throw new Error(sub.status.error.message);
+    }
+  }
+
+  // Check the signatures first
+  if (wait === true || wait === "signatures") {
+    for (const sub of subs.slice(1)) {
+      await waitForMsg(client, sub.status!.txID!);
+    }
+  }
+
+  // Check the transaction
+  if (wait === true) {
+    await waitForAll(client, subs[0].status!.txID!);
+  }
+
+  return subs;
+}
+
+export async function waitForAll(client: JsonRpcClient, id: TxID | TransactionStatus | Submission) {
+  if (id instanceof Submission) {
+    id.status && (await waitForAll(client, id.status));
+    return;
+  }
+
+  if (id instanceof TransactionStatus) {
+    id.txID && (await waitForAll(client, id.txID));
+    return;
+  }
+
+  // Wait for the transaction
+  const r = await waitForMsg(client, id);
+  if (!r?.produced?.records) return;
+
+  // Wait for deposits, etc
+  for (const { value: id } of r.produced.records.filter((x): x is TxIDRecord => !!x)) {
+    await waitForAll(client, id!);
+  }
+}
+
+export async function waitForMsg(client: JsonRpcClient, id: TxID) {
+  if (
+    Buffer.from(id.hash).toString("hex") ==
+    "0100000000000000000000000000000000000000000000000000000000000000"
+  ) {
+    // This is a fake faucet transaction from the simulator, there's nothing to
+    // wait for
+    return;
+  }
+
+  console.log(`Waiting for ${id}`);
+  for (let i = 0; i < 30; i++) {
+    let res: MessageRecord<TransactionMessage>;
+    try {
+      res = (await client.query(id)) as MessageRecord<TransactionMessage>;
+    } catch (error) {
+      if (!(error instanceof RpcError)) throw error;
+      if (error.data?.code !== "notFound") throw error;
+      // Not found, wait 1 second
+      await new Promise((r) => setTimeout(r, 1000));
+      continue;
+    }
+
+    if (res.status == Status.Delivered) {
+      console.log("Message completed");
+      return res;
+    }
+
+    if (res.status! >= 400) {
+      throw new Error(`Message failed: ${res.error!.message}`);
+    }
+
+    // Pending, wait 1 second
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  throw new Error(`${id} not completed within 30s`);
 }

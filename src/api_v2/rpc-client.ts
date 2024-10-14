@@ -19,6 +19,7 @@ export class RpcClient {
   private readonly _httpCli: AxiosInstance;
   private readonly _endpoint: string;
   private _idCounter: number;
+  debug = false;
 
   constructor(endpoint: string) {
     const httpCliOptions = {
@@ -44,7 +45,15 @@ export class RpcClient {
       return [];
     }
 
-    const { data } = await this._httpCli.post(this._endpoint, single ? requests[0] : requests);
+    const body = single ? requests[0] : requests;
+    if (this.debug) {
+      console.debug(`! ${this._endpoint}`);
+      console.debug(`> ${JSON.stringify(body)}`);
+    }
+    const { data } = await this._httpCli.post(this._endpoint, body);
+    if (this.debug) {
+      console.debug(`< ${JSON.stringify(data)}`);
+    }
     if (single) {
       const { error, result } = data;
       if (error) {
