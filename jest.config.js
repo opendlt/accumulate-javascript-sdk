@@ -6,5 +6,6 @@ module.exports = {
   },
   collectCoverage: true,
   collectCoverageFrom: ["<rootDir>/src/**"],
+  modulePathIgnorePatterns: ["<rootDir>/accumulate/"],
   testTimeout: 120000,
 };

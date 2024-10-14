@@ -87,7 +87,7 @@ async function waitForAll(txid: TxID | URLArgs) {
     return;
   }
 
-  for (const { value: txid } of r.produced.records) {
+  for (const { value: txid } of r.produced.records.filter((x) => !!x)) {
     txid && (await waitForAll(txid));
   }
 
