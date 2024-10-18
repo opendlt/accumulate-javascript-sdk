@@ -55,7 +55,7 @@ export function makePath(
   coinType: CoinType,
   account: number,
   change: number,
-  address: number
+  address: number,
 ): string {
   const path = HDMap.get(coinType);
   if (typeof path === "undefined") {

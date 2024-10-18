@@ -39,7 +39,7 @@ FactomDataEntryWrapper.prototype.asBinary = function () {
   const extIds = Buffer.concat(
     (this.extIds || []).map((x) => {
       return Buffer.concat([len2buf(x?.length || 0), x || new Uint8Array()]);
-    })
+    }),
   );
 
   return Buffer.concat([

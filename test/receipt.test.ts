@@ -42,7 +42,7 @@ test("should clone receipt with string hashes", () => {
   const r2o = r2.asObject();
   expect(r2o.start).toEqual("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52");
   expect(r2o.entries![0].hash).toEqual(
-    "baee50fcd5b881c14fd54437d5b371cadedc0bce12f3f443e42a91529005c588"
+    "baee50fcd5b881c14fd54437d5b371cadedc0bce12f3f443e42a91529005c588",
   );
   expect(r2o.entries![0].right).toBeFalsy();
 });
@@ -58,13 +58,13 @@ test("should clone receipt with Buffer hashes", () => {
       {
         hash: Buffer.from(
           "baee50fcd5b881c14fd54437d5b371cadedc0bce12f3f443e42a91529005c588",
-          "hex"
+          "hex",
         ),
       },
       {
         hash: Buffer.from(
           "d52ff6d28d5ae24afa5b07792ac5b9b41ac901bdf6878fc0f3575ca939e455b1",
-          "hex"
+          "hex",
         ),
         right: true,
       },
@@ -91,10 +91,10 @@ test("should clone receipt with Buffer hashes", () => {
   r1.entries![0].right = true;
 
   expect(r2.start).toEqual(
-    Buffer.from("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52", "hex")
+    Buffer.from("c5f890fa64b1321b8454a53c4106faca35f7acf4f8e535e28153d11460885a52", "hex"),
   );
   expect(r2.entries![0].hash).toEqual(
-    Buffer.from("baee50fcd5b881c14fd54437d5b371cadedc0bce12f3f443e42a91529005c588", "hex")
+    Buffer.from("baee50fcd5b881c14fd54437d5b371cadedc0bce12f3f443e42a91529005c588", "hex"),
   );
   expect(r2.entries![0].right).toBeFalsy();
 });

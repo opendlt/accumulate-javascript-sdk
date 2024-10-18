@@ -16,7 +16,7 @@ beforeAll(
     await startSim((proc, port) => {
       sim = proc;
       client = new Client(`http://127.0.1.1:${port}/v2`);
-    })
+    }),
 );
 afterAll(() => sim?.pid && treeKill(sim.pid));
 
@@ -62,7 +62,7 @@ describe("Test manual transactions", () => {
     const tx = new Transaction({ body: payload, header });
 
     expect(() => client.execute(new Envelope({ transaction: [tx] }))).toThrowError(
-      /unsigned transaction/i
+      /unsigned transaction/i,
     );
   });
 });

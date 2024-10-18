@@ -14,11 +14,11 @@ export type CallSiteArgs = {
   line?: number;
 };
 export class CallSite {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public funcName?: string;
-  @encodeAs.field(2).string
+  @(encodeAs.field(2).string)
   public file?: string;
-  @encodeAs.field(3).int
+  @(encodeAs.field(3).int)
   public line?: number;
 
   constructor(args: CallSiteArgs) {
@@ -47,13 +47,13 @@ export type ErrorArgs = {
   callStack?: (CallSite | CallSiteArgs)[];
 };
 export class Error {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public message?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public code?: Status;
-  @encodeAs.field(3).reference
+  @(encodeAs.field(3).reference)
   public cause?: Error;
-  @encodeAs.field(4).repeatable.reference
+  @(encodeAs.field(4).repeatable.reference)
   public callStack?: CallSite[];
 
   constructor(args: ErrorArgs) {
@@ -63,8 +63,8 @@ export class Error {
       args.cause == undefined
         ? undefined
         : args.cause instanceof Error
-        ? args.cause
-        : new Error(args.cause);
+          ? args.cause
+          : new Error(args.cause);
     this.callStack =
       args.callStack == undefined
         ? undefined

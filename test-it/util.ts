@@ -15,6 +15,7 @@ import {
   TransactionBody,
   TransactionHeader,
   TransactionStatus,
+  VoteType,
 } from "../src/core";
 import { Status } from "../src/errors";
 import { TransactionMessage } from "../src/messaging";
@@ -36,7 +37,7 @@ export async function addCredits(
   client: Client,
   recipient: URL | string,
   creditAmount: number,
-  signer: SignerWithVersion
+  signer: SignerWithVersion,
 ) {
   let res = await client.queryUrl(recipient);
   const originalBalance = BigInt(res.data.creditBalance || 0);
@@ -71,7 +72,7 @@ export async function startSim(fn: (proc: ChildProcess, port: number) => void) {
       "--log=error;sim=info;executor=info",
       "--log-format=json",
     ],
-    { cwd: path.join(__dirname, "..", "accumulate") }
+    { cwd: path.join(__dirname, "..", "accumulate") },
   );
 
   return new Promise<void>((resolve, reject) => {
@@ -142,10 +143,15 @@ export async function addCredits2({
   });
 }
 
-export async function sign(principal: URLArgs, body: TransactionBody, signer: SignerWithVersion) {
+export async function sign(
+  principal: URLArgs,
+  body: TransactionBody,
+  signer: SignerWithVersion,
+  vote: VoteType = VoteType.Accept,
+) {
   const header = new TransactionHeader({ principal });
   const txn = new Transaction({ body, header });
-  const sig = await signer.sign(txn, { timestamp: Date.now() });
+  const sig = await signer.sign(txn, { timestamp: Date.now(), vote });
   return { txn, sig };
 }
 
@@ -154,7 +160,7 @@ export async function signAndSubmit(
   principal: URLArgs,
   body: TransactionBody,
   signer: SignerWithVersion,
-  wait: boolean | "signatures" = false
+  wait: boolean | "signatures" = false,
 ) {
   const { txn, sig } = await sign(principal, body, signer);
   return await submit(client, txn, sig, wait);
@@ -164,7 +170,7 @@ export async function submit(
   client: JsonRpcClient,
   txn: Transaction,
   sig: Signature,
-  wait: boolean | "signatures" = false
+  wait: boolean | "signatures" = false,
 ) {
   const subs = await client.submit({ transaction: [txn], signatures: [sig] });
   for (const sub of subs) {

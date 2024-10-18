@@ -23,7 +23,7 @@ registerTransportModule({
       type: e.type,
       id: e.device.path,
       name: e.device.deviceName || "",
-    }))
+    })),
   ),
   disconnect: () => Promise.resolve(),
 });

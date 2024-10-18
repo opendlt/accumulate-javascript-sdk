@@ -4,7 +4,10 @@ import type { UserSignature } from "../core";
 import type { Key, Signable, SignOptions } from "./key";
 
 export class Signer {
-  constructor(public readonly key: Key, public readonly url: URL) {}
+  constructor(
+    public readonly key: Key,
+    public readonly url: URL,
+  ) {}
 
   static forPage(url: URLArgs, key: Key) {
     return new Signer(key, URL.parse(url));
@@ -31,13 +34,17 @@ export class Signer {
 }
 
 export class SignerWithVersion extends Signer {
-  constructor(key: Key, url: URL, public readonly version: number) {
+  constructor(
+    key: Key,
+    url: URL,
+    public readonly version: number,
+  ) {
     super(key, url);
   }
 
   sign(
     message: Signable,
-    opts: Omit<SignOptions, "signer" | "signerVersion">
+    opts: Omit<SignOptions, "signer" | "signerVersion">,
   ): Promise<UserSignature> {
     return this.key.sign(message, {
       ...opts,

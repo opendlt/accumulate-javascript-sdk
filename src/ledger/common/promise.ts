@@ -34,7 +34,7 @@ export function retry<A>(f: () => Promise<A>, options?: Partial<typeof defaults>
 type Job<R, A extends Array<any>> = (...args: A) => Promise<R>;
 export const atomicQueue = <R, A extends Array<any>>(
   job: Job<R, A>,
-  queueIdentifier: (...args: A) => string = () => ""
+  queueIdentifier: (...args: A) => string = () => "",
 ): Job<R, A> => {
   const queues = {};
   return (...args) => {
@@ -69,7 +69,7 @@ export function execAndWaitAtLeast<A>(ms: number, cb: () => Promise<A>): Promise
 export async function promiseAllBatched<A, B>(
   batch: number,
   items: Array<A>,
-  fn: (arg0: A, arg1: number) => Promise<B>
+  fn: (arg0: A, arg1: number) => Promise<B>,
 ): Promise<B[]> {
   const data = Array(items.length);
   const queue = items.map((item, index) => ({
@@ -91,7 +91,7 @@ export async function promiseAllBatched<A, B>(
   await Promise.all(
     Array(Math.min(batch, items.length))
       .fill(() => undefined)
-      .map(step)
+      .map(step),
   );
   return data;
 }

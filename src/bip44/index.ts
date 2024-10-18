@@ -77,7 +77,7 @@ export class HDWallet {
       throw new Error(
         `error path coin type ${d.getCoinType()} does not match expected for signature type ${
           this.signatureType
-        }`
+        }`,
       );
     }
     d.validate();
@@ -108,7 +108,7 @@ export class BIP44 extends HDWallet {
     secp256k1: TinySecp256k1Interface,
     signatureType: SignatureType,
     mnemonic: string,
-    passphrase?: string
+    passphrase?: string,
   ) {
     super({ secp256k1, mnemonic, passphrase, signatureType });
   }
@@ -160,7 +160,7 @@ export function NewWalletFromMnemonic(
   secp256k1: TinySecp256k1Interface,
   mnemonic: string,
   coin: bip44path.CoinType,
-  passphrase?: string
+  passphrase?: string,
 ): BIP44 {
   return new BIP44(secp256k1, GetSigTypeFromCoinType(coin), mnemonic, passphrase);
 }

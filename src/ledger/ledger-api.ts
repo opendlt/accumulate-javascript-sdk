@@ -46,7 +46,7 @@ export class LedgerApi {
     transport.decorateAppAPIMethods(
       this,
       ["getPublicKey", "signTransaction", "getAppName", "getVersion"],
-      "TFA"
+      "TFA",
     );
   }
 
@@ -73,7 +73,7 @@ export class LedgerApi {
     path: string,
     boolDisplay = false,
     boolChainCode = false,
-    alias = ""
+    alias = "",
   ): Promise<LedgerAddress> {
     const bipPath = BIPPath.fromPath(path).toPathArray();
 
@@ -94,24 +94,24 @@ export class LedgerApi {
         ledgerOpGetPublicKey,
         boolDisplay || false ? ledgerP1Display : 0x00,
         boolChainCode || false ? ledgerP2DiscardAddressChainCode : 0x00,
-        buffer as any
+        buffer as any,
       )
       .then((response) => {
         const result = new LedgerAddress("", "", "");
         let offset = 0;
         const publicKeyLength = response[offset++];
         result.publicKey = Buffer.from(
-          response.subarray(offset, offset + publicKeyLength)
+          response.subarray(offset, offset + publicKeyLength),
         ).toString("hex");
         offset += publicKeyLength;
         const chainCodeLength = response[offset++];
         result.chainCode = Buffer.from(
-          response.subarray(offset, offset + chainCodeLength)
+          response.subarray(offset, offset + chainCodeLength),
         ).toString("hex");
         offset += chainCodeLength;
         const addressLength = response[offset++];
         result.address = Buffer.from(response.subarray(offset, offset + addressLength)).toString(
-          "utf-8"
+          "utf-8",
         );
 
         return result;
@@ -127,7 +127,7 @@ export class LedgerApi {
    */
   signTransaction(
     path: string,
-    unsignedEnvelopeHex: string /* Marshaled Transaction Envelope with unsigned Signature struct in Hex */
+    unsignedEnvelopeHex: string /* Marshaled Transaction Envelope with unsigned Signature struct in Hex */,
   ): Promise<LedgerSignature> {
     const paths = splitPath(path);
     let offset = 0;
@@ -164,16 +164,16 @@ export class LedgerApi {
           ledgerOpSignTransaction,
           i === 0 ? ledgerP1InitTransactionData : ledgerP1ContTransactionData,
           i === toSend.length - 1 ? ledgerP2LastTransactionData : ledgerP2MoreTransactionData,
-          data as any
+          data as any,
         )
         .then((apduResponse) => {
           response = apduResponse;
-        })
+        }),
     ).then(() => {
       const signatureLen = response[0];
       const ret = new LedgerSignature(
         response.slice(1, signatureLen + 1).toString("hex"),
-        response[1 + signatureLen] == 1
+        response[1 + signatureLen] == 1,
       );
 
       //for ecdsa it returns the DER format the user should converted to the rsv format if sigtype == eth
@@ -251,7 +251,7 @@ export async function queryHidWallets(): Promise<Array<LedgerDeviceInfo>> {
         }
 
         return copy;
-      }, [])
+      }, []),
     )
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .subscribe((_value) => {
@@ -307,7 +307,7 @@ export class LedgerKey extends BaseKey {
   private constructor(
     private readonly api: LedgerApi,
     public readonly path: string,
-    publicKey: PublicKey
+    publicKey: PublicKey,
   ) {
     super(publicKey);
   }

@@ -62,11 +62,11 @@ export type ADIArgs = {
 };
 export type ADIArgsWithType = ADIArgs & { type: AccountType.Identity | "identity" };
 export class ADI {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.Identity;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3, 1).repeatable.reference
+  @(encodeAs.field(3, 1).repeatable.reference)
   public authorities?: (AuthorityEntry | undefined)[];
 
   constructor(args: ADIArgs) {
@@ -75,7 +75,7 @@ export class ADI {
       args.authorities == undefined
         ? undefined
         : args.authorities.map((v) =>
-            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
+            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v),
           );
   }
 
@@ -86,10 +86,11 @@ export class ADI {
   asObject(): ADIArgsWithType {
     return {
       type: "identity",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -98,7 +99,7 @@ export type AccountAuthArgs = {
   authorities?: (AuthorityEntry | AuthorityEntryArgs | undefined)[];
 };
 export class AccountAuth {
-  @encodeAs.field(1).repeatable.reference
+  @(encodeAs.field(1).repeatable.reference)
   public authorities?: (AuthorityEntry | undefined)[];
 
   constructor(args: AccountAuthArgs) {
@@ -106,7 +107,7 @@ export class AccountAuth {
       args.authorities == undefined
         ? undefined
         : args.authorities.map((v) =>
-            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
+            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v),
           );
   }
 
@@ -117,8 +118,9 @@ export class AccountAuth {
   asObject(): AccountAuthArgs {
     return {
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -130,9 +132,9 @@ export type AccumulateDataEntryArgsWithType = AccumulateDataEntryArgs & {
   type: DataEntryType.Accumulate | "accumulate";
 };
 export class AccumulateDataEntry {
-  @encodeAs.field(1).keepEmpty.enum.of(DataEntryType)
+  @(encodeAs.field(1).keepEmpty.enum.of(DataEntryType))
   public readonly type = DataEntryType.Accumulate;
-  @encodeAs.field(2).repeatable.bytes
+  @(encodeAs.field(2).repeatable.bytes)
   public data?: (Uint8Array | undefined)[];
 
   constructor(args: AccumulateDataEntryArgs) {
@@ -140,7 +142,7 @@ export class AccumulateDataEntry {
       args.data == undefined
         ? undefined
         : args.data.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
   }
 
@@ -152,8 +154,11 @@ export class AccumulateDataEntry {
     return {
       type: "accumulate",
       data:
-        this.data &&
-        this.data?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
+        this.data === undefined
+          ? undefined
+          : this.data?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
     };
   }
 }
@@ -165,9 +170,9 @@ export type AcmeFaucetArgsWithType = AcmeFaucetArgs & {
   type: TransactionType.AcmeFaucet | "acmeFaucet";
 };
 export class AcmeFaucet {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.AcmeFaucet;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
 
   constructor(args: AcmeFaucetArgs) {
@@ -181,7 +186,7 @@ export class AcmeFaucet {
   asObject(): AcmeFaucetArgsWithType {
     return {
       type: "acmeFaucet",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
     };
   }
 }
@@ -190,7 +195,7 @@ export type AcmeOracleArgs = {
   price?: number;
 };
 export class AcmeOracle {
-  @encodeAs.field(1).uint
+  @(encodeAs.field(1).uint)
   public price?: number;
 
   constructor(args: AcmeOracleArgs) {
@@ -203,7 +208,7 @@ export class AcmeOracle {
 
   asObject(): AcmeOracleArgs {
     return {
-      price: this.price && this.price,
+      price: this.price === undefined ? undefined : this.price,
     };
   }
 }
@@ -215,9 +220,9 @@ export type ActivateProtocolVersionArgsWithType = ActivateProtocolVersionArgs & 
   type: TransactionType.ActivateProtocolVersion | "activateProtocolVersion";
 };
 export class ActivateProtocolVersion {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.ActivateProtocolVersion;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public version?: ExecutorVersion;
 
   constructor(args: ActivateProtocolVersionArgs) {
@@ -231,7 +236,7 @@ export class ActivateProtocolVersion {
   asObject(): ActivateProtocolVersionArgsWithType {
     return {
       type: "activateProtocolVersion",
-      version: this.version && ExecutorVersion.getName(this.version),
+      version: this.version === undefined ? undefined : ExecutorVersion.getName(this.version),
     };
   }
 }
@@ -243,9 +248,9 @@ export type AddAccountAuthorityOperationArgsWithType = AddAccountAuthorityOperat
   type: AccountAuthOperationType.AddAuthority | "addAuthority";
 };
 export class AddAccountAuthorityOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType))
   public readonly type = AccountAuthOperationType.AddAuthority;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public authority?: URL;
 
   constructor(args: AddAccountAuthorityOperationArgs) {
@@ -259,7 +264,7 @@ export class AddAccountAuthorityOperation {
   asObject(): AddAccountAuthorityOperationArgsWithType {
     return {
       type: "addAuthority",
-      authority: this.authority && this.authority.toString(),
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
     };
   }
 }
@@ -273,13 +278,13 @@ export type AddCreditsArgsWithType = AddCreditsArgs & {
   type: TransactionType.AddCredits | "addCredits";
 };
 export class AddCredits {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.AddCredits;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public recipient?: URL;
-  @encodeAs.field(3).bigInt
+  @(encodeAs.field(3).bigInt)
   public amount?: bigint;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public oracle?: number;
 
   constructor(args: AddCreditsArgs) {
@@ -288,8 +293,8 @@ export class AddCredits {
       args.amount == undefined
         ? undefined
         : typeof args.amount === "bigint"
-        ? args.amount
-        : BigInt(args.amount);
+          ? args.amount
+          : BigInt(args.amount);
     this.oracle = args.oracle == undefined ? undefined : args.oracle;
   }
 
@@ -300,9 +305,9 @@ export class AddCredits {
   asObject(): AddCreditsArgsWithType {
     return {
       type: "addCredits",
-      recipient: this.recipient && this.recipient.toString(),
-      amount: this.amount && this.amount.toString(),
-      oracle: this.oracle && this.oracle,
+      recipient: this.recipient === undefined ? undefined : this.recipient.toString(),
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
+      oracle: this.oracle === undefined ? undefined : this.oracle,
     };
   }
 }
@@ -316,13 +321,13 @@ export type AddCreditsResultArgsWithType = AddCreditsResultArgs & {
   type: TransactionType.AddCredits | "addCredits";
 };
 export class AddCreditsResult {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.AddCredits;
-  @encodeAs.field(2).bigInt
+  @(encodeAs.field(2).bigInt)
   public amount?: bigint;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public credits?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public oracle?: number;
 
   constructor(args: AddCreditsResultArgs) {
@@ -330,8 +335,8 @@ export class AddCreditsResult {
       args.amount == undefined
         ? undefined
         : typeof args.amount === "bigint"
-        ? args.amount
-        : BigInt(args.amount);
+          ? args.amount
+          : BigInt(args.amount);
     this.credits = args.credits == undefined ? undefined : args.credits;
     this.oracle = args.oracle == undefined ? undefined : args.oracle;
   }
@@ -343,9 +348,9 @@ export class AddCreditsResult {
   asObject(): AddCreditsResultArgsWithType {
     return {
       type: "addCredits",
-      amount: this.amount && this.amount.toString(),
-      credits: this.credits && this.credits,
-      oracle: this.oracle && this.oracle,
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
+      credits: this.credits === undefined ? undefined : this.credits,
+      oracle: this.oracle === undefined ? undefined : this.oracle,
     };
   }
 }
@@ -357,9 +362,9 @@ export type AddKeyOperationArgsWithType = AddKeyOperationArgs & {
   type: KeyPageOperationType.Add | "add";
 };
 export class AddKeyOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType))
   public readonly type = KeyPageOperationType.Add;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public entry?: KeySpecParams;
 
   constructor(args: AddKeyOperationArgs) {
@@ -367,8 +372,8 @@ export class AddKeyOperation {
       args.entry == undefined
         ? undefined
         : args.entry instanceof KeySpecParams
-        ? args.entry
-        : new KeySpecParams(args.entry);
+          ? args.entry
+          : new KeySpecParams(args.entry);
   }
 
   copy() {
@@ -378,7 +383,7 @@ export class AddKeyOperation {
   asObject(): AddKeyOperationArgsWithType {
     return {
       type: "add",
-      entry: this.entry && this.entry.asObject(),
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
     };
   }
 }
@@ -395,19 +400,19 @@ export type AnchorLedgerArgsWithType = AnchorLedgerArgs & {
   type: AccountType.AnchorLedger | "anchorLedger";
 };
 export class AnchorLedger {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.AnchorLedger;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public minorBlockSequenceNumber?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public majorBlockIndex?: number;
-  @encodeAs.field(5).time
+  @(encodeAs.field(5).time)
   public majorBlockTime?: Date;
-  @encodeAs.field(6).repeatable.url
+  @(encodeAs.field(6).repeatable.url)
   public pendingMajorBlockAnchors?: (URL | undefined)[];
-  @encodeAs.field(7).repeatable.reference
+  @(encodeAs.field(7).repeatable.reference)
   public sequence?: (PartitionSyntheticLedger | undefined)[];
 
   constructor(args: AnchorLedgerArgs) {
@@ -419,8 +424,8 @@ export class AnchorLedger {
       args.majorBlockTime == undefined
         ? undefined
         : args.majorBlockTime instanceof Date
-        ? args.majorBlockTime
-        : new Date(args.majorBlockTime);
+          ? args.majorBlockTime
+          : new Date(args.majorBlockTime);
     this.pendingMajorBlockAnchors =
       args.pendingMajorBlockAnchors == undefined
         ? undefined
@@ -432,8 +437,8 @@ export class AnchorLedger {
             v == undefined
               ? undefined
               : v instanceof PartitionSyntheticLedger
-              ? v
-              : new PartitionSyntheticLedger(v)
+                ? v
+                : new PartitionSyntheticLedger(v),
           );
   }
 
@@ -444,15 +449,19 @@ export class AnchorLedger {
   asObject(): AnchorLedgerArgsWithType {
     return {
       type: "anchorLedger",
-      url: this.url && this.url.toString(),
-      minorBlockSequenceNumber: this.minorBlockSequenceNumber && this.minorBlockSequenceNumber,
-      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
-      majorBlockTime: this.majorBlockTime && this.majorBlockTime,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      minorBlockSequenceNumber:
+        this.minorBlockSequenceNumber === undefined ? undefined : this.minorBlockSequenceNumber,
+      majorBlockIndex: this.majorBlockIndex === undefined ? undefined : this.majorBlockIndex,
+      majorBlockTime: this.majorBlockTime === undefined ? undefined : this.majorBlockTime,
       pendingMajorBlockAnchors:
-        this.pendingMajorBlockAnchors &&
-        this.pendingMajorBlockAnchors?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.pendingMajorBlockAnchors === undefined
+          ? undefined
+          : this.pendingMajorBlockAnchors?.map((v) => (v == undefined ? undefined : v.toString())),
       sequence:
-        this.sequence && this.sequence?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.sequence === undefined
+          ? undefined
+          : this.sequence?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -467,19 +476,19 @@ export type AnchorMetadataArgs = {
   entry?: Uint8Array | string;
 };
 export class AnchorMetadata {
-  @encodeAs.field(1, 1).string
+  @(encodeAs.field(1, 1).string)
   public name?: string;
-  @encodeAs.field(1, 2).enum
+  @(encodeAs.field(1, 2).enum)
   public type?: ChainType;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public account?: URL;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public index?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public sourceIndex?: number;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public sourceBlock?: number;
-  @encodeAs.field(6).bytes
+  @(encodeAs.field(6).bytes)
   public entry?: Uint8Array;
 
   constructor(args: AnchorMetadataArgs) {
@@ -493,8 +502,8 @@ export class AnchorMetadata {
       args.entry == undefined
         ? undefined
         : args.entry instanceof Uint8Array
-        ? args.entry
-        : Buffer.from(args.entry, "hex");
+          ? args.entry
+          : Buffer.from(args.entry, "hex");
   }
 
   copy() {
@@ -503,13 +512,16 @@ export class AnchorMetadata {
 
   asObject(): AnchorMetadataArgs {
     return {
-      name: this.name && this.name,
-      type: this.type && ChainType.getName(this.type),
-      account: this.account && this.account.toString(),
-      index: this.index && this.index,
-      sourceIndex: this.sourceIndex && this.sourceIndex,
-      sourceBlock: this.sourceBlock && this.sourceBlock,
-      entry: this.entry && this.entry && Buffer.from(this.entry).toString("hex"),
+      name: this.name === undefined ? undefined : this.name,
+      type: this.type === undefined ? undefined : ChainType.getName(this.type),
+      account: this.account === undefined ? undefined : this.account.toString(),
+      index: this.index === undefined ? undefined : this.index,
+      sourceIndex: this.sourceIndex === undefined ? undefined : this.sourceIndex,
+      sourceBlock: this.sourceBlock === undefined ? undefined : this.sourceBlock,
+      entry:
+        this.entry === undefined
+          ? undefined
+          : this.entry && Buffer.from(this.entry).toString("hex"),
     };
   }
 }
@@ -519,9 +531,9 @@ export type AnnotatedReceiptArgs = {
   anchor?: AnchorMetadata | AnchorMetadataArgs;
 };
 export class AnnotatedReceipt {
-  @encodeAs.field(1).reference
+  @(encodeAs.field(1).reference)
   public receipt?: merkle.Receipt;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public anchor?: AnchorMetadata;
 
   constructor(args: AnnotatedReceiptArgs) {
@@ -529,14 +541,14 @@ export class AnnotatedReceipt {
       args.receipt == undefined
         ? undefined
         : args.receipt instanceof merkle.Receipt
-        ? args.receipt
-        : new merkle.Receipt(args.receipt);
+          ? args.receipt
+          : new merkle.Receipt(args.receipt);
     this.anchor =
       args.anchor == undefined
         ? undefined
         : args.anchor instanceof AnchorMetadata
-        ? args.anchor
-        : new AnchorMetadata(args.anchor);
+          ? args.anchor
+          : new AnchorMetadata(args.anchor);
   }
 
   copy() {
@@ -545,8 +557,8 @@ export class AnnotatedReceipt {
 
   asObject(): AnnotatedReceiptArgs {
     return {
-      receipt: this.receipt && this.receipt.asObject(),
-      anchor: this.anchor && this.anchor.asObject(),
+      receipt: this.receipt === undefined ? undefined : this.receipt.asObject(),
+      anchor: this.anchor === undefined ? undefined : this.anchor.asObject(),
     };
   }
 }
@@ -556,9 +568,9 @@ export type AuthorityEntryArgs = {
   disabled?: boolean;
 };
 export class AuthorityEntry {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public url?: URL;
-  @encodeAs.field(2).bool
+  @(encodeAs.field(2).bool)
   public disabled?: boolean;
 
   constructor(args: AuthorityEntryArgs) {
@@ -572,8 +584,8 @@ export class AuthorityEntry {
 
   asObject(): AuthorityEntryArgs {
     return {
-      url: this.url && this.url.toString(),
-      disabled: this.disabled && this.disabled,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      disabled: this.disabled === undefined ? undefined : this.disabled,
     };
   }
 }
@@ -591,21 +603,21 @@ export type AuthoritySignatureArgsWithType = AuthoritySignatureArgs & {
   type: SignatureType.Authority | "authority";
 };
 export class AuthoritySignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.Authority;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public origin?: URL;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public authority?: URL;
-  @encodeAs.field(4).enum
+  @(encodeAs.field(4).enum)
   public vote?: VoteType;
-  @encodeAs.field(5).txid
+  @(encodeAs.field(5).txid)
   public txID?: TxID;
-  @encodeAs.field(6).txid
+  @(encodeAs.field(6).txid)
   public cause?: TxID;
-  @encodeAs.field(7).repeatable.url
+  @(encodeAs.field(7).repeatable.url)
   public delegator?: (URL | undefined)[];
-  @encodeAs.field(8).string
+  @(encodeAs.field(8).string)
   public memo?: string;
 
   constructor(args: AuthoritySignatureArgs) {
@@ -628,14 +640,16 @@ export class AuthoritySignature {
   asObject(): AuthoritySignatureArgsWithType {
     return {
       type: "authority",
-      origin: this.origin && this.origin.toString(),
-      authority: this.authority && this.authority.toString(),
-      vote: this.vote && VoteType.getName(this.vote),
-      txID: this.txID && this.txID.toString(),
-      cause: this.cause && this.cause.toString(),
+      origin: this.origin === undefined ? undefined : this.origin.toString(),
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
+      txID: this.txID === undefined ? undefined : this.txID.toString(),
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
       delegator:
-        this.delegator && this.delegator?.map((v) => (v == undefined ? undefined : v.toString())),
-      memo: this.memo && this.memo,
+        this.delegator === undefined
+          ? undefined
+          : this.delegator?.map((v) => (v == undefined ? undefined : v.toString())),
+      memo: this.memo === undefined ? undefined : this.memo,
     };
   }
 }
@@ -655,25 +669,25 @@ export type BTCLegacySignatureArgsWithType = BTCLegacySignatureArgs & {
   type: SignatureType.BTCLegacy | "btclegacy";
 };
 export class BTCLegacySignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.BTCLegacy;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public signer?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public signerVersion?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public timestamp?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(9).string
+  @(encodeAs.field(9).string)
   public memo?: string;
-  @encodeAs.field(10).bytes
+  @(encodeAs.field(10).bytes)
   public data?: Uint8Array;
 
   constructor(args: BTCLegacySignatureArgs) {
@@ -681,14 +695,14 @@ export class BTCLegacySignature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
@@ -697,15 +711,15 @@ export class BTCLegacySignature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -715,18 +729,25 @@ export class BTCLegacySignature {
   asObject(): BTCLegacySignatureArgsWithType {
     return {
       type: "btclegacy",
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && VoteType.getName(this.vote),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      memo: this.memo && this.memo,
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -744,25 +765,25 @@ export type BTCSignatureArgs = {
 };
 export type BTCSignatureArgsWithType = BTCSignatureArgs & { type: SignatureType.BTC | "btc" };
 export class BTCSignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.BTC;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public signer?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public signerVersion?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public timestamp?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(9).string
+  @(encodeAs.field(9).string)
   public memo?: string;
-  @encodeAs.field(10).bytes
+  @(encodeAs.field(10).bytes)
   public data?: Uint8Array;
 
   constructor(args: BTCSignatureArgs) {
@@ -770,14 +791,14 @@ export class BTCSignature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
@@ -786,15 +807,15 @@ export class BTCSignature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -804,18 +825,25 @@ export class BTCSignature {
   asObject(): BTCSignatureArgsWithType {
     return {
       type: "btc",
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && VoteType.getName(this.vote),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      memo: this.memo && this.memo,
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -826,11 +854,11 @@ export type BlockEntryArgs = {
   index?: number;
 };
 export class BlockEntry {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public account?: URL;
-  @encodeAs.field(2).string
+  @(encodeAs.field(2).string)
   public chain?: string;
-  @encodeAs.field(3).keepEmpty.uint
+  @(encodeAs.field(3).keepEmpty.uint)
   public index?: number;
 
   constructor(args: BlockEntryArgs) {
@@ -845,9 +873,9 @@ export class BlockEntry {
 
   asObject(): BlockEntryArgs {
     return {
-      account: this.account && this.account.toString(),
-      chain: this.chain && this.chain,
-      index: this.index && this.index,
+      account: this.account === undefined ? undefined : this.account.toString(),
+      chain: this.chain === undefined ? undefined : this.chain,
+      index: this.index === undefined ? undefined : this.index,
     };
   }
 }
@@ -862,15 +890,15 @@ export type BlockLedgerArgsWithType = BlockLedgerArgs & {
   type: AccountType.BlockLedger | "blockLedger";
 };
 export class BlockLedger {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.BlockLedger;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public index?: number;
-  @encodeAs.field(4).time
+  @(encodeAs.field(4).time)
   public time?: Date;
-  @encodeAs.field(5).repeatable.reference
+  @(encodeAs.field(5).repeatable.reference)
   public entries?: (BlockEntry | undefined)[];
 
   constructor(args: BlockLedgerArgs) {
@@ -880,13 +908,13 @@ export class BlockLedger {
       args.time == undefined
         ? undefined
         : args.time instanceof Date
-        ? args.time
-        : new Date(args.time);
+          ? args.time
+          : new Date(args.time);
     this.entries =
       args.entries == undefined
         ? undefined
         : args.entries.map((v) =>
-            v == undefined ? undefined : v instanceof BlockEntry ? v : new BlockEntry(v)
+            v == undefined ? undefined : v instanceof BlockEntry ? v : new BlockEntry(v),
           );
   }
 
@@ -897,11 +925,13 @@ export class BlockLedger {
   asObject(): BlockLedgerArgsWithType {
     return {
       type: "blockLedger",
-      url: this.url && this.url.toString(),
-      index: this.index && this.index,
-      time: this.time && this.time,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      index: this.index === undefined ? undefined : this.index,
+      time: this.time === undefined ? undefined : this.time,
       entries:
-        this.entries && this.entries?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.entries === undefined
+          ? undefined
+          : this.entries?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -919,21 +949,21 @@ export type BlockValidatorAnchorArgsWithType = BlockValidatorAnchorArgs & {
   type: TransactionType.BlockValidatorAnchor | "blockValidatorAnchor";
 };
 export class BlockValidatorAnchor {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.BlockValidatorAnchor;
-  @encodeAs.field(2, 1).url
+  @(encodeAs.field(2, 1).url)
   public source?: URL;
-  @encodeAs.field(2, 2).uint
+  @(encodeAs.field(2, 2).uint)
   public majorBlockIndex?: number;
-  @encodeAs.field(2, 3).uint
+  @(encodeAs.field(2, 3).uint)
   public minorBlockIndex?: number;
-  @encodeAs.field(2, 4).uint
+  @(encodeAs.field(2, 4).uint)
   public rootChainIndex?: number;
-  @encodeAs.field(2, 5).hash
+  @(encodeAs.field(2, 5).hash)
   public rootChainAnchor?: Uint8Array;
-  @encodeAs.field(2, 6).hash
+  @(encodeAs.field(2, 6).hash)
   public stateTreeAnchor?: Uint8Array;
-  @encodeAs.field(3).bigInt
+  @(encodeAs.field(3).bigInt)
   public acmeBurnt?: bigint;
 
   constructor(args: BlockValidatorAnchorArgs) {
@@ -945,20 +975,20 @@ export class BlockValidatorAnchor {
       args.rootChainAnchor == undefined
         ? undefined
         : args.rootChainAnchor instanceof Uint8Array
-        ? args.rootChainAnchor
-        : Buffer.from(args.rootChainAnchor, "hex");
+          ? args.rootChainAnchor
+          : Buffer.from(args.rootChainAnchor, "hex");
     this.stateTreeAnchor =
       args.stateTreeAnchor == undefined
         ? undefined
         : args.stateTreeAnchor instanceof Uint8Array
-        ? args.stateTreeAnchor
-        : Buffer.from(args.stateTreeAnchor, "hex");
+          ? args.stateTreeAnchor
+          : Buffer.from(args.stateTreeAnchor, "hex");
     this.acmeBurnt =
       args.acmeBurnt == undefined
         ? undefined
         : typeof args.acmeBurnt === "bigint"
-        ? args.acmeBurnt
-        : BigInt(args.acmeBurnt);
+          ? args.acmeBurnt
+          : BigInt(args.acmeBurnt);
   }
 
   copy() {
@@ -968,19 +998,19 @@ export class BlockValidatorAnchor {
   asObject(): BlockValidatorAnchorArgsWithType {
     return {
       type: "blockValidatorAnchor",
-      source: this.source && this.source.toString(),
-      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
-      minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
-      rootChainIndex: this.rootChainIndex && this.rootChainIndex,
+      source: this.source === undefined ? undefined : this.source.toString(),
+      majorBlockIndex: this.majorBlockIndex === undefined ? undefined : this.majorBlockIndex,
+      minorBlockIndex: this.minorBlockIndex === undefined ? undefined : this.minorBlockIndex,
+      rootChainIndex: this.rootChainIndex === undefined ? undefined : this.rootChainIndex,
       rootChainAnchor:
-        this.rootChainAnchor &&
-        this.rootChainAnchor &&
-        Buffer.from(this.rootChainAnchor).toString("hex"),
+        this.rootChainAnchor === undefined
+          ? undefined
+          : this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
       stateTreeAnchor:
-        this.stateTreeAnchor &&
-        this.stateTreeAnchor &&
-        Buffer.from(this.stateTreeAnchor).toString("hex"),
-      acmeBurnt: this.acmeBurnt && this.acmeBurnt.toString(),
+        this.stateTreeAnchor === undefined
+          ? undefined
+          : this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
+      acmeBurnt: this.acmeBurnt === undefined ? undefined : this.acmeBurnt.toString(),
     };
   }
 }
@@ -992,9 +1022,9 @@ export type BurnCreditsArgsWithType = BurnCreditsArgs & {
   type: TransactionType.BurnCredits | "burnCredits";
 };
 export class BurnCredits {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.BurnCredits;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public amount?: number;
 
   constructor(args: BurnCreditsArgs) {
@@ -1008,7 +1038,7 @@ export class BurnCredits {
   asObject(): BurnCreditsArgsWithType {
     return {
       type: "burnCredits",
-      amount: this.amount && this.amount,
+      amount: this.amount === undefined ? undefined : this.amount,
     };
   }
 }
@@ -1020,9 +1050,9 @@ export type BurnTokensArgsWithType = BurnTokensArgs & {
   type: TransactionType.BurnTokens | "burnTokens";
 };
 export class BurnTokens {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.BurnTokens;
-  @encodeAs.field(2).bigInt
+  @(encodeAs.field(2).bigInt)
   public amount?: bigint;
 
   constructor(args: BurnTokensArgs) {
@@ -1030,8 +1060,8 @@ export class BurnTokens {
       args.amount == undefined
         ? undefined
         : typeof args.amount === "bigint"
-        ? args.amount
-        : BigInt(args.amount);
+          ? args.amount
+          : BigInt(args.amount);
   }
 
   copy() {
@@ -1041,7 +1071,7 @@ export class BurnTokens {
   asObject(): BurnTokensArgsWithType {
     return {
       type: "burnTokens",
-      amount: this.amount && this.amount.toString(),
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
     };
   }
 }
@@ -1051,9 +1081,9 @@ export type ChainMetadataArgs = {
   type?: ChainTypeArgs;
 };
 export class ChainMetadata {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public name?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public type?: ChainType;
 
   constructor(args: ChainMetadataArgs) {
@@ -1067,8 +1097,8 @@ export class ChainMetadata {
 
   asObject(): ChainMetadataArgs {
     return {
-      name: this.name && this.name,
-      type: this.type && ChainType.getName(this.type),
+      name: this.name === undefined ? undefined : this.name,
+      type: this.type === undefined ? undefined : ChainType.getName(this.type),
     };
   }
 }
@@ -1078,9 +1108,9 @@ export type ChainParamsArgs = {
   isUpdate?: boolean;
 };
 export class ChainParams {
-  @encodeAs.field(1).bytes
+  @(encodeAs.field(1).bytes)
   public data?: Uint8Array;
-  @encodeAs.field(2).bool
+  @(encodeAs.field(2).bool)
   public isUpdate?: boolean;
 
   constructor(args: ChainParamsArgs) {
@@ -1088,8 +1118,8 @@ export class ChainParams {
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
     this.isUpdate = args.isUpdate == undefined ? undefined : args.isUpdate;
   }
 
@@ -1099,8 +1129,9 @@ export class ChainParams {
 
   asObject(): ChainParamsArgs {
     return {
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
-      isUpdate: this.isUpdate && this.isUpdate,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
+      isUpdate: this.isUpdate === undefined ? undefined : this.isUpdate,
     };
   }
 }
@@ -1113,11 +1144,11 @@ export type CreateDataAccountArgsWithType = CreateDataAccountArgs & {
   type: TransactionType.CreateDataAccount | "createDataAccount";
 };
 export class CreateDataAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.CreateDataAccount;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).repeatable.url
+  @(encodeAs.field(3).repeatable.url)
   public authorities?: (URL | undefined)[];
 
   constructor(args: CreateDataAccountArgs) {
@@ -1135,10 +1166,11 @@ export class CreateDataAccount {
   asObject(): CreateDataAccountArgsWithType {
     return {
       type: "createDataAccount",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
     };
   }
 }
@@ -1153,15 +1185,15 @@ export type CreateIdentityArgsWithType = CreateIdentityArgs & {
   type: TransactionType.CreateIdentity | "createIdentity";
 };
 export class CreateIdentity {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.CreateIdentity;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public keyHash?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public keyBookUrl?: URL;
-  @encodeAs.field(6).repeatable.url
+  @(encodeAs.field(6).repeatable.url)
   public authorities?: (URL | undefined)[];
 
   constructor(args: CreateIdentityArgs) {
@@ -1170,8 +1202,8 @@ export class CreateIdentity {
       args.keyHash == undefined
         ? undefined
         : args.keyHash instanceof Uint8Array
-        ? args.keyHash
-        : Buffer.from(args.keyHash, "hex");
+          ? args.keyHash
+          : Buffer.from(args.keyHash, "hex");
     this.keyBookUrl = args.keyBookUrl == undefined ? undefined : URL.parse(args.keyBookUrl);
     this.authorities =
       args.authorities == undefined
@@ -1186,12 +1218,16 @@ export class CreateIdentity {
   asObject(): CreateIdentityArgsWithType {
     return {
       type: "createIdentity",
-      url: this.url && this.url.toString(),
-      keyHash: this.keyHash && this.keyHash && Buffer.from(this.keyHash).toString("hex"),
-      keyBookUrl: this.keyBookUrl && this.keyBookUrl.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      keyHash:
+        this.keyHash === undefined
+          ? undefined
+          : this.keyHash && Buffer.from(this.keyHash).toString("hex"),
+      keyBookUrl: this.keyBookUrl === undefined ? undefined : this.keyBookUrl.toString(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
     };
   }
 }
@@ -1205,13 +1241,13 @@ export type CreateKeyBookArgsWithType = CreateKeyBookArgs & {
   type: TransactionType.CreateKeyBook | "createKeyBook";
 };
 export class CreateKeyBook {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.CreateKeyBook;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public publicKeyHash?: Uint8Array;
-  @encodeAs.field(5).repeatable.url
+  @(encodeAs.field(5).repeatable.url)
   public authorities?: (URL | undefined)[];
 
   constructor(args: CreateKeyBookArgs) {
@@ -1220,8 +1256,8 @@ export class CreateKeyBook {
       args.publicKeyHash == undefined
         ? undefined
         : args.publicKeyHash instanceof Uint8Array
-        ? args.publicKeyHash
-        : Buffer.from(args.publicKeyHash, "hex");
+          ? args.publicKeyHash
+          : Buffer.from(args.publicKeyHash, "hex");
     this.authorities =
       args.authorities == undefined
         ? undefined
@@ -1235,12 +1271,15 @@ export class CreateKeyBook {
   asObject(): CreateKeyBookArgsWithType {
     return {
       type: "createKeyBook",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
       publicKeyHash:
-        this.publicKeyHash && this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+        this.publicKeyHash === undefined
+          ? undefined
+          : this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
     };
   }
 }
@@ -1252,9 +1291,9 @@ export type CreateKeyPageArgsWithType = CreateKeyPageArgs & {
   type: TransactionType.CreateKeyPage | "createKeyPage";
 };
 export class CreateKeyPage {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.CreateKeyPage;
-  @encodeAs.field(2).repeatable.reference
+  @(encodeAs.field(2).repeatable.reference)
   public keys?: (KeySpecParams | undefined)[];
 
   constructor(args: CreateKeyPageArgs) {
@@ -1262,7 +1301,7 @@ export class CreateKeyPage {
       args.keys == undefined
         ? undefined
         : args.keys.map((v) =>
-            v == undefined ? undefined : v instanceof KeySpecParams ? v : new KeySpecParams(v)
+            v == undefined ? undefined : v instanceof KeySpecParams ? v : new KeySpecParams(v),
           );
   }
 
@@ -1273,7 +1312,10 @@ export class CreateKeyPage {
   asObject(): CreateKeyPageArgsWithType {
     return {
       type: "createKeyPage",
-      keys: this.keys && this.keys?.map((v) => (v == undefined ? undefined : v.asObject())),
+      keys:
+        this.keys === undefined
+          ? undefined
+          : this.keys?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -1283,7 +1325,7 @@ export type CreateLiteTokenAccountArgsWithType = {
   type: TransactionType.CreateLiteTokenAccount | "createLiteTokenAccount";
 };
 export class CreateLiteTokenAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.CreateLiteTokenAccount;
 
   constructor(_: CreateLiteTokenAccountArgs) {}
@@ -1311,19 +1353,19 @@ export type CreateTokenArgsWithType = CreateTokenArgs & {
   type: TransactionType.CreateToken | "createToken";
 };
 export class CreateToken {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.CreateToken;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(4).string
+  @(encodeAs.field(4).string)
   public symbol?: string;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public precision?: number;
-  @encodeAs.field(6).url
+  @(encodeAs.field(6).url)
   public properties?: URL;
-  @encodeAs.field(7).bigInt
+  @(encodeAs.field(7).bigInt)
   public supplyLimit?: bigint;
-  @encodeAs.field(9).repeatable.url
+  @(encodeAs.field(9).repeatable.url)
   public authorities?: (URL | undefined)[];
 
   constructor(args: CreateTokenArgs) {
@@ -1335,8 +1377,8 @@ export class CreateToken {
       args.supplyLimit == undefined
         ? undefined
         : typeof args.supplyLimit === "bigint"
-        ? args.supplyLimit
-        : BigInt(args.supplyLimit);
+          ? args.supplyLimit
+          : BigInt(args.supplyLimit);
     this.authorities =
       args.authorities == undefined
         ? undefined
@@ -1350,14 +1392,15 @@ export class CreateToken {
   asObject(): CreateTokenArgsWithType {
     return {
       type: "createToken",
-      url: this.url && this.url.toString(),
-      symbol: this.symbol && this.symbol,
-      precision: this.precision && this.precision,
-      properties: this.properties && this.properties.toString(),
-      supplyLimit: this.supplyLimit && this.supplyLimit.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      symbol: this.symbol === undefined ? undefined : this.symbol,
+      precision: this.precision === undefined ? undefined : this.precision,
+      properties: this.properties === undefined ? undefined : this.properties.toString(),
+      supplyLimit: this.supplyLimit === undefined ? undefined : this.supplyLimit.toString(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
     };
   }
 }
@@ -1372,15 +1415,15 @@ export type CreateTokenAccountArgsWithType = CreateTokenAccountArgs & {
   type: TransactionType.CreateTokenAccount | "createTokenAccount";
 };
 export class CreateTokenAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.CreateTokenAccount;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public tokenUrl?: URL;
-  @encodeAs.field(7).repeatable.url
+  @(encodeAs.field(7).repeatable.url)
   public authorities?: (URL | undefined)[];
-  @encodeAs.field(8).reference
+  @(encodeAs.field(8).reference)
   public proof?: TokenIssuerProof;
 
   constructor(args: CreateTokenAccountArgs) {
@@ -1394,8 +1437,8 @@ export class CreateTokenAccount {
       args.proof == undefined
         ? undefined
         : args.proof instanceof TokenIssuerProof
-        ? args.proof
-        : new TokenIssuerProof(args.proof);
+          ? args.proof
+          : new TokenIssuerProof(args.proof);
   }
 
   copy() {
@@ -1405,12 +1448,13 @@ export class CreateTokenAccount {
   asObject(): CreateTokenAccountArgsWithType {
     return {
       type: "createTokenAccount",
-      url: this.url && this.url.toString(),
-      tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      tokenUrl: this.tokenUrl === undefined ? undefined : this.tokenUrl.toString(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
-      proof: this.proof && this.proof.asObject(),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
+      proof: this.proof === undefined ? undefined : this.proof.asObject(),
     };
   }
 }
@@ -1420,9 +1464,9 @@ export type CreditRecipientArgs = {
   amount?: number;
 };
 export class CreditRecipient {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public url?: URL;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public amount?: number;
 
   constructor(args: CreditRecipientArgs) {
@@ -1436,8 +1480,8 @@ export class CreditRecipient {
 
   asObject(): CreditRecipientArgs {
     return {
-      url: this.url && this.url.toString(),
-      amount: this.amount && this.amount,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      amount: this.amount === undefined ? undefined : this.amount,
     };
   }
 }
@@ -1451,13 +1495,13 @@ export type DataAccountArgsWithType = DataAccountArgs & {
   type: AccountType.DataAccount | "dataAccount";
 };
 export class DataAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.DataAccount;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3, 1).repeatable.reference
+  @(encodeAs.field(3, 1).repeatable.reference)
   public authorities?: (AuthorityEntry | undefined)[];
-  @encodeAs.field(4).union
+  @(encodeAs.field(4).union)
   public entry?: DataEntry;
 
   constructor(args: DataAccountArgs) {
@@ -1466,7 +1510,7 @@ export class DataAccount {
       args.authorities == undefined
         ? undefined
         : args.authorities.map((v) =>
-            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
+            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v),
           );
     this.entry = args.entry == undefined ? undefined : DataEntry.fromObject(args.entry);
   }
@@ -1478,11 +1522,12 @@ export class DataAccount {
   asObject(): DataAccountArgsWithType {
     return {
       type: "dataAccount",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
-      entry: this.entry && this.entry.asObject(),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
     };
   }
 }
@@ -1495,11 +1540,11 @@ export type DelegatedSignatureArgsWithType = DelegatedSignatureArgs & {
   type: SignatureType.Delegated | "delegated";
 };
 export class DelegatedSignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.Delegated;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public signature?: Signature;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public delegator?: URL;
 
   constructor(args: DelegatedSignatureArgs) {
@@ -1514,8 +1559,8 @@ export class DelegatedSignature {
   asObject(): DelegatedSignatureArgsWithType {
     return {
       type: "delegated",
-      signature: this.signature && this.signature.asObject(),
-      delegator: this.delegator && this.delegator.toString(),
+      signature: this.signature === undefined ? undefined : this.signature.asObject(),
+      delegator: this.delegator === undefined ? undefined : this.delegator.toString(),
     };
   }
 }
@@ -1536,27 +1581,27 @@ export type DirectoryAnchorArgsWithType = DirectoryAnchorArgs & {
   type: TransactionType.DirectoryAnchor | "directoryAnchor";
 };
 export class DirectoryAnchor {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.DirectoryAnchor;
-  @encodeAs.field(2, 1).url
+  @(encodeAs.field(2, 1).url)
   public source?: URL;
-  @encodeAs.field(2, 2).uint
+  @(encodeAs.field(2, 2).uint)
   public majorBlockIndex?: number;
-  @encodeAs.field(2, 3).uint
+  @(encodeAs.field(2, 3).uint)
   public minorBlockIndex?: number;
-  @encodeAs.field(2, 4).uint
+  @(encodeAs.field(2, 4).uint)
   public rootChainIndex?: number;
-  @encodeAs.field(2, 5).hash
+  @(encodeAs.field(2, 5).hash)
   public rootChainAnchor?: Uint8Array;
-  @encodeAs.field(2, 6).hash
+  @(encodeAs.field(2, 6).hash)
   public stateTreeAnchor?: Uint8Array;
-  @encodeAs.field(3).repeatable.reference
+  @(encodeAs.field(3).repeatable.reference)
   public updates?: (NetworkAccountUpdate | undefined)[];
-  @encodeAs.field(4).repeatable.reference
+  @(encodeAs.field(4).repeatable.reference)
   public receipts?: (PartitionAnchorReceipt | undefined)[];
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public makeMajorBlock?: number;
-  @encodeAs.field(6).time
+  @(encodeAs.field(6).time)
   public makeMajorBlockTime?: Date;
 
   constructor(args: DirectoryAnchorArgs) {
@@ -1568,14 +1613,14 @@ export class DirectoryAnchor {
       args.rootChainAnchor == undefined
         ? undefined
         : args.rootChainAnchor instanceof Uint8Array
-        ? args.rootChainAnchor
-        : Buffer.from(args.rootChainAnchor, "hex");
+          ? args.rootChainAnchor
+          : Buffer.from(args.rootChainAnchor, "hex");
     this.stateTreeAnchor =
       args.stateTreeAnchor == undefined
         ? undefined
         : args.stateTreeAnchor instanceof Uint8Array
-        ? args.stateTreeAnchor
-        : Buffer.from(args.stateTreeAnchor, "hex");
+          ? args.stateTreeAnchor
+          : Buffer.from(args.stateTreeAnchor, "hex");
     this.updates =
       args.updates == undefined
         ? undefined
@@ -1583,8 +1628,8 @@ export class DirectoryAnchor {
             v == undefined
               ? undefined
               : v instanceof NetworkAccountUpdate
-              ? v
-              : new NetworkAccountUpdate(v)
+                ? v
+                : new NetworkAccountUpdate(v),
           );
     this.receipts =
       args.receipts == undefined
@@ -1593,16 +1638,16 @@ export class DirectoryAnchor {
             v == undefined
               ? undefined
               : v instanceof PartitionAnchorReceipt
-              ? v
-              : new PartitionAnchorReceipt(v)
+                ? v
+                : new PartitionAnchorReceipt(v),
           );
     this.makeMajorBlock = args.makeMajorBlock == undefined ? undefined : args.makeMajorBlock;
     this.makeMajorBlockTime =
       args.makeMajorBlockTime == undefined
         ? undefined
         : args.makeMajorBlockTime instanceof Date
-        ? args.makeMajorBlockTime
-        : new Date(args.makeMajorBlockTime);
+          ? args.makeMajorBlockTime
+          : new Date(args.makeMajorBlockTime);
   }
 
   copy() {
@@ -1612,24 +1657,29 @@ export class DirectoryAnchor {
   asObject(): DirectoryAnchorArgsWithType {
     return {
       type: "directoryAnchor",
-      source: this.source && this.source.toString(),
-      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
-      minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
-      rootChainIndex: this.rootChainIndex && this.rootChainIndex,
+      source: this.source === undefined ? undefined : this.source.toString(),
+      majorBlockIndex: this.majorBlockIndex === undefined ? undefined : this.majorBlockIndex,
+      minorBlockIndex: this.minorBlockIndex === undefined ? undefined : this.minorBlockIndex,
+      rootChainIndex: this.rootChainIndex === undefined ? undefined : this.rootChainIndex,
       rootChainAnchor:
-        this.rootChainAnchor &&
-        this.rootChainAnchor &&
-        Buffer.from(this.rootChainAnchor).toString("hex"),
+        this.rootChainAnchor === undefined
+          ? undefined
+          : this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
       stateTreeAnchor:
-        this.stateTreeAnchor &&
-        this.stateTreeAnchor &&
-        Buffer.from(this.stateTreeAnchor).toString("hex"),
+        this.stateTreeAnchor === undefined
+          ? undefined
+          : this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
       updates:
-        this.updates && this.updates?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.updates === undefined
+          ? undefined
+          : this.updates?.map((v) => (v == undefined ? undefined : v.asObject())),
       receipts:
-        this.receipts && this.receipts?.map((v) => (v == undefined ? undefined : v.asObject())),
-      makeMajorBlock: this.makeMajorBlock && this.makeMajorBlock,
-      makeMajorBlockTime: this.makeMajorBlockTime && this.makeMajorBlockTime,
+        this.receipts === undefined
+          ? undefined
+          : this.receipts?.map((v) => (v == undefined ? undefined : v.asObject())),
+      makeMajorBlock: this.makeMajorBlock === undefined ? undefined : this.makeMajorBlock,
+      makeMajorBlockTime:
+        this.makeMajorBlockTime === undefined ? undefined : this.makeMajorBlockTime,
     };
   }
 }
@@ -1641,9 +1691,9 @@ export type DisableAccountAuthOperationArgsWithType = DisableAccountAuthOperatio
   type: AccountAuthOperationType.Disable | "disable";
 };
 export class DisableAccountAuthOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType))
   public readonly type = AccountAuthOperationType.Disable;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public authority?: URL;
 
   constructor(args: DisableAccountAuthOperationArgs) {
@@ -1657,7 +1707,7 @@ export class DisableAccountAuthOperation {
   asObject(): DisableAccountAuthOperationArgsWithType {
     return {
       type: "disable",
-      authority: this.authority && this.authority.toString(),
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
     };
   }
 }
@@ -1669,9 +1719,9 @@ export type DoubleHashDataEntryArgsWithType = DoubleHashDataEntryArgs & {
   type: DataEntryType.DoubleHash | "doubleHash";
 };
 export class DoubleHashDataEntry {
-  @encodeAs.field(1).keepEmpty.enum.of(DataEntryType)
+  @(encodeAs.field(1).keepEmpty.enum.of(DataEntryType))
   public readonly type = DataEntryType.DoubleHash;
-  @encodeAs.field(2).repeatable.bytes
+  @(encodeAs.field(2).repeatable.bytes)
   public data?: (Uint8Array | undefined)[];
 
   constructor(args: DoubleHashDataEntryArgs) {
@@ -1679,7 +1729,7 @@ export class DoubleHashDataEntry {
       args.data == undefined
         ? undefined
         : args.data.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
   }
 
@@ -1691,8 +1741,11 @@ export class DoubleHashDataEntry {
     return {
       type: "doubleHash",
       data:
-        this.data &&
-        this.data?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
+        this.data === undefined
+          ? undefined
+          : this.data?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
     };
   }
 }
@@ -1712,25 +1765,25 @@ export type ED25519SignatureArgsWithType = ED25519SignatureArgs & {
   type: SignatureType.ED25519 | "ed25519";
 };
 export class ED25519Signature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.ED25519;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public signer?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public signerVersion?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public timestamp?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(9).string
+  @(encodeAs.field(9).string)
   public memo?: string;
-  @encodeAs.field(10).bytes
+  @(encodeAs.field(10).bytes)
   public data?: Uint8Array;
 
   constructor(args: ED25519SignatureArgs) {
@@ -1738,14 +1791,14 @@ export class ED25519Signature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
@@ -1754,15 +1807,15 @@ export class ED25519Signature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -1772,18 +1825,25 @@ export class ED25519Signature {
   asObject(): ED25519SignatureArgsWithType {
     return {
       type: "ed25519",
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && VoteType.getName(this.vote),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      memo: this.memo && this.memo,
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -1801,25 +1861,25 @@ export type ETHSignatureArgs = {
 };
 export type ETHSignatureArgsWithType = ETHSignatureArgs & { type: SignatureType.ETH | "eth" };
 export class ETHSignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.ETH;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public signer?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public signerVersion?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public timestamp?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(9).string
+  @(encodeAs.field(9).string)
   public memo?: string;
-  @encodeAs.field(10).bytes
+  @(encodeAs.field(10).bytes)
   public data?: Uint8Array;
 
   constructor(args: ETHSignatureArgs) {
@@ -1827,14 +1887,14 @@ export class ETHSignature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
@@ -1843,15 +1903,15 @@ export class ETHSignature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -1861,18 +1921,25 @@ export class ETHSignature {
   asObject(): ETHSignatureArgsWithType {
     return {
       type: "eth",
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && VoteType.getName(this.vote),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      memo: this.memo && this.memo,
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -1892,25 +1959,25 @@ export type EcdsaSha256SignatureArgsWithType = EcdsaSha256SignatureArgs & {
   type: SignatureType.EcdsaSha256 | "ecdsaSha256";
 };
 export class EcdsaSha256Signature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.EcdsaSha256;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public signer?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public signerVersion?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public timestamp?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(9).string
+  @(encodeAs.field(9).string)
   public memo?: string;
-  @encodeAs.field(10).bytes
+  @(encodeAs.field(10).bytes)
   public data?: Uint8Array;
 
   constructor(args: EcdsaSha256SignatureArgs) {
@@ -1918,14 +1985,14 @@ export class EcdsaSha256Signature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
@@ -1934,15 +2001,15 @@ export class EcdsaSha256Signature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -1952,18 +2019,25 @@ export class EcdsaSha256Signature {
   asObject(): EcdsaSha256SignatureArgsWithType {
     return {
       type: "ecdsaSha256",
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && VoteType.getName(this.vote),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      memo: this.memo && this.memo,
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -1971,7 +2045,7 @@ export class EcdsaSha256Signature {
 export type EmptyResultArgs = {};
 export type EmptyResultArgsWithType = { type: TransactionType.Unknown | "unknown" };
 export class EmptyResult {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.Unknown;
 
   constructor(_: EmptyResultArgs) {}
@@ -1994,9 +2068,9 @@ export type EnableAccountAuthOperationArgsWithType = EnableAccountAuthOperationA
   type: AccountAuthOperationType.Enable | "enable";
 };
 export class EnableAccountAuthOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType))
   public readonly type = AccountAuthOperationType.Enable;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public authority?: URL;
 
   constructor(args: EnableAccountAuthOperationArgs) {
@@ -2010,7 +2084,7 @@ export class EnableAccountAuthOperation {
   asObject(): EnableAccountAuthOperationArgsWithType {
     return {
       type: "enable",
-      authority: this.authority && this.authority.toString(),
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
     };
   }
 }
@@ -2019,7 +2093,7 @@ export type ExpireOptionsArgs = {
   atTime?: Date | string;
 };
 export class ExpireOptions {
-  @encodeAs.field(1).time
+  @(encodeAs.field(1).time)
   public atTime?: Date;
 
   constructor(args: ExpireOptionsArgs) {
@@ -2027,8 +2101,8 @@ export class ExpireOptions {
       args.atTime == undefined
         ? undefined
         : args.atTime instanceof Date
-        ? args.atTime
-        : new Date(args.atTime);
+          ? args.atTime
+          : new Date(args.atTime);
   }
 
   copy() {
@@ -2037,7 +2111,7 @@ export class ExpireOptions {
 
   asObject(): ExpireOptionsArgs {
     return {
-      atTime: this.atTime && this.atTime,
+      atTime: this.atTime === undefined ? undefined : this.atTime,
     };
   }
 }
@@ -2057,19 +2131,19 @@ export class FactomDataEntry {
       args.accountId == undefined
         ? undefined
         : args.accountId instanceof Uint8Array
-        ? args.accountId
-        : Buffer.from(args.accountId, "hex");
+          ? args.accountId
+          : Buffer.from(args.accountId, "hex");
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
     this.extIds =
       args.extIds == undefined
         ? undefined
         : args.extIds.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
   }
 
@@ -2079,11 +2153,18 @@ export class FactomDataEntry {
 
   asObject(): FactomDataEntryArgs {
     return {
-      accountId: this.accountId && this.accountId && Buffer.from(this.accountId).toString("hex"),
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+      accountId:
+        this.accountId === undefined
+          ? undefined
+          : this.accountId && Buffer.from(this.accountId).toString("hex"),
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
       extIds:
-        this.extIds &&
-        this.extIds?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
+        this.extIds === undefined
+          ? undefined
+          : this.extIds?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
     };
   }
 }
@@ -2097,13 +2178,13 @@ export type FactomDataEntryWrapperArgsWithType = FactomDataEntryWrapperArgs & {
   type: DataEntryType.Factom | "factom";
 };
 export class FactomDataEntryWrapper {
-  @encodeAs.field(1).keepEmpty.enum.of(DataEntryType)
+  @(encodeAs.field(1).keepEmpty.enum.of(DataEntryType))
   public readonly type = DataEntryType.Factom;
-  @encodeAs.field(2, 1).hash
+  @(encodeAs.field(2, 1).hash)
   public accountId?: Uint8Array;
-  @encodeAs.field(2, 2).bytes
+  @(encodeAs.field(2, 2).bytes)
   public data?: Uint8Array;
-  @encodeAs.field(2, 3).repeatable.bytes
+  @(encodeAs.field(2, 3).repeatable.bytes)
   public extIds?: (Uint8Array | undefined)[];
 
   constructor(args: FactomDataEntryWrapperArgs) {
@@ -2111,19 +2192,19 @@ export class FactomDataEntryWrapper {
       args.accountId == undefined
         ? undefined
         : args.accountId instanceof Uint8Array
-        ? args.accountId
-        : Buffer.from(args.accountId, "hex");
+          ? args.accountId
+          : Buffer.from(args.accountId, "hex");
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
     this.extIds =
       args.extIds == undefined
         ? undefined
         : args.extIds.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
   }
 
@@ -2134,11 +2215,18 @@ export class FactomDataEntryWrapper {
   asObject(): FactomDataEntryWrapperArgsWithType {
     return {
       type: "factom",
-      accountId: this.accountId && this.accountId && Buffer.from(this.accountId).toString("hex"),
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+      accountId:
+        this.accountId === undefined
+          ? undefined
+          : this.accountId && Buffer.from(this.accountId).toString("hex"),
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
       extIds:
-        this.extIds &&
-        this.extIds?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
+        this.extIds === undefined
+          ? undefined
+          : this.extIds?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
     };
   }
 }
@@ -2149,11 +2237,11 @@ export type FeeScheduleArgs = {
   bareIdentityDiscount?: FeeArgs;
 };
 export class FeeSchedule {
-  @encodeAs.field(1).repeatable.enum
+  @(encodeAs.field(1).repeatable.enum)
   public createIdentitySliding?: (Fee | undefined)[];
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public createSubIdentity?: Fee;
-  @encodeAs.field(3).enum
+  @(encodeAs.field(3).enum)
   public bareIdentityDiscount?: Fee;
 
   constructor(args: FeeScheduleArgs) {
@@ -2176,10 +2264,15 @@ export class FeeSchedule {
   asObject(): FeeScheduleArgs {
     return {
       createIdentitySliding:
-        this.createIdentitySliding &&
-        this.createIdentitySliding?.map((v) => (v == undefined ? undefined : Fee.getName(v))),
-      createSubIdentity: this.createSubIdentity && Fee.getName(this.createSubIdentity),
-      bareIdentityDiscount: this.bareIdentityDiscount && Fee.getName(this.bareIdentityDiscount),
+        this.createIdentitySliding === undefined
+          ? undefined
+          : this.createIdentitySliding?.map((v) => (v == undefined ? undefined : Fee.getName(v))),
+      createSubIdentity:
+        this.createSubIdentity === undefined ? undefined : Fee.getName(this.createSubIdentity),
+      bareIdentityDiscount:
+        this.bareIdentityDiscount === undefined
+          ? undefined
+          : Fee.getName(this.bareIdentityDiscount),
     };
   }
 }
@@ -2188,7 +2281,7 @@ export type HoldUntilOptionsArgs = {
   minorBlock?: number;
 };
 export class HoldUntilOptions {
-  @encodeAs.field(1).uint
+  @(encodeAs.field(1).uint)
   public minorBlock?: number;
 
   constructor(args: HoldUntilOptionsArgs) {
@@ -2201,7 +2294,7 @@ export class HoldUntilOptions {
 
   asObject(): HoldUntilOptionsArgs {
     return {
-      minorBlock: this.minorBlock && this.minorBlock,
+      minorBlock: this.minorBlock === undefined ? undefined : this.minorBlock,
     };
   }
 }
@@ -2214,15 +2307,15 @@ export type IndexEntryArgs = {
   rootIndexIndex?: number;
 };
 export class IndexEntry {
-  @encodeAs.field(1).uint
+  @(encodeAs.field(1).uint)
   public source?: number;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public anchor?: number;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public blockIndex?: number;
-  @encodeAs.field(4).time
+  @(encodeAs.field(4).time)
   public blockTime?: Date;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public rootIndexIndex?: number;
 
   constructor(args: IndexEntryArgs) {
@@ -2233,8 +2326,8 @@ export class IndexEntry {
       args.blockTime == undefined
         ? undefined
         : args.blockTime instanceof Date
-        ? args.blockTime
-        : new Date(args.blockTime);
+          ? args.blockTime
+          : new Date(args.blockTime);
     this.rootIndexIndex = args.rootIndexIndex == undefined ? undefined : args.rootIndexIndex;
   }
 
@@ -2244,11 +2337,11 @@ export class IndexEntry {
 
   asObject(): IndexEntryArgs {
     return {
-      source: this.source && this.source,
-      anchor: this.anchor && this.anchor,
-      blockIndex: this.blockIndex && this.blockIndex,
-      blockTime: this.blockTime && this.blockTime,
-      rootIndexIndex: this.rootIndexIndex && this.rootIndexIndex,
+      source: this.source === undefined ? undefined : this.source,
+      anchor: this.anchor === undefined ? undefined : this.anchor,
+      blockIndex: this.blockIndex === undefined ? undefined : this.blockIndex,
+      blockTime: this.blockTime === undefined ? undefined : this.blockTime,
+      rootIndexIndex: this.rootIndexIndex === undefined ? undefined : this.rootIndexIndex,
     };
   }
 }
@@ -2261,11 +2354,11 @@ export type InternalSignatureArgsWithType = InternalSignatureArgs & {
   type: SignatureType.Internal | "internal";
 };
 export class InternalSignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.Internal;
-  @encodeAs.field(2).hash
+  @(encodeAs.field(2).hash)
   public cause?: Uint8Array;
-  @encodeAs.field(3).hash
+  @(encodeAs.field(3).hash)
   public transactionHash?: Uint8Array;
 
   constructor(args: InternalSignatureArgs) {
@@ -2273,14 +2366,14 @@ export class InternalSignature {
       args.cause == undefined
         ? undefined
         : args.cause instanceof Uint8Array
-        ? args.cause
-        : Buffer.from(args.cause, "hex");
+          ? args.cause
+          : Buffer.from(args.cause, "hex");
     this.transactionHash =
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
   }
 
   copy() {
@@ -2290,11 +2383,14 @@ export class InternalSignature {
   asObject(): InternalSignatureArgsWithType {
     return {
       type: "internal",
-      cause: this.cause && this.cause && Buffer.from(this.cause).toString("hex"),
+      cause:
+        this.cause === undefined
+          ? undefined
+          : this.cause && Buffer.from(this.cause).toString("hex"),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
@@ -2308,13 +2404,13 @@ export type IssueTokensArgsWithType = IssueTokensArgs & {
   type: TransactionType.IssueTokens | "issueTokens";
 };
 export class IssueTokens {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.IssueTokens;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public recipient?: URL;
-  @encodeAs.field(3).bigInt
+  @(encodeAs.field(3).bigInt)
   public amount?: bigint;
-  @encodeAs.field(4).repeatable.reference
+  @(encodeAs.field(4).repeatable.reference)
   public to?: (TokenRecipient | undefined)[];
 
   constructor(args: IssueTokensArgs) {
@@ -2323,13 +2419,13 @@ export class IssueTokens {
       args.amount == undefined
         ? undefined
         : typeof args.amount === "bigint"
-        ? args.amount
-        : BigInt(args.amount);
+          ? args.amount
+          : BigInt(args.amount);
     this.to =
       args.to == undefined
         ? undefined
         : args.to.map((v) =>
-            v == undefined ? undefined : v instanceof TokenRecipient ? v : new TokenRecipient(v)
+            v == undefined ? undefined : v instanceof TokenRecipient ? v : new TokenRecipient(v),
           );
   }
 
@@ -2340,9 +2436,12 @@ export class IssueTokens {
   asObject(): IssueTokensArgsWithType {
     return {
       type: "issueTokens",
-      recipient: this.recipient && this.recipient.toString(),
-      amount: this.amount && this.amount.toString(),
-      to: this.to && this.to?.map((v) => (v == undefined ? undefined : v.asObject())),
+      recipient: this.recipient === undefined ? undefined : this.recipient.toString(),
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
+      to:
+        this.to === undefined
+          ? undefined
+          : this.to?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -2355,15 +2454,15 @@ export type KeyBookArgs = {
 };
 export type KeyBookArgsWithType = KeyBookArgs & { type: AccountType.KeyBook | "keyBook" };
 export class KeyBook {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.KeyBook;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).enum
+  @(encodeAs.field(3).enum)
   public bookType?: BookType;
-  @encodeAs.field(4, 1).repeatable.reference
+  @(encodeAs.field(4, 1).repeatable.reference)
   public authorities?: (AuthorityEntry | undefined)[];
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public pageCount?: number;
 
   constructor(args: KeyBookArgs) {
@@ -2373,7 +2472,7 @@ export class KeyBook {
       args.authorities == undefined
         ? undefined
         : args.authorities.map((v) =>
-            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
+            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v),
           );
     this.pageCount = args.pageCount == undefined ? undefined : args.pageCount;
   }
@@ -2385,12 +2484,13 @@ export class KeyBook {
   asObject(): KeyBookArgsWithType {
     return {
       type: "keyBook",
-      url: this.url && this.url.toString(),
-      bookType: this.bookType && BookType.getName(this.bookType),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      bookType: this.bookType === undefined ? undefined : BookType.getName(this.bookType),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
-      pageCount: this.pageCount && this.pageCount,
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
+      pageCount: this.pageCount === undefined ? undefined : this.pageCount,
     };
   }
 }
@@ -2408,25 +2508,25 @@ export type KeyPageArgs = {
 };
 export type KeyPageArgsWithType = KeyPageArgs & { type: AccountType.KeyPage | "keyPage" };
 export class KeyPage {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.KeyPage;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public creditBalance?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public acceptThreshold?: number;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public rejectThreshold?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public responseThreshold?: number;
-  @encodeAs.field(7).uint
+  @(encodeAs.field(7).uint)
   public blockThreshold?: number;
-  @encodeAs.field(8).uint
+  @(encodeAs.field(8).uint)
   public version?: number;
-  @encodeAs.field(9).repeatable.reference
+  @(encodeAs.field(9).repeatable.reference)
   public keys?: (KeySpec | undefined)[];
-  @encodeAs.field(10).enum
+  @(encodeAs.field(10).enum)
   public transactionBlacklist?: AllowedTransactions;
 
   constructor(args: KeyPageArgs) {
@@ -2442,7 +2542,7 @@ export class KeyPage {
       args.keys == undefined
         ? undefined
         : args.keys.map((v) =>
-            v == undefined ? undefined : v instanceof KeySpec ? v : new KeySpec(v)
+            v == undefined ? undefined : v instanceof KeySpec ? v : new KeySpec(v),
           );
     this.transactionBlacklist =
       args.transactionBlacklist == undefined
@@ -2457,17 +2557,21 @@ export class KeyPage {
   asObject(): KeyPageArgsWithType {
     return {
       type: "keyPage",
-      url: this.url && this.url.toString(),
-      creditBalance: this.creditBalance && this.creditBalance,
-      acceptThreshold: this.acceptThreshold && this.acceptThreshold,
-      rejectThreshold: this.rejectThreshold && this.rejectThreshold,
-      responseThreshold: this.responseThreshold && this.responseThreshold,
-      blockThreshold: this.blockThreshold && this.blockThreshold,
-      version: this.version && this.version,
-      keys: this.keys && this.keys?.map((v) => (v == undefined ? undefined : v.asObject())),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      creditBalance: this.creditBalance === undefined ? undefined : this.creditBalance,
+      acceptThreshold: this.acceptThreshold === undefined ? undefined : this.acceptThreshold,
+      rejectThreshold: this.rejectThreshold === undefined ? undefined : this.rejectThreshold,
+      responseThreshold: this.responseThreshold === undefined ? undefined : this.responseThreshold,
+      blockThreshold: this.blockThreshold === undefined ? undefined : this.blockThreshold,
+      version: this.version === undefined ? undefined : this.version,
+      keys:
+        this.keys === undefined
+          ? undefined
+          : this.keys?.map((v) => (v == undefined ? undefined : v.asObject())),
       transactionBlacklist:
-        this.transactionBlacklist &&
-        this.transactionBlacklist.map((v) => TransactionType.getName(v)),
+        this.transactionBlacklist === undefined
+          ? undefined
+          : this.transactionBlacklist.map((v) => TransactionType.getName(v)),
     };
   }
 }
@@ -2478,11 +2582,11 @@ export type KeySpecArgs = {
   delegate?: URLArgs;
 };
 export class KeySpec {
-  @encodeAs.field(1).bytes
+  @(encodeAs.field(1).bytes)
   public publicKeyHash?: Uint8Array;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public lastUsedOn?: number;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public delegate?: URL;
 
   constructor(args: KeySpecArgs) {
@@ -2490,8 +2594,8 @@ export class KeySpec {
       args.publicKeyHash == undefined
         ? undefined
         : args.publicKeyHash instanceof Uint8Array
-        ? args.publicKeyHash
-        : Buffer.from(args.publicKeyHash, "hex");
+          ? args.publicKeyHash
+          : Buffer.from(args.publicKeyHash, "hex");
     this.lastUsedOn = args.lastUsedOn == undefined ? undefined : args.lastUsedOn;
     this.delegate = args.delegate == undefined ? undefined : URL.parse(args.delegate);
   }
@@ -2503,9 +2607,11 @@ export class KeySpec {
   asObject(): KeySpecArgs {
     return {
       publicKeyHash:
-        this.publicKeyHash && this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
-      lastUsedOn: this.lastUsedOn && this.lastUsedOn,
-      delegate: this.delegate && this.delegate.toString(),
+        this.publicKeyHash === undefined
+          ? undefined
+          : this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      lastUsedOn: this.lastUsedOn === undefined ? undefined : this.lastUsedOn,
+      delegate: this.delegate === undefined ? undefined : this.delegate.toString(),
     };
   }
 }
@@ -2515,9 +2621,9 @@ export type KeySpecParamsArgs = {
   delegate?: URLArgs;
 };
 export class KeySpecParams {
-  @encodeAs.field(1).bytes
+  @(encodeAs.field(1).bytes)
   public keyHash?: Uint8Array;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public delegate?: URL;
 
   constructor(args: KeySpecParamsArgs) {
@@ -2525,8 +2631,8 @@ export class KeySpecParams {
       args.keyHash == undefined
         ? undefined
         : args.keyHash instanceof Uint8Array
-        ? args.keyHash
-        : Buffer.from(args.keyHash, "hex");
+          ? args.keyHash
+          : Buffer.from(args.keyHash, "hex");
     this.delegate = args.delegate == undefined ? undefined : URL.parse(args.delegate);
   }
 
@@ -2536,8 +2642,11 @@ export class KeySpecParams {
 
   asObject(): KeySpecParamsArgs {
     return {
-      keyHash: this.keyHash && this.keyHash && Buffer.from(this.keyHash).toString("hex"),
-      delegate: this.delegate && this.delegate.toString(),
+      keyHash:
+        this.keyHash === undefined
+          ? undefined
+          : this.keyHash && Buffer.from(this.keyHash).toString("hex"),
+      delegate: this.delegate === undefined ? undefined : this.delegate.toString(),
     };
   }
 }
@@ -2555,21 +2664,21 @@ export type LegacyED25519SignatureArgsWithType = LegacyED25519SignatureArgs & {
   type: SignatureType.LegacyED25519 | "legacyED25519";
 };
 export class LegacyED25519Signature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.LegacyED25519;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public timestamp?: number;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(4).bytes
+  @(encodeAs.field(4).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(5).url
+  @(encodeAs.field(5).url)
   public signer?: URL;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public signerVersion?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
 
   constructor(args: LegacyED25519SignatureArgs) {
@@ -2578,14 +2687,14 @@ export class LegacyED25519Signature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.vote = args.vote == undefined ? undefined : VoteType.fromObject(args.vote);
@@ -2593,8 +2702,8 @@ export class LegacyED25519Signature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
   }
 
   copy() {
@@ -2604,16 +2713,22 @@ export class LegacyED25519Signature {
   asObject(): LegacyED25519SignatureArgsWithType {
     return {
       type: "legacyED25519",
-      timestamp: this.timestamp && this.timestamp,
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      vote: this.vote && VoteType.getName(this.vote),
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
@@ -2625,9 +2740,9 @@ export type LiteDataAccountArgsWithType = LiteDataAccountArgs & {
   type: AccountType.LiteDataAccount | "liteDataAccount";
 };
 export class LiteDataAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.LiteDataAccount;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
 
   constructor(args: LiteDataAccountArgs) {
@@ -2641,7 +2756,7 @@ export class LiteDataAccount {
   asObject(): LiteDataAccountArgsWithType {
     return {
       type: "liteDataAccount",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
     };
   }
 }
@@ -2655,13 +2770,13 @@ export type LiteIdentityArgsWithType = LiteIdentityArgs & {
   type: AccountType.LiteIdentity | "liteIdentity";
 };
 export class LiteIdentity {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.LiteIdentity;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public creditBalance?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public lastUsedOn?: number;
 
   constructor(args: LiteIdentityArgs) {
@@ -2677,9 +2792,9 @@ export class LiteIdentity {
   asObject(): LiteIdentityArgsWithType {
     return {
       type: "liteIdentity",
-      url: this.url && this.url.toString(),
-      creditBalance: this.creditBalance && this.creditBalance,
-      lastUsedOn: this.lastUsedOn && this.lastUsedOn,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      creditBalance: this.creditBalance === undefined ? undefined : this.creditBalance,
+      lastUsedOn: this.lastUsedOn === undefined ? undefined : this.lastUsedOn,
     };
   }
 }
@@ -2694,15 +2809,15 @@ export type LiteTokenAccountArgsWithType = LiteTokenAccountArgs & {
   type: AccountType.LiteTokenAccount | "liteTokenAccount";
 };
 export class LiteTokenAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.LiteTokenAccount;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public tokenUrl?: URL;
-  @encodeAs.field(4).bigInt
+  @(encodeAs.field(4).bigInt)
   public balance?: bigint;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public lockHeight?: number;
 
   constructor(args: LiteTokenAccountArgs) {
@@ -2712,8 +2827,8 @@ export class LiteTokenAccount {
       args.balance == undefined
         ? undefined
         : typeof args.balance === "bigint"
-        ? args.balance
-        : BigInt(args.balance);
+          ? args.balance
+          : BigInt(args.balance);
     this.lockHeight = args.lockHeight == undefined ? undefined : args.lockHeight;
   }
 
@@ -2724,10 +2839,10 @@ export class LiteTokenAccount {
   asObject(): LiteTokenAccountArgsWithType {
     return {
       type: "liteTokenAccount",
-      url: this.url && this.url.toString(),
-      tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
-      balance: this.balance && this.balance.toString(),
-      lockHeight: this.lockHeight && this.lockHeight,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      tokenUrl: this.tokenUrl === undefined ? undefined : this.tokenUrl.toString(),
+      balance: this.balance === undefined ? undefined : this.balance.toString(),
+      lockHeight: this.lockHeight === undefined ? undefined : this.lockHeight,
     };
   }
 }
@@ -2739,9 +2854,9 @@ export type LockAccountArgsWithType = LockAccountArgs & {
   type: TransactionType.LockAccount | "lockAccount";
 };
 export class LockAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.LockAccount;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public height?: number;
 
   constructor(args: LockAccountArgs) {
@@ -2755,7 +2870,7 @@ export class LockAccount {
   asObject(): LockAccountArgsWithType {
     return {
       type: "lockAccount",
-      height: this.height && this.height,
+      height: this.height === undefined ? undefined : this.height,
     };
   }
 }
@@ -2765,9 +2880,9 @@ export type NetworkAccountUpdateArgs = {
   body?: TransactionBody | TransactionBodyArgs;
 };
 export class NetworkAccountUpdate {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public name?: string;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public body?: TransactionBody;
 
   constructor(args: NetworkAccountUpdateArgs) {
@@ -2781,8 +2896,8 @@ export class NetworkAccountUpdate {
 
   asObject(): NetworkAccountUpdateArgs {
     return {
-      name: this.name && this.name,
-      body: this.body && this.body.asObject(),
+      name: this.name === undefined ? undefined : this.name,
+      body: this.body === undefined ? undefined : this.body.asObject(),
     };
   }
 }
@@ -2794,13 +2909,13 @@ export type NetworkDefinitionArgs = {
   validators?: (ValidatorInfo | ValidatorInfoArgs | undefined)[];
 };
 export class NetworkDefinition {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public networkName?: string;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public version?: number;
-  @encodeAs.field(3).repeatable.reference
+  @(encodeAs.field(3).repeatable.reference)
   public partitions?: (PartitionInfo | undefined)[];
-  @encodeAs.field(4).repeatable.reference
+  @(encodeAs.field(4).repeatable.reference)
   public validators?: (ValidatorInfo | undefined)[];
 
   constructor(args: NetworkDefinitionArgs) {
@@ -2810,13 +2925,13 @@ export class NetworkDefinition {
       args.partitions == undefined
         ? undefined
         : args.partitions.map((v) =>
-            v == undefined ? undefined : v instanceof PartitionInfo ? v : new PartitionInfo(v)
+            v == undefined ? undefined : v instanceof PartitionInfo ? v : new PartitionInfo(v),
           );
     this.validators =
       args.validators == undefined
         ? undefined
         : args.validators.map((v) =>
-            v == undefined ? undefined : v instanceof ValidatorInfo ? v : new ValidatorInfo(v)
+            v == undefined ? undefined : v instanceof ValidatorInfo ? v : new ValidatorInfo(v),
           );
   }
 
@@ -2826,12 +2941,16 @@ export class NetworkDefinition {
 
   asObject(): NetworkDefinitionArgs {
     return {
-      networkName: this.networkName && this.networkName,
-      version: this.version && this.version,
+      networkName: this.networkName === undefined ? undefined : this.networkName,
+      version: this.version === undefined ? undefined : this.version,
       partitions:
-        this.partitions && this.partitions?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.partitions === undefined
+          ? undefined
+          : this.partitions?.map((v) => (v == undefined ? undefined : v.asObject())),
       validators:
-        this.validators && this.validators?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.validators === undefined
+          ? undefined
+          : this.validators?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -2845,17 +2964,17 @@ export type NetworkGlobalsArgs = {
   limits?: NetworkLimits | NetworkLimitsArgs;
 };
 export class NetworkGlobals {
-  @encodeAs.field(1).reference
+  @(encodeAs.field(1).reference)
   public operatorAcceptThreshold?: Rational;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public validatorAcceptThreshold?: Rational;
-  @encodeAs.field(3).string
+  @(encodeAs.field(3).string)
   public majorBlockSchedule?: string;
-  @encodeAs.field(4).bool
+  @(encodeAs.field(4).bool)
   public anchorEmptyBlocks?: boolean;
-  @encodeAs.field(5).reference
+  @(encodeAs.field(5).reference)
   public feeSchedule?: FeeSchedule;
-  @encodeAs.field(6).reference
+  @(encodeAs.field(6).reference)
   public limits?: NetworkLimits;
 
   constructor(args: NetworkGlobalsArgs) {
@@ -2863,14 +2982,14 @@ export class NetworkGlobals {
       args.operatorAcceptThreshold == undefined
         ? undefined
         : args.operatorAcceptThreshold instanceof Rational
-        ? args.operatorAcceptThreshold
-        : new Rational(args.operatorAcceptThreshold);
+          ? args.operatorAcceptThreshold
+          : new Rational(args.operatorAcceptThreshold);
     this.validatorAcceptThreshold =
       args.validatorAcceptThreshold == undefined
         ? undefined
         : args.validatorAcceptThreshold instanceof Rational
-        ? args.validatorAcceptThreshold
-        : new Rational(args.validatorAcceptThreshold);
+          ? args.validatorAcceptThreshold
+          : new Rational(args.validatorAcceptThreshold);
     this.majorBlockSchedule =
       args.majorBlockSchedule == undefined ? undefined : args.majorBlockSchedule;
     this.anchorEmptyBlocks =
@@ -2879,14 +2998,14 @@ export class NetworkGlobals {
       args.feeSchedule == undefined
         ? undefined
         : args.feeSchedule instanceof FeeSchedule
-        ? args.feeSchedule
-        : new FeeSchedule(args.feeSchedule);
+          ? args.feeSchedule
+          : new FeeSchedule(args.feeSchedule);
     this.limits =
       args.limits == undefined
         ? undefined
         : args.limits instanceof NetworkLimits
-        ? args.limits
-        : new NetworkLimits(args.limits);
+          ? args.limits
+          : new NetworkLimits(args.limits);
   }
 
   copy() {
@@ -2896,13 +3015,18 @@ export class NetworkGlobals {
   asObject(): NetworkGlobalsArgs {
     return {
       operatorAcceptThreshold:
-        this.operatorAcceptThreshold && this.operatorAcceptThreshold.asObject(),
+        this.operatorAcceptThreshold === undefined
+          ? undefined
+          : this.operatorAcceptThreshold.asObject(),
       validatorAcceptThreshold:
-        this.validatorAcceptThreshold && this.validatorAcceptThreshold.asObject(),
-      majorBlockSchedule: this.majorBlockSchedule && this.majorBlockSchedule,
-      anchorEmptyBlocks: this.anchorEmptyBlocks && this.anchorEmptyBlocks,
-      feeSchedule: this.feeSchedule && this.feeSchedule.asObject(),
-      limits: this.limits && this.limits.asObject(),
+        this.validatorAcceptThreshold === undefined
+          ? undefined
+          : this.validatorAcceptThreshold.asObject(),
+      majorBlockSchedule:
+        this.majorBlockSchedule === undefined ? undefined : this.majorBlockSchedule,
+      anchorEmptyBlocks: this.anchorEmptyBlocks === undefined ? undefined : this.anchorEmptyBlocks,
+      feeSchedule: this.feeSchedule === undefined ? undefined : this.feeSchedule.asObject(),
+      limits: this.limits === undefined ? undefined : this.limits.asObject(),
     };
   }
 }
@@ -2917,19 +3041,19 @@ export type NetworkLimitsArgs = {
   eventsPerBlock?: number;
 };
 export class NetworkLimits {
-  @encodeAs.field(1).uint
+  @(encodeAs.field(1).uint)
   public dataEntryParts?: number;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public accountAuthorities?: number;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public bookPages?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public pageEntries?: number;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public identityAccounts?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public pendingMajorBlocks?: number;
-  @encodeAs.field(7).uint
+  @(encodeAs.field(7).uint)
   public eventsPerBlock?: number;
 
   constructor(args: NetworkLimitsArgs) {
@@ -2950,13 +3074,15 @@ export class NetworkLimits {
 
   asObject(): NetworkLimitsArgs {
     return {
-      dataEntryParts: this.dataEntryParts && this.dataEntryParts,
-      accountAuthorities: this.accountAuthorities && this.accountAuthorities,
-      bookPages: this.bookPages && this.bookPages,
-      pageEntries: this.pageEntries && this.pageEntries,
-      identityAccounts: this.identityAccounts && this.identityAccounts,
-      pendingMajorBlocks: this.pendingMajorBlocks && this.pendingMajorBlocks,
-      eventsPerBlock: this.eventsPerBlock && this.eventsPerBlock,
+      dataEntryParts: this.dataEntryParts === undefined ? undefined : this.dataEntryParts,
+      accountAuthorities:
+        this.accountAuthorities === undefined ? undefined : this.accountAuthorities,
+      bookPages: this.bookPages === undefined ? undefined : this.bookPages,
+      pageEntries: this.pageEntries === undefined ? undefined : this.pageEntries,
+      identityAccounts: this.identityAccounts === undefined ? undefined : this.identityAccounts,
+      pendingMajorBlocks:
+        this.pendingMajorBlocks === undefined ? undefined : this.pendingMajorBlocks,
+      eventsPerBlock: this.eventsPerBlock === undefined ? undefined : this.eventsPerBlock,
     };
   }
 }
@@ -2968,9 +3094,9 @@ export type NetworkMaintenanceArgsWithType = NetworkMaintenanceArgs & {
   type: TransactionType.NetworkMaintenance | "networkMaintenance";
 };
 export class NetworkMaintenance {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.NetworkMaintenance;
-  @encodeAs.field(2).repeatable.union
+  @(encodeAs.field(2).repeatable.union)
   public operations?: (NetworkMaintenanceOperation | undefined)[];
 
   constructor(args: NetworkMaintenanceArgs) {
@@ -2978,7 +3104,7 @@ export class NetworkMaintenance {
       args.operations == undefined
         ? undefined
         : args.operations.map((v) =>
-            v == undefined ? undefined : NetworkMaintenanceOperation.fromObject(v)
+            v == undefined ? undefined : NetworkMaintenanceOperation.fromObject(v),
           );
   }
 
@@ -2990,7 +3116,9 @@ export class NetworkMaintenance {
     return {
       type: "networkMaintenance",
       operations:
-        this.operations && this.operations?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.operations === undefined
+          ? undefined
+          : this.operations?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -3004,17 +3132,17 @@ export type PartitionAnchorArgs = {
   stateTreeAnchor?: Uint8Array | string;
 };
 export class PartitionAnchor {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public source?: URL;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public majorBlockIndex?: number;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public minorBlockIndex?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public rootChainIndex?: number;
-  @encodeAs.field(5).hash
+  @(encodeAs.field(5).hash)
   public rootChainAnchor?: Uint8Array;
-  @encodeAs.field(6).hash
+  @(encodeAs.field(6).hash)
   public stateTreeAnchor?: Uint8Array;
 
   constructor(args: PartitionAnchorArgs) {
@@ -3026,14 +3154,14 @@ export class PartitionAnchor {
       args.rootChainAnchor == undefined
         ? undefined
         : args.rootChainAnchor instanceof Uint8Array
-        ? args.rootChainAnchor
-        : Buffer.from(args.rootChainAnchor, "hex");
+          ? args.rootChainAnchor
+          : Buffer.from(args.rootChainAnchor, "hex");
     this.stateTreeAnchor =
       args.stateTreeAnchor == undefined
         ? undefined
         : args.stateTreeAnchor instanceof Uint8Array
-        ? args.stateTreeAnchor
-        : Buffer.from(args.stateTreeAnchor, "hex");
+          ? args.stateTreeAnchor
+          : Buffer.from(args.stateTreeAnchor, "hex");
   }
 
   copy() {
@@ -3042,18 +3170,18 @@ export class PartitionAnchor {
 
   asObject(): PartitionAnchorArgs {
     return {
-      source: this.source && this.source.toString(),
-      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
-      minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
-      rootChainIndex: this.rootChainIndex && this.rootChainIndex,
+      source: this.source === undefined ? undefined : this.source.toString(),
+      majorBlockIndex: this.majorBlockIndex === undefined ? undefined : this.majorBlockIndex,
+      minorBlockIndex: this.minorBlockIndex === undefined ? undefined : this.minorBlockIndex,
+      rootChainIndex: this.rootChainIndex === undefined ? undefined : this.rootChainIndex,
       rootChainAnchor:
-        this.rootChainAnchor &&
-        this.rootChainAnchor &&
-        Buffer.from(this.rootChainAnchor).toString("hex"),
+        this.rootChainAnchor === undefined
+          ? undefined
+          : this.rootChainAnchor && Buffer.from(this.rootChainAnchor).toString("hex"),
       stateTreeAnchor:
-        this.stateTreeAnchor &&
-        this.stateTreeAnchor &&
-        Buffer.from(this.stateTreeAnchor).toString("hex"),
+        this.stateTreeAnchor === undefined
+          ? undefined
+          : this.stateTreeAnchor && Buffer.from(this.stateTreeAnchor).toString("hex"),
     };
   }
 }
@@ -3063,9 +3191,9 @@ export type PartitionAnchorReceiptArgs = {
   rootChainReceipt?: merkle.Receipt | merkle.ReceiptArgs;
 };
 export class PartitionAnchorReceipt {
-  @encodeAs.field(1).reference
+  @(encodeAs.field(1).reference)
   public anchor?: PartitionAnchor;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public rootChainReceipt?: merkle.Receipt;
 
   constructor(args: PartitionAnchorReceiptArgs) {
@@ -3073,14 +3201,14 @@ export class PartitionAnchorReceipt {
       args.anchor == undefined
         ? undefined
         : args.anchor instanceof PartitionAnchor
-        ? args.anchor
-        : new PartitionAnchor(args.anchor);
+          ? args.anchor
+          : new PartitionAnchor(args.anchor);
     this.rootChainReceipt =
       args.rootChainReceipt == undefined
         ? undefined
         : args.rootChainReceipt instanceof merkle.Receipt
-        ? args.rootChainReceipt
-        : new merkle.Receipt(args.rootChainReceipt);
+          ? args.rootChainReceipt
+          : new merkle.Receipt(args.rootChainReceipt);
   }
 
   copy() {
@@ -3089,8 +3217,9 @@ export class PartitionAnchorReceipt {
 
   asObject(): PartitionAnchorReceiptArgs {
     return {
-      anchor: this.anchor && this.anchor.asObject(),
-      rootChainReceipt: this.rootChainReceipt && this.rootChainReceipt.asObject(),
+      anchor: this.anchor === undefined ? undefined : this.anchor.asObject(),
+      rootChainReceipt:
+        this.rootChainReceipt === undefined ? undefined : this.rootChainReceipt.asObject(),
     };
   }
 }
@@ -3100,9 +3229,9 @@ export type PartitionExecutorVersionArgs = {
   version?: ExecutorVersionArgs;
 };
 export class PartitionExecutorVersion {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public partition?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public version?: ExecutorVersion;
 
   constructor(args: PartitionExecutorVersionArgs) {
@@ -3116,8 +3245,8 @@ export class PartitionExecutorVersion {
 
   asObject(): PartitionExecutorVersionArgs {
     return {
-      partition: this.partition && this.partition,
-      version: this.version && ExecutorVersion.getName(this.version),
+      partition: this.partition === undefined ? undefined : this.partition,
+      version: this.version === undefined ? undefined : ExecutorVersion.getName(this.version),
     };
   }
 }
@@ -3127,9 +3256,9 @@ export type PartitionInfoArgs = {
   type?: PartitionTypeArgs;
 };
 export class PartitionInfo {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public id?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public type?: PartitionType;
 
   constructor(args: PartitionInfoArgs) {
@@ -3143,8 +3272,8 @@ export class PartitionInfo {
 
   asObject(): PartitionInfoArgs {
     return {
-      id: this.id && this.id,
-      type: this.type && PartitionType.getName(this.type),
+      id: this.id === undefined ? undefined : this.id,
+      type: this.type === undefined ? undefined : PartitionType.getName(this.type),
     };
   }
 }
@@ -3159,15 +3288,15 @@ export type PartitionSignatureArgsWithType = PartitionSignatureArgs & {
   type: SignatureType.Partition | "partition";
 };
 export class PartitionSignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.Partition;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public sourceNetwork?: URL;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public destinationNetwork?: URL;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public sequenceNumber?: number;
-  @encodeAs.field(5).hash
+  @(encodeAs.field(5).hash)
   public transactionHash?: Uint8Array;
 
   constructor(args: PartitionSignatureArgs) {
@@ -3180,8 +3309,8 @@ export class PartitionSignature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
   }
 
   copy() {
@@ -3191,13 +3320,14 @@ export class PartitionSignature {
   asObject(): PartitionSignatureArgsWithType {
     return {
       type: "partition",
-      sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
-      destinationNetwork: this.destinationNetwork && this.destinationNetwork.toString(),
-      sequenceNumber: this.sequenceNumber && this.sequenceNumber,
+      sourceNetwork: this.sourceNetwork === undefined ? undefined : this.sourceNetwork.toString(),
+      destinationNetwork:
+        this.destinationNetwork === undefined ? undefined : this.destinationNetwork.toString(),
+      sequenceNumber: this.sequenceNumber === undefined ? undefined : this.sequenceNumber,
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
@@ -3210,15 +3340,15 @@ export type PartitionSyntheticLedgerArgs = {
   pending?: (TxIDArgs | undefined)[];
 };
 export class PartitionSyntheticLedger {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public url?: URL;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public produced?: number;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public received?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public delivered?: number;
-  @encodeAs.field(5).repeatable.txid
+  @(encodeAs.field(5).repeatable.txid)
   public pending?: (TxID | undefined)[];
 
   constructor(args: PartitionSyntheticLedgerArgs) {
@@ -3238,12 +3368,14 @@ export class PartitionSyntheticLedger {
 
   asObject(): PartitionSyntheticLedgerArgs {
     return {
-      url: this.url && this.url.toString(),
-      produced: this.produced && this.produced,
-      received: this.received && this.received,
-      delivered: this.delivered && this.delivered,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      produced: this.produced === undefined ? undefined : this.produced,
+      received: this.received === undefined ? undefined : this.received,
+      delivered: this.delivered === undefined ? undefined : this.delivered,
       pending:
-        this.pending && this.pending?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.pending === undefined
+          ? undefined
+          : this.pending?.map((v) => (v == undefined ? undefined : v.toString())),
     };
   }
 }
@@ -3255,9 +3387,9 @@ export type PendingTransactionGCOperationArgsWithType = PendingTransactionGCOper
   type: NetworkMaintenanceOperationType.PendingTransactionGC | "pendingTransactionGC";
 };
 export class PendingTransactionGCOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(NetworkMaintenanceOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(NetworkMaintenanceOperationType))
   public readonly type = NetworkMaintenanceOperationType.PendingTransactionGC;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public account?: URL;
 
   constructor(args: PendingTransactionGCOperationArgs) {
@@ -3271,7 +3403,7 @@ export class PendingTransactionGCOperation {
   asObject(): PendingTransactionGCOperationArgsWithType {
     return {
       type: "pendingTransactionGC",
-      account: this.account && this.account.toString(),
+      account: this.account === undefined ? undefined : this.account.toString(),
     };
   }
 }
@@ -3289,25 +3421,25 @@ export type RCD1SignatureArgs = {
 };
 export type RCD1SignatureArgsWithType = RCD1SignatureArgs & { type: SignatureType.RCD1 | "rcd1" };
 export class RCD1Signature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.RCD1;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public signer?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public signerVersion?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public timestamp?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(9).string
+  @(encodeAs.field(9).string)
   public memo?: string;
-  @encodeAs.field(10).bytes
+  @(encodeAs.field(10).bytes)
   public data?: Uint8Array;
 
   constructor(args: RCD1SignatureArgs) {
@@ -3315,14 +3447,14 @@ export class RCD1Signature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
@@ -3331,15 +3463,15 @@ export class RCD1Signature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -3349,18 +3481,25 @@ export class RCD1Signature {
   asObject(): RCD1SignatureArgsWithType {
     return {
       type: "rcd1",
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && VoteType.getName(this.vote),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      memo: this.memo && this.memo,
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -3370,9 +3509,9 @@ export type RationalArgs = {
   denominator?: number;
 };
 export class Rational {
-  @encodeAs.field(1).uint
+  @(encodeAs.field(1).uint)
   public numerator?: number;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public denominator?: number;
 
   constructor(args: RationalArgs) {
@@ -3386,8 +3525,8 @@ export class Rational {
 
   asObject(): RationalArgs {
     return {
-      numerator: this.numerator && this.numerator,
-      denominator: this.denominator && this.denominator,
+      numerator: this.numerator === undefined ? undefined : this.numerator,
+      denominator: this.denominator === undefined ? undefined : this.denominator,
     };
   }
 }
@@ -3401,13 +3540,13 @@ export type ReceiptSignatureArgsWithType = ReceiptSignatureArgs & {
   type: SignatureType.Receipt | "receipt";
 };
 export class ReceiptSignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.Receipt;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public sourceNetwork?: URL;
-  @encodeAs.field(3).reference
+  @(encodeAs.field(3).reference)
   public proof?: merkle.Receipt;
-  @encodeAs.field(4).hash
+  @(encodeAs.field(4).hash)
   public transactionHash?: Uint8Array;
 
   constructor(args: ReceiptSignatureArgs) {
@@ -3417,14 +3556,14 @@ export class ReceiptSignature {
       args.proof == undefined
         ? undefined
         : args.proof instanceof merkle.Receipt
-        ? args.proof
-        : new merkle.Receipt(args.proof);
+          ? args.proof
+          : new merkle.Receipt(args.proof);
     this.transactionHash =
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
   }
 
   copy() {
@@ -3434,12 +3573,12 @@ export class ReceiptSignature {
   asObject(): ReceiptSignatureArgsWithType {
     return {
       type: "receipt",
-      sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
-      proof: this.proof && this.proof.asObject(),
+      sourceNetwork: this.sourceNetwork === undefined ? undefined : this.sourceNetwork.toString(),
+      proof: this.proof === undefined ? undefined : this.proof.asObject(),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
     };
   }
 }
@@ -3453,13 +3592,13 @@ export type RemoteSignatureArgsWithType = RemoteSignatureArgs & {
   type: SignatureType.Remote | "remote";
 };
 export class RemoteSignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.Remote;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public destination?: URL;
-  @encodeAs.field(3).union
+  @(encodeAs.field(3).union)
   public signature?: Signature;
-  @encodeAs.field(4).repeatable.hash
+  @(encodeAs.field(4).repeatable.hash)
   public cause?: (Uint8Array | undefined)[];
 
   constructor(args: RemoteSignatureArgs) {
@@ -3469,7 +3608,7 @@ export class RemoteSignature {
       args.cause == undefined
         ? undefined
         : args.cause.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
   }
 
@@ -3480,11 +3619,14 @@ export class RemoteSignature {
   asObject(): RemoteSignatureArgsWithType {
     return {
       type: "remote",
-      destination: this.destination && this.destination.toString(),
-      signature: this.signature && this.signature.asObject(),
+      destination: this.destination === undefined ? undefined : this.destination.toString(),
+      signature: this.signature === undefined ? undefined : this.signature.asObject(),
       cause:
-        this.cause &&
-        this.cause?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
+        this.cause === undefined
+          ? undefined
+          : this.cause?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
     };
   }
 }
@@ -3496,9 +3638,9 @@ export type RemoteTransactionArgsWithType = RemoteTransactionArgs & {
   type: TransactionType.Remote | "remote";
 };
 export class RemoteTransaction {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.Remote;
-  @encodeAs.field(2).hash
+  @(encodeAs.field(2).hash)
   public hash?: Uint8Array;
 
   constructor(args: RemoteTransactionArgs) {
@@ -3506,8 +3648,8 @@ export class RemoteTransaction {
       args.hash == undefined
         ? undefined
         : args.hash instanceof Uint8Array
-        ? args.hash
-        : Buffer.from(args.hash, "hex");
+          ? args.hash
+          : Buffer.from(args.hash, "hex");
   }
 
   copy() {
@@ -3517,7 +3659,8 @@ export class RemoteTransaction {
   asObject(): RemoteTransactionArgsWithType {
     return {
       type: "remote",
-      hash: this.hash && this.hash && Buffer.from(this.hash).toString("hex"),
+      hash:
+        this.hash === undefined ? undefined : this.hash && Buffer.from(this.hash).toString("hex"),
     };
   }
 }
@@ -3529,9 +3672,9 @@ export type RemoveAccountAuthorityOperationArgsWithType = RemoveAccountAuthority
   type: AccountAuthOperationType.RemoveAuthority | "removeAuthority";
 };
 export class RemoveAccountAuthorityOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountAuthOperationType))
   public readonly type = AccountAuthOperationType.RemoveAuthority;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public authority?: URL;
 
   constructor(args: RemoveAccountAuthorityOperationArgs) {
@@ -3545,7 +3688,7 @@ export class RemoveAccountAuthorityOperation {
   asObject(): RemoveAccountAuthorityOperationArgsWithType {
     return {
       type: "removeAuthority",
-      authority: this.authority && this.authority.toString(),
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
     };
   }
 }
@@ -3557,9 +3700,9 @@ export type RemoveKeyOperationArgsWithType = RemoveKeyOperationArgs & {
   type: KeyPageOperationType.Remove | "remove";
 };
 export class RemoveKeyOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType))
   public readonly type = KeyPageOperationType.Remove;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public entry?: KeySpecParams;
 
   constructor(args: RemoveKeyOperationArgs) {
@@ -3567,8 +3710,8 @@ export class RemoveKeyOperation {
       args.entry == undefined
         ? undefined
         : args.entry instanceof KeySpecParams
-        ? args.entry
-        : new KeySpecParams(args.entry);
+          ? args.entry
+          : new KeySpecParams(args.entry);
   }
 
   copy() {
@@ -3578,7 +3721,7 @@ export class RemoveKeyOperation {
   asObject(): RemoveKeyOperationArgsWithType {
     return {
       type: "remove",
-      entry: this.entry && this.entry.asObject(),
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
     };
   }
 }
@@ -3589,11 +3732,11 @@ export type RouteArgs = {
   partition?: string;
 };
 export class Route {
-  @encodeAs.field(1).uint
+  @(encodeAs.field(1).uint)
   public length?: number;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public value?: number;
-  @encodeAs.field(3).string
+  @(encodeAs.field(3).string)
   public partition?: string;
 
   constructor(args: RouteArgs) {
@@ -3608,9 +3751,9 @@ export class Route {
 
   asObject(): RouteArgs {
     return {
-      length: this.length && this.length,
-      value: this.value && this.value,
-      partition: this.partition && this.partition,
+      length: this.length === undefined ? undefined : this.length,
+      value: this.value === undefined ? undefined : this.value,
+      partition: this.partition === undefined ? undefined : this.partition,
     };
   }
 }
@@ -3620,9 +3763,9 @@ export type RouteOverrideArgs = {
   partition?: string;
 };
 export class RouteOverride {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public account?: URL;
-  @encodeAs.field(2).string
+  @(encodeAs.field(2).string)
   public partition?: string;
 
   constructor(args: RouteOverrideArgs) {
@@ -3636,8 +3779,8 @@ export class RouteOverride {
 
   asObject(): RouteOverrideArgs {
     return {
-      account: this.account && this.account.toString(),
-      partition: this.partition && this.partition,
+      account: this.account === undefined ? undefined : this.account.toString(),
+      partition: this.partition === undefined ? undefined : this.partition,
     };
   }
 }
@@ -3647,9 +3790,9 @@ export type RoutingTableArgs = {
   routes?: (Route | RouteArgs | undefined)[];
 };
 export class RoutingTable {
-  @encodeAs.field(1).repeatable.reference
+  @(encodeAs.field(1).repeatable.reference)
   public overrides?: (RouteOverride | undefined)[];
-  @encodeAs.field(2).repeatable.reference
+  @(encodeAs.field(2).repeatable.reference)
   public routes?: (Route | undefined)[];
 
   constructor(args: RoutingTableArgs) {
@@ -3657,13 +3800,13 @@ export class RoutingTable {
       args.overrides == undefined
         ? undefined
         : args.overrides.map((v) =>
-            v == undefined ? undefined : v instanceof RouteOverride ? v : new RouteOverride(v)
+            v == undefined ? undefined : v instanceof RouteOverride ? v : new RouteOverride(v),
           );
     this.routes =
       args.routes == undefined
         ? undefined
         : args.routes.map((v) =>
-            v == undefined ? undefined : v instanceof Route ? v : new Route(v)
+            v == undefined ? undefined : v instanceof Route ? v : new Route(v),
           );
   }
 
@@ -3674,8 +3817,13 @@ export class RoutingTable {
   asObject(): RoutingTableArgs {
     return {
       overrides:
-        this.overrides && this.overrides?.map((v) => (v == undefined ? undefined : v.asObject())),
-      routes: this.routes && this.routes?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.overrides === undefined
+          ? undefined
+          : this.overrides?.map((v) => (v == undefined ? undefined : v.asObject())),
+      routes:
+        this.routes === undefined
+          ? undefined
+          : this.routes?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -3695,25 +3843,25 @@ export type RsaSha256SignatureArgsWithType = RsaSha256SignatureArgs & {
   type: SignatureType.RsaSha256 | "rsaSha256";
 };
 export class RsaSha256Signature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.RsaSha256;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public signer?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public signerVersion?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public timestamp?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(9).string
+  @(encodeAs.field(9).string)
   public memo?: string;
-  @encodeAs.field(10).bytes
+  @(encodeAs.field(10).bytes)
   public data?: Uint8Array;
 
   constructor(args: RsaSha256SignatureArgs) {
@@ -3721,14 +3869,14 @@ export class RsaSha256Signature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
@@ -3737,15 +3885,15 @@ export class RsaSha256Signature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
   }
 
   copy() {
@@ -3755,18 +3903,25 @@ export class RsaSha256Signature {
   asObject(): RsaSha256SignatureArgsWithType {
     return {
       type: "rsaSha256",
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && VoteType.getName(this.vote),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      memo: this.memo && this.memo,
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
     };
   }
 }
@@ -3780,13 +3935,13 @@ export type SendTokensArgsWithType = SendTokensArgs & {
   type: TransactionType.SendTokens | "sendTokens";
 };
 export class SendTokens {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SendTokens;
-  @encodeAs.field(2).hash
+  @(encodeAs.field(2).hash)
   public hash?: Uint8Array;
-  @encodeAs.field(3).rawJson
+  @(encodeAs.field(3).rawJson)
   public meta?: unknown;
-  @encodeAs.field(4).repeatable.reference
+  @(encodeAs.field(4).repeatable.reference)
   public to?: (TokenRecipient | undefined)[];
 
   constructor(args: SendTokensArgs) {
@@ -3794,14 +3949,14 @@ export class SendTokens {
       args.hash == undefined
         ? undefined
         : args.hash instanceof Uint8Array
-        ? args.hash
-        : Buffer.from(args.hash, "hex");
+          ? args.hash
+          : Buffer.from(args.hash, "hex");
     this.meta = args.meta == undefined ? undefined : args.meta;
     this.to =
       args.to == undefined
         ? undefined
         : args.to.map((v) =>
-            v == undefined ? undefined : v instanceof TokenRecipient ? v : new TokenRecipient(v)
+            v == undefined ? undefined : v instanceof TokenRecipient ? v : new TokenRecipient(v),
           );
   }
 
@@ -3812,9 +3967,13 @@ export class SendTokens {
   asObject(): SendTokensArgsWithType {
     return {
       type: "sendTokens",
-      hash: this.hash && this.hash && Buffer.from(this.hash).toString("hex"),
-      meta: this.meta && this.meta,
-      to: this.to && this.to?.map((v) => (v == undefined ? undefined : v.asObject())),
+      hash:
+        this.hash === undefined ? undefined : this.hash && Buffer.from(this.hash).toString("hex"),
+      meta: this.meta === undefined ? undefined : this.meta,
+      to:
+        this.to === undefined
+          ? undefined
+          : this.to?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -3827,9 +3986,9 @@ export type SetRejectThresholdKeyPageOperationArgsWithType =
     type: KeyPageOperationType.SetRejectThreshold | "setRejectThreshold";
   };
 export class SetRejectThresholdKeyPageOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType))
   public readonly type = KeyPageOperationType.SetRejectThreshold;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public threshold?: number;
 
   constructor(args: SetRejectThresholdKeyPageOperationArgs) {
@@ -3843,7 +4002,7 @@ export class SetRejectThresholdKeyPageOperation {
   asObject(): SetRejectThresholdKeyPageOperationArgsWithType {
     return {
       type: "setRejectThreshold",
-      threshold: this.threshold && this.threshold,
+      threshold: this.threshold === undefined ? undefined : this.threshold,
     };
   }
 }
@@ -3856,9 +4015,9 @@ export type SetResponseThresholdKeyPageOperationArgsWithType =
     type: KeyPageOperationType.SetResponseThreshold | "setResponseThreshold";
   };
 export class SetResponseThresholdKeyPageOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType))
   public readonly type = KeyPageOperationType.SetResponseThreshold;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public threshold?: number;
 
   constructor(args: SetResponseThresholdKeyPageOperationArgs) {
@@ -3872,7 +4031,7 @@ export class SetResponseThresholdKeyPageOperation {
   asObject(): SetResponseThresholdKeyPageOperationArgsWithType {
     return {
       type: "setResponseThreshold",
-      threshold: this.threshold && this.threshold,
+      threshold: this.threshold === undefined ? undefined : this.threshold,
     };
   }
 }
@@ -3884,9 +4043,9 @@ export type SetThresholdKeyPageOperationArgsWithType = SetThresholdKeyPageOperat
   type: KeyPageOperationType.SetThreshold | "setThreshold";
 };
 export class SetThresholdKeyPageOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType))
   public readonly type = KeyPageOperationType.SetThreshold;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public threshold?: number;
 
   constructor(args: SetThresholdKeyPageOperationArgs) {
@@ -3900,7 +4059,7 @@ export class SetThresholdKeyPageOperation {
   asObject(): SetThresholdKeyPageOperationArgsWithType {
     return {
       type: "setThreshold",
-      threshold: this.threshold && this.threshold,
+      threshold: this.threshold === undefined ? undefined : this.threshold,
     };
   }
 }
@@ -3914,17 +4073,17 @@ export type SignatureSetArgs = {
 };
 export type SignatureSetArgsWithType = SignatureSetArgs & { type: SignatureType.Set | "set" };
 export class SignatureSet {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.Set;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public vote?: VoteType;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public signer?: URL;
-  @encodeAs.field(4).hash
+  @(encodeAs.field(4).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(5).repeatable.union
+  @(encodeAs.field(5).repeatable.union)
   public signatures?: (Signature | undefined)[];
-  @encodeAs.field(6).url
+  @(encodeAs.field(6).url)
   public authority?: URL;
 
   constructor(args: SignatureSetArgs) {
@@ -3934,8 +4093,8 @@ export class SignatureSet {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.signatures =
       args.signatures == undefined
         ? undefined
@@ -3950,15 +4109,17 @@ export class SignatureSet {
   asObject(): SignatureSetArgsWithType {
     return {
       type: "set",
-      vote: this.vote && VoteType.getName(this.vote),
-      signer: this.signer && this.signer.toString(),
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
       signatures:
-        this.signatures && this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
-      authority: this.authority && this.authority.toString(),
+        this.signatures === undefined
+          ? undefined
+          : this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
     };
   }
 }
@@ -3976,21 +4137,21 @@ export type SyntheticBurnTokensArgsWithType = SyntheticBurnTokensArgs & {
   type: TransactionType.SyntheticBurnTokens | "syntheticBurnTokens";
 };
 export class SyntheticBurnTokens {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SyntheticBurnTokens;
-  @encodeAs.field(2, 1).txid
+  @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @encodeAs.field(2, 0).url
+  @(encodeAs.field(2, 0).url)
   public source?: URL;
-  @encodeAs.field(2, 3).url
+  @(encodeAs.field(2, 3).url)
   public initiator?: URL;
-  @encodeAs.field(2, 4).uint
+  @(encodeAs.field(2, 4).uint)
   public feeRefund?: number;
-  @encodeAs.field(2, 5).uint
+  @(encodeAs.field(2, 5).uint)
   public index?: number;
-  @encodeAs.field(3).bigInt
+  @(encodeAs.field(3).bigInt)
   public amount?: bigint;
-  @encodeAs.field(4).bool
+  @(encodeAs.field(4).bool)
   public isRefund?: boolean;
 
   constructor(args: SyntheticBurnTokensArgs) {
@@ -4003,8 +4164,8 @@ export class SyntheticBurnTokens {
       args.amount == undefined
         ? undefined
         : typeof args.amount === "bigint"
-        ? args.amount
-        : BigInt(args.amount);
+          ? args.amount
+          : BigInt(args.amount);
     this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
 
@@ -4015,13 +4176,13 @@ export class SyntheticBurnTokens {
   asObject(): SyntheticBurnTokensArgsWithType {
     return {
       type: "syntheticBurnTokens",
-      cause: this.cause && this.cause.toString(),
-      source: this.source && this.source.toString(),
-      initiator: this.initiator && this.initiator.toString(),
-      feeRefund: this.feeRefund && this.feeRefund,
-      index: this.index && this.index,
-      amount: this.amount && this.amount.toString(),
-      isRefund: this.isRefund && this.isRefund,
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
+      source: this.source === undefined ? undefined : this.source.toString(),
+      initiator: this.initiator === undefined ? undefined : this.initiator.toString(),
+      feeRefund: this.feeRefund === undefined ? undefined : this.feeRefund,
+      index: this.index === undefined ? undefined : this.index,
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
+      isRefund: this.isRefund === undefined ? undefined : this.isRefund,
     };
   }
 }
@@ -4038,19 +4199,19 @@ export type SyntheticCreateIdentityArgsWithType = SyntheticCreateIdentityArgs & 
   type: TransactionType.SyntheticCreateIdentity | "syntheticCreateIdentity";
 };
 export class SyntheticCreateIdentity {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SyntheticCreateIdentity;
-  @encodeAs.field(2, 1).txid
+  @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @encodeAs.field(2, 0).url
+  @(encodeAs.field(2, 0).url)
   public source?: URL;
-  @encodeAs.field(2, 3).url
+  @(encodeAs.field(2, 3).url)
   public initiator?: URL;
-  @encodeAs.field(2, 4).uint
+  @(encodeAs.field(2, 4).uint)
   public feeRefund?: number;
-  @encodeAs.field(2, 5).uint
+  @(encodeAs.field(2, 5).uint)
   public index?: number;
-  @encodeAs.field(3).repeatable.union
+  @(encodeAs.field(3).repeatable.union)
   public accounts?: (Account | undefined)[];
 
   constructor(args: SyntheticCreateIdentityArgs) {
@@ -4072,13 +4233,15 @@ export class SyntheticCreateIdentity {
   asObject(): SyntheticCreateIdentityArgsWithType {
     return {
       type: "syntheticCreateIdentity",
-      cause: this.cause && this.cause.toString(),
-      source: this.source && this.source.toString(),
-      initiator: this.initiator && this.initiator.toString(),
-      feeRefund: this.feeRefund && this.feeRefund,
-      index: this.index && this.index,
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
+      source: this.source === undefined ? undefined : this.source.toString(),
+      initiator: this.initiator === undefined ? undefined : this.initiator.toString(),
+      feeRefund: this.feeRefund === undefined ? undefined : this.feeRefund,
+      index: this.index === undefined ? undefined : this.index,
       accounts:
-        this.accounts && this.accounts?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.accounts === undefined
+          ? undefined
+          : this.accounts?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -4097,23 +4260,23 @@ export type SyntheticDepositCreditsArgsWithType = SyntheticDepositCreditsArgs & 
   type: TransactionType.SyntheticDepositCredits | "syntheticDepositCredits";
 };
 export class SyntheticDepositCredits {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SyntheticDepositCredits;
-  @encodeAs.field(2, 1).txid
+  @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @encodeAs.field(2, 0).url
+  @(encodeAs.field(2, 0).url)
   public source?: URL;
-  @encodeAs.field(2, 3).url
+  @(encodeAs.field(2, 3).url)
   public initiator?: URL;
-  @encodeAs.field(2, 4).uint
+  @(encodeAs.field(2, 4).uint)
   public feeRefund?: number;
-  @encodeAs.field(2, 5).uint
+  @(encodeAs.field(2, 5).uint)
   public index?: number;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public amount?: number;
-  @encodeAs.field(4).bigInt
+  @(encodeAs.field(4).bigInt)
   public acmeRefundAmount?: bigint;
-  @encodeAs.field(5).bool
+  @(encodeAs.field(5).bool)
   public isRefund?: boolean;
 
   constructor(args: SyntheticDepositCreditsArgs) {
@@ -4127,8 +4290,8 @@ export class SyntheticDepositCredits {
       args.acmeRefundAmount == undefined
         ? undefined
         : typeof args.acmeRefundAmount === "bigint"
-        ? args.acmeRefundAmount
-        : BigInt(args.acmeRefundAmount);
+          ? args.acmeRefundAmount
+          : BigInt(args.acmeRefundAmount);
     this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
 
@@ -4139,14 +4302,15 @@ export class SyntheticDepositCredits {
   asObject(): SyntheticDepositCreditsArgsWithType {
     return {
       type: "syntheticDepositCredits",
-      cause: this.cause && this.cause.toString(),
-      source: this.source && this.source.toString(),
-      initiator: this.initiator && this.initiator.toString(),
-      feeRefund: this.feeRefund && this.feeRefund,
-      index: this.index && this.index,
-      amount: this.amount && this.amount,
-      acmeRefundAmount: this.acmeRefundAmount && this.acmeRefundAmount.toString(),
-      isRefund: this.isRefund && this.isRefund,
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
+      source: this.source === undefined ? undefined : this.source.toString(),
+      initiator: this.initiator === undefined ? undefined : this.initiator.toString(),
+      feeRefund: this.feeRefund === undefined ? undefined : this.feeRefund,
+      index: this.index === undefined ? undefined : this.index,
+      amount: this.amount === undefined ? undefined : this.amount,
+      acmeRefundAmount:
+        this.acmeRefundAmount === undefined ? undefined : this.acmeRefundAmount.toString(),
+      isRefund: this.isRefund === undefined ? undefined : this.isRefund,
     };
   }
 }
@@ -4166,25 +4330,25 @@ export type SyntheticDepositTokensArgsWithType = SyntheticDepositTokensArgs & {
   type: TransactionType.SyntheticDepositTokens | "syntheticDepositTokens";
 };
 export class SyntheticDepositTokens {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SyntheticDepositTokens;
-  @encodeAs.field(2, 1).txid
+  @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @encodeAs.field(2, 0).url
+  @(encodeAs.field(2, 0).url)
   public source?: URL;
-  @encodeAs.field(2, 3).url
+  @(encodeAs.field(2, 3).url)
   public initiator?: URL;
-  @encodeAs.field(2, 4).uint
+  @(encodeAs.field(2, 4).uint)
   public feeRefund?: number;
-  @encodeAs.field(2, 5).uint
+  @(encodeAs.field(2, 5).uint)
   public index?: number;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public token?: URL;
-  @encodeAs.field(4).bigInt
+  @(encodeAs.field(4).bigInt)
   public amount?: bigint;
-  @encodeAs.field(5).bool
+  @(encodeAs.field(5).bool)
   public isIssuer?: boolean;
-  @encodeAs.field(6).bool
+  @(encodeAs.field(6).bool)
   public isRefund?: boolean;
 
   constructor(args: SyntheticDepositTokensArgs) {
@@ -4198,8 +4362,8 @@ export class SyntheticDepositTokens {
       args.amount == undefined
         ? undefined
         : typeof args.amount === "bigint"
-        ? args.amount
-        : BigInt(args.amount);
+          ? args.amount
+          : BigInt(args.amount);
     this.isIssuer = args.isIssuer == undefined ? undefined : args.isIssuer;
     this.isRefund = args.isRefund == undefined ? undefined : args.isRefund;
   }
@@ -4211,15 +4375,15 @@ export class SyntheticDepositTokens {
   asObject(): SyntheticDepositTokensArgsWithType {
     return {
       type: "syntheticDepositTokens",
-      cause: this.cause && this.cause.toString(),
-      source: this.source && this.source.toString(),
-      initiator: this.initiator && this.initiator.toString(),
-      feeRefund: this.feeRefund && this.feeRefund,
-      index: this.index && this.index,
-      token: this.token && this.token.toString(),
-      amount: this.amount && this.amount.toString(),
-      isIssuer: this.isIssuer && this.isIssuer,
-      isRefund: this.isRefund && this.isRefund,
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
+      source: this.source === undefined ? undefined : this.source.toString(),
+      initiator: this.initiator === undefined ? undefined : this.initiator.toString(),
+      feeRefund: this.feeRefund === undefined ? undefined : this.feeRefund,
+      index: this.index === undefined ? undefined : this.index,
+      token: this.token === undefined ? undefined : this.token.toString(),
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
+      isIssuer: this.isIssuer === undefined ? undefined : this.isIssuer,
+      isRefund: this.isRefund === undefined ? undefined : this.isRefund,
     };
   }
 }
@@ -4232,11 +4396,11 @@ export type SyntheticForwardTransactionArgsWithType = SyntheticForwardTransactio
   type: TransactionType.SyntheticForwardTransaction | "syntheticForwardTransaction";
 };
 export class SyntheticForwardTransaction {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SyntheticForwardTransaction;
-  @encodeAs.field(2).repeatable.reference
+  @(encodeAs.field(2).repeatable.reference)
   public signatures?: (RemoteSignature | undefined)[];
-  @encodeAs.field(3).reference
+  @(encodeAs.field(3).reference)
   public transaction?: Transaction;
 
   constructor(args: SyntheticForwardTransactionArgs) {
@@ -4244,14 +4408,14 @@ export class SyntheticForwardTransaction {
       args.signatures == undefined
         ? undefined
         : args.signatures.map((v) =>
-            v == undefined ? undefined : v instanceof RemoteSignature ? v : new RemoteSignature(v)
+            v == undefined ? undefined : v instanceof RemoteSignature ? v : new RemoteSignature(v),
           );
     this.transaction =
       args.transaction == undefined
         ? undefined
         : args.transaction instanceof Transaction
-        ? args.transaction
-        : new Transaction(args.transaction);
+          ? args.transaction
+          : new Transaction(args.transaction);
   }
 
   copy() {
@@ -4262,8 +4426,10 @@ export class SyntheticForwardTransaction {
     return {
       type: "syntheticForwardTransaction",
       signatures:
-        this.signatures && this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
-      transaction: this.transaction && this.transaction.asObject(),
+        this.signatures === undefined
+          ? undefined
+          : this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
+      transaction: this.transaction === undefined ? undefined : this.transaction.asObject(),
     };
   }
 }
@@ -4276,11 +4442,11 @@ export type SyntheticLedgerArgsWithType = SyntheticLedgerArgs & {
   type: AccountType.SyntheticLedger | "syntheticLedger";
 };
 export class SyntheticLedger {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.SyntheticLedger;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).repeatable.reference
+  @(encodeAs.field(3).repeatable.reference)
   public sequence?: (PartitionSyntheticLedger | undefined)[];
 
   constructor(args: SyntheticLedgerArgs) {
@@ -4292,8 +4458,8 @@ export class SyntheticLedger {
             v == undefined
               ? undefined
               : v instanceof PartitionSyntheticLedger
-              ? v
-              : new PartitionSyntheticLedger(v)
+                ? v
+                : new PartitionSyntheticLedger(v),
           );
   }
 
@@ -4304,9 +4470,11 @@ export class SyntheticLedger {
   asObject(): SyntheticLedgerArgsWithType {
     return {
       type: "syntheticLedger",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
       sequence:
-        this.sequence && this.sequence?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.sequence === undefined
+          ? undefined
+          : this.sequence?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -4318,13 +4486,13 @@ export type SyntheticOriginArgs = {
   index?: number;
 };
 export class SyntheticOrigin {
-  @encodeAs.field(1).txid
+  @(encodeAs.field(1).txid)
   public cause?: TxID;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public initiator?: URL;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public feeRefund?: number;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public index?: number;
 
   constructor(args: SyntheticOriginArgs) {
@@ -4340,10 +4508,10 @@ export class SyntheticOrigin {
 
   asObject(): SyntheticOriginArgs {
     return {
-      cause: this.cause && this.cause.toString(),
-      initiator: this.initiator && this.initiator.toString(),
-      feeRefund: this.feeRefund && this.feeRefund,
-      index: this.index && this.index,
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
+      initiator: this.initiator === undefined ? undefined : this.initiator.toString(),
+      feeRefund: this.feeRefund === undefined ? undefined : this.feeRefund,
+      index: this.index === undefined ? undefined : this.index,
     };
   }
 }
@@ -4360,19 +4528,19 @@ export type SyntheticWriteDataArgsWithType = SyntheticWriteDataArgs & {
   type: TransactionType.SyntheticWriteData | "syntheticWriteData";
 };
 export class SyntheticWriteData {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SyntheticWriteData;
-  @encodeAs.field(2, 1).txid
+  @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @encodeAs.field(2, 0).url
+  @(encodeAs.field(2, 0).url)
   public source?: URL;
-  @encodeAs.field(2, 3).url
+  @(encodeAs.field(2, 3).url)
   public initiator?: URL;
-  @encodeAs.field(2, 4).uint
+  @(encodeAs.field(2, 4).uint)
   public feeRefund?: number;
-  @encodeAs.field(2, 5).uint
+  @(encodeAs.field(2, 5).uint)
   public index?: number;
-  @encodeAs.field(3).union
+  @(encodeAs.field(3).union)
   public entry?: DataEntry;
 
   constructor(args: SyntheticWriteDataArgs) {
@@ -4391,12 +4559,12 @@ export class SyntheticWriteData {
   asObject(): SyntheticWriteDataArgsWithType {
     return {
       type: "syntheticWriteData",
-      cause: this.cause && this.cause.toString(),
-      source: this.source && this.source.toString(),
-      initiator: this.initiator && this.initiator.toString(),
-      feeRefund: this.feeRefund && this.feeRefund,
-      index: this.index && this.index,
-      entry: this.entry && this.entry.asObject(),
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
+      source: this.source === undefined ? undefined : this.source.toString(),
+      initiator: this.initiator === undefined ? undefined : this.initiator.toString(),
+      feeRefund: this.feeRefund === undefined ? undefined : this.feeRefund,
+      index: this.index === undefined ? undefined : this.index,
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
     };
   }
 }
@@ -4404,7 +4572,7 @@ export class SyntheticWriteData {
 export type SystemGenesisArgs = {};
 export type SystemGenesisArgsWithType = { type: TransactionType.SystemGenesis | "systemGenesis" };
 export class SystemGenesis {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SystemGenesis;
 
   constructor(_: SystemGenesisArgs) {}
@@ -4434,23 +4602,23 @@ export type SystemLedgerArgsWithType = SystemLedgerArgs & {
   type: AccountType.SystemLedger | "systemLedger";
 };
 export class SystemLedger {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.SystemLedger;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public index?: number;
-  @encodeAs.field(4).time
+  @(encodeAs.field(4).time)
   public timestamp?: Date;
-  @encodeAs.field(5).bigInt
+  @(encodeAs.field(5).bigInt)
   public acmeBurnt?: bigint;
-  @encodeAs.field(6).repeatable.reference
+  @(encodeAs.field(6).repeatable.reference)
   public pendingUpdates?: (NetworkAccountUpdate | undefined)[];
-  @encodeAs.field(7).union
+  @(encodeAs.field(7).union)
   public anchor?: AnchorBody;
-  @encodeAs.field(8).enum
+  @(encodeAs.field(8).enum)
   public executorVersion?: ExecutorVersion;
-  @encodeAs.field(9).repeatable.reference
+  @(encodeAs.field(9).repeatable.reference)
   public bvnExecutorVersions?: (PartitionExecutorVersion | undefined)[];
 
   constructor(args: SystemLedgerArgs) {
@@ -4460,14 +4628,14 @@ export class SystemLedger {
       args.timestamp == undefined
         ? undefined
         : args.timestamp instanceof Date
-        ? args.timestamp
-        : new Date(args.timestamp);
+          ? args.timestamp
+          : new Date(args.timestamp);
     this.acmeBurnt =
       args.acmeBurnt == undefined
         ? undefined
         : typeof args.acmeBurnt === "bigint"
-        ? args.acmeBurnt
-        : BigInt(args.acmeBurnt);
+          ? args.acmeBurnt
+          : BigInt(args.acmeBurnt);
     this.pendingUpdates =
       args.pendingUpdates == undefined
         ? undefined
@@ -4475,8 +4643,8 @@ export class SystemLedger {
             v == undefined
               ? undefined
               : v instanceof NetworkAccountUpdate
-              ? v
-              : new NetworkAccountUpdate(v)
+                ? v
+                : new NetworkAccountUpdate(v),
           );
     this.anchor = args.anchor == undefined ? undefined : AnchorBody.fromObject(args.anchor);
     this.executorVersion =
@@ -4490,8 +4658,8 @@ export class SystemLedger {
             v == undefined
               ? undefined
               : v instanceof PartitionExecutorVersion
-              ? v
-              : new PartitionExecutorVersion(v)
+                ? v
+                : new PartitionExecutorVersion(v),
           );
   }
 
@@ -4502,18 +4670,23 @@ export class SystemLedger {
   asObject(): SystemLedgerArgsWithType {
     return {
       type: "systemLedger",
-      url: this.url && this.url.toString(),
-      index: this.index && this.index,
-      timestamp: this.timestamp && this.timestamp,
-      acmeBurnt: this.acmeBurnt && this.acmeBurnt.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      index: this.index === undefined ? undefined : this.index,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      acmeBurnt: this.acmeBurnt === undefined ? undefined : this.acmeBurnt.toString(),
       pendingUpdates:
-        this.pendingUpdates &&
-        this.pendingUpdates?.map((v) => (v == undefined ? undefined : v.asObject())),
-      anchor: this.anchor && this.anchor.asObject(),
-      executorVersion: this.executorVersion && ExecutorVersion.getName(this.executorVersion),
+        this.pendingUpdates === undefined
+          ? undefined
+          : this.pendingUpdates?.map((v) => (v == undefined ? undefined : v.asObject())),
+      anchor: this.anchor === undefined ? undefined : this.anchor.asObject(),
+      executorVersion:
+        this.executorVersion === undefined
+          ? undefined
+          : ExecutorVersion.getName(this.executorVersion),
       bvnExecutorVersions:
-        this.bvnExecutorVersions &&
-        this.bvnExecutorVersions?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.bvnExecutorVersions === undefined
+          ? undefined
+          : this.bvnExecutorVersions?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -4526,11 +4699,11 @@ export type SystemWriteDataArgsWithType = SystemWriteDataArgs & {
   type: TransactionType.SystemWriteData | "systemWriteData";
 };
 export class SystemWriteData {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.SystemWriteData;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public entry?: DataEntry;
-  @encodeAs.field(3).bool
+  @(encodeAs.field(3).bool)
   public writeToState?: boolean;
 
   constructor(args: SystemWriteDataArgs) {
@@ -4545,8 +4718,8 @@ export class SystemWriteData {
   asObject(): SystemWriteDataArgsWithType {
     return {
       type: "systemWriteData",
-      entry: this.entry && this.entry.asObject(),
-      writeToState: this.writeToState && this.writeToState,
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
+      writeToState: this.writeToState === undefined ? undefined : this.writeToState,
     };
   }
 }
@@ -4561,15 +4734,15 @@ export type TokenAccountArgsWithType = TokenAccountArgs & {
   type: AccountType.TokenAccount | "tokenAccount";
 };
 export class TokenAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.TokenAccount;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3, 1).repeatable.reference
+  @(encodeAs.field(3, 1).repeatable.reference)
   public authorities?: (AuthorityEntry | undefined)[];
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public tokenUrl?: URL;
-  @encodeAs.field(5).bigInt
+  @(encodeAs.field(5).bigInt)
   public balance?: bigint;
 
   constructor(args: TokenAccountArgs) {
@@ -4578,15 +4751,15 @@ export class TokenAccount {
       args.authorities == undefined
         ? undefined
         : args.authorities.map((v) =>
-            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
+            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v),
           );
     this.tokenUrl = args.tokenUrl == undefined ? undefined : URL.parse(args.tokenUrl);
     this.balance =
       args.balance == undefined
         ? undefined
         : typeof args.balance === "bigint"
-        ? args.balance
-        : BigInt(args.balance);
+          ? args.balance
+          : BigInt(args.balance);
   }
 
   copy() {
@@ -4596,12 +4769,13 @@ export class TokenAccount {
   asObject(): TokenAccountArgsWithType {
     return {
       type: "tokenAccount",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
-      tokenUrl: this.tokenUrl && this.tokenUrl.toString(),
-      balance: this.balance && this.balance.toString(),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
+      tokenUrl: this.tokenUrl === undefined ? undefined : this.tokenUrl.toString(),
+      balance: this.balance === undefined ? undefined : this.balance.toString(),
     };
   }
 }
@@ -4619,21 +4793,21 @@ export type TokenIssuerArgsWithType = TokenIssuerArgs & {
   type: AccountType.TokenIssuer | "tokenIssuer";
 };
 export class TokenIssuer {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.TokenIssuer;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3, 1).repeatable.reference
+  @(encodeAs.field(3, 1).repeatable.reference)
   public authorities?: (AuthorityEntry | undefined)[];
-  @encodeAs.field(4).string
+  @(encodeAs.field(4).string)
   public symbol?: string;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public precision?: number;
-  @encodeAs.field(6).url
+  @(encodeAs.field(6).url)
   public properties?: URL;
-  @encodeAs.field(7).bigInt
+  @(encodeAs.field(7).bigInt)
   public issued?: bigint;
-  @encodeAs.field(8).bigInt
+  @(encodeAs.field(8).bigInt)
   public supplyLimit?: bigint;
 
   constructor(args: TokenIssuerArgs) {
@@ -4642,7 +4816,7 @@ export class TokenIssuer {
       args.authorities == undefined
         ? undefined
         : args.authorities.map((v) =>
-            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v)
+            v == undefined ? undefined : v instanceof AuthorityEntry ? v : new AuthorityEntry(v),
           );
     this.symbol = args.symbol == undefined ? undefined : args.symbol;
     this.precision = args.precision == undefined ? undefined : args.precision;
@@ -4651,14 +4825,14 @@ export class TokenIssuer {
       args.issued == undefined
         ? undefined
         : typeof args.issued === "bigint"
-        ? args.issued
-        : BigInt(args.issued);
+          ? args.issued
+          : BigInt(args.issued);
     this.supplyLimit =
       args.supplyLimit == undefined
         ? undefined
         : typeof args.supplyLimit === "bigint"
-        ? args.supplyLimit
-        : BigInt(args.supplyLimit);
+          ? args.supplyLimit
+          : BigInt(args.supplyLimit);
   }
 
   copy() {
@@ -4668,15 +4842,16 @@ export class TokenIssuer {
   asObject(): TokenIssuerArgsWithType {
     return {
       type: "tokenIssuer",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
-      symbol: this.symbol && this.symbol,
-      precision: this.precision && this.precision,
-      properties: this.properties && this.properties.toString(),
-      issued: this.issued && this.issued.toString(),
-      supplyLimit: this.supplyLimit && this.supplyLimit.toString(),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.asObject())),
+      symbol: this.symbol === undefined ? undefined : this.symbol,
+      precision: this.precision === undefined ? undefined : this.precision,
+      properties: this.properties === undefined ? undefined : this.properties.toString(),
+      issued: this.issued === undefined ? undefined : this.issued.toString(),
+      supplyLimit: this.supplyLimit === undefined ? undefined : this.supplyLimit.toString(),
     };
   }
 }
@@ -4686,9 +4861,9 @@ export type TokenIssuerProofArgs = {
   receipt?: merkle.Receipt | merkle.ReceiptArgs;
 };
 export class TokenIssuerProof {
-  @encodeAs.field(1).reference
+  @(encodeAs.field(1).reference)
   public transaction?: CreateToken;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public receipt?: merkle.Receipt;
 
   constructor(args: TokenIssuerProofArgs) {
@@ -4696,14 +4871,14 @@ export class TokenIssuerProof {
       args.transaction == undefined
         ? undefined
         : args.transaction instanceof CreateToken
-        ? args.transaction
-        : new CreateToken(args.transaction);
+          ? args.transaction
+          : new CreateToken(args.transaction);
     this.receipt =
       args.receipt == undefined
         ? undefined
         : args.receipt instanceof merkle.Receipt
-        ? args.receipt
-        : new merkle.Receipt(args.receipt);
+          ? args.receipt
+          : new merkle.Receipt(args.receipt);
   }
 
   copy() {
@@ -4712,8 +4887,8 @@ export class TokenIssuerProof {
 
   asObject(): TokenIssuerProofArgs {
     return {
-      transaction: this.transaction && this.transaction.asObject(),
-      receipt: this.receipt && this.receipt.asObject(),
+      transaction: this.transaction === undefined ? undefined : this.transaction.asObject(),
+      receipt: this.receipt === undefined ? undefined : this.receipt.asObject(),
     };
   }
 }
@@ -4723,9 +4898,9 @@ export type TokenRecipientArgs = {
   amount?: bigint | string | number;
 };
 export class TokenRecipient {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public url?: URL;
-  @encodeAs.field(2).bigInt
+  @(encodeAs.field(2).bigInt)
   public amount?: bigint;
 
   constructor(args: TokenRecipientArgs) {
@@ -4734,8 +4909,8 @@ export class TokenRecipient {
       args.amount == undefined
         ? undefined
         : typeof args.amount === "bigint"
-        ? args.amount
-        : BigInt(args.amount);
+          ? args.amount
+          : BigInt(args.amount);
   }
 
   copy() {
@@ -4744,8 +4919,8 @@ export class TokenRecipient {
 
   asObject(): TokenRecipientArgs {
     return {
-      url: this.url && this.url.toString(),
-      amount: this.amount && this.amount.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
     };
   }
 }
@@ -4755,9 +4930,9 @@ export type TransactionArgs = {
   body?: TransactionBody | TransactionBodyArgs;
 };
 export class Transaction extends TransactionBase {
-  @encodeAs.field(1).reference
+  @(encodeAs.field(1).reference)
   public header?: TransactionHeader;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public body?: TransactionBody;
 
   constructor(args: TransactionArgs) {
@@ -4766,8 +4941,8 @@ export class Transaction extends TransactionBase {
       args.header == undefined
         ? undefined
         : args.header instanceof TransactionHeader
-        ? args.header
-        : new TransactionHeader(args.header);
+          ? args.header
+          : new TransactionHeader(args.header);
     this.body = args.body == undefined ? undefined : TransactionBody.fromObject(args.body);
   }
 
@@ -4777,8 +4952,8 @@ export class Transaction extends TransactionBase {
 
   asObject(): TransactionArgs {
     return {
-      header: this.header && this.header.asObject(),
-      body: this.body && this.body.asObject(),
+      header: this.header === undefined ? undefined : this.header.asObject(),
+      body: this.body === undefined ? undefined : this.body.asObject(),
     };
   }
 }
@@ -4793,19 +4968,19 @@ export type TransactionHeaderArgs = {
   authorities?: (URLArgs | undefined)[];
 };
 export class TransactionHeader {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public principal?: URL;
-  @encodeAs.field(2).hash
+  @(encodeAs.field(2).hash)
   public initiator?: Uint8Array;
-  @encodeAs.field(3).string
+  @(encodeAs.field(3).string)
   public memo?: string;
-  @encodeAs.field(4).bytes
+  @(encodeAs.field(4).bytes)
   public metadata?: Uint8Array;
-  @encodeAs.field(5).reference
+  @(encodeAs.field(5).reference)
   public expire?: ExpireOptions;
-  @encodeAs.field(6).reference
+  @(encodeAs.field(6).reference)
   public holdUntil?: HoldUntilOptions;
-  @encodeAs.field(7).repeatable.url
+  @(encodeAs.field(7).repeatable.url)
   public authorities?: (URL | undefined)[];
 
   constructor(args: TransactionHeaderArgs) {
@@ -4814,27 +4989,27 @@ export class TransactionHeader {
       args.initiator == undefined
         ? undefined
         : args.initiator instanceof Uint8Array
-        ? args.initiator
-        : Buffer.from(args.initiator, "hex");
+          ? args.initiator
+          : Buffer.from(args.initiator, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.metadata =
       args.metadata == undefined
         ? undefined
         : args.metadata instanceof Uint8Array
-        ? args.metadata
-        : Buffer.from(args.metadata, "hex");
+          ? args.metadata
+          : Buffer.from(args.metadata, "hex");
     this.expire =
       args.expire == undefined
         ? undefined
         : args.expire instanceof ExpireOptions
-        ? args.expire
-        : new ExpireOptions(args.expire);
+          ? args.expire
+          : new ExpireOptions(args.expire);
     this.holdUntil =
       args.holdUntil == undefined
         ? undefined
         : args.holdUntil instanceof HoldUntilOptions
-        ? args.holdUntil
-        : new HoldUntilOptions(args.holdUntil);
+          ? args.holdUntil
+          : new HoldUntilOptions(args.holdUntil);
     this.authorities =
       args.authorities == undefined
         ? undefined
@@ -4847,15 +5022,22 @@ export class TransactionHeader {
 
   asObject(): TransactionHeaderArgs {
     return {
-      principal: this.principal && this.principal.toString(),
-      initiator: this.initiator && this.initiator && Buffer.from(this.initiator).toString("hex"),
-      memo: this.memo && this.memo,
-      metadata: this.metadata && this.metadata && Buffer.from(this.metadata).toString("hex"),
-      expire: this.expire && this.expire.asObject(),
-      holdUntil: this.holdUntil && this.holdUntil.asObject(),
+      principal: this.principal === undefined ? undefined : this.principal.toString(),
+      initiator:
+        this.initiator === undefined
+          ? undefined
+          : this.initiator && Buffer.from(this.initiator).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      metadata:
+        this.metadata === undefined
+          ? undefined
+          : this.metadata && Buffer.from(this.metadata).toString("hex"),
+      expire: this.expire === undefined ? undefined : this.expire.asObject(),
+      holdUntil: this.holdUntil === undefined ? undefined : this.holdUntil.asObject(),
       authorities:
-        this.authorities &&
-        this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.authorities === undefined
+          ? undefined
+          : this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
     };
   }
 }
@@ -4876,31 +5058,31 @@ export type TransactionStatusArgs = {
   anchorSigners?: (Uint8Array | string | undefined)[];
 };
 export class TransactionStatus {
-  @encodeAs.field(1).txid
+  @(encodeAs.field(1).txid)
   public txID?: TxID;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public code?: errors2.Status;
-  @encodeAs.field(3).reference
+  @(encodeAs.field(3).reference)
   public error?: errors2.Error;
-  @encodeAs.field(4).union
+  @(encodeAs.field(4).union)
   public result?: TransactionResult;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public received?: number;
-  @encodeAs.field(6).url
+  @(encodeAs.field(6).url)
   public initiator?: URL;
-  @encodeAs.field(7).repeatable.union
+  @(encodeAs.field(7).repeatable.union)
   public signers?: (Signer | undefined)[];
-  @encodeAs.field(8).url
+  @(encodeAs.field(8).url)
   public sourceNetwork?: URL;
-  @encodeAs.field(9).url
+  @(encodeAs.field(9).url)
   public destinationNetwork?: URL;
-  @encodeAs.field(10).uint
+  @(encodeAs.field(10).uint)
   public sequenceNumber?: number;
-  @encodeAs.field(11).bool
+  @(encodeAs.field(11).bool)
   public gotDirectoryReceipt?: boolean;
-  @encodeAs.field(12).reference
+  @(encodeAs.field(12).reference)
   public proof?: merkle.Receipt;
-  @encodeAs.field(13).repeatable.bytes
+  @(encodeAs.field(13).repeatable.bytes)
   public anchorSigners?: (Uint8Array | undefined)[];
 
   constructor(args: TransactionStatusArgs) {
@@ -4910,8 +5092,8 @@ export class TransactionStatus {
       args.error == undefined
         ? undefined
         : args.error instanceof errors2.Error
-        ? args.error
-        : new errors2.Error(args.error);
+          ? args.error
+          : new errors2.Error(args.error);
     this.result = args.result == undefined ? undefined : TransactionResult.fromObject(args.result);
     this.received = args.received == undefined ? undefined : args.received;
     this.initiator = args.initiator == undefined ? undefined : URL.parse(args.initiator);
@@ -4930,13 +5112,13 @@ export class TransactionStatus {
       args.proof == undefined
         ? undefined
         : args.proof instanceof merkle.Receipt
-        ? args.proof
-        : new merkle.Receipt(args.proof);
+          ? args.proof
+          : new merkle.Receipt(args.proof);
     this.anchorSigners =
       args.anchorSigners == undefined
         ? undefined
         : args.anchorSigners.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
   }
 
@@ -4946,24 +5128,29 @@ export class TransactionStatus {
 
   asObject(): TransactionStatusArgs {
     return {
-      txID: this.txID && this.txID.toString(),
-      code: this.code && errors2.Status.getName(this.code),
-      error: this.error && this.error.asObject(),
-      result: this.result && this.result.asObject(),
-      received: this.received && this.received,
-      initiator: this.initiator && this.initiator.toString(),
+      txID: this.txID === undefined ? undefined : this.txID.toString(),
+      code: this.code === undefined ? undefined : errors2.Status.getName(this.code),
+      error: this.error === undefined ? undefined : this.error.asObject(),
+      result: this.result === undefined ? undefined : this.result.asObject(),
+      received: this.received === undefined ? undefined : this.received,
+      initiator: this.initiator === undefined ? undefined : this.initiator.toString(),
       signers:
-        this.signers && this.signers?.map((v) => (v == undefined ? undefined : v.asObject())),
-      sourceNetwork: this.sourceNetwork && this.sourceNetwork.toString(),
-      destinationNetwork: this.destinationNetwork && this.destinationNetwork.toString(),
-      sequenceNumber: this.sequenceNumber && this.sequenceNumber,
-      gotDirectoryReceipt: this.gotDirectoryReceipt && this.gotDirectoryReceipt,
-      proof: this.proof && this.proof.asObject(),
+        this.signers === undefined
+          ? undefined
+          : this.signers?.map((v) => (v == undefined ? undefined : v.asObject())),
+      sourceNetwork: this.sourceNetwork === undefined ? undefined : this.sourceNetwork.toString(),
+      destinationNetwork:
+        this.destinationNetwork === undefined ? undefined : this.destinationNetwork.toString(),
+      sequenceNumber: this.sequenceNumber === undefined ? undefined : this.sequenceNumber,
+      gotDirectoryReceipt:
+        this.gotDirectoryReceipt === undefined ? undefined : this.gotDirectoryReceipt,
+      proof: this.proof === undefined ? undefined : this.proof.asObject(),
       anchorSigners:
-        this.anchorSigners &&
-        this.anchorSigners?.map((v) =>
-          v == undefined ? undefined : v && Buffer.from(v).toString("hex")
-        ),
+        this.anchorSigners === undefined
+          ? undefined
+          : this.anchorSigners?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
     };
   }
 }
@@ -4975,9 +5162,9 @@ export type TransferCreditsArgsWithType = TransferCreditsArgs & {
   type: TransactionType.TransferCredits | "transferCredits";
 };
 export class TransferCredits {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.TransferCredits;
-  @encodeAs.field(2).repeatable.reference
+  @(encodeAs.field(2).repeatable.reference)
   public to?: (CreditRecipient | undefined)[];
 
   constructor(args: TransferCreditsArgs) {
@@ -4985,7 +5172,7 @@ export class TransferCredits {
       args.to == undefined
         ? undefined
         : args.to.map((v) =>
-            v == undefined ? undefined : v instanceof CreditRecipient ? v : new CreditRecipient(v)
+            v == undefined ? undefined : v instanceof CreditRecipient ? v : new CreditRecipient(v),
           );
   }
 
@@ -4996,7 +5183,10 @@ export class TransferCredits {
   asObject(): TransferCreditsArgsWithType {
     return {
       type: "transferCredits",
-      to: this.to && this.to?.map((v) => (v == undefined ? undefined : v.asObject())),
+      to:
+        this.to === undefined
+          ? undefined
+          : this.to?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -5005,7 +5195,7 @@ export type TxIdSetArgs = {
   entries?: (TxIDArgs | undefined)[];
 };
 export class TxIdSet {
-  @encodeAs.field(1).repeatable.txid
+  @(encodeAs.field(1).repeatable.txid)
   public entries?: (TxID | undefined)[];
 
   constructor(args: TxIdSetArgs) {
@@ -5022,7 +5212,9 @@ export class TxIdSet {
   asObject(): TxIdSetArgs {
     return {
       entries:
-        this.entries && this.entries?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.entries === undefined
+          ? undefined
+          : this.entries?.map((v) => (v == undefined ? undefined : v.toString())),
     };
   }
 }
@@ -5043,27 +5235,27 @@ export type TypedDataSignatureArgsWithType = TypedDataSignatureArgs & {
   type: SignatureType.TypedData | "typedData";
 };
 export class TypedDataSignature {
-  @encodeAs.field(1).keepEmpty.enum.of(SignatureType)
+  @(encodeAs.field(1).keepEmpty.enum.of(SignatureType))
   public readonly type = SignatureType.TypedData;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(3).bytes
+  @(encodeAs.field(3).bytes)
   public signature?: Uint8Array;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public signer?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public signerVersion?: number;
-  @encodeAs.field(6).uint
+  @(encodeAs.field(6).uint)
   public timestamp?: number;
-  @encodeAs.field(7).enum
+  @(encodeAs.field(7).enum)
   public vote?: VoteType;
-  @encodeAs.field(8).hash
+  @(encodeAs.field(8).hash)
   public transactionHash?: Uint8Array;
-  @encodeAs.field(9).string
+  @(encodeAs.field(9).string)
   public memo?: string;
-  @encodeAs.field(10).bytes
+  @(encodeAs.field(10).bytes)
   public data?: Uint8Array;
-  @encodeAs.field(11).bigInt
+  @(encodeAs.field(11).bigInt)
   public chainID?: bigint;
 
   constructor(args: TypedDataSignatureArgs) {
@@ -5071,14 +5263,14 @@ export class TypedDataSignature {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.signer = args.signer == undefined ? undefined : URL.parse(args.signer);
     this.signerVersion = args.signerVersion == undefined ? undefined : args.signerVersion;
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
@@ -5087,21 +5279,21 @@ export class TypedDataSignature {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.data =
       args.data == undefined
         ? undefined
         : args.data instanceof Uint8Array
-        ? args.data
-        : Buffer.from(args.data, "hex");
+          ? args.data
+          : Buffer.from(args.data, "hex");
     this.chainID =
       args.chainID == undefined
         ? undefined
         : typeof args.chainID === "bigint"
-        ? args.chainID
-        : BigInt(args.chainID);
+          ? args.chainID
+          : BigInt(args.chainID);
   }
 
   copy() {
@@ -5111,19 +5303,26 @@ export class TypedDataSignature {
   asObject(): TypedDataSignatureArgsWithType {
     return {
       type: "typedData",
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      signer: this.signer && this.signer.toString(),
-      signerVersion: this.signerVersion && this.signerVersion,
-      timestamp: this.timestamp && this.timestamp,
-      vote: this.vote && VoteType.getName(this.vote),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      signerVersion: this.signerVersion === undefined ? undefined : this.signerVersion,
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      vote: this.vote === undefined ? undefined : VoteType.getName(this.vote),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      memo: this.memo && this.memo,
-      data: this.data && this.data && Buffer.from(this.data).toString("hex"),
-      chainID: this.chainID && this.chainID.toString(),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      memo: this.memo === undefined ? undefined : this.memo,
+      data:
+        this.data === undefined ? undefined : this.data && Buffer.from(this.data).toString("hex"),
+      chainID: this.chainID === undefined ? undefined : this.chainID.toString(),
     };
   }
 }
@@ -5135,9 +5334,9 @@ export type UnknownAccountArgsWithType = UnknownAccountArgs & {
   type: AccountType.Unknown | "unknown";
 };
 export class UnknownAccount {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.Unknown;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
 
   constructor(args: UnknownAccountArgs) {
@@ -5151,7 +5350,7 @@ export class UnknownAccount {
   asObject(): UnknownAccountArgsWithType {
     return {
       type: "unknown",
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
     };
   }
 }
@@ -5164,11 +5363,11 @@ export type UnknownSignerArgsWithType = UnknownSignerArgs & {
   type: AccountType.UnknownSigner | "unknownSigner";
 };
 export class UnknownSigner {
-  @encodeAs.field(1).keepEmpty.enum.of(AccountType)
+  @(encodeAs.field(1).keepEmpty.enum.of(AccountType))
   public readonly type = AccountType.UnknownSigner;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public url?: URL;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public version?: number;
 
   constructor(args: UnknownSignerArgs) {
@@ -5183,8 +5382,8 @@ export class UnknownSigner {
   asObject(): UnknownSignerArgsWithType {
     return {
       type: "unknownSigner",
-      url: this.url && this.url.toString(),
-      version: this.version && this.version,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      version: this.version === undefined ? undefined : this.version,
     };
   }
 }
@@ -5196,9 +5395,9 @@ export type UpdateAccountAuthArgsWithType = UpdateAccountAuthArgs & {
   type: TransactionType.UpdateAccountAuth | "updateAccountAuth";
 };
 export class UpdateAccountAuth {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.UpdateAccountAuth;
-  @encodeAs.field(2).repeatable.union
+  @(encodeAs.field(2).repeatable.union)
   public operations?: (AccountAuthOperation | undefined)[];
 
   constructor(args: UpdateAccountAuthArgs) {
@@ -5206,7 +5405,7 @@ export class UpdateAccountAuth {
       args.operations == undefined
         ? undefined
         : args.operations.map((v) =>
-            v == undefined ? undefined : AccountAuthOperation.fromObject(v)
+            v == undefined ? undefined : AccountAuthOperation.fromObject(v),
           );
   }
 
@@ -5218,7 +5417,9 @@ export class UpdateAccountAuth {
     return {
       type: "updateAccountAuth",
       operations:
-        this.operations && this.operations?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.operations === undefined
+          ? undefined
+          : this.operations?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -5231,11 +5432,11 @@ export type UpdateAllowedKeyPageOperationArgsWithType = UpdateAllowedKeyPageOper
   type: KeyPageOperationType.UpdateAllowed | "updateAllowed";
 };
 export class UpdateAllowedKeyPageOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType))
   public readonly type = KeyPageOperationType.UpdateAllowed;
-  @encodeAs.field(2).repeatable.enum
+  @(encodeAs.field(2).repeatable.enum)
   public allow?: (TransactionType | undefined)[];
-  @encodeAs.field(3).repeatable.enum
+  @(encodeAs.field(3).repeatable.enum)
   public deny?: (TransactionType | undefined)[];
 
   constructor(args: UpdateAllowedKeyPageOperationArgs) {
@@ -5257,11 +5458,13 @@ export class UpdateAllowedKeyPageOperation {
     return {
       type: "updateAllowed",
       allow:
-        this.allow &&
-        this.allow?.map((v) => (v == undefined ? undefined : TransactionType.getName(v))),
+        this.allow === undefined
+          ? undefined
+          : this.allow?.map((v) => (v == undefined ? undefined : TransactionType.getName(v))),
       deny:
-        this.deny &&
-        this.deny?.map((v) => (v == undefined ? undefined : TransactionType.getName(v))),
+        this.deny === undefined
+          ? undefined
+          : this.deny?.map((v) => (v == undefined ? undefined : TransactionType.getName(v))),
     };
   }
 }
@@ -5273,9 +5476,9 @@ export type UpdateKeyArgsWithType = UpdateKeyArgs & {
   type: TransactionType.UpdateKey | "updateKey";
 };
 export class UpdateKey {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.UpdateKey;
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public newKeyHash?: Uint8Array;
 
   constructor(args: UpdateKeyArgs) {
@@ -5283,8 +5486,8 @@ export class UpdateKey {
       args.newKeyHash == undefined
         ? undefined
         : args.newKeyHash instanceof Uint8Array
-        ? args.newKeyHash
-        : Buffer.from(args.newKeyHash, "hex");
+          ? args.newKeyHash
+          : Buffer.from(args.newKeyHash, "hex");
   }
 
   copy() {
@@ -5295,7 +5498,9 @@ export class UpdateKey {
     return {
       type: "updateKey",
       newKeyHash:
-        this.newKeyHash && this.newKeyHash && Buffer.from(this.newKeyHash).toString("hex"),
+        this.newKeyHash === undefined
+          ? undefined
+          : this.newKeyHash && Buffer.from(this.newKeyHash).toString("hex"),
     };
   }
 }
@@ -5308,11 +5513,11 @@ export type UpdateKeyOperationArgsWithType = UpdateKeyOperationArgs & {
   type: KeyPageOperationType.Update | "update";
 };
 export class UpdateKeyOperation {
-  @encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType)
+  @(encodeAs.field(1).keepEmpty.enum.of(KeyPageOperationType))
   public readonly type = KeyPageOperationType.Update;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public oldEntry?: KeySpecParams;
-  @encodeAs.field(3).reference
+  @(encodeAs.field(3).reference)
   public newEntry?: KeySpecParams;
 
   constructor(args: UpdateKeyOperationArgs) {
@@ -5320,14 +5525,14 @@ export class UpdateKeyOperation {
       args.oldEntry == undefined
         ? undefined
         : args.oldEntry instanceof KeySpecParams
-        ? args.oldEntry
-        : new KeySpecParams(args.oldEntry);
+          ? args.oldEntry
+          : new KeySpecParams(args.oldEntry);
     this.newEntry =
       args.newEntry == undefined
         ? undefined
         : args.newEntry instanceof KeySpecParams
-        ? args.newEntry
-        : new KeySpecParams(args.newEntry);
+          ? args.newEntry
+          : new KeySpecParams(args.newEntry);
   }
 
   copy() {
@@ -5337,8 +5542,8 @@ export class UpdateKeyOperation {
   asObject(): UpdateKeyOperationArgsWithType {
     return {
       type: "update",
-      oldEntry: this.oldEntry && this.oldEntry.asObject(),
-      newEntry: this.newEntry && this.newEntry.asObject(),
+      oldEntry: this.oldEntry === undefined ? undefined : this.oldEntry.asObject(),
+      newEntry: this.newEntry === undefined ? undefined : this.newEntry.asObject(),
     };
   }
 }
@@ -5350,9 +5555,9 @@ export type UpdateKeyPageArgsWithType = UpdateKeyPageArgs & {
   type: TransactionType.UpdateKeyPage | "updateKeyPage";
 };
 export class UpdateKeyPage {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.UpdateKeyPage;
-  @encodeAs.field(2).repeatable.union
+  @(encodeAs.field(2).repeatable.union)
   public operation?: (KeyPageOperation | undefined)[];
 
   constructor(args: UpdateKeyPageArgs) {
@@ -5370,7 +5575,9 @@ export class UpdateKeyPage {
     return {
       type: "updateKeyPage",
       operation:
-        this.operation && this.operation?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.operation === undefined
+          ? undefined
+          : this.operation?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -5382,13 +5589,13 @@ export type ValidatorInfoArgs = {
   partitions?: (ValidatorPartitionInfo | ValidatorPartitionInfoArgs | undefined)[];
 };
 export class ValidatorInfo {
-  @encodeAs.field(1).bytes
+  @(encodeAs.field(1).bytes)
   public publicKey?: Uint8Array;
-  @encodeAs.field(2).hash
+  @(encodeAs.field(2).hash)
   public publicKeyHash?: Uint8Array;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public operator?: URL;
-  @encodeAs.field(4).repeatable.reference
+  @(encodeAs.field(4).repeatable.reference)
   public partitions?: (ValidatorPartitionInfo | undefined)[];
 
   constructor(args: ValidatorInfoArgs) {
@@ -5396,14 +5603,14 @@ export class ValidatorInfo {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.publicKeyHash =
       args.publicKeyHash == undefined
         ? undefined
         : args.publicKeyHash instanceof Uint8Array
-        ? args.publicKeyHash
-        : Buffer.from(args.publicKeyHash, "hex");
+          ? args.publicKeyHash
+          : Buffer.from(args.publicKeyHash, "hex");
     this.operator = args.operator == undefined ? undefined : URL.parse(args.operator);
     this.partitions =
       args.partitions == undefined
@@ -5412,8 +5619,8 @@ export class ValidatorInfo {
             v == undefined
               ? undefined
               : v instanceof ValidatorPartitionInfo
-              ? v
-              : new ValidatorPartitionInfo(v)
+                ? v
+                : new ValidatorPartitionInfo(v),
           );
   }
 
@@ -5423,12 +5630,19 @@ export class ValidatorInfo {
 
   asObject(): ValidatorInfoArgs {
     return {
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
       publicKeyHash:
-        this.publicKeyHash && this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
-      operator: this.operator && this.operator.toString(),
+        this.publicKeyHash === undefined
+          ? undefined
+          : this.publicKeyHash && Buffer.from(this.publicKeyHash).toString("hex"),
+      operator: this.operator === undefined ? undefined : this.operator.toString(),
       partitions:
-        this.partitions && this.partitions?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.partitions === undefined
+          ? undefined
+          : this.partitions?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -5438,9 +5652,9 @@ export type ValidatorPartitionInfoArgs = {
   active?: boolean;
 };
 export class ValidatorPartitionInfo {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public id?: string;
-  @encodeAs.field(2).keepEmpty.bool
+  @(encodeAs.field(2).keepEmpty.bool)
   public active?: boolean;
 
   constructor(args: ValidatorPartitionInfoArgs) {
@@ -5454,8 +5668,8 @@ export class ValidatorPartitionInfo {
 
   asObject(): ValidatorPartitionInfoArgs {
     return {
-      id: this.id && this.id,
-      active: this.active && this.active,
+      id: this.id === undefined ? undefined : this.id,
+      active: this.active === undefined ? undefined : this.active,
     };
   }
 }
@@ -5469,13 +5683,13 @@ export type WriteDataArgsWithType = WriteDataArgs & {
   type: TransactionType.WriteData | "writeData";
 };
 export class WriteData {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.WriteData;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public entry?: DataEntry;
-  @encodeAs.field(3).bool
+  @(encodeAs.field(3).bool)
   public scratch?: boolean;
-  @encodeAs.field(4).bool
+  @(encodeAs.field(4).bool)
   public writeToState?: boolean;
 
   constructor(args: WriteDataArgs) {
@@ -5491,9 +5705,9 @@ export class WriteData {
   asObject(): WriteDataArgsWithType {
     return {
       type: "writeData",
-      entry: this.entry && this.entry.asObject(),
-      scratch: this.scratch && this.scratch,
-      writeToState: this.writeToState && this.writeToState,
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
+      scratch: this.scratch === undefined ? undefined : this.scratch,
+      writeToState: this.writeToState === undefined ? undefined : this.writeToState,
     };
   }
 }
@@ -5507,13 +5721,13 @@ export type WriteDataResultArgsWithType = WriteDataResultArgs & {
   type: TransactionType.WriteData | "writeData";
 };
 export class WriteDataResult {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.WriteData;
-  @encodeAs.field(2).hash
+  @(encodeAs.field(2).hash)
   public entryHash?: Uint8Array;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public accountUrl?: URL;
-  @encodeAs.field(4).bytes
+  @(encodeAs.field(4).bytes)
   public accountID?: Uint8Array;
 
   constructor(args: WriteDataResultArgs) {
@@ -5521,15 +5735,15 @@ export class WriteDataResult {
       args.entryHash == undefined
         ? undefined
         : args.entryHash instanceof Uint8Array
-        ? args.entryHash
-        : Buffer.from(args.entryHash, "hex");
+          ? args.entryHash
+          : Buffer.from(args.entryHash, "hex");
     this.accountUrl = args.accountUrl == undefined ? undefined : URL.parse(args.accountUrl);
     this.accountID =
       args.accountID == undefined
         ? undefined
         : args.accountID instanceof Uint8Array
-        ? args.accountID
-        : Buffer.from(args.accountID, "hex");
+          ? args.accountID
+          : Buffer.from(args.accountID, "hex");
   }
 
   copy() {
@@ -5539,9 +5753,15 @@ export class WriteDataResult {
   asObject(): WriteDataResultArgsWithType {
     return {
       type: "writeData",
-      entryHash: this.entryHash && this.entryHash && Buffer.from(this.entryHash).toString("hex"),
-      accountUrl: this.accountUrl && this.accountUrl.toString(),
-      accountID: this.accountID && this.accountID && Buffer.from(this.accountID).toString("hex"),
+      entryHash:
+        this.entryHash === undefined
+          ? undefined
+          : this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      accountUrl: this.accountUrl === undefined ? undefined : this.accountUrl.toString(),
+      accountID:
+        this.accountID === undefined
+          ? undefined
+          : this.accountID && Buffer.from(this.accountID).toString("hex"),
     };
   }
 }
@@ -5554,11 +5774,11 @@ export type WriteDataToArgsWithType = WriteDataToArgs & {
   type: TransactionType.WriteDataTo | "writeDataTo";
 };
 export class WriteDataTo {
-  @encodeAs.field(1).keepEmpty.enum.of(TransactionType)
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
   public readonly type = TransactionType.WriteDataTo;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public recipient?: URL;
-  @encodeAs.field(3).union
+  @(encodeAs.field(3).union)
   public entry?: DataEntry;
 
   constructor(args: WriteDataToArgs) {
@@ -5573,8 +5793,8 @@ export class WriteDataTo {
   asObject(): WriteDataToArgsWithType {
     return {
       type: "writeDataTo",
-      recipient: this.recipient && this.recipient.toString(),
-      entry: this.entry && this.entry.asObject(),
+      recipient: this.recipient === undefined ? undefined : this.recipient.toString(),
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
     };
   }
 }

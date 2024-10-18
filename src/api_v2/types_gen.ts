@@ -35,13 +35,13 @@ export class ChainEntry {
       args.entry == undefined
         ? undefined
         : args.entry instanceof Uint8Array
-        ? args.entry
-        : Buffer.from(args.entry, "hex");
+          ? args.entry
+          : Buffer.from(args.entry, "hex");
     this.state =
       args.state == undefined
         ? undefined
         : args.state.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
     this.value = args.value == undefined ? undefined : args.value;
   }
@@ -52,12 +52,18 @@ export class ChainEntry {
 
   asObject(): ChainEntryArgs {
     return {
-      height: this.height && this.height,
-      entry: this.entry && this.entry && Buffer.from(this.entry).toString("hex"),
+      height: this.height === undefined ? undefined : this.height,
+      entry:
+        this.entry === undefined
+          ? undefined
+          : this.entry && Buffer.from(this.entry).toString("hex"),
       state:
-        this.state &&
-        this.state?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
-      value: this.value && this.value,
+        this.state === undefined
+          ? undefined
+          : this.state?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
+      value: this.value === undefined ? undefined : this.value,
     };
   }
 }
@@ -73,8 +79,8 @@ export class ChainIdQuery {
       args.chainId == undefined
         ? undefined
         : args.chainId instanceof Uint8Array
-        ? args.chainId
-        : Buffer.from(args.chainId, "hex");
+          ? args.chainId
+          : Buffer.from(args.chainId, "hex");
   }
 
   copy() {
@@ -83,7 +89,10 @@ export class ChainIdQuery {
 
   asObject(): ChainIdQueryArgs {
     return {
-      chainId: this.chainId && this.chainId && Buffer.from(this.chainId).toString("hex"),
+      chainId:
+        this.chainId === undefined
+          ? undefined
+          : this.chainId && Buffer.from(this.chainId).toString("hex"),
     };
   }
 }
@@ -112,33 +121,33 @@ export class ChainQueryResponse {
       args.mainChain == undefined
         ? undefined
         : args.mainChain instanceof MerkleState
-        ? args.mainChain
-        : new MerkleState(args.mainChain);
+          ? args.mainChain
+          : new MerkleState(args.mainChain);
     this.chains =
       args.chains == undefined
         ? undefined
         : args.chains.map((v) =>
-            v == undefined ? undefined : v instanceof ChainState ? v : new ChainState(v)
+            v == undefined ? undefined : v instanceof ChainState ? v : new ChainState(v),
           );
     this.data = args.data == undefined ? undefined : args.data;
     this.chainId =
       args.chainId == undefined
         ? undefined
         : args.chainId instanceof Uint8Array
-        ? args.chainId
-        : Buffer.from(args.chainId, "hex");
+          ? args.chainId
+          : Buffer.from(args.chainId, "hex");
     this.receipt =
       args.receipt == undefined
         ? undefined
         : args.receipt instanceof GeneralReceipt
-        ? args.receipt
-        : new GeneralReceipt(args.receipt);
+          ? args.receipt
+          : new GeneralReceipt(args.receipt);
     this.lastBlockTime =
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -147,13 +156,19 @@ export class ChainQueryResponse {
 
   asObject(): ChainQueryResponseArgs {
     return {
-      type: this.type && this.type,
-      mainChain: this.mainChain && this.mainChain.asObject(),
-      chains: this.chains && this.chains?.map((v) => (v == undefined ? undefined : v.asObject())),
-      data: this.data && this.data,
-      chainId: this.chainId && this.chainId && Buffer.from(this.chainId).toString("hex"),
-      receipt: this.receipt && this.receipt.asObject(),
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+      type: this.type === undefined ? undefined : this.type,
+      mainChain: this.mainChain === undefined ? undefined : this.mainChain.asObject(),
+      chains:
+        this.chains === undefined
+          ? undefined
+          : this.chains?.map((v) => (v == undefined ? undefined : v.asObject())),
+      data: this.data === undefined ? undefined : this.data,
+      chainId:
+        this.chainId === undefined
+          ? undefined
+          : this.chainId && Buffer.from(this.chainId).toString("hex"),
+      receipt: this.receipt === undefined ? undefined : this.receipt.asObject(),
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -165,13 +180,13 @@ export type ChainStateArgs = {
   roots?: (Uint8Array | string | undefined)[];
 };
 export class ChainState {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public name?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public type?: protocol.ChainType;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public height?: number;
-  @encodeAs.field(4).repeatable.bytes
+  @(encodeAs.field(4).repeatable.bytes)
   public roots?: (Uint8Array | undefined)[];
 
   constructor(args: ChainStateArgs) {
@@ -182,7 +197,7 @@ export class ChainState {
       args.roots == undefined
         ? undefined
         : args.roots.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
   }
 
@@ -192,12 +207,15 @@ export class ChainState {
 
   asObject(): ChainStateArgs {
     return {
-      name: this.name && this.name,
-      type: this.type && protocol.ChainType.getName(this.type),
-      height: this.height && this.height,
+      name: this.name === undefined ? undefined : this.name,
+      type: this.type === undefined ? undefined : protocol.ChainType.getName(this.type),
+      height: this.height === undefined ? undefined : this.height,
       roots:
-        this.roots &&
-        this.roots?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
+        this.roots === undefined
+          ? undefined
+          : this.roots?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
     };
   }
 }
@@ -207,9 +225,9 @@ export type DataEntryQueryArgs = {
   entryHash?: Uint8Array | string;
 };
 export class DataEntryQuery {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public url?: URL;
-  @encodeAs.field(2).hash
+  @(encodeAs.field(2).hash)
   public entryHash?: Uint8Array;
 
   constructor(args: DataEntryQueryArgs) {
@@ -218,8 +236,8 @@ export class DataEntryQuery {
       args.entryHash == undefined
         ? undefined
         : args.entryHash instanceof Uint8Array
-        ? args.entryHash
-        : Buffer.from(args.entryHash, "hex");
+          ? args.entryHash
+          : Buffer.from(args.entryHash, "hex");
   }
 
   copy() {
@@ -228,8 +246,11 @@ export class DataEntryQuery {
 
   asObject(): DataEntryQueryArgs {
     return {
-      url: this.url && this.url.toString(),
-      entryHash: this.entryHash && this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      entryHash:
+        this.entryHash === undefined
+          ? undefined
+          : this.entryHash && Buffer.from(this.entryHash).toString("hex"),
     };
   }
 }
@@ -242,15 +263,15 @@ export type DataEntryQueryResponseArgs = {
   lastBlockTime?: Date | string;
 };
 export class DataEntryQueryResponse {
-  @encodeAs.field(1).hash
+  @(encodeAs.field(1).hash)
   public entryHash?: Uint8Array;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public entry?: protocol.DataEntry;
-  @encodeAs.field(3).txid
+  @(encodeAs.field(3).txid)
   public txId?: TxID;
-  @encodeAs.field(4).txid
+  @(encodeAs.field(4).txid)
   public causeTxId?: TxID;
-  @encodeAs.field(5).time
+  @(encodeAs.field(5).time)
   public lastBlockTime?: Date;
 
   constructor(args: DataEntryQueryResponseArgs) {
@@ -258,8 +279,8 @@ export class DataEntryQueryResponse {
       args.entryHash == undefined
         ? undefined
         : args.entryHash instanceof Uint8Array
-        ? args.entryHash
-        : Buffer.from(args.entryHash, "hex");
+          ? args.entryHash
+          : Buffer.from(args.entryHash, "hex");
     this.entry = args.entry == undefined ? undefined : protocol.DataEntry.fromObject(args.entry);
     this.txId = args.txId == undefined ? undefined : TxID.parse(args.txId);
     this.causeTxId = args.causeTxId == undefined ? undefined : TxID.parse(args.causeTxId);
@@ -267,8 +288,8 @@ export class DataEntryQueryResponse {
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -277,11 +298,14 @@ export class DataEntryQueryResponse {
 
   asObject(): DataEntryQueryResponseArgs {
     return {
-      entryHash: this.entryHash && this.entryHash && Buffer.from(this.entryHash).toString("hex"),
-      entry: this.entry && this.entry.asObject(),
-      txId: this.txId && this.txId.toString(),
-      causeTxId: this.causeTxId && this.causeTxId.toString(),
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+      entryHash:
+        this.entryHash === undefined
+          ? undefined
+          : this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
+      txId: this.txId === undefined ? undefined : this.txId.toString(),
+      causeTxId: this.causeTxId === undefined ? undefined : this.causeTxId.toString(),
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -323,14 +347,14 @@ export class DataEntrySetQuery {
 
   asObject(): DataEntrySetQueryArgs {
     return {
-      url: this.url && this.url.toString(),
-      start: this.start && this.start,
-      count: this.count && this.count,
-      expand: this.expand && this.expand,
-      height: this.height && this.height,
-      scratch: this.scratch && this.scratch,
-      prove: this.prove && this.prove,
-      includeRemote: this.includeRemote && this.includeRemote,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      start: this.start === undefined ? undefined : this.start,
+      count: this.count === undefined ? undefined : this.count,
+      expand: this.expand === undefined ? undefined : this.expand,
+      height: this.height === undefined ? undefined : this.height,
+      scratch: this.scratch === undefined ? undefined : this.scratch,
+      prove: this.prove === undefined ? undefined : this.prove,
+      includeRemote: this.includeRemote === undefined ? undefined : this.includeRemote,
     };
   }
 }
@@ -361,26 +385,26 @@ export class DescriptionResponse {
       args.network == undefined
         ? undefined
         : args.network instanceof NetworkDescription
-        ? args.network
-        : new NetworkDescription(args.network);
+          ? args.network
+          : new NetworkDescription(args.network);
     this.networkAnchor =
       args.networkAnchor == undefined
         ? undefined
         : args.networkAnchor instanceof Uint8Array
-        ? args.networkAnchor
-        : Buffer.from(args.networkAnchor, "hex");
+          ? args.networkAnchor
+          : Buffer.from(args.networkAnchor, "hex");
     this.values =
       args.values == undefined
         ? undefined
         : args.values instanceof core.GlobalValues
-        ? args.values
-        : new core.GlobalValues(args.values);
+          ? args.values
+          : new core.GlobalValues(args.values);
     this.error =
       args.error == undefined
         ? undefined
         : args.error instanceof errors2.Error
-        ? args.error
-        : new errors2.Error(args.error);
+          ? args.error
+          : new errors2.Error(args.error);
   }
 
   copy() {
@@ -389,13 +413,18 @@ export class DescriptionResponse {
 
   asObject(): DescriptionResponseArgs {
     return {
-      partitionId: this.partitionId && this.partitionId,
-      networkType: this.networkType && protocol.PartitionType.getName(this.networkType),
-      network: this.network && this.network.asObject(),
+      partitionId: this.partitionId === undefined ? undefined : this.partitionId,
+      networkType:
+        this.networkType === undefined
+          ? undefined
+          : protocol.PartitionType.getName(this.networkType),
+      network: this.network === undefined ? undefined : this.network.asObject(),
       networkAnchor:
-        this.networkAnchor && this.networkAnchor && Buffer.from(this.networkAnchor).toString("hex"),
-      values: this.values && this.values.asObject(),
-      error: this.error && this.error.asObject(),
+        this.networkAnchor === undefined
+          ? undefined
+          : this.networkAnchor && Buffer.from(this.networkAnchor).toString("hex"),
+      values: this.values === undefined ? undefined : this.values.asObject(),
+      error: this.error === undefined ? undefined : this.error.asObject(),
     };
   }
 }
@@ -437,14 +466,14 @@ export class DirectoryQuery {
 
   asObject(): DirectoryQueryArgs {
     return {
-      url: this.url && this.url.toString(),
-      start: this.start && this.start,
-      count: this.count && this.count,
-      expand: this.expand && this.expand,
-      height: this.height && this.height,
-      scratch: this.scratch && this.scratch,
-      prove: this.prove && this.prove,
-      includeRemote: this.includeRemote && this.includeRemote,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      start: this.start === undefined ? undefined : this.start,
+      count: this.count === undefined ? undefined : this.count,
+      expand: this.expand === undefined ? undefined : this.expand,
+      height: this.height === undefined ? undefined : this.height,
+      scratch: this.scratch === undefined ? undefined : this.scratch,
+      prove: this.prove === undefined ? undefined : this.prove,
+      includeRemote: this.includeRemote === undefined ? undefined : this.includeRemote,
     };
   }
 }
@@ -462,8 +491,8 @@ export class ExecuteRequest {
       args.envelope == undefined
         ? undefined
         : args.envelope instanceof messaging.Envelope
-        ? args.envelope
-        : new messaging.Envelope(args.envelope);
+          ? args.envelope
+          : new messaging.Envelope(args.envelope);
     this.checkOnly = args.checkOnly == undefined ? undefined : args.checkOnly;
   }
 
@@ -473,8 +502,8 @@ export class ExecuteRequest {
 
   asObject(): ExecuteRequestArgs {
     return {
-      envelope: this.envelope && this.envelope.asObject(),
-      checkOnly: this.checkOnly && this.checkOnly,
+      envelope: this.envelope === undefined ? undefined : this.envelope.asObject(),
+      checkOnly: this.checkOnly === undefined ? undefined : this.checkOnly,
     };
   }
 }
@@ -510,12 +539,12 @@ export class GeneralQuery {
 
   asObject(): GeneralQueryArgs {
     return {
-      url: this.url && this.url.toString(),
-      expand: this.expand && this.expand,
-      height: this.height && this.height,
-      scratch: this.scratch && this.scratch,
-      prove: this.prove && this.prove,
-      includeRemote: this.includeRemote && this.includeRemote,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      expand: this.expand === undefined ? undefined : this.expand,
+      height: this.height === undefined ? undefined : this.height,
+      scratch: this.scratch === undefined ? undefined : this.scratch,
+      prove: this.prove === undefined ? undefined : this.prove,
+      includeRemote: this.includeRemote === undefined ? undefined : this.includeRemote,
     };
   }
 }
@@ -529,17 +558,17 @@ export type GeneralReceiptArgs = {
   error?: string;
 };
 export class GeneralReceipt {
-  @encodeAs.field(1).uint
+  @(encodeAs.field(1).uint)
   public localBlock?: number;
-  @encodeAs.field(2).time
+  @(encodeAs.field(2).time)
   public localBlockTime?: Date;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public directoryBlock?: number;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public majorBlock?: number;
-  @encodeAs.field(5).reference
+  @(encodeAs.field(5).reference)
   public proof?: merkle.Receipt;
-  @encodeAs.field(6).string
+  @(encodeAs.field(6).string)
   public error?: string;
 
   constructor(args: GeneralReceiptArgs) {
@@ -548,16 +577,16 @@ export class GeneralReceipt {
       args.localBlockTime == undefined
         ? undefined
         : args.localBlockTime instanceof Date
-        ? args.localBlockTime
-        : new Date(args.localBlockTime);
+          ? args.localBlockTime
+          : new Date(args.localBlockTime);
     this.directoryBlock = args.directoryBlock == undefined ? undefined : args.directoryBlock;
     this.majorBlock = args.majorBlock == undefined ? undefined : args.majorBlock;
     this.proof =
       args.proof == undefined
         ? undefined
         : args.proof instanceof merkle.Receipt
-        ? args.proof
-        : new merkle.Receipt(args.proof);
+          ? args.proof
+          : new merkle.Receipt(args.proof);
     this.error = args.error == undefined ? undefined : args.error;
   }
 
@@ -567,12 +596,12 @@ export class GeneralReceipt {
 
   asObject(): GeneralReceiptArgs {
     return {
-      localBlock: this.localBlock && this.localBlock,
-      localBlockTime: this.localBlockTime && this.localBlockTime,
-      directoryBlock: this.directoryBlock && this.directoryBlock,
-      majorBlock: this.majorBlock && this.majorBlock,
-      proof: this.proof && this.proof.asObject(),
-      error: this.error && this.error,
+      localBlock: this.localBlock === undefined ? undefined : this.localBlock,
+      localBlockTime: this.localBlockTime === undefined ? undefined : this.localBlockTime,
+      directoryBlock: this.directoryBlock === undefined ? undefined : this.directoryBlock,
+      majorBlock: this.majorBlock === undefined ? undefined : this.majorBlock,
+      proof: this.proof === undefined ? undefined : this.proof.asObject(),
+      error: this.error === undefined ? undefined : this.error,
     };
   }
 }
@@ -593,7 +622,7 @@ export class KeyPage {
 
   asObject(): KeyPageArgs {
     return {
-      version: this.version && this.version,
+      version: this.version === undefined ? undefined : this.version,
     };
   }
 }
@@ -612,8 +641,8 @@ export class KeyPageIndexQuery {
       args.key == undefined
         ? undefined
         : args.key instanceof Uint8Array
-        ? args.key
-        : Buffer.from(args.key, "hex");
+          ? args.key
+          : Buffer.from(args.key, "hex");
   }
 
   copy() {
@@ -622,8 +651,8 @@ export class KeyPageIndexQuery {
 
   asObject(): KeyPageIndexQueryArgs {
     return {
-      url: this.url && this.url.toString(),
-      key: this.key && this.key && Buffer.from(this.key).toString("hex"),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      key: this.key === undefined ? undefined : this.key && Buffer.from(this.key).toString("hex"),
     };
   }
 }
@@ -650,9 +679,9 @@ export class MajorBlocksQuery {
 
   asObject(): MajorBlocksQueryArgs {
     return {
-      url: this.url && this.url.toString(),
-      start: this.start && this.start,
-      count: this.count && this.count,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      start: this.start === undefined ? undefined : this.start,
+      count: this.count === undefined ? undefined : this.count,
     };
   }
 }
@@ -675,20 +704,20 @@ export class MajorQueryResponse {
       args.majorBlockTime == undefined
         ? undefined
         : args.majorBlockTime instanceof Date
-        ? args.majorBlockTime
-        : new Date(args.majorBlockTime);
+          ? args.majorBlockTime
+          : new Date(args.majorBlockTime);
     this.minorBlocks =
       args.minorBlocks == undefined
         ? undefined
         : args.minorBlocks.map((v) =>
-            v == undefined ? undefined : v instanceof MinorBlock ? v : new MinorBlock(v)
+            v == undefined ? undefined : v instanceof MinorBlock ? v : new MinorBlock(v),
           );
     this.lastBlockTime =
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -697,12 +726,13 @@ export class MajorQueryResponse {
 
   asObject(): MajorQueryResponseArgs {
     return {
-      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
-      majorBlockTime: this.majorBlockTime && this.majorBlockTime,
+      majorBlockIndex: this.majorBlockIndex === undefined ? undefined : this.majorBlockIndex,
+      majorBlockTime: this.majorBlockTime === undefined ? undefined : this.majorBlockTime,
       minorBlocks:
-        this.minorBlocks &&
-        this.minorBlocks?.map((v) => (v == undefined ? undefined : v.asObject())),
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+        this.minorBlocks === undefined
+          ? undefined
+          : this.minorBlocks?.map((v) => (v == undefined ? undefined : v.asObject())),
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -721,7 +751,7 @@ export class MerkleState {
       args.roots == undefined
         ? undefined
         : args.roots.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
   }
 
@@ -731,10 +761,13 @@ export class MerkleState {
 
   asObject(): MerkleStateArgs {
     return {
-      height: this.height && this.height,
+      height: this.height === undefined ? undefined : this.height,
       roots:
-        this.roots &&
-        this.roots?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
+        this.roots === undefined
+          ? undefined
+          : this.roots?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
     };
   }
 }
@@ -758,8 +791,8 @@ export class MetricsQuery {
 
   asObject(): MetricsQueryArgs {
     return {
-      metric: this.metric && this.metric,
-      duration: this.duration && this.duration,
+      metric: this.metric === undefined ? undefined : this.metric,
+      duration: this.duration === undefined ? undefined : this.duration,
     };
   }
 }
@@ -780,7 +813,7 @@ export class MetricsResponse {
 
   asObject(): MetricsResponseArgs {
     return {
-      value: this.value && this.value,
+      value: this.value === undefined ? undefined : this.value,
     };
   }
 }
@@ -799,8 +832,8 @@ export class MinorBlock {
       args.blockTime == undefined
         ? undefined
         : args.blockTime instanceof Date
-        ? args.blockTime
-        : new Date(args.blockTime);
+          ? args.blockTime
+          : new Date(args.blockTime);
   }
 
   copy() {
@@ -809,8 +842,8 @@ export class MinorBlock {
 
   asObject(): MinorBlockArgs {
     return {
-      blockIndex: this.blockIndex && this.blockIndex,
-      blockTime: this.blockTime && this.blockTime,
+      blockIndex: this.blockIndex === undefined ? undefined : this.blockIndex,
+      blockTime: this.blockTime === undefined ? undefined : this.blockTime,
     };
   }
 }
@@ -847,11 +880,15 @@ export class MinorBlocksQuery {
 
   asObject(): MinorBlocksQueryArgs {
     return {
-      url: this.url && this.url.toString(),
-      start: this.start && this.start,
-      count: this.count && this.count,
-      txFetchMode: this.txFetchMode && TxFetchMode.getName(this.txFetchMode),
-      blockFilterMode: this.blockFilterMode && BlockFilterMode.getName(this.blockFilterMode),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      start: this.start === undefined ? undefined : this.start,
+      count: this.count === undefined ? undefined : this.count,
+      txFetchMode:
+        this.txFetchMode === undefined ? undefined : TxFetchMode.getName(this.txFetchMode),
+      blockFilterMode:
+        this.blockFilterMode === undefined
+          ? undefined
+          : BlockFilterMode.getName(this.blockFilterMode),
     };
   }
 }
@@ -878,14 +915,14 @@ export class MinorQueryResponse {
       args.blockTime == undefined
         ? undefined
         : args.blockTime instanceof Date
-        ? args.blockTime
-        : new Date(args.blockTime);
+          ? args.blockTime
+          : new Date(args.blockTime);
     this.txCount = args.txCount == undefined ? undefined : args.txCount;
     this.txIds =
       args.txIds == undefined
         ? undefined
         : args.txIds.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
     this.transactions =
       args.transactions == undefined
@@ -894,15 +931,15 @@ export class MinorQueryResponse {
             v == undefined
               ? undefined
               : v instanceof TransactionQueryResponse
-              ? v
-              : new TransactionQueryResponse(v)
+                ? v
+                : new TransactionQueryResponse(v),
           );
     this.lastBlockTime =
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -911,16 +948,20 @@ export class MinorQueryResponse {
 
   asObject(): MinorQueryResponseArgs {
     return {
-      blockIndex: this.blockIndex && this.blockIndex,
-      blockTime: this.blockTime && this.blockTime,
-      txCount: this.txCount && this.txCount,
+      blockIndex: this.blockIndex === undefined ? undefined : this.blockIndex,
+      blockTime: this.blockTime === undefined ? undefined : this.blockTime,
+      txCount: this.txCount === undefined ? undefined : this.txCount,
       txIds:
-        this.txIds &&
-        this.txIds?.map((v) => (v == undefined ? undefined : v && Buffer.from(v).toString("hex"))),
+        this.txIds === undefined
+          ? undefined
+          : this.txIds?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
       transactions:
-        this.transactions &&
-        this.transactions?.map((v) => (v == undefined ? undefined : v.asObject())),
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+        this.transactions === undefined
+          ? undefined
+          : this.transactions?.map((v) => (v == undefined ? undefined : v.asObject())),
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -958,8 +999,8 @@ export class MultiResponse {
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -968,13 +1009,19 @@ export class MultiResponse {
 
   asObject(): MultiResponseArgs {
     return {
-      type: this.type && this.type,
-      items: this.items && this.items?.map((v) => (v == undefined ? undefined : v)),
-      start: this.start && this.start,
-      count: this.count && this.count,
-      total: this.total && this.total,
-      otherItems: this.otherItems && this.otherItems?.map((v) => (v == undefined ? undefined : v)),
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+      type: this.type === undefined ? undefined : this.type,
+      items:
+        this.items === undefined
+          ? undefined
+          : this.items?.map((v) => (v == undefined ? undefined : v)),
+      start: this.start === undefined ? undefined : this.start,
+      count: this.count === undefined ? undefined : this.count,
+      total: this.total === undefined ? undefined : this.total,
+      otherItems:
+        this.otherItems === undefined
+          ? undefined
+          : this.otherItems?.map((v) => (v == undefined ? undefined : v)),
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -984,9 +1031,9 @@ export type NetworkDescriptionArgs = {
   partitions?: (PartitionDescription | PartitionDescriptionArgs | undefined)[];
 };
 export class NetworkDescription {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public id?: string;
-  @encodeAs.field(2).repeatable.reference
+  @(encodeAs.field(2).repeatable.reference)
   public partitions?: (PartitionDescription | undefined)[];
 
   constructor(args: NetworkDescriptionArgs) {
@@ -998,8 +1045,8 @@ export class NetworkDescription {
             v == undefined
               ? undefined
               : v instanceof PartitionDescription
-              ? v
-              : new PartitionDescription(v)
+                ? v
+                : new PartitionDescription(v),
           );
   }
 
@@ -1009,9 +1056,11 @@ export class NetworkDescription {
 
   asObject(): NetworkDescriptionArgs {
     return {
-      id: this.id && this.id,
+      id: this.id === undefined ? undefined : this.id,
       partitions:
-        this.partitions && this.partitions?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.partitions === undefined
+          ? undefined
+          : this.partitions?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -1021,9 +1070,9 @@ export type NodeDescriptionArgs = {
   type?: config.NodeTypeArgs;
 };
 export class NodeDescription {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public address?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public type?: config.NodeType;
 
   constructor(args: NodeDescriptionArgs) {
@@ -1037,8 +1086,8 @@ export class NodeDescription {
 
   asObject(): NodeDescriptionArgs {
     return {
-      address: this.address && this.address,
-      type: this.type && config.NodeType.getName(this.type),
+      address: this.address === undefined ? undefined : this.address,
+      type: this.type === undefined ? undefined : config.NodeType.getName(this.type),
     };
   }
 }
@@ -1050,13 +1099,13 @@ export type PartitionDescriptionArgs = {
   nodes?: (NodeDescription | NodeDescriptionArgs | undefined)[];
 };
 export class PartitionDescription {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public id?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public type?: protocol.PartitionType;
-  @encodeAs.field(3).int
+  @(encodeAs.field(3).int)
   public basePort?: number;
-  @encodeAs.field(4).repeatable.reference
+  @(encodeAs.field(4).repeatable.reference)
   public nodes?: (NodeDescription | undefined)[];
 
   constructor(args: PartitionDescriptionArgs) {
@@ -1067,7 +1116,7 @@ export class PartitionDescription {
       args.nodes == undefined
         ? undefined
         : args.nodes.map((v) =>
-            v == undefined ? undefined : v instanceof NodeDescription ? v : new NodeDescription(v)
+            v == undefined ? undefined : v instanceof NodeDescription ? v : new NodeDescription(v),
           );
   }
 
@@ -1077,10 +1126,13 @@ export class PartitionDescription {
 
   asObject(): PartitionDescriptionArgs {
     return {
-      id: this.id && this.id,
-      type: this.type && protocol.PartitionType.getName(this.type),
-      basePort: this.basePort && this.basePort,
-      nodes: this.nodes && this.nodes?.map((v) => (v == undefined ? undefined : v.asObject())),
+      id: this.id === undefined ? undefined : this.id,
+      type: this.type === undefined ? undefined : protocol.PartitionType.getName(this.type),
+      basePort: this.basePort === undefined ? undefined : this.basePort,
+      nodes:
+        this.nodes === undefined
+          ? undefined
+          : this.nodes?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -1113,11 +1165,11 @@ export class QueryOptions {
 
   asObject(): QueryOptionsArgs {
     return {
-      expand: this.expand && this.expand,
-      height: this.height && this.height,
-      scratch: this.scratch && this.scratch,
-      prove: this.prove && this.prove,
-      includeRemote: this.includeRemote && this.includeRemote,
+      expand: this.expand === undefined ? undefined : this.expand,
+      height: this.height === undefined ? undefined : this.height,
+      scratch: this.scratch === undefined ? undefined : this.scratch,
+      prove: this.prove === undefined ? undefined : this.prove,
+      includeRemote: this.includeRemote === undefined ? undefined : this.includeRemote,
     };
   }
 }
@@ -1141,8 +1193,8 @@ export class QueryPagination {
 
   asObject(): QueryPaginationArgs {
     return {
-      start: this.start && this.start,
-      count: this.count && this.count,
+      start: this.start === undefined ? undefined : this.start,
+      count: this.count === undefined ? undefined : this.count,
     };
   }
 }
@@ -1155,15 +1207,15 @@ export type ResponseDataEntryArgs = {
   lastBlockTime?: Date | string;
 };
 export class ResponseDataEntry {
-  @encodeAs.field(1).hash
+  @(encodeAs.field(1).hash)
   public entryHash?: Uint8Array;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public entry?: protocol.DataEntry;
-  @encodeAs.field(3).txid
+  @(encodeAs.field(3).txid)
   public txId?: TxID;
-  @encodeAs.field(4).txid
+  @(encodeAs.field(4).txid)
   public causeTxId?: TxID;
-  @encodeAs.field(5).time
+  @(encodeAs.field(5).time)
   public lastBlockTime?: Date;
 
   constructor(args: ResponseDataEntryArgs) {
@@ -1171,8 +1223,8 @@ export class ResponseDataEntry {
       args.entryHash == undefined
         ? undefined
         : args.entryHash instanceof Uint8Array
-        ? args.entryHash
-        : Buffer.from(args.entryHash, "hex");
+          ? args.entryHash
+          : Buffer.from(args.entryHash, "hex");
     this.entry = args.entry == undefined ? undefined : protocol.DataEntry.fromObject(args.entry);
     this.txId = args.txId == undefined ? undefined : TxID.parse(args.txId);
     this.causeTxId = args.causeTxId == undefined ? undefined : TxID.parse(args.causeTxId);
@@ -1180,8 +1232,8 @@ export class ResponseDataEntry {
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1190,11 +1242,14 @@ export class ResponseDataEntry {
 
   asObject(): ResponseDataEntryArgs {
     return {
-      entryHash: this.entryHash && this.entryHash && Buffer.from(this.entryHash).toString("hex"),
-      entry: this.entry && this.entry.asObject(),
-      txId: this.txId && this.txId.toString(),
-      causeTxId: this.causeTxId && this.causeTxId.toString(),
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+      entryHash:
+        this.entryHash === undefined
+          ? undefined
+          : this.entryHash && Buffer.from(this.entryHash).toString("hex"),
+      entry: this.entry === undefined ? undefined : this.entry.asObject(),
+      txId: this.txId === undefined ? undefined : this.txId.toString(),
+      causeTxId: this.causeTxId === undefined ? undefined : this.causeTxId.toString(),
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -1205,11 +1260,11 @@ export type ResponseDataEntrySetArgs = {
   lastBlockTime?: Date | string;
 };
 export class ResponseDataEntrySet {
-  @encodeAs.field(1).repeatable.reference
+  @(encodeAs.field(1).repeatable.reference)
   public dataEntries?: (ResponseDataEntry | undefined)[];
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public total?: number;
-  @encodeAs.field(3).time
+  @(encodeAs.field(3).time)
   public lastBlockTime?: Date;
 
   constructor(args: ResponseDataEntrySetArgs) {
@@ -1220,16 +1275,16 @@ export class ResponseDataEntrySet {
             v == undefined
               ? undefined
               : v instanceof ResponseDataEntry
-              ? v
-              : new ResponseDataEntry(v)
+                ? v
+                : new ResponseDataEntry(v),
           );
     this.total = args.total == undefined ? undefined : args.total;
     this.lastBlockTime =
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1239,10 +1294,11 @@ export class ResponseDataEntrySet {
   asObject(): ResponseDataEntrySetArgs {
     return {
       dataEntries:
-        this.dataEntries &&
-        this.dataEntries?.map((v) => (v == undefined ? undefined : v.asObject())),
-      total: this.total && this.total,
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+        this.dataEntries === undefined
+          ? undefined
+          : this.dataEntries?.map((v) => (v == undefined ? undefined : v.asObject())),
+      total: this.total === undefined ? undefined : this.total,
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -1254,13 +1310,13 @@ export type ResponseKeyPageIndexArgs = {
   lastBlockTime?: Date | string;
 };
 export class ResponseKeyPageIndex {
-  @encodeAs.field(1).url
+  @(encodeAs.field(1).url)
   public authority?: URL;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public signer?: URL;
-  @encodeAs.field(3).keepEmpty.uint
+  @(encodeAs.field(3).keepEmpty.uint)
   public index?: number;
-  @encodeAs.field(4).time
+  @(encodeAs.field(4).time)
   public lastBlockTime?: Date;
 
   constructor(args: ResponseKeyPageIndexArgs) {
@@ -1271,8 +1327,8 @@ export class ResponseKeyPageIndex {
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1281,10 +1337,10 @@ export class ResponseKeyPageIndex {
 
   asObject(): ResponseKeyPageIndexArgs {
     return {
-      authority: this.authority && this.authority.toString(),
-      signer: this.signer && this.signer.toString(),
-      index: this.index && this.index,
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
+      signer: this.signer === undefined ? undefined : this.signer.toString(),
+      index: this.index === undefined ? undefined : this.index,
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -1303,7 +1359,7 @@ export class SignatureBook {
       args.pages == undefined
         ? undefined
         : args.pages.map((v) =>
-            v == undefined ? undefined : v instanceof SignaturePage ? v : new SignaturePage(v)
+            v == undefined ? undefined : v instanceof SignaturePage ? v : new SignaturePage(v),
           );
   }
 
@@ -1313,8 +1369,11 @@ export class SignatureBook {
 
   asObject(): SignatureBookArgs {
     return {
-      authority: this.authority && this.authority.toString(),
-      pages: this.pages && this.pages?.map((v) => (v == undefined ? undefined : v.asObject())),
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
+      pages:
+        this.pages === undefined
+          ? undefined
+          : this.pages?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -1332,13 +1391,13 @@ export class SignaturePage {
       args.signer == undefined
         ? undefined
         : args.signer instanceof SignerMetadata
-        ? args.signer
-        : new SignerMetadata(args.signer);
+          ? args.signer
+          : new SignerMetadata(args.signer);
     this.signatures =
       args.signatures == undefined
         ? undefined
         : args.signatures.map((v) =>
-            v == undefined ? undefined : protocol.Signature.fromObject(v)
+            v == undefined ? undefined : protocol.Signature.fromObject(v),
           );
   }
 
@@ -1348,9 +1407,11 @@ export class SignaturePage {
 
   asObject(): SignaturePageArgs {
     return {
-      signer: this.signer && this.signer.asObject(),
+      signer: this.signer === undefined ? undefined : this.signer.asObject(),
       signatures:
-        this.signatures && this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.signatures === undefined
+          ? undefined
+          : this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -1376,8 +1437,8 @@ export class Signer {
       args.publicKey == undefined
         ? undefined
         : args.publicKey instanceof Uint8Array
-        ? args.publicKey
-        : Buffer.from(args.publicKey, "hex");
+          ? args.publicKey
+          : Buffer.from(args.publicKey, "hex");
     this.timestamp = args.timestamp == undefined ? undefined : args.timestamp;
     this.url = args.url == undefined ? undefined : URL.parse(args.url);
     this.version = args.version == undefined ? undefined : args.version;
@@ -1394,12 +1455,18 @@ export class Signer {
 
   asObject(): SignerArgs {
     return {
-      publicKey: this.publicKey && this.publicKey && Buffer.from(this.publicKey).toString("hex"),
-      timestamp: this.timestamp && this.timestamp,
-      url: this.url && this.url.toString(),
-      version: this.version && this.version,
-      signatureType: this.signatureType && protocol.SignatureType.getName(this.signatureType),
-      useSimpleHash: this.useSimpleHash && this.useSimpleHash,
+      publicKey:
+        this.publicKey === undefined
+          ? undefined
+          : this.publicKey && Buffer.from(this.publicKey).toString("hex"),
+      timestamp: this.timestamp === undefined ? undefined : this.timestamp,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      version: this.version === undefined ? undefined : this.version,
+      signatureType:
+        this.signatureType === undefined
+          ? undefined
+          : protocol.SignatureType.getName(this.signatureType),
+      useSimpleHash: this.useSimpleHash === undefined ? undefined : this.useSimpleHash,
     };
   }
 }
@@ -1426,9 +1493,9 @@ export class SignerMetadata {
 
   asObject(): SignerMetadataArgs {
     return {
-      type: this.type && protocol.AccountType.getName(this.type),
-      url: this.url && this.url.toString(),
-      acceptThreshold: this.acceptThreshold && this.acceptThreshold,
+      type: this.type === undefined ? undefined : protocol.AccountType.getName(this.type),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      acceptThreshold: this.acceptThreshold === undefined ? undefined : this.acceptThreshold,
     };
   }
 }
@@ -1465,40 +1532,40 @@ export class StatusResponse {
       args.bvnTime == undefined
         ? undefined
         : args.bvnTime instanceof Date
-        ? args.bvnTime
-        : new Date(args.bvnTime);
+          ? args.bvnTime
+          : new Date(args.bvnTime);
     this.dnTime =
       args.dnTime == undefined
         ? undefined
         : args.dnTime instanceof Date
-        ? args.dnTime
-        : new Date(args.dnTime);
+          ? args.dnTime
+          : new Date(args.dnTime);
     this.lastDirectoryAnchorHeight =
       args.lastDirectoryAnchorHeight == undefined ? undefined : args.lastDirectoryAnchorHeight;
     this.bvnRootHash =
       args.bvnRootHash == undefined
         ? undefined
         : args.bvnRootHash instanceof Uint8Array
-        ? args.bvnRootHash
-        : Buffer.from(args.bvnRootHash, "hex");
+          ? args.bvnRootHash
+          : Buffer.from(args.bvnRootHash, "hex");
     this.dnRootHash =
       args.dnRootHash == undefined
         ? undefined
         : args.dnRootHash instanceof Uint8Array
-        ? args.dnRootHash
-        : Buffer.from(args.dnRootHash, "hex");
+          ? args.dnRootHash
+          : Buffer.from(args.dnRootHash, "hex");
     this.bvnBptHash =
       args.bvnBptHash == undefined
         ? undefined
         : args.bvnBptHash instanceof Uint8Array
-        ? args.bvnBptHash
-        : Buffer.from(args.bvnBptHash, "hex");
+          ? args.bvnBptHash
+          : Buffer.from(args.bvnBptHash, "hex");
     this.dnBptHash =
       args.dnBptHash == undefined
         ? undefined
         : args.dnBptHash instanceof Uint8Array
-        ? args.dnBptHash
-        : Buffer.from(args.dnBptHash, "hex");
+          ? args.dnBptHash
+          : Buffer.from(args.dnBptHash, "hex");
   }
 
   copy() {
@@ -1507,19 +1574,29 @@ export class StatusResponse {
 
   asObject(): StatusResponseArgs {
     return {
-      ok: this.ok && this.ok,
-      bvnHeight: this.bvnHeight && this.bvnHeight,
-      dnHeight: this.dnHeight && this.dnHeight,
-      bvnTime: this.bvnTime && this.bvnTime,
-      dnTime: this.dnTime && this.dnTime,
-      lastDirectoryAnchorHeight: this.lastDirectoryAnchorHeight && this.lastDirectoryAnchorHeight,
+      ok: this.ok === undefined ? undefined : this.ok,
+      bvnHeight: this.bvnHeight === undefined ? undefined : this.bvnHeight,
+      dnHeight: this.dnHeight === undefined ? undefined : this.dnHeight,
+      bvnTime: this.bvnTime === undefined ? undefined : this.bvnTime,
+      dnTime: this.dnTime === undefined ? undefined : this.dnTime,
+      lastDirectoryAnchorHeight:
+        this.lastDirectoryAnchorHeight === undefined ? undefined : this.lastDirectoryAnchorHeight,
       bvnRootHash:
-        this.bvnRootHash && this.bvnRootHash && Buffer.from(this.bvnRootHash).toString("hex"),
+        this.bvnRootHash === undefined
+          ? undefined
+          : this.bvnRootHash && Buffer.from(this.bvnRootHash).toString("hex"),
       dnRootHash:
-        this.dnRootHash && this.dnRootHash && Buffer.from(this.dnRootHash).toString("hex"),
+        this.dnRootHash === undefined
+          ? undefined
+          : this.dnRootHash && Buffer.from(this.dnRootHash).toString("hex"),
       bvnBptHash:
-        this.bvnBptHash && this.bvnBptHash && Buffer.from(this.bvnBptHash).toString("hex"),
-      dnBptHash: this.dnBptHash && this.dnBptHash && Buffer.from(this.dnBptHash).toString("hex"),
+        this.bvnBptHash === undefined
+          ? undefined
+          : this.bvnBptHash && Buffer.from(this.bvnBptHash).toString("hex"),
+      dnBptHash:
+        this.dnBptHash === undefined
+          ? undefined
+          : this.dnBptHash && Buffer.from(this.dnBptHash).toString("hex"),
     };
   }
 }
@@ -1549,10 +1626,10 @@ export class SyntheticTransactionRequest {
 
   asObject(): SyntheticTransactionRequestArgs {
     return {
-      source: this.source && this.source.toString(),
-      destination: this.destination && this.destination.toString(),
-      sequenceNumber: this.sequenceNumber && this.sequenceNumber,
-      anchor: this.anchor && this.anchor,
+      source: this.source === undefined ? undefined : this.source.toString(),
+      destination: this.destination === undefined ? undefined : this.destination.toString(),
+      sequenceNumber: this.sequenceNumber === undefined ? undefined : this.sequenceNumber,
+      anchor: this.anchor === undefined ? undefined : this.anchor,
     };
   }
 }
@@ -1573,14 +1650,14 @@ export class TokenDeposit {
       args.amount == undefined
         ? undefined
         : typeof args.amount === "bigint"
-        ? args.amount
-        : BigInt(args.amount);
+          ? args.amount
+          : BigInt(args.amount);
     this.txid =
       args.txid == undefined
         ? undefined
         : args.txid instanceof Uint8Array
-        ? args.txid
-        : Buffer.from(args.txid, "hex");
+          ? args.txid
+          : Buffer.from(args.txid, "hex");
   }
 
   copy() {
@@ -1589,9 +1666,10 @@ export class TokenDeposit {
 
   asObject(): TokenDepositArgs {
     return {
-      url: this.url && this.url.toString(),
-      amount: this.amount && this.amount.toString(),
-      txid: this.txid && this.txid && Buffer.from(this.txid).toString("hex"),
+      url: this.url === undefined ? undefined : this.url.toString(),
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
+      txid:
+        this.txid === undefined ? undefined : this.txid && Buffer.from(this.txid).toString("hex"),
     };
   }
 }
@@ -1610,7 +1688,7 @@ export class TokenSend {
       args.to == undefined
         ? undefined
         : args.to.map((v) =>
-            v == undefined ? undefined : v instanceof TokenDeposit ? v : new TokenDeposit(v)
+            v == undefined ? undefined : v instanceof TokenDeposit ? v : new TokenDeposit(v),
           );
   }
 
@@ -1620,8 +1698,11 @@ export class TokenSend {
 
   asObject(): TokenSendArgs {
     return {
-      from: this.from && this.from.toString(),
-      to: this.to && this.to?.map((v) => (v == undefined ? undefined : v.asObject())),
+      from: this.from === undefined ? undefined : this.from.toString(),
+      to:
+        this.to === undefined
+          ? undefined
+          : this.to?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -1662,35 +1743,35 @@ export class TransactionQueryResponse {
       args.mainChain == undefined
         ? undefined
         : args.mainChain instanceof MerkleState
-        ? args.mainChain
-        : new MerkleState(args.mainChain);
+          ? args.mainChain
+          : new MerkleState(args.mainChain);
     this.data = args.data == undefined ? undefined : args.data;
     this.origin = args.origin == undefined ? undefined : URL.parse(args.origin);
     this.transactionHash =
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.txid = args.txid == undefined ? undefined : TxID.parse(args.txid);
     this.transaction =
       args.transaction == undefined
         ? undefined
         : args.transaction instanceof protocol.Transaction
-        ? args.transaction
-        : new protocol.Transaction(args.transaction);
+          ? args.transaction
+          : new protocol.Transaction(args.transaction);
     this.signatures =
       args.signatures == undefined
         ? undefined
         : args.signatures.map((v) =>
-            v == undefined ? undefined : protocol.Signature.fromObject(v)
+            v == undefined ? undefined : protocol.Signature.fromObject(v),
           );
     this.status =
       args.status == undefined
         ? undefined
         : args.status instanceof protocol.TransactionStatus
-        ? args.status
-        : new protocol.TransactionStatus(args.status);
+          ? args.status
+          : new protocol.TransactionStatus(args.status);
     this.produced =
       args.produced == undefined
         ? undefined
@@ -1699,20 +1780,20 @@ export class TransactionQueryResponse {
       args.receipts == undefined
         ? undefined
         : args.receipts.map((v) =>
-            v == undefined ? undefined : v instanceof TxReceipt ? v : new TxReceipt(v)
+            v == undefined ? undefined : v instanceof TxReceipt ? v : new TxReceipt(v),
           );
     this.signatureBooks =
       args.signatureBooks == undefined
         ? undefined
         : args.signatureBooks.map((v) =>
-            v == undefined ? undefined : v instanceof SignatureBook ? v : new SignatureBook(v)
+            v == undefined ? undefined : v instanceof SignatureBook ? v : new SignatureBook(v),
           );
     this.lastBlockTime =
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1721,27 +1802,34 @@ export class TransactionQueryResponse {
 
   asObject(): TransactionQueryResponseArgs {
     return {
-      type: this.type && this.type,
-      mainChain: this.mainChain && this.mainChain.asObject(),
-      data: this.data && this.data,
-      origin: this.origin && this.origin.toString(),
+      type: this.type === undefined ? undefined : this.type,
+      mainChain: this.mainChain === undefined ? undefined : this.mainChain.asObject(),
+      data: this.data === undefined ? undefined : this.data,
+      origin: this.origin === undefined ? undefined : this.origin.toString(),
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      txid: this.txid && this.txid.toString(),
-      transaction: this.transaction && this.transaction.asObject(),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      txid: this.txid === undefined ? undefined : this.txid.toString(),
+      transaction: this.transaction === undefined ? undefined : this.transaction.asObject(),
       signatures:
-        this.signatures && this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
-      status: this.status && this.status.asObject(),
+        this.signatures === undefined
+          ? undefined
+          : this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
+      status: this.status === undefined ? undefined : this.status.asObject(),
       produced:
-        this.produced && this.produced?.map((v) => (v == undefined ? undefined : v.toString())),
+        this.produced === undefined
+          ? undefined
+          : this.produced?.map((v) => (v == undefined ? undefined : v.toString())),
       receipts:
-        this.receipts && this.receipts?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.receipts === undefined
+          ? undefined
+          : this.receipts?.map((v) => (v == undefined ? undefined : v.asObject())),
       signatureBooks:
-        this.signatureBooks &&
-        this.signatureBooks?.map((v) => (v == undefined ? undefined : v.asObject())),
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+        this.signatureBooks === undefined
+          ? undefined
+          : this.signatureBooks?.map((v) => (v == undefined ? undefined : v.asObject())),
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -1771,10 +1859,10 @@ export class TxHistoryQuery {
 
   asObject(): TxHistoryQueryArgs {
     return {
-      url: this.url && this.url.toString(),
-      start: this.start && this.start,
-      count: this.count && this.count,
-      scratch: this.scratch && this.scratch,
+      url: this.url === undefined ? undefined : this.url.toString(),
+      start: this.start === undefined ? undefined : this.start,
+      count: this.count === undefined ? undefined : this.count,
+      scratch: this.scratch === undefined ? undefined : this.scratch,
     };
   }
 }
@@ -1790,21 +1878,21 @@ export type TxReceiptArgs = {
   chain?: string;
 };
 export class TxReceipt {
-  @encodeAs.field(1, 1).uint
+  @(encodeAs.field(1, 1).uint)
   public localBlock?: number;
-  @encodeAs.field(1, 2).time
+  @(encodeAs.field(1, 2).time)
   public localBlockTime?: Date;
-  @encodeAs.field(1, 3).uint
+  @(encodeAs.field(1, 3).uint)
   public directoryBlock?: number;
-  @encodeAs.field(1, 4).uint
+  @(encodeAs.field(1, 4).uint)
   public majorBlock?: number;
-  @encodeAs.field(1, 5).reference
+  @(encodeAs.field(1, 5).reference)
   public proof?: merkle.Receipt;
-  @encodeAs.field(1, 6).string
+  @(encodeAs.field(1, 6).string)
   public error?: string;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public account?: URL;
-  @encodeAs.field(3).string
+  @(encodeAs.field(3).string)
   public chain?: string;
 
   constructor(args: TxReceiptArgs) {
@@ -1813,16 +1901,16 @@ export class TxReceipt {
       args.localBlockTime == undefined
         ? undefined
         : args.localBlockTime instanceof Date
-        ? args.localBlockTime
-        : new Date(args.localBlockTime);
+          ? args.localBlockTime
+          : new Date(args.localBlockTime);
     this.directoryBlock = args.directoryBlock == undefined ? undefined : args.directoryBlock;
     this.majorBlock = args.majorBlock == undefined ? undefined : args.majorBlock;
     this.proof =
       args.proof == undefined
         ? undefined
         : args.proof instanceof merkle.Receipt
-        ? args.proof
-        : new merkle.Receipt(args.proof);
+          ? args.proof
+          : new merkle.Receipt(args.proof);
     this.error = args.error == undefined ? undefined : args.error;
     this.account = args.account == undefined ? undefined : URL.parse(args.account);
     this.chain = args.chain == undefined ? undefined : args.chain;
@@ -1834,14 +1922,14 @@ export class TxReceipt {
 
   asObject(): TxReceiptArgs {
     return {
-      localBlock: this.localBlock && this.localBlock,
-      localBlockTime: this.localBlockTime && this.localBlockTime,
-      directoryBlock: this.directoryBlock && this.directoryBlock,
-      majorBlock: this.majorBlock && this.majorBlock,
-      proof: this.proof && this.proof.asObject(),
-      error: this.error && this.error,
-      account: this.account && this.account.toString(),
-      chain: this.chain && this.chain,
+      localBlock: this.localBlock === undefined ? undefined : this.localBlock,
+      localBlockTime: this.localBlockTime === undefined ? undefined : this.localBlockTime,
+      directoryBlock: this.directoryBlock === undefined ? undefined : this.directoryBlock,
+      majorBlock: this.majorBlock === undefined ? undefined : this.majorBlock,
+      proof: this.proof === undefined ? undefined : this.proof.asObject(),
+      error: this.error === undefined ? undefined : this.error,
+      account: this.account === undefined ? undefined : this.account.toString(),
+      chain: this.chain === undefined ? undefined : this.chain,
     };
   }
 }
@@ -1878,34 +1966,34 @@ export class TxRequest {
       args.signer == undefined
         ? undefined
         : args.signer instanceof Signer
-        ? args.signer
-        : new Signer(args.signer);
+          ? args.signer
+          : new Signer(args.signer);
     this.signature =
       args.signature == undefined
         ? undefined
         : args.signature instanceof Uint8Array
-        ? args.signature
-        : Buffer.from(args.signature, "hex");
+          ? args.signature
+          : Buffer.from(args.signature, "hex");
     this.keyPage =
       args.keyPage == undefined
         ? undefined
         : args.keyPage instanceof KeyPage
-        ? args.keyPage
-        : new KeyPage(args.keyPage);
+          ? args.keyPage
+          : new KeyPage(args.keyPage);
     this.txHash =
       args.txHash == undefined
         ? undefined
         : args.txHash instanceof Uint8Array
-        ? args.txHash
-        : Buffer.from(args.txHash, "hex");
+          ? args.txHash
+          : Buffer.from(args.txHash, "hex");
     this.payload = args.payload == undefined ? undefined : args.payload;
     this.memo = args.memo == undefined ? undefined : args.memo;
     this.metadata =
       args.metadata == undefined
         ? undefined
         : args.metadata instanceof Uint8Array
-        ? args.metadata
-        : Buffer.from(args.metadata, "hex");
+          ? args.metadata
+          : Buffer.from(args.metadata, "hex");
   }
 
   copy() {
@@ -1914,16 +2002,25 @@ export class TxRequest {
 
   asObject(): TxRequestArgs {
     return {
-      checkOnly: this.checkOnly && this.checkOnly,
-      isEnvelope: this.isEnvelope && this.isEnvelope,
-      origin: this.origin && this.origin.toString(),
-      signer: this.signer && this.signer.asObject(),
-      signature: this.signature && this.signature && Buffer.from(this.signature).toString("hex"),
-      keyPage: this.keyPage && this.keyPage.asObject(),
-      txHash: this.txHash && this.txHash && Buffer.from(this.txHash).toString("hex"),
-      payload: this.payload && this.payload,
-      memo: this.memo && this.memo,
-      metadata: this.metadata && this.metadata && Buffer.from(this.metadata).toString("hex"),
+      checkOnly: this.checkOnly === undefined ? undefined : this.checkOnly,
+      isEnvelope: this.isEnvelope === undefined ? undefined : this.isEnvelope,
+      origin: this.origin === undefined ? undefined : this.origin.toString(),
+      signer: this.signer === undefined ? undefined : this.signer.asObject(),
+      signature:
+        this.signature === undefined
+          ? undefined
+          : this.signature && Buffer.from(this.signature).toString("hex"),
+      keyPage: this.keyPage === undefined ? undefined : this.keyPage.asObject(),
+      txHash:
+        this.txHash === undefined
+          ? undefined
+          : this.txHash && Buffer.from(this.txHash).toString("hex"),
+      payload: this.payload === undefined ? undefined : this.payload,
+      memo: this.memo === undefined ? undefined : this.memo,
+      metadata:
+        this.metadata === undefined
+          ? undefined
+          : this.metadata && Buffer.from(this.metadata).toString("hex"),
     };
   }
 }
@@ -1955,21 +2052,21 @@ export class TxResponse {
       args.transactionHash == undefined
         ? undefined
         : args.transactionHash instanceof Uint8Array
-        ? args.transactionHash
-        : Buffer.from(args.transactionHash, "hex");
+          ? args.transactionHash
+          : Buffer.from(args.transactionHash, "hex");
     this.txid = args.txid == undefined ? undefined : TxID.parse(args.txid);
     this.signatureHashes =
       args.signatureHashes == undefined
         ? undefined
         : args.signatureHashes.map((v) =>
-            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex")
+            v == undefined ? undefined : v instanceof Uint8Array ? v : Buffer.from(v, "hex"),
           );
     this.simpleHash =
       args.simpleHash == undefined
         ? undefined
         : args.simpleHash instanceof Uint8Array
-        ? args.simpleHash
-        : Buffer.from(args.simpleHash, "hex");
+          ? args.simpleHash
+          : Buffer.from(args.simpleHash, "hex");
     this.code = args.code == undefined ? undefined : args.code;
     this.message = args.message == undefined ? undefined : args.message;
     this.delivered = args.delivered == undefined ? undefined : args.delivered;
@@ -1978,8 +2075,8 @@ export class TxResponse {
       args.lastBlockTime == undefined
         ? undefined
         : args.lastBlockTime instanceof Date
-        ? args.lastBlockTime
-        : new Date(args.lastBlockTime);
+          ? args.lastBlockTime
+          : new Date(args.lastBlockTime);
   }
 
   copy() {
@@ -1989,22 +2086,25 @@ export class TxResponse {
   asObject(): TxResponseArgs {
     return {
       transactionHash:
-        this.transactionHash &&
-        this.transactionHash &&
-        Buffer.from(this.transactionHash).toString("hex"),
-      txid: this.txid && this.txid.toString(),
+        this.transactionHash === undefined
+          ? undefined
+          : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+      txid: this.txid === undefined ? undefined : this.txid.toString(),
       signatureHashes:
-        this.signatureHashes &&
-        this.signatureHashes?.map((v) =>
-          v == undefined ? undefined : v && Buffer.from(v).toString("hex")
-        ),
+        this.signatureHashes === undefined
+          ? undefined
+          : this.signatureHashes?.map((v) =>
+              v == undefined ? undefined : v && Buffer.from(v).toString("hex"),
+            ),
       simpleHash:
-        this.simpleHash && this.simpleHash && Buffer.from(this.simpleHash).toString("hex"),
-      code: this.code && this.code,
-      message: this.message && this.message,
-      delivered: this.delivered && this.delivered,
-      result: this.result && this.result,
-      lastBlockTime: this.lastBlockTime && this.lastBlockTime,
+        this.simpleHash === undefined
+          ? undefined
+          : this.simpleHash && Buffer.from(this.simpleHash).toString("hex"),
+      code: this.code === undefined ? undefined : this.code,
+      message: this.message === undefined ? undefined : this.message,
+      delivered: this.delivered === undefined ? undefined : this.delivered,
+      result: this.result === undefined ? undefined : this.result,
+      lastBlockTime: this.lastBlockTime === undefined ? undefined : this.lastBlockTime,
     };
   }
 }
@@ -2041,8 +2141,8 @@ export class TxnQuery {
       args.txid == undefined
         ? undefined
         : args.txid instanceof Uint8Array
-        ? args.txid
-        : Buffer.from(args.txid, "hex");
+          ? args.txid
+          : Buffer.from(args.txid, "hex");
     this.txIdUrl = args.txIdUrl == undefined ? undefined : TxID.parse(args.txIdUrl);
     this.wait = args.wait == undefined ? undefined : args.wait;
     this.ignorePending = args.ignorePending == undefined ? undefined : args.ignorePending;
@@ -2054,15 +2154,16 @@ export class TxnQuery {
 
   asObject(): TxnQueryArgs {
     return {
-      expand: this.expand && this.expand,
-      height: this.height && this.height,
-      scratch: this.scratch && this.scratch,
-      prove: this.prove && this.prove,
-      includeRemote: this.includeRemote && this.includeRemote,
-      txid: this.txid && this.txid && Buffer.from(this.txid).toString("hex"),
-      txIdUrl: this.txIdUrl && this.txIdUrl.toString(),
-      wait: this.wait && this.wait,
-      ignorePending: this.ignorePending && this.ignorePending,
+      expand: this.expand === undefined ? undefined : this.expand,
+      height: this.height === undefined ? undefined : this.height,
+      scratch: this.scratch === undefined ? undefined : this.scratch,
+      prove: this.prove === undefined ? undefined : this.prove,
+      includeRemote: this.includeRemote === undefined ? undefined : this.includeRemote,
+      txid:
+        this.txid === undefined ? undefined : this.txid && Buffer.from(this.txid).toString("hex"),
+      txIdUrl: this.txIdUrl === undefined ? undefined : this.txIdUrl.toString(),
+      wait: this.wait === undefined ? undefined : this.wait,
+      ignorePending: this.ignorePending === undefined ? undefined : this.ignorePending,
     };
   }
 }
@@ -2083,7 +2184,7 @@ export class UrlQuery {
 
   asObject(): UrlQueryArgs {
     return {
-      url: this.url && this.url.toString(),
+      url: this.url === undefined ? undefined : this.url.toString(),
     };
   }
 }
@@ -2113,10 +2214,10 @@ export class VersionResponse {
 
   asObject(): VersionResponseArgs {
     return {
-      version: this.version && this.version,
-      commit: this.commit && this.commit,
-      versionIsKnown: this.versionIsKnown && this.versionIsKnown,
-      isTestNet: this.isTestNet && this.isTestNet,
+      version: this.version === undefined ? undefined : this.version,
+      commit: this.commit === undefined ? undefined : this.commit,
+      versionIsKnown: this.versionIsKnown === undefined ? undefined : this.versionIsKnown,
+      isTestNet: this.isTestNet === undefined ? undefined : this.isTestNet,
     };
   }
 }

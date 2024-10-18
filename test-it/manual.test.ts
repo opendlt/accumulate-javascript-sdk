@@ -15,7 +15,7 @@ beforeAll(
     await startSim((proc, port) => {
       sim = proc;
       client = new JsonRpcClient(`http://127.0.1.1:${port}/v3`);
-    })
+    }),
 );
 afterAll(() => sim?.pid && treeKill(sim.pid));
 

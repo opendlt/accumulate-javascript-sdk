@@ -328,8 +328,10 @@ export enum ExecutorVersion {
   V2Baikonur = 6,
   /** V2Vandenberg enables the Vandenberg release. */
   V2Vandenberg = 7,
+  /** V2Jiuquan enables the Jiuquan release. */
+  V2Jiuquan = 8,
   /** VNext is a placeholder for testing. DO NOT USE. */
-  VNext = 8,
+  VNext = 9,
 }
 
 export type ExecutorVersionArgs = ExecutorVersion | string;
@@ -359,6 +361,8 @@ export namespace ExecutorVersion {
         return ExecutorVersion.V2Baikonur;
       case "v2-vandenberg":
         return ExecutorVersion.V2Vandenberg;
+      case "v2-jiuquan":
+        return ExecutorVersion.V2Jiuquan;
       case "vnext":
         return ExecutorVersion.VNext;
       default:
@@ -382,6 +386,8 @@ export namespace ExecutorVersion {
         return "v2Baikonur";
       case ExecutorVersion.V2Vandenberg:
         return "v2-vandenberg";
+      case ExecutorVersion.V2Jiuquan:
+        return "v2-jiuquan";
       case ExecutorVersion.VNext:
         return "vnext";
       default:
@@ -477,7 +483,7 @@ export type NetworkMaintenanceOperationTypeArgs = NetworkMaintenanceOperationTyp
 /** @ignore */
 export namespace NetworkMaintenanceOperationType {
   export function fromObject(
-    obj: NetworkMaintenanceOperationTypeArgs
+    obj: NetworkMaintenanceOperationTypeArgs,
   ): NetworkMaintenanceOperationType {
     if (typeof obj === "number") return obj;
     return byName(obj);

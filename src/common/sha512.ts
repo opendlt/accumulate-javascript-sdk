@@ -202,12 +202,12 @@ class Digest {
             (rotateLeft64(e, -14) ^ rotateLeft64(e, -18) ^ rotateLeft64(e, -41)) +
             ((e & f) ^ (~e & g)) +
             _K[i] +
-            w[i]
+            w[i],
         );
 
         const t2 = uint64(
           (rotateLeft64(a, -28) ^ rotateLeft64(a, -34) ^ rotateLeft64(a, -39)) +
-            ((a & b) ^ (a & c) ^ (b & c))
+            ((a & b) ^ (a & c) ^ (b & c)),
         );
 
         h = g;

@@ -28,7 +28,7 @@ beforeAll(
     await startSim((proc, port) => {
       sim = proc;
       client = new Client(`http://127.0.1.1:${port}/v2`);
-    })
+    }),
 );
 afterAll(() => sim?.pid && treeKill(sim.pid));
 
@@ -125,7 +125,7 @@ describe("Test Accumulate client", () => {
     const txRes = await client.createTokenAccount(
       identityUrl,
       createTokenAccount,
-      identityKeyPageTxSigner
+      identityKeyPageTxSigner,
     );
     await client.waitOnTx(txRes.txid!.toString());
 
@@ -213,7 +213,7 @@ describe("Test Accumulate client", () => {
     res = await client.queryUrl(page1Url);
     expect(res.data.keys.length).toStrictEqual(1);
     expect(res.data.keys[0].publicKey).toStrictEqual(
-      Buffer.from(page1Signer.address.publicKeyHash).toString("hex")
+      Buffer.from(page1Signer.address.publicKeyHash).toString("hex"),
     );
 
     // Create a new key page to the book
@@ -277,7 +277,7 @@ describe("Test Accumulate client", () => {
     const txRes = await client.createDataAccount(
       identityUrl,
       createDataAccount,
-      identityKeyPageTxSigner
+      identityKeyPageTxSigner,
     );
     await client.waitOnTx(txRes.txid!.toString());
 
@@ -364,7 +364,7 @@ describe("Test Accumulate client", () => {
     txRes = await client.createTokenAccount(
       identityUrl,
       createTokenAccount,
-      identityKeyPageTxSigner
+      identityKeyPageTxSigner,
     );
 
     await client.waitOnTx(txRes.txid, { timeout: 10_000 });
@@ -382,13 +382,13 @@ describe("Test Accumulate client", () => {
     const txRes = await client.updateKey(
       identityKeyPageTxSigner.url,
       updateKey,
-      identityKeyPageTxSigner
+      identityKeyPageTxSigner,
     );
     await client.waitOnTx(txRes.txid!.toString());
 
     const res = await client.queryUrl(identityKeyPageTxSigner.url);
     expect(res.data.keys[0].publicKeyHash).toStrictEqual(
-      Buffer.from(newKey.address.publicKeyHash).toString("hex")
+      Buffer.from(newKey.address.publicKeyHash).toString("hex"),
     );
   });
 
@@ -402,7 +402,7 @@ describe("Test Accumulate client", () => {
     const res = await client.updateAccountAuth(
       identityKeyPageTxSigner.url,
       disable,
-      identityKeyPageTxSigner
+      identityKeyPageTxSigner,
     );
     await client.waitOnTx(res.txid!.toString());
 
@@ -488,7 +488,7 @@ describe("Test Accumulate client", () => {
       {
         txFetchMode: "ids",
         blockFilterMode: "excludenone",
-      }
+      },
     );
     expect(res).toBeTruthy();
   });
