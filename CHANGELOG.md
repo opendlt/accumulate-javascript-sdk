@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.11.9
+
+- Fixes rejecting transactions.
+- Adds a multisig example.
+
 ## v0.11.8
 
 - Bug fix for API v2 client.
