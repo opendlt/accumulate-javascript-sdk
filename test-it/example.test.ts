@@ -36,7 +36,7 @@ afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Example usage:", () => {
   test("Multisig", async () => {
-    client.debug = true;
+    // client.debug = true;
 
     const { oracle } = await client.networkStatus({ partition: "Directory" });
 
