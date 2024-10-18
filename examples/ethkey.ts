@@ -43,7 +43,7 @@ const ethPrivKeyHex = "c0ffeef00d";
 const ethKey = PrivateKeyAddress.from(
   SignatureType.ETH,
   Buffer.from(ethPubKeyHex, "hex"),
-  Buffer.from(ethPrivKeyHex, "hex")
+  Buffer.from(ethPrivKeyHex, "hex"),
 );
 
 const sender = Signer.forPage(URL.parse("me.acme/book/1"), new EthKey(ethKey));

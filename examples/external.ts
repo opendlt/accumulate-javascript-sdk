@@ -21,7 +21,7 @@ const signExternal = (hash: Uint8Array): Promise<Uint8Array> => {
 const ethKey = Address.fromKey(SignatureType.ETH, Buffer.from(ethKeyHex, "hex"));
 const sender = Signer.forPage(
   URL.parse("me.acme/book/1"),
-  new SimpleExternalKey(ethKey, signExternal)
+  new SimpleExternalKey(ethKey, signExternal),
 );
 const signerVersion = 5; // Hard code or retrieve via the API
 

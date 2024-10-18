@@ -57,7 +57,7 @@ export function splitPath(path: string): number[] {
 
 export function foreach<T, A>(
   arr: T[],
-  callback: (T: T, number: number) => Promise<A>
+  callback: (T: T, number: number) => Promise<A>,
 ): Promise<A[]> {
   function iterate(index: number, array: T[], result: A[]): any {
     if (index >= array.length) {
@@ -81,7 +81,7 @@ export function doIf(condition: boolean, callback: () => any | Promise<any>): Pr
 
 export function asyncWhile<T>(
   predicate: () => boolean,
-  callback: () => Promise<T>
+  callback: () => Promise<T>,
 ): Promise<Array<T>> {
   function iterate(result: any): any {
     if (!predicate()) {

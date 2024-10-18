@@ -36,7 +36,7 @@ export type TransportModule = {
   setAllowAutoDisconnect?: (
     transport: Transport,
     id: string,
-    allow: boolean
+    allow: boolean,
   ) => Promise<void> | null | undefined;
   // optional observable that allows to discover a transport
   discovery?: Discovery;
@@ -52,7 +52,7 @@ export const registerTransportModule = (module: TransportModule) => {
  * {@link discoverDevices}
  */
 export const discoverDevices = (
-  accept: (mod: TransportModule) => boolean = () => true
+  accept: (mod: TransportModule) => boolean = () => true,
 ): Discovery => {
   const all: Discovery[] = [];
   for (let i = 0; i < modules.length; i++) {
@@ -68,9 +68,9 @@ export const discoverDevices = (
         catchError((e) => {
           console.warn(`One Transport provider failed: ${e}`);
           return EMPTY;
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 };
 export const open = (deviceId: string): Promise<Transport> => {
@@ -95,7 +95,7 @@ export const close = (transport: Transport, deviceId: string): Promise<void> => 
 export const setAllowAutoDisconnect = (
   transport: Transport,
   deviceId: string,
-  allow: boolean
+  allow: boolean,
 ): Promise<void> | null | undefined => {
   for (let i = 0; i < modules.length; i++) {
     const m = modules[i];

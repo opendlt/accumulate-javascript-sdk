@@ -45,7 +45,7 @@ export abstract class BaseKey implements Key {
         signerVersion: opts.signerVersion,
         timestamp: opts.timestamp,
         vote: opts.vote,
-      })
+      }),
     );
   }
 

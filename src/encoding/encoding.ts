@@ -12,7 +12,7 @@ export function fieldMarshalBinary(field: number, val: Uint8Array): Uint8Array {
 export function uvarintMarshalBinary(val: number | bigint, field?: number): Uint8Array {
   if (typeof val === "number" && val > Number.MAX_SAFE_INTEGER) {
     throw new Error(
-      "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use bigint instead."
+      "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use bigint instead.",
     );
   }
 
@@ -38,12 +38,12 @@ export function varintMarshalBinary(val: number | bigint, field?: number): Uint8
   if (typeof val === "number") {
     if (val > Number.MAX_SAFE_INTEGER) {
       throw new Error(
-        "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use bigint instead."
+        "Cannot marshal binary number greater than MAX_SAFE_INTEGER. Use bigint instead.",
       );
     }
     if (val < Number.MIN_SAFE_INTEGER) {
       throw new Error(
-        "Cannot marshal binary number less than MIN_SAFE_INTEGER. Use bigint instead."
+        "Cannot marshal binary number less than MIN_SAFE_INTEGER. Use bigint instead.",
       );
     }
   }

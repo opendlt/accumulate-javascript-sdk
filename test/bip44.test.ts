@@ -18,7 +18,7 @@ describe("bip44 key derivation", () => {
   test("should create factom key from bip44", async () => {
     const checkKey = new Buffer(
       "36422e9560f56e0ead53a83b33aec9571d379291b5e292b88dec641a98ef05d8",
-      "hex"
+      "hex",
     );
 
     const kp1 = await ED25519Key.from(checkKey);
@@ -29,7 +29,7 @@ describe("bip44 key derivation", () => {
     //now test deriving from the path
     const kp3 = await ED25519Key.from(
       wallet.Factom.getKeyFromPath(bip44.makePath(bip44.CoinType.FactomFactoids, 0, 0, 0))
-        .privateKey
+        .privateKey,
     );
     expect(kp2.address.publicKey).toStrictEqual(kp3.address.publicKey);
   });
@@ -37,7 +37,7 @@ describe("bip44 key derivation", () => {
   test("should create acme key from bip44", async () => {
     const checkKey = new Buffer(
       "a2fd3e3b8c130edac176da83dcf809e22a01ab5a853560806e6cc054b3e160b0",
-      "hex"
+      "hex",
     );
     const kp1 = await ED25519Key.from(checkKey);
     const kp2 = await ED25519Key.from(wallet.Acme.getKey(0, 0, 0).privateKey);
@@ -45,18 +45,18 @@ describe("bip44 key derivation", () => {
     expect(kp1.address.publicKey).toStrictEqual(kp2.address.publicKey);
 
     const kp3 = await ED25519Key.from(
-      wallet.Acme.getKeyFromPath(bip44.makePath(bip44.CoinType.Accumulate, 0, 0, 0)).privateKey
+      wallet.Acme.getKeyFromPath(bip44.makePath(bip44.CoinType.Accumulate, 0, 0, 0)).privateKey,
     );
     expect(kp2.address.publicKey).toStrictEqual(kp3.address.publicKey);
   });
 
   test("should create bitcoin key from bip44", async () => {
     const pubKey0 = fromHexString(
-      "02f7aa1eb14de438735c026c7cc719db11baf82e47f8fa2c86b55bff92b677eae2"
+      "02f7aa1eb14de438735c026c7cc719db11baf82e47f8fa2c86b55bff92b677eae2",
     );
     const pubKey1 = await ecc.pointFromScalar(wallet.Btc.getKey(0, 0, 0).privateKey);
     const pubKey2 = await ecc.pointFromScalar(
-      wallet.Btc.getKeyFromPath(bip44.makePath(bip44.CoinType.Bitcoin, 0, 0, 0)).privateKey
+      wallet.Btc.getKeyFromPath(bip44.makePath(bip44.CoinType.Bitcoin, 0, 0, 0)).privateKey,
     );
 
     expect(pubKey0).toStrictEqual(pubKey1);
@@ -65,11 +65,11 @@ describe("bip44 key derivation", () => {
 
   test("should create ethereum key from bip44", async () => {
     const pubKey0 = fromHexString(
-      "02c4755e0a7a0f7082749bf46cdae4fcddb784e11428446a01478d656f588f94c1"
+      "02c4755e0a7a0f7082749bf46cdae4fcddb784e11428446a01478d656f588f94c1",
     );
     const pubKey1 = await ecc.pointFromScalar(wallet.Eth.getKey(0, 0, 0).privateKey);
     const pubKey2 = await ecc.pointFromScalar(
-      wallet.Eth.getKeyFromPath(bip44.makePath(bip44.CoinType.Ether, 0, 0, 0)).privateKey
+      wallet.Eth.getKeyFromPath(bip44.makePath(bip44.CoinType.Ether, 0, 0, 0)).privateKey,
     );
 
     expect(pubKey0).toStrictEqual(pubKey1);

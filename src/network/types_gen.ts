@@ -21,17 +21,17 @@ export type GlobalValuesArgs = {
   )[];
 };
 export class GlobalValues {
-  @encodeAs.field(1).reference
+  @(encodeAs.field(1).reference)
   public oracle?: protocol.AcmeOracle;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public globals?: protocol.NetworkGlobals;
-  @encodeAs.field(3).reference
+  @(encodeAs.field(3).reference)
   public network?: protocol.NetworkDefinition;
-  @encodeAs.field(4).reference
+  @(encodeAs.field(4).reference)
   public routing?: protocol.RoutingTable;
-  @encodeAs.field(5).enum
+  @(encodeAs.field(5).enum)
   public executorVersion?: protocol.ExecutorVersion;
-  @encodeAs.field(6).repeatable.reference
+  @(encodeAs.field(6).repeatable.reference)
   public bvnExecutorVersions?: (protocol.PartitionExecutorVersion | undefined)[];
 
   constructor(args: GlobalValuesArgs) {
@@ -39,26 +39,26 @@ export class GlobalValues {
       args.oracle == undefined
         ? undefined
         : args.oracle instanceof protocol.AcmeOracle
-        ? args.oracle
-        : new protocol.AcmeOracle(args.oracle);
+          ? args.oracle
+          : new protocol.AcmeOracle(args.oracle);
     this.globals =
       args.globals == undefined
         ? undefined
         : args.globals instanceof protocol.NetworkGlobals
-        ? args.globals
-        : new protocol.NetworkGlobals(args.globals);
+          ? args.globals
+          : new protocol.NetworkGlobals(args.globals);
     this.network =
       args.network == undefined
         ? undefined
         : args.network instanceof protocol.NetworkDefinition
-        ? args.network
-        : new protocol.NetworkDefinition(args.network);
+          ? args.network
+          : new protocol.NetworkDefinition(args.network);
     this.routing =
       args.routing == undefined
         ? undefined
         : args.routing instanceof protocol.RoutingTable
-        ? args.routing
-        : new protocol.RoutingTable(args.routing);
+          ? args.routing
+          : new protocol.RoutingTable(args.routing);
     this.executorVersion =
       args.executorVersion == undefined
         ? undefined
@@ -70,8 +70,8 @@ export class GlobalValues {
             v == undefined
               ? undefined
               : v instanceof protocol.PartitionExecutorVersion
-              ? v
-              : new protocol.PartitionExecutorVersion(v)
+                ? v
+                : new protocol.PartitionExecutorVersion(v),
           );
   }
 
@@ -81,15 +81,18 @@ export class GlobalValues {
 
   asObject(): GlobalValuesArgs {
     return {
-      oracle: this.oracle && this.oracle.asObject(),
-      globals: this.globals && this.globals.asObject(),
-      network: this.network && this.network.asObject(),
-      routing: this.routing && this.routing.asObject(),
+      oracle: this.oracle === undefined ? undefined : this.oracle.asObject(),
+      globals: this.globals === undefined ? undefined : this.globals.asObject(),
+      network: this.network === undefined ? undefined : this.network.asObject(),
+      routing: this.routing === undefined ? undefined : this.routing.asObject(),
       executorVersion:
-        this.executorVersion && protocol.ExecutorVersion.getName(this.executorVersion),
+        this.executorVersion === undefined
+          ? undefined
+          : protocol.ExecutorVersion.getName(this.executorVersion),
       bvnExecutorVersions:
-        this.bvnExecutorVersions &&
-        this.bvnExecutorVersions?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.bvnExecutorVersions === undefined
+          ? undefined
+          : this.bvnExecutorVersions?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }

@@ -45,7 +45,7 @@ export namespace Address {
 
   export function fromKeyHash(
     type: SignatureType,
-    publicKeyHash: Uint8Array
+    publicKeyHash: Uint8Array,
   ): PublicKeyHashAddress {
     return new PublicKeyHashAddress(type, publicKeyHash);
   }
@@ -96,7 +96,10 @@ export interface Address {
 // }
 
 export class PublicKeyHashAddress implements Address {
-  constructor(public readonly type: SignatureType, public readonly publicKeyHash: Uint8Array) {}
+  constructor(
+    public readonly type: SignatureType,
+    public readonly publicKeyHash: Uint8Array,
+  ) {}
 
   toString() {
     switch (this.type) {
@@ -125,7 +128,7 @@ export class PublicKeyAddress extends PublicKeyHashAddress {
   protected constructor(
     public readonly type: SignatureType,
     public readonly publicKeyHash: Uint8Array,
-    public readonly publicKey: Uint8Array
+    public readonly publicKey: Uint8Array,
   ) {
     super(type, publicKeyHash);
   }
@@ -139,7 +142,7 @@ export class PrivateKeyAddress extends PublicKeyHashAddress {
     public readonly type: SignatureType,
     public readonly publicKeyHash: Uint8Array,
     public readonly publicKey: Uint8Array,
-    public readonly privateKey: Uint8Array
+    public readonly privateKey: Uint8Array,
   ) {
     super(type, publicKeyHash);
   }

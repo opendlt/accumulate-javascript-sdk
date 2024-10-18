@@ -14,7 +14,7 @@ beforeAll(
       sim = proc;
       client2 = new api_v2.Client(process.env.ACC_ENDPOINT || `http://127.0.1.1:${port}/v2`);
       client3 = new api_v3.JsonRpcClient(process.env.ACC_ENDPOINT || `http://127.0.1.1:${port}/v3`);
-    })
+    }),
 );
 afterAll(() => sim?.pid && treeKill(sim.pid));
 

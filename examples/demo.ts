@@ -119,7 +119,7 @@ async function waitForSingle(txid: TxID | URLArgs) {
   }
 
   throw new Error(
-    `Transaction still missing or pending after ${(waitTime * waitLimit) / 1000} seconds`
+    `Transaction still missing or pending after ${(waitTime * waitLimit) / 1000} seconds`,
   );
 }
 

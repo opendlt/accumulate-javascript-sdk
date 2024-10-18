@@ -10,12 +10,12 @@ export class Buffer extends Uint8Array {
   static from(
     v: Iterable<number> | ArrayLike<number>,
     mapFn?: (v: number, k: number) => number,
-    thisArg?: any
+    thisArg?: any,
   ): Buffer;
   static from(v: string, mapFn: (v: number, k: number) => number, thisArg?: any): never;
   static from(
     v?: string | Iterable<number> | ArrayLike<number> | null,
-    encoding?: Encoding | ((v: number, k: number) => number)
+    encoding?: Encoding | ((v: number, k: number) => number),
   ): Buffer | undefined {
     if (!v) return;
 

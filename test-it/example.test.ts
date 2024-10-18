@@ -9,6 +9,7 @@ import {
   CreateIdentity,
   SetThresholdKeyPageOperation,
   UpdateKeyPage,
+  VoteType,
 } from "../src/core";
 import {
   addCredits2,
@@ -29,13 +30,13 @@ beforeAll(
     await startSim((proc, port) => {
       sim = proc;
       client = new JsonRpcClient(`http://127.0.1.1:${port}/v3`);
-    })
+    }),
 );
 afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Example usage:", () => {
   test("Multisig", async () => {
-    // client.debug = true;
+    client.debug = true;
 
     const { oracle } = await client.networkStatus({ partition: "Directory" });
 
@@ -52,7 +53,7 @@ describe("Example usage:", () => {
         oracle: oracle!.price!,
       }),
       lite,
-      true
+      true,
     );
 
     console.log("Create an ADI");
@@ -66,7 +67,7 @@ describe("Example usage:", () => {
         keyHash: keySigner.key.address.publicKeyHash,
       }),
       lite,
-      true
+      true,
     );
 
     await signAndSubmit(
@@ -78,7 +79,7 @@ describe("Example usage:", () => {
         oracle: oracle!.price!,
       }),
       lite,
-      true
+      true,
     );
 
     console.log("Add another key and set M=2");
@@ -99,7 +100,7 @@ describe("Example usage:", () => {
         ],
       }),
       keySigner.withVersion(1),
-      true
+      true,
     );
 
     console.log("Do something else");
@@ -108,7 +109,8 @@ describe("Example usage:", () => {
       new CreateDataAccount({
         url: "example.acme/data",
       }),
-      keySigner.withVersion(2)
+      keySigner.withVersion(2),
+      VoteType.Reject,
     );
     await submit(client, txn, sig, "signatures");
 

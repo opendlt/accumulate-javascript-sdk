@@ -21,13 +21,13 @@ export type BadSyntheticMessageArgsWithType = BadSyntheticMessageArgs & {
   type: MessageType.BadSynthetic | "badSynthetic";
 };
 export class BadSyntheticMessage {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.BadSynthetic;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public message?: Message;
-  @encodeAs.field(3).union
+  @(encodeAs.field(3).union)
   public signature?: protocol.KeySignature;
-  @encodeAs.field(4).reference
+  @(encodeAs.field(4).reference)
   public proof?: protocol.AnnotatedReceipt;
 
   constructor(args: BadSyntheticMessageArgs) {
@@ -38,8 +38,8 @@ export class BadSyntheticMessage {
       args.proof == undefined
         ? undefined
         : args.proof instanceof protocol.AnnotatedReceipt
-        ? args.proof
-        : new protocol.AnnotatedReceipt(args.proof);
+          ? args.proof
+          : new protocol.AnnotatedReceipt(args.proof);
   }
 
   copy() {
@@ -49,9 +49,9 @@ export class BadSyntheticMessage {
   asObject(): BadSyntheticMessageArgsWithType {
     return {
       type: "badSynthetic",
-      message: this.message && this.message.asObject(),
-      signature: this.signature && this.signature.asObject(),
-      proof: this.proof && this.proof.asObject(),
+      message: this.message === undefined ? undefined : this.message.asObject(),
+      signature: this.signature === undefined ? undefined : this.signature.asObject(),
+      proof: this.proof === undefined ? undefined : this.proof.asObject(),
     };
   }
 }
@@ -64,11 +64,11 @@ export type BlockAnchorArgsWithType = BlockAnchorArgs & {
   type: MessageType.BlockAnchor | "blockAnchor";
 };
 export class BlockAnchor {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.BlockAnchor;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public signature?: protocol.KeySignature;
-  @encodeAs.field(3).union
+  @(encodeAs.field(3).union)
   public anchor?: Message;
 
   constructor(args: BlockAnchorArgs) {
@@ -84,8 +84,8 @@ export class BlockAnchor {
   asObject(): BlockAnchorArgsWithType {
     return {
       type: "blockAnchor",
-      signature: this.signature && this.signature.asObject(),
-      anchor: this.anchor && this.anchor.asObject(),
+      signature: this.signature === undefined ? undefined : this.signature.asObject(),
+      anchor: this.anchor === undefined ? undefined : this.anchor.asObject(),
     };
   }
 }
@@ -101,17 +101,17 @@ export type CreditPaymentArgsWithType = CreditPaymentArgs & {
   type: MessageType.CreditPayment | "creditPayment";
 };
 export class CreditPayment {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.CreditPayment;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public paid?: protocol.Fee;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public payer?: URL;
-  @encodeAs.field(4).bool
+  @(encodeAs.field(4).bool)
   public initiator?: boolean;
-  @encodeAs.field(5).txid
+  @(encodeAs.field(5).txid)
   public txID?: TxID;
-  @encodeAs.field(6).txid
+  @(encodeAs.field(6).txid)
   public cause?: TxID;
 
   constructor(args: CreditPaymentArgs) {
@@ -129,11 +129,11 @@ export class CreditPayment {
   asObject(): CreditPaymentArgsWithType {
     return {
       type: "creditPayment",
-      paid: this.paid && protocol.Fee.getName(this.paid),
-      payer: this.payer && this.payer.toString(),
-      initiator: this.initiator && this.initiator,
-      txID: this.txID && this.txID.toString(),
-      cause: this.cause && this.cause.toString(),
+      paid: this.paid === undefined ? undefined : protocol.Fee.getName(this.paid),
+      payer: this.payer === undefined ? undefined : this.payer.toString(),
+      initiator: this.initiator === undefined ? undefined : this.initiator,
+      txID: this.txID === undefined ? undefined : this.txID.toString(),
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
     };
   }
 }
@@ -146,11 +146,11 @@ export type DidUpdateExecutorVersionArgsWithType = DidUpdateExecutorVersionArgs 
   type: MessageType.DidUpdateExecutorVersion | "didUpdateExecutorVersion";
 };
 export class DidUpdateExecutorVersion {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.DidUpdateExecutorVersion;
-  @encodeAs.field(2).string
+  @(encodeAs.field(2).string)
   public partition?: string;
-  @encodeAs.field(3).enum
+  @(encodeAs.field(3).enum)
   public version?: protocol.ExecutorVersion;
 
   constructor(args: DidUpdateExecutorVersionArgs) {
@@ -166,8 +166,9 @@ export class DidUpdateExecutorVersion {
   asObject(): DidUpdateExecutorVersionArgsWithType {
     return {
       type: "didUpdateExecutorVersion",
-      partition: this.partition && this.partition,
-      version: this.version && protocol.ExecutorVersion.getName(this.version),
+      partition: this.partition === undefined ? undefined : this.partition,
+      version:
+        this.version === undefined ? undefined : protocol.ExecutorVersion.getName(this.version),
     };
   }
 }
@@ -179,13 +180,13 @@ export type EnvelopeArgs = {
   messages?: (Message | MessageArgs | undefined)[];
 };
 export class Envelope {
-  @encodeAs.field(1).repeatable.union
+  @(encodeAs.field(1).repeatable.union)
   public signatures?: (protocol.Signature | undefined)[];
-  @encodeAs.field(2).bytes
+  @(encodeAs.field(2).bytes)
   public txHash?: Uint8Array;
-  @encodeAs.field(3).repeatable.reference
+  @(encodeAs.field(3).repeatable.reference)
   public transaction?: (protocol.Transaction | undefined)[];
-  @encodeAs.field(4).repeatable.union
+  @(encodeAs.field(4).repeatable.union)
   public messages?: (Message | undefined)[];
 
   constructor(args: EnvelopeArgs) {
@@ -193,14 +194,14 @@ export class Envelope {
       args.signatures == undefined
         ? undefined
         : args.signatures.map((v) =>
-            v == undefined ? undefined : protocol.Signature.fromObject(v)
+            v == undefined ? undefined : protocol.Signature.fromObject(v),
           );
     this.txHash =
       args.txHash == undefined
         ? undefined
         : args.txHash instanceof Uint8Array
-        ? args.txHash
-        : Buffer.from(args.txHash, "hex");
+          ? args.txHash
+          : Buffer.from(args.txHash, "hex");
     this.transaction =
       args.transaction == undefined
         ? undefined
@@ -208,8 +209,8 @@ export class Envelope {
             v == undefined
               ? undefined
               : v instanceof protocol.Transaction
-              ? v
-              : new protocol.Transaction(v)
+                ? v
+                : new protocol.Transaction(v),
           );
     this.messages =
       args.messages == undefined
@@ -224,13 +225,21 @@ export class Envelope {
   asObject(): EnvelopeArgs {
     return {
       signatures:
-        this.signatures && this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
-      txHash: this.txHash && this.txHash && Buffer.from(this.txHash).toString("hex"),
+        this.signatures === undefined
+          ? undefined
+          : this.signatures?.map((v) => (v == undefined ? undefined : v.asObject())),
+      txHash:
+        this.txHash === undefined
+          ? undefined
+          : this.txHash && Buffer.from(this.txHash).toString("hex"),
       transaction:
-        this.transaction &&
-        this.transaction?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.transaction === undefined
+          ? undefined
+          : this.transaction?.map((v) => (v == undefined ? undefined : v.asObject())),
       messages:
-        this.messages && this.messages?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.messages === undefined
+          ? undefined
+          : this.messages?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -244,13 +253,13 @@ export type MakeMajorBlockArgsWithType = MakeMajorBlockArgs & {
   type: MessageType.MakeMajorBlock | "makeMajorBlock";
 };
 export class MakeMajorBlock {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.MakeMajorBlock;
-  @encodeAs.field(2).uint
+  @(encodeAs.field(2).uint)
   public majorBlockIndex?: number;
-  @encodeAs.field(3).uint
+  @(encodeAs.field(3).uint)
   public minorBlockIndex?: number;
-  @encodeAs.field(4).time
+  @(encodeAs.field(4).time)
   public majorBlockTime?: Date;
 
   constructor(args: MakeMajorBlockArgs) {
@@ -260,8 +269,8 @@ export class MakeMajorBlock {
       args.majorBlockTime == undefined
         ? undefined
         : args.majorBlockTime instanceof Date
-        ? args.majorBlockTime
-        : new Date(args.majorBlockTime);
+          ? args.majorBlockTime
+          : new Date(args.majorBlockTime);
   }
 
   copy() {
@@ -271,9 +280,9 @@ export class MakeMajorBlock {
   asObject(): MakeMajorBlockArgsWithType {
     return {
       type: "makeMajorBlock",
-      majorBlockIndex: this.majorBlockIndex && this.majorBlockIndex,
-      minorBlockIndex: this.minorBlockIndex && this.minorBlockIndex,
-      majorBlockTime: this.majorBlockTime && this.majorBlockTime,
+      majorBlockIndex: this.majorBlockIndex === undefined ? undefined : this.majorBlockIndex,
+      minorBlockIndex: this.minorBlockIndex === undefined ? undefined : this.minorBlockIndex,
+      majorBlockTime: this.majorBlockTime === undefined ? undefined : this.majorBlockTime,
     };
   }
 }
@@ -285,9 +294,9 @@ export type NetworkUpdateArgsWithType = NetworkUpdateArgs & {
   type: MessageType.NetworkUpdate | "networkUpdate";
 };
 export class NetworkUpdate {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.NetworkUpdate;
-  @encodeAs.field(2).repeatable.reference
+  @(encodeAs.field(2).repeatable.reference)
   public accounts?: (protocol.NetworkAccountUpdate | undefined)[];
 
   constructor(args: NetworkUpdateArgs) {
@@ -298,8 +307,8 @@ export class NetworkUpdate {
             v == undefined
               ? undefined
               : v instanceof protocol.NetworkAccountUpdate
-              ? v
-              : new protocol.NetworkAccountUpdate(v)
+                ? v
+                : new protocol.NetworkAccountUpdate(v),
           );
   }
 
@@ -311,7 +320,9 @@ export class NetworkUpdate {
     return {
       type: "networkUpdate",
       accounts:
-        this.accounts && this.accounts?.map((v) => (v == undefined ? undefined : v.asObject())),
+        this.accounts === undefined
+          ? undefined
+          : this.accounts?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -326,15 +337,15 @@ export type SequencedMessageArgsWithType = SequencedMessageArgs & {
   type: MessageType.Sequenced | "sequenced";
 };
 export class SequencedMessage {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.Sequenced;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public message?: Message;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public source?: URL;
-  @encodeAs.field(4).url
+  @(encodeAs.field(4).url)
   public destination?: URL;
-  @encodeAs.field(5).uint
+  @(encodeAs.field(5).uint)
   public number?: number;
 
   constructor(args: SequencedMessageArgs) {
@@ -351,10 +362,10 @@ export class SequencedMessage {
   asObject(): SequencedMessageArgsWithType {
     return {
       type: "sequenced",
-      message: this.message && this.message.asObject(),
-      source: this.source && this.source.toString(),
-      destination: this.destination && this.destination.toString(),
-      number: this.number && this.number,
+      message: this.message === undefined ? undefined : this.message.asObject(),
+      source: this.source === undefined ? undefined : this.source.toString(),
+      destination: this.destination === undefined ? undefined : this.destination.toString(),
+      number: this.number === undefined ? undefined : this.number,
     };
   }
 }
@@ -367,11 +378,11 @@ export type SignatureMessageArgsWithType = SignatureMessageArgs & {
   type: MessageType.Signature | "signature";
 };
 export class SignatureMessage {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.Signature;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public signature?: protocol.Signature;
-  @encodeAs.field(3).txid
+  @(encodeAs.field(3).txid)
   public txID?: TxID;
 
   constructor(args: SignatureMessageArgs) {
@@ -387,8 +398,8 @@ export class SignatureMessage {
   asObject(): SignatureMessageArgsWithType {
     return {
       type: "signature",
-      signature: this.signature && this.signature.asObject(),
-      txID: this.txID && this.txID.toString(),
+      signature: this.signature === undefined ? undefined : this.signature.asObject(),
+      txID: this.txID === undefined ? undefined : this.txID.toString(),
     };
   }
 }
@@ -402,13 +413,13 @@ export type SignatureRequestArgsWithType = SignatureRequestArgs & {
   type: MessageType.SignatureRequest | "signatureRequest";
 };
 export class SignatureRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.SignatureRequest;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public authority?: URL;
-  @encodeAs.field(3).txid
+  @(encodeAs.field(3).txid)
   public txID?: TxID;
-  @encodeAs.field(4).txid
+  @(encodeAs.field(4).txid)
   public cause?: TxID;
 
   constructor(args: SignatureRequestArgs) {
@@ -424,9 +435,9 @@ export class SignatureRequest {
   asObject(): SignatureRequestArgsWithType {
     return {
       type: "signatureRequest",
-      authority: this.authority && this.authority.toString(),
-      txID: this.txID && this.txID.toString(),
-      cause: this.cause && this.cause.toString(),
+      authority: this.authority === undefined ? undefined : this.authority.toString(),
+      txID: this.txID === undefined ? undefined : this.txID.toString(),
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
     };
   }
 }
@@ -449,8 +460,8 @@ export class SynthFields {
       args.proof == undefined
         ? undefined
         : args.proof instanceof protocol.AnnotatedReceipt
-        ? args.proof
-        : new protocol.AnnotatedReceipt(args.proof);
+          ? args.proof
+          : new protocol.AnnotatedReceipt(args.proof);
   }
 
   copy() {
@@ -459,9 +470,9 @@ export class SynthFields {
 
   asObject(): SynthFieldsArgs {
     return {
-      message: this.message && this.message.asObject(),
-      signature: this.signature && this.signature.asObject(),
-      proof: this.proof && this.proof.asObject(),
+      message: this.message === undefined ? undefined : this.message.asObject(),
+      signature: this.signature === undefined ? undefined : this.signature.asObject(),
+      proof: this.proof === undefined ? undefined : this.proof.asObject(),
     };
   }
 }
@@ -475,13 +486,13 @@ export type SyntheticMessageArgsWithType = SyntheticMessageArgs & {
   type: MessageType.Synthetic | "synthetic";
 };
 export class SyntheticMessage {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.Synthetic;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public message?: Message;
-  @encodeAs.field(3).union
+  @(encodeAs.field(3).union)
   public signature?: protocol.KeySignature;
-  @encodeAs.field(4).reference
+  @(encodeAs.field(4).reference)
   public proof?: protocol.AnnotatedReceipt;
 
   constructor(args: SyntheticMessageArgs) {
@@ -492,8 +503,8 @@ export class SyntheticMessage {
       args.proof == undefined
         ? undefined
         : args.proof instanceof protocol.AnnotatedReceipt
-        ? args.proof
-        : new protocol.AnnotatedReceipt(args.proof);
+          ? args.proof
+          : new protocol.AnnotatedReceipt(args.proof);
   }
 
   copy() {
@@ -503,9 +514,9 @@ export class SyntheticMessage {
   asObject(): SyntheticMessageArgsWithType {
     return {
       type: "synthetic",
-      message: this.message && this.message.asObject(),
-      signature: this.signature && this.signature.asObject(),
-      proof: this.proof && this.proof.asObject(),
+      message: this.message === undefined ? undefined : this.message.asObject(),
+      signature: this.signature === undefined ? undefined : this.signature.asObject(),
+      proof: this.proof === undefined ? undefined : this.proof.asObject(),
     };
   }
 }
@@ -517,9 +528,9 @@ export type TransactionMessageArgsWithType = TransactionMessageArgs & {
   type: MessageType.Transaction | "transaction";
 };
 export class TransactionMessage {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.Transaction;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public transaction?: protocol.Transaction;
 
   constructor(args: TransactionMessageArgs) {
@@ -527,8 +538,8 @@ export class TransactionMessage {
       args.transaction == undefined
         ? undefined
         : args.transaction instanceof protocol.Transaction
-        ? args.transaction
-        : new protocol.Transaction(args.transaction);
+          ? args.transaction
+          : new protocol.Transaction(args.transaction);
   }
 
   copy() {
@@ -538,7 +549,7 @@ export class TransactionMessage {
   asObject(): TransactionMessageArgsWithType {
     return {
       type: "transaction",
-      transaction: this.transaction && this.transaction.asObject(),
+      transaction: this.transaction === undefined ? undefined : this.transaction.asObject(),
     };
   }
 }

@@ -23,15 +23,15 @@ export type ConsensusStatusRequestArgsWithType = ConsensusStatusRequestArgs & {
   type: MessageType.ConsensusStatusRequest | "consensusStatusRequest";
 };
 export class ConsensusStatusRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.ConsensusStatusRequest;
-  @encodeAs.field(2, 1).string
+  @(encodeAs.field(2, 1).string)
   public nodeID?: string;
-  @encodeAs.field(2, 2).string
+  @(encodeAs.field(2, 2).string)
   public partition?: string;
-  @encodeAs.field(2, 3).bool
+  @(encodeAs.field(2, 3).bool)
   public includePeers?: boolean;
-  @encodeAs.field(2, 4).bool
+  @(encodeAs.field(2, 4).bool)
   public includeAccumulate?: boolean;
 
   constructor(args: ConsensusStatusRequestArgs) {
@@ -49,10 +49,10 @@ export class ConsensusStatusRequest {
   asObject(): ConsensusStatusRequestArgsWithType {
     return {
       type: "consensusStatusRequest",
-      nodeID: this.nodeID && this.nodeID,
-      partition: this.partition && this.partition,
-      includePeers: this.includePeers && this.includePeers,
-      includeAccumulate: this.includeAccumulate && this.includeAccumulate,
+      nodeID: this.nodeID === undefined ? undefined : this.nodeID,
+      partition: this.partition === undefined ? undefined : this.partition,
+      includePeers: this.includePeers === undefined ? undefined : this.includePeers,
+      includeAccumulate: this.includeAccumulate === undefined ? undefined : this.includeAccumulate,
     };
   }
 }
@@ -64,9 +64,9 @@ export type ConsensusStatusResponseArgsWithType = ConsensusStatusResponseArgs & 
   type: MessageType.ConsensusStatusResponse | "consensusStatusResponse";
 };
 export class ConsensusStatusResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.ConsensusStatusResponse;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public value?: api.ConsensusStatus;
 
   constructor(args: ConsensusStatusResponseArgs) {
@@ -74,8 +74,8 @@ export class ConsensusStatusResponse {
       args.value == undefined
         ? undefined
         : args.value instanceof api.ConsensusStatus
-        ? args.value
-        : new api.ConsensusStatus(args.value);
+          ? args.value
+          : new api.ConsensusStatus(args.value);
   }
 
   copy() {
@@ -85,7 +85,7 @@ export class ConsensusStatusResponse {
   asObject(): ConsensusStatusResponseArgsWithType {
     return {
       type: "consensusStatusResponse",
-      value: this.value && this.value.asObject(),
+      value: this.value === undefined ? undefined : this.value.asObject(),
     };
   }
 }
@@ -97,9 +97,9 @@ export type ErrorResponseArgsWithType = ErrorResponseArgs & {
   type: MessageType.ErrorResponse | "errorResponse";
 };
 export class ErrorResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.ErrorResponse;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public error?: errors2.Error;
 
   constructor(args: ErrorResponseArgs) {
@@ -107,8 +107,8 @@ export class ErrorResponse {
       args.error == undefined
         ? undefined
         : args.error instanceof errors2.Error
-        ? args.error
-        : new errors2.Error(args.error);
+          ? args.error
+          : new errors2.Error(args.error);
   }
 
   copy() {
@@ -118,7 +118,7 @@ export class ErrorResponse {
   asObject(): ErrorResponseArgsWithType {
     return {
       type: "errorResponse",
-      error: this.error && this.error.asObject(),
+      error: this.error === undefined ? undefined : this.error.asObject(),
     };
   }
 }
@@ -128,9 +128,9 @@ export type EventMessageArgs = {
 };
 export type EventMessageArgsWithType = EventMessageArgs & { type: MessageType.Event | "event" };
 export class EventMessage {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.Event;
-  @encodeAs.field(2).repeatable.keepEmpty.union
+  @(encodeAs.field(2).repeatable.keepEmpty.union)
   public value?: (api.Event | undefined)[];
 
   constructor(args: EventMessageArgs) {
@@ -147,7 +147,10 @@ export class EventMessage {
   asObject(): EventMessageArgsWithType {
     return {
       type: "event",
-      value: this.value && this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
+      value:
+        this.value === undefined
+          ? undefined
+          : this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -160,11 +163,11 @@ export type FaucetRequestArgsWithType = FaucetRequestArgs & {
   type: MessageType.FaucetRequest | "faucetRequest";
 };
 export class FaucetRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.FaucetRequest;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public account?: URL;
-  @encodeAs.field(3, 1).url
+  @(encodeAs.field(3, 1).url)
   public token?: URL;
 
   constructor(args: FaucetRequestArgs) {
@@ -179,8 +182,8 @@ export class FaucetRequest {
   asObject(): FaucetRequestArgsWithType {
     return {
       type: "faucetRequest",
-      account: this.account && this.account.toString(),
-      token: this.token && this.token.toString(),
+      account: this.account === undefined ? undefined : this.account.toString(),
+      token: this.token === undefined ? undefined : this.token.toString(),
     };
   }
 }
@@ -192,9 +195,9 @@ export type FaucetResponseArgsWithType = FaucetResponseArgs & {
   type: MessageType.FaucetResponse | "faucetResponse";
 };
 export class FaucetResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.FaucetResponse;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public value?: api.Submission;
 
   constructor(args: FaucetResponseArgs) {
@@ -202,8 +205,8 @@ export class FaucetResponse {
       args.value == undefined
         ? undefined
         : args.value instanceof api.Submission
-        ? args.value
-        : new api.Submission(args.value);
+          ? args.value
+          : new api.Submission(args.value);
   }
 
   copy() {
@@ -213,7 +216,7 @@ export class FaucetResponse {
   asObject(): FaucetResponseArgsWithType {
     return {
       type: "faucetResponse",
-      value: this.value && this.value.asObject(),
+      value: this.value === undefined ? undefined : this.value.asObject(),
     };
   }
 }
@@ -228,15 +231,15 @@ export type FindServiceRequestArgsWithType = FindServiceRequestArgs & {
   type: MessageType.FindServiceRequest | "findServiceRequest";
 };
 export class FindServiceRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.FindServiceRequest;
-  @encodeAs.field(2, 1).string
+  @(encodeAs.field(2, 1).string)
   public network?: string;
-  @encodeAs.field(2, 2).reference
+  @(encodeAs.field(2, 2).reference)
   public service?: api.ServiceAddress;
-  @encodeAs.field(2, 3).bool
+  @(encodeAs.field(2, 3).bool)
   public known?: boolean;
-  @encodeAs.field(2, 4).duration
+  @(encodeAs.field(2, 4).duration)
   public timeout?: number;
 
   constructor(args: FindServiceRequestArgs) {
@@ -245,8 +248,8 @@ export class FindServiceRequest {
       args.service == undefined
         ? undefined
         : args.service instanceof api.ServiceAddress
-        ? args.service
-        : new api.ServiceAddress(args.service);
+          ? args.service
+          : new api.ServiceAddress(args.service);
     this.known = args.known == undefined ? undefined : args.known;
     this.timeout = args.timeout == undefined ? undefined : args.timeout;
   }
@@ -258,10 +261,10 @@ export class FindServiceRequest {
   asObject(): FindServiceRequestArgsWithType {
     return {
       type: "findServiceRequest",
-      network: this.network && this.network,
-      service: this.service && this.service.asObject(),
-      known: this.known && this.known,
-      timeout: this.timeout && this.timeout,
+      network: this.network === undefined ? undefined : this.network,
+      service: this.service === undefined ? undefined : this.service.asObject(),
+      known: this.known === undefined ? undefined : this.known,
+      timeout: this.timeout === undefined ? undefined : this.timeout,
     };
   }
 }
@@ -273,9 +276,9 @@ export type FindServiceResponseArgsWithType = FindServiceResponseArgs & {
   type: MessageType.FindServiceResponse | "findServiceResponse";
 };
 export class FindServiceResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.FindServiceResponse;
-  @encodeAs.field(2).repeatable.keepEmpty.reference
+  @(encodeAs.field(2).repeatable.keepEmpty.reference)
   public value?: (api.FindServiceResult | undefined)[];
 
   constructor(args: FindServiceResponseArgs) {
@@ -286,8 +289,8 @@ export class FindServiceResponse {
             v == undefined
               ? undefined
               : v instanceof api.FindServiceResult
-              ? v
-              : new api.FindServiceResult(v)
+                ? v
+                : new api.FindServiceResult(v),
           );
   }
 
@@ -298,7 +301,10 @@ export class FindServiceResponse {
   asObject(): FindServiceResponseArgsWithType {
     return {
       type: "findServiceResponse",
-      value: this.value && this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
+      value:
+        this.value === undefined
+          ? undefined
+          : this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -310,9 +316,9 @@ export type NetworkStatusRequestArgsWithType = NetworkStatusRequestArgs & {
   type: MessageType.NetworkStatusRequest | "networkStatusRequest";
 };
 export class NetworkStatusRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.NetworkStatusRequest;
-  @encodeAs.field(2, 1).string
+  @(encodeAs.field(2, 1).string)
   public partition?: string;
 
   constructor(args: NetworkStatusRequestArgs) {
@@ -326,7 +332,7 @@ export class NetworkStatusRequest {
   asObject(): NetworkStatusRequestArgsWithType {
     return {
       type: "networkStatusRequest",
-      partition: this.partition && this.partition,
+      partition: this.partition === undefined ? undefined : this.partition,
     };
   }
 }
@@ -338,9 +344,9 @@ export type NetworkStatusResponseArgsWithType = NetworkStatusResponseArgs & {
   type: MessageType.NetworkStatusResponse | "networkStatusResponse";
 };
 export class NetworkStatusResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.NetworkStatusResponse;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public value?: api.NetworkStatus;
 
   constructor(args: NetworkStatusResponseArgs) {
@@ -348,8 +354,8 @@ export class NetworkStatusResponse {
       args.value == undefined
         ? undefined
         : args.value instanceof api.NetworkStatus
-        ? args.value
-        : new api.NetworkStatus(args.value);
+          ? args.value
+          : new api.NetworkStatus(args.value);
   }
 
   copy() {
@@ -359,7 +365,7 @@ export class NetworkStatusResponse {
   asObject(): NetworkStatusResponseArgsWithType {
     return {
       type: "networkStatusResponse",
-      value: this.value && this.value.asObject(),
+      value: this.value === undefined ? undefined : this.value.asObject(),
     };
   }
 }
@@ -371,9 +377,9 @@ export type NodeInfoRequestArgsWithType = NodeInfoRequestArgs & {
   type: MessageType.NodeInfoRequest | "nodeInfoRequest";
 };
 export class NodeInfoRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.NodeInfoRequest;
-  @encodeAs.field(2, 1).union
+  @(encodeAs.field(2, 1).union)
   public peerID?: p2p.PeerID;
 
   constructor(args: NodeInfoRequestArgs) {
@@ -387,7 +393,7 @@ export class NodeInfoRequest {
   asObject(): NodeInfoRequestArgsWithType {
     return {
       type: "nodeInfoRequest",
-      peerID: this.peerID && this.peerID.asObject(),
+      peerID: this.peerID === undefined ? undefined : this.peerID.asObject(),
     };
   }
 }
@@ -399,9 +405,9 @@ export type NodeInfoResponseArgsWithType = NodeInfoResponseArgs & {
   type: MessageType.NodeInfoResponse | "nodeInfoResponse";
 };
 export class NodeInfoResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.NodeInfoResponse;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public value?: api.NodeInfo;
 
   constructor(args: NodeInfoResponseArgs) {
@@ -409,8 +415,8 @@ export class NodeInfoResponse {
       args.value == undefined
         ? undefined
         : args.value instanceof api.NodeInfo
-        ? args.value
-        : new api.NodeInfo(args.value);
+          ? args.value
+          : new api.NodeInfo(args.value);
   }
 
   copy() {
@@ -420,7 +426,7 @@ export class NodeInfoResponse {
   asObject(): NodeInfoResponseArgsWithType {
     return {
       type: "nodeInfoResponse",
-      value: this.value && this.value.asObject(),
+      value: this.value === undefined ? undefined : this.value.asObject(),
     };
   }
 }
@@ -435,15 +441,15 @@ export type PrivateSequenceRequestArgsWithType = PrivateSequenceRequestArgs & {
   type: MessageType.PrivateSequenceRequest | "privateSequenceRequest";
 };
 export class PrivateSequenceRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.PrivateSequenceRequest;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public source?: URL;
-  @encodeAs.field(3).url
+  @(encodeAs.field(3).url)
   public destination?: URL;
-  @encodeAs.field(4).uint
+  @(encodeAs.field(4).uint)
   public sequenceNumber?: number;
-  @encodeAs.field(5, 1).union
+  @(encodeAs.field(5, 1).union)
   public nodeID?: p2p.PeerID;
 
   constructor(args: PrivateSequenceRequestArgs) {
@@ -460,10 +466,10 @@ export class PrivateSequenceRequest {
   asObject(): PrivateSequenceRequestArgsWithType {
     return {
       type: "privateSequenceRequest",
-      source: this.source && this.source.toString(),
-      destination: this.destination && this.destination.toString(),
-      sequenceNumber: this.sequenceNumber && this.sequenceNumber,
-      nodeID: this.nodeID && this.nodeID.asObject(),
+      source: this.source === undefined ? undefined : this.source.toString(),
+      destination: this.destination === undefined ? undefined : this.destination.toString(),
+      sequenceNumber: this.sequenceNumber === undefined ? undefined : this.sequenceNumber,
+      nodeID: this.nodeID === undefined ? undefined : this.nodeID.asObject(),
     };
   }
 }
@@ -475,9 +481,9 @@ export type PrivateSequenceResponseArgsWithType = PrivateSequenceResponseArgs & 
   type: MessageType.PrivateSequenceResponse | "privateSequenceResponse";
 };
 export class PrivateSequenceResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.PrivateSequenceResponse;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public value?: api.MessageRecord<messaging.Message>;
 
   constructor(args: PrivateSequenceResponseArgs) {
@@ -485,8 +491,8 @@ export class PrivateSequenceResponse {
       args.value == undefined
         ? undefined
         : args.value instanceof api.MessageRecord<messaging.Message>
-        ? args.value
-        : new api.MessageRecord<messaging.Message>(args.value);
+          ? args.value
+          : new api.MessageRecord<messaging.Message>(args.value);
   }
 
   copy() {
@@ -496,7 +502,7 @@ export class PrivateSequenceResponse {
   asObject(): PrivateSequenceResponseArgsWithType {
     return {
       type: "privateSequenceResponse",
-      value: this.value && this.value.asObject(),
+      value: this.value === undefined ? undefined : this.value.asObject(),
     };
   }
 }
@@ -509,11 +515,11 @@ export type QueryRequestArgsWithType = QueryRequestArgs & {
   type: MessageType.QueryRequest | "queryRequest";
 };
 export class QueryRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.QueryRequest;
-  @encodeAs.field(2).url
+  @(encodeAs.field(2).url)
   public scope?: URL;
-  @encodeAs.field(3).union
+  @(encodeAs.field(3).union)
   public query?: api.Query;
 
   constructor(args: QueryRequestArgs) {
@@ -528,8 +534,8 @@ export class QueryRequest {
   asObject(): QueryRequestArgsWithType {
     return {
       type: "queryRequest",
-      scope: this.scope && this.scope.toString(),
-      query: this.query && this.query.asObject(),
+      scope: this.scope === undefined ? undefined : this.scope.toString(),
+      query: this.query === undefined ? undefined : this.query.asObject(),
     };
   }
 }
@@ -541,9 +547,9 @@ export type RecordResponseArgsWithType = RecordResponseArgs & {
   type: MessageType.RecordResponse | "recordResponse";
 };
 export class RecordResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.RecordResponse;
-  @encodeAs.field(2).union
+  @(encodeAs.field(2).union)
   public value?: api.Record;
 
   constructor(args: RecordResponseArgs) {
@@ -557,7 +563,7 @@ export class RecordResponse {
   asObject(): RecordResponseArgsWithType {
     return {
       type: "recordResponse",
-      value: this.value && this.value.asObject(),
+      value: this.value === undefined ? undefined : this.value.asObject(),
     };
   }
 }
@@ -571,13 +577,13 @@ export type SubmitRequestArgsWithType = SubmitRequestArgs & {
   type: MessageType.SubmitRequest | "submitRequest";
 };
 export class SubmitRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.SubmitRequest;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public envelope?: messaging.Envelope;
-  @encodeAs.field(3, 1).bool
+  @(encodeAs.field(3, 1).bool)
   public verify?: boolean;
-  @encodeAs.field(3, 2).bool
+  @(encodeAs.field(3, 2).bool)
   public wait?: boolean;
 
   constructor(args: SubmitRequestArgs) {
@@ -585,8 +591,8 @@ export class SubmitRequest {
       args.envelope == undefined
         ? undefined
         : args.envelope instanceof messaging.Envelope
-        ? args.envelope
-        : new messaging.Envelope(args.envelope);
+          ? args.envelope
+          : new messaging.Envelope(args.envelope);
     this.verify = args.verify == undefined ? undefined : args.verify;
     this.wait = args.wait == undefined ? undefined : args.wait;
   }
@@ -598,9 +604,9 @@ export class SubmitRequest {
   asObject(): SubmitRequestArgsWithType {
     return {
       type: "submitRequest",
-      envelope: this.envelope && this.envelope.asObject(),
-      verify: this.verify && this.verify,
-      wait: this.wait && this.wait,
+      envelope: this.envelope === undefined ? undefined : this.envelope.asObject(),
+      verify: this.verify === undefined ? undefined : this.verify,
+      wait: this.wait === undefined ? undefined : this.wait,
     };
   }
 }
@@ -612,9 +618,9 @@ export type SubmitResponseArgsWithType = SubmitResponseArgs & {
   type: MessageType.SubmitResponse | "submitResponse";
 };
 export class SubmitResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.SubmitResponse;
-  @encodeAs.field(2).repeatable.keepEmpty.reference
+  @(encodeAs.field(2).repeatable.keepEmpty.reference)
   public value?: (api.Submission | undefined)[];
 
   constructor(args: SubmitResponseArgs) {
@@ -622,7 +628,7 @@ export class SubmitResponse {
       args.value == undefined
         ? undefined
         : args.value.map((v) =>
-            v == undefined ? undefined : v instanceof api.Submission ? v : new api.Submission(v)
+            v == undefined ? undefined : v instanceof api.Submission ? v : new api.Submission(v),
           );
   }
 
@@ -633,7 +639,10 @@ export class SubmitResponse {
   asObject(): SubmitResponseArgsWithType {
     return {
       type: "submitResponse",
-      value: this.value && this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
+      value:
+        this.value === undefined
+          ? undefined
+          : this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
@@ -646,11 +655,11 @@ export type SubscribeRequestArgsWithType = SubscribeRequestArgs & {
   type: MessageType.SubscribeRequest | "subscribeRequest";
 };
 export class SubscribeRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.SubscribeRequest;
-  @encodeAs.field(2, 1).string
+  @(encodeAs.field(2, 1).string)
   public partition?: string;
-  @encodeAs.field(2, 2).url
+  @(encodeAs.field(2, 2).url)
   public account?: URL;
 
   constructor(args: SubscribeRequestArgs) {
@@ -665,8 +674,8 @@ export class SubscribeRequest {
   asObject(): SubscribeRequestArgsWithType {
     return {
       type: "subscribeRequest",
-      partition: this.partition && this.partition,
-      account: this.account && this.account.toString(),
+      partition: this.partition === undefined ? undefined : this.partition,
+      account: this.account === undefined ? undefined : this.account.toString(),
     };
   }
 }
@@ -676,7 +685,7 @@ export type SubscribeResponseArgsWithType = {
   type: MessageType.SubscribeResponse | "subscribeResponse";
 };
 export class SubscribeResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.SubscribeResponse;
 
   constructor(_: SubscribeResponseArgs) {}
@@ -700,11 +709,11 @@ export type ValidateRequestArgsWithType = ValidateRequestArgs & {
   type: MessageType.ValidateRequest | "validateRequest";
 };
 export class ValidateRequest {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.ValidateRequest;
-  @encodeAs.field(2).reference
+  @(encodeAs.field(2).reference)
   public envelope?: messaging.Envelope;
-  @encodeAs.field(3, 1).bool
+  @(encodeAs.field(3, 1).bool)
   public full?: boolean;
 
   constructor(args: ValidateRequestArgs) {
@@ -712,8 +721,8 @@ export class ValidateRequest {
       args.envelope == undefined
         ? undefined
         : args.envelope instanceof messaging.Envelope
-        ? args.envelope
-        : new messaging.Envelope(args.envelope);
+          ? args.envelope
+          : new messaging.Envelope(args.envelope);
     this.full = args.full == undefined ? undefined : args.full;
   }
 
@@ -724,8 +733,8 @@ export class ValidateRequest {
   asObject(): ValidateRequestArgsWithType {
     return {
       type: "validateRequest",
-      envelope: this.envelope && this.envelope.asObject(),
-      full: this.full && this.full,
+      envelope: this.envelope === undefined ? undefined : this.envelope.asObject(),
+      full: this.full === undefined ? undefined : this.full,
     };
   }
 }
@@ -737,9 +746,9 @@ export type ValidateResponseArgsWithType = ValidateResponseArgs & {
   type: MessageType.ValidateResponse | "validateResponse";
 };
 export class ValidateResponse {
-  @encodeAs.field(1).keepEmpty.enum.of(MessageType)
+  @(encodeAs.field(1).keepEmpty.enum.of(MessageType))
   public readonly type = MessageType.ValidateResponse;
-  @encodeAs.field(2).repeatable.keepEmpty.reference
+  @(encodeAs.field(2).repeatable.keepEmpty.reference)
   public value?: (api.Submission | undefined)[];
 
   constructor(args: ValidateResponseArgs) {
@@ -747,7 +756,7 @@ export class ValidateResponse {
       args.value == undefined
         ? undefined
         : args.value.map((v) =>
-            v == undefined ? undefined : v instanceof api.Submission ? v : new api.Submission(v)
+            v == undefined ? undefined : v instanceof api.Submission ? v : new api.Submission(v),
           );
   }
 
@@ -758,7 +767,10 @@ export class ValidateResponse {
   asObject(): ValidateResponseArgsWithType {
     return {
       type: "validateResponse",
-      value: this.value && this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
+      value:
+        this.value === undefined
+          ? undefined
+          : this.value?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }

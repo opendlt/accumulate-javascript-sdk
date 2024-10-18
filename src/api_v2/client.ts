@@ -130,7 +130,7 @@ export class Client {
 
   queryTx(
     txId: string | URL | TxID,
-    options?: Omit<TxnQueryArgs, "txid" | "txidUrl">
+    options?: Omit<TxnQueryArgs, "txid" | "txidUrl">,
   ): Promise<any> {
     const txIdStr = txId.toString();
     const paramName = txIdStr.startsWith("acc://") ? "txIdUrl" : "txid";
@@ -144,7 +144,7 @@ export class Client {
   queryTxHistory(
     url: string | URL,
     pagination: QueryPaginationArgs,
-    options?: Omit<TxHistoryQueryArgs, "url" | keyof QueryPaginationArgs>
+    options?: Omit<TxHistoryQueryArgs, "url" | keyof QueryPaginationArgs>,
   ): Promise<any> {
     const urlStr = url.toString();
     return this.call("query-tx-history", {
@@ -157,7 +157,7 @@ export class Client {
   queryDirectory(
     url: string | URL,
     pagination: QueryPaginationArgs,
-    options?: QueryOptionsArgs
+    options?: QueryOptionsArgs,
   ): Promise<any> {
     return this.call("query-directory", {
       url: url.toString(),
@@ -176,7 +176,7 @@ export class Client {
   queryDataSet(
     url: string | URL,
     pagination: QueryPaginationArgs,
-    options?: QueryOptionsArgs
+    options?: QueryOptionsArgs,
   ): Promise<any> {
     return this.call("query-data-set", {
       url: url.toString(),
@@ -205,7 +205,7 @@ export class Client {
   queryMinorBlocks(
     url: string | URL,
     pagination: QueryPaginationArgs,
-    options?: Omit<MinorBlocksQueryArgs, "url" | keyof QueryPaginationArgs>
+    options?: Omit<MinorBlocksQueryArgs, "url" | keyof QueryPaginationArgs>,
   ): Promise<any> {
     return this.call("query-minor-blocks", {
       url: url.toString(),
@@ -281,8 +281,8 @@ export class Client {
               timeout: timeoutLeft,
               pollInterval: options?.pollInterval,
               ignoreSyntheticTxs: options?.ignoreSyntheticTxs,
-            })
-          )
+            }),
+          ),
         );
         return;
       } catch (e) {
@@ -298,7 +298,7 @@ export class Client {
     } while (Date.now() - start < to);
 
     throw new Error(
-      `Transaction ${txId} was not confirmed within ${to / 1000}s. Cause: ${lastError}`
+      `Transaction ${txId} was not confirmed within ${to / 1000}s. Cause: ${lastError}`,
     );
   }
 
@@ -309,7 +309,7 @@ export class Client {
   addCredits(
     principal: URL | string,
     addCredits: AddCreditsArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new AddCredits(addCredits), signer);
   }
@@ -317,7 +317,7 @@ export class Client {
   burnTokens(
     principal: URL | string,
     burnTokens: BurnTokensArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new BurnTokens(burnTokens), signer);
   }
@@ -325,7 +325,7 @@ export class Client {
   createDataAccount(
     principal: URL | string,
     createDataAccount: CreateDataAccountArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateDataAccount(createDataAccount), signer);
   }
@@ -333,7 +333,7 @@ export class Client {
   createIdentity(
     principal: URL | string,
     createIdentity: CreateIdentityArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateIdentity(createIdentity), signer);
   }
@@ -341,7 +341,7 @@ export class Client {
   createKeyBook(
     principal: URL | string,
     createKeyBook: CreateKeyBookArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateKeyBook(createKeyBook), signer);
   }
@@ -349,7 +349,7 @@ export class Client {
   createKeyPage(
     principal: URL | string,
     createKeyPage: CreateKeyPageArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateKeyPage(createKeyPage), signer);
   }
@@ -357,7 +357,7 @@ export class Client {
   createToken(
     principal: URL | string,
     createToken: CreateTokenArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateToken(createToken), signer);
   }
@@ -365,7 +365,7 @@ export class Client {
   createTokenAccount(
     principal: URL | string,
     createTokenAccount: CreateTokenAccountArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new CreateTokenAccount(createTokenAccount), signer);
   }
@@ -373,7 +373,7 @@ export class Client {
   issueTokens(
     principal: URL | string,
     issueTokens: IssueTokensArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new IssueTokens(issueTokens), signer);
   }
@@ -381,7 +381,7 @@ export class Client {
   sendTokens(
     principal: URL | string,
     sendTokens: SendTokensArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new SendTokens(sendTokens), signer);
   }
@@ -389,7 +389,7 @@ export class Client {
   updateAccountAuth(
     principal: URL | string,
     operation: AccountAuthOperationArgs | AccountAuthOperationArgs[],
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     const operations = operation instanceof Array ? operation : [operation];
     return this._execute(URL.parse(principal), new UpdateAccountAuth({ operations }), signer);
@@ -398,7 +398,7 @@ export class Client {
   updateKey(
     principal: URL | string,
     updateKey: UpdateKeyArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new UpdateKey(updateKey), signer);
   }
@@ -406,20 +406,20 @@ export class Client {
   updateKeyPage(
     principal: URL | string,
     operation: KeyPageOperationArgs | KeyPageOperationArgs[],
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     const operations = operation instanceof Array ? operation : [operation];
     return this._execute(
       URL.parse(principal),
       new UpdateKeyPage({ operation: operations }),
-      signer
+      signer,
     );
   }
 
   writeData(
     principal: URL | string,
     writeData: WriteDataArgs,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     return this._execute(URL.parse(principal), new WriteData(writeData), signer);
   }
@@ -427,7 +427,7 @@ export class Client {
   private async _execute(
     principal: URL,
     payload: TransactionBody,
-    signer: SignerWithVersion
+    signer: SignerWithVersion,
   ): Promise<TxResponse2> {
     const header = new TransactionHeader({ principal });
     const tx = new Transaction({ body: payload, header });

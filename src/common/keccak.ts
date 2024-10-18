@@ -305,7 +305,7 @@ const createKeccak = (KeccakState: any) =>
     _transform(
       chunk: any,
       encoding: BufferEncoding,
-      callback: (error?: Error | null | undefined, data?: any) => void
+      callback: (error?: Error | null | undefined, data?: any) => void,
     ): void {
       let error = null;
       try {
@@ -337,7 +337,7 @@ const createKeccak = (KeccakState: any) =>
         | Buffer
         | WithImplicitCoercion<string>
         | { [Symbol.toPrimitive](hint: "string"): string },
-      encoding?: string | undefined
+      encoding?: string | undefined,
     ) {
       if (!Buffer.isBuffer(data) && typeof data !== "string")
         throw new TypeError("Data must be a string or a buffer");
@@ -375,7 +375,7 @@ const createKeccak = (KeccakState: any) =>
         this._capacity,
         this._delimitedSuffix,
         this._hashBitLength,
-        this._options
+        this._options,
       );
       this._state.copy(clone._state);
       clone._finalized = this._finalized;

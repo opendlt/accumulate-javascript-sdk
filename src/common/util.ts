@@ -8,7 +8,7 @@ import { Buffer, sha256 } from "./index";
 
 export async function constructIssuerProof(
   client: Client,
-  issuer: string | URL
+  issuer: string | URL,
 ): Promise<{ receipt: Receipt; transaction: CreateToken }> {
   // The first transaction of a token issuer must be the one that created it
   const txn0url = `${issuer}#txn/0`;
@@ -23,7 +23,7 @@ export async function constructIssuerProof(
   // Convert the response to a Transaction
   if (transaction.body.type != "createToken") {
     throw new Error(
-      `Expected first transaction of ${issuer} to be createToken but got ${transaction.body.type}`
+      `Expected first transaction of ${issuer} to be createToken but got ${transaction.body.type}`,
     );
   }
   const header = new TransactionHeader({
@@ -59,7 +59,7 @@ export async function constructIssuerProof(
   // Assemble the full proof
   const receipt = combineReceipts(
     combineReceipts(new Receipt(proof1), new Receipt(proof2)),
-    new Receipt(proof3)
+    new Receipt(proof3),
   );
   return { receipt, transaction: body };
 }

@@ -23,7 +23,7 @@ import type {
 } from "./index";
 
 export async function discoverDevices(
-  accept: (mod: TransportModule) => boolean = () => true
+  accept: (mod: TransportModule) => boolean = () => true,
 ): Promise<Discovery> {
   const { discoverDevices } = await import("./index");
   return discoverDevices(accept);

@@ -15,11 +15,11 @@ export type DescribeArgs = {
   network?: Network | NetworkArgs;
 };
 export class Describe {
-  @encodeAs.field(1).enum
+  @(encodeAs.field(1).enum)
   public networkType?: protocol.PartitionType;
-  @encodeAs.field(2).string
+  @(encodeAs.field(2).string)
   public partitionId?: string;
-  @encodeAs.field(3).reference
+  @(encodeAs.field(3).reference)
   public network?: Network;
 
   constructor(args: DescribeArgs) {
@@ -32,8 +32,8 @@ export class Describe {
       args.network == undefined
         ? undefined
         : args.network instanceof Network
-        ? args.network
-        : new Network(args.network);
+          ? args.network
+          : new Network(args.network);
   }
 
   copy() {
@@ -42,9 +42,12 @@ export class Describe {
 
   asObject(): DescribeArgs {
     return {
-      networkType: this.networkType && protocol.PartitionType.getName(this.networkType),
-      partitionId: this.partitionId && this.partitionId,
-      network: this.network && this.network.asObject(),
+      networkType:
+        this.networkType === undefined
+          ? undefined
+          : protocol.PartitionType.getName(this.networkType),
+      partitionId: this.partitionId === undefined ? undefined : this.partitionId,
+      network: this.network === undefined ? undefined : this.network.asObject(),
     };
   }
 }
@@ -53,7 +56,7 @@ export type NetworkArgs = {
   id?: string;
 };
 export class Network {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public id?: string;
 
   constructor(args: NetworkArgs) {
@@ -66,7 +69,7 @@ export class Network {
 
   asObject(): NetworkArgs {
     return {
-      id: this.id && this.id,
+      id: this.id === undefined ? undefined : this.id,
     };
   }
 }
@@ -76,9 +79,9 @@ export type NodeArgs = {
   type?: NodeTypeArgs;
 };
 export class Node {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public address?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public type?: NodeType;
 
   constructor(args: NodeArgs) {
@@ -92,8 +95,8 @@ export class Node {
 
   asObject(): NodeArgs {
     return {
-      address: this.address && this.address,
-      type: this.type && NodeType.getName(this.type),
+      address: this.address === undefined ? undefined : this.address,
+      type: this.type === undefined ? undefined : NodeType.getName(this.type),
     };
   }
 }
@@ -105,13 +108,13 @@ export type PartitionArgs = {
   nodes?: (Node | NodeArgs | undefined)[];
 };
 export class Partition {
-  @encodeAs.field(1).string
+  @(encodeAs.field(1).string)
   public id?: string;
-  @encodeAs.field(2).enum
+  @(encodeAs.field(2).enum)
   public type?: protocol.PartitionType;
-  @encodeAs.field(3).int
+  @(encodeAs.field(3).int)
   public basePort?: number;
-  @encodeAs.field(4).repeatable.reference
+  @(encodeAs.field(4).repeatable.reference)
   public nodes?: (Node | undefined)[];
 
   constructor(args: PartitionArgs) {
@@ -130,10 +133,13 @@ export class Partition {
 
   asObject(): PartitionArgs {
     return {
-      id: this.id && this.id,
-      type: this.type && protocol.PartitionType.getName(this.type),
-      basePort: this.basePort && this.basePort,
-      nodes: this.nodes && this.nodes?.map((v) => (v == undefined ? undefined : v.asObject())),
+      id: this.id === undefined ? undefined : this.id,
+      type: this.type === undefined ? undefined : protocol.PartitionType.getName(this.type),
+      basePort: this.basePort === undefined ? undefined : this.basePort,
+      nodes:
+        this.nodes === undefined
+          ? undefined
+          : this.nodes?.map((v) => (v == undefined ? undefined : v.asObject())),
     };
   }
 }
