@@ -10,6 +10,7 @@ import { Buffer } from "../src/common/buffer";
 import {
   AddCredits,
   AddCreditsArgs,
+  CreateIdentity,
   Signature,
   Transaction,
   TransactionBody,
@@ -23,6 +24,64 @@ import { ED25519Key, Signer, SignerWithVersion } from "../src/signing";
 
 export async function randomLiteIdentity(): Promise<SignerWithVersion> {
   return Signer.forLite(await ED25519Key.generate());
+}
+
+export async function makeRandomLiteAccount(
+  client: JsonRpcClient,
+  { credits = 1000 }: { credits?: number } = {},
+): Promise<SignerWithVersion> {
+  console.log("Set up a lite account");
+  const lite = await randomLiteIdentity();
+  await waitForAll(client, await client.faucet(lite.url.join("ACME")));
+
+  const { oracle } = await client.networkStatus({ partition: "Directory" });
+  await signAndSubmit(
+    client,
+    lite.url.join("ACME"),
+    await addCredits2({
+      amount: credits,
+      recipient: lite.url,
+      oracle: oracle!.price!,
+    }),
+    lite,
+    true,
+  );
+
+  return lite;
+}
+
+export async function createADIWithRandomKey(
+  client: JsonRpcClient,
+  url: string,
+  lite: SignerWithVersion,
+  { credits = 1000 }: { credits?: number } = {},
+) {
+  const keySigner = Signer.forPage(`${url}/book/1`, ED25519Key.generate());
+  await signAndSubmit(
+    client,
+    lite.url.join("ACME"),
+    new CreateIdentity({
+      url,
+      keyBookUrl: `${url}/book`,
+      keyHash: keySigner.key.address.publicKeyHash,
+    }),
+    lite,
+    true,
+  );
+
+  const { oracle } = await client.networkStatus({ partition: "Directory" });
+  await signAndSubmit(
+    client,
+    lite.url.join("ACME"),
+    await addCredits2({
+      amount: credits,
+      recipient: `${url}/book/1`,
+      oracle: oracle!.price!,
+    }),
+    lite,
+    true,
+  );
+  return keySigner.withVersion(1);
 }
 
 export function randomBuffer(length = 12) {

@@ -2,27 +2,28 @@
 import { ChildProcess } from "child_process";
 import treeKill from "tree-kill";
 import { ED25519Key, Signer } from "../src";
-import { JsonRpcClient } from "../src/api_v3";
+import { AccountRecord, JsonRpcClient } from "../src/api_v3";
 import {
   AddKeyOperation,
   CreateDataAccount,
   CreateIdentity,
   SetThresholdKeyPageOperation,
+  UpdateAccountAuth,
   UpdateKeyPage,
   VoteType,
 } from "../src/core";
 import {
-  addCredits2,
-  randomLiteIdentity,
+  createADIWithRandomKey,
+  makeRandomLiteAccount as createRandomLiteAccount,
   sign,
   signAndSubmit,
   startSim,
   submit,
-  waitForAll,
 } from "./util";
 
 // eslint-disable-next-line prefer-const
 let client = new JsonRpcClient(process.env.ACC_ENDPOINT || "http://127.0.1.1:26660/v3");
+// client.debug = true;
 
 let sim: ChildProcess;
 beforeAll(
@@ -36,51 +37,11 @@ afterAll(() => sim?.pid && treeKill(sim.pid));
 
 describe("Example usage:", () => {
   test("Multisig", async () => {
-    // client.debug = true;
-
-    const { oracle } = await client.networkStatus({ partition: "Directory" });
-
     console.log("Set up a lite account");
-    const lite = await randomLiteIdentity();
-    await waitForAll(client, await client.faucet(lite.url.join("ACME")));
-
-    await signAndSubmit(
-      client,
-      lite.url.join("ACME"),
-      await addCredits2({
-        amount: 32000,
-        recipient: lite.url,
-        oracle: oracle!.price!,
-      }),
-      lite,
-      true,
-    );
+    const lite = await createRandomLiteAccount(client, { credits: 32000 });
 
     console.log("Create an ADI");
-    const keySigner = Signer.forPage("example.acme/book/1", ED25519Key.generate());
-    await signAndSubmit(
-      client,
-      lite.url.join("ACME"),
-      new CreateIdentity({
-        url: "example.acme",
-        keyBookUrl: "example.acme/book",
-        keyHash: keySigner.key.address.publicKeyHash,
-      }),
-      lite,
-      true,
-    );
-
-    await signAndSubmit(
-      client,
-      lite.url.join("ACME"),
-      await addCredits2({
-        amount: 10000,
-        recipient: "example.acme/book/1",
-        oracle: oracle!.price!,
-      }),
-      lite,
-      true,
-    );
+    const keySigner = await createADIWithRandomKey(client, "example.acme", lite);
 
     console.log("Add another key and set M=2");
     const otherSigner = Signer.forPage(keySigner.url, ED25519Key.generate());
@@ -116,5 +77,56 @@ describe("Example usage:", () => {
 
     const sig2 = await otherSigner.sign(txn, { signerVersion: 2, timestamp: Date.now() });
     await submit(client, txn, sig2, true);
+  });
+
+  test("Multi-authority", async () => {
+    console.log("Set up a lite account");
+    const lite = await createRandomLiteAccount(client, { credits: 1e6 });
+
+    console.log("Create Alice and Bob");
+    const alice = await createADIWithRandomKey(client, "alice.acme", lite, { credits: 1e6 });
+    const bob = await createADIWithRandomKey(client, "bob.acme", lite);
+
+    console.log("Create an owned ADI");
+    await signAndSubmit(
+      client,
+      "alice.acme",
+      new CreateIdentity({
+        url: "example.acme",
+        authorities: ["alice.acme/book"],
+      }),
+      alice.withVersion(1),
+      true,
+    );
+
+    await client
+      .query("example.acme")
+      .then((r) => console.log((r as AccountRecord).account!.asObject()));
+
+    console.log("Transfer example.acme to Bob");
+    const { txn, sig } = await sign(
+      "example.acme",
+      new UpdateAccountAuth({
+        operations: [
+          {
+            type: "addAuthority",
+            authority: "bob.acme/book",
+          },
+          {
+            type: "removeAuthority",
+            authority: "alice.acme/book",
+          },
+        ],
+      }),
+      alice,
+    );
+    await submit(client, txn, sig, "signatures");
+
+    const sig2 = await bob.sign(txn, {});
+    await submit(client, txn, sig2, true);
+
+    await client
+      .query("example.acme")
+      .then((r) => console.log((r as AccountRecord).account!.asObject()));
   });
 });
