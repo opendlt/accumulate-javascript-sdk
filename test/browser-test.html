@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Secp256k1 Library Test</title>
+  </head>
+  <body>
+    <h1>Secp256k1 Library Test</h1>
+    <button onclick="runTest()">Run Test</button>
+    <pre id="results"></pre>
+
+    <script>
+      // Add timestamp for cache busting
+      const cacheBuster = "?v=" + Date.now();
+
+      // Dynamically create and append script tags with cache busting
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src + cacheBuster;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+
+      // Load scripts in sequence
+      Promise.all([
+        loadScript("../dist/accumulate.browser.js"),
+        loadScript("../dist/browser-test.js"),
+      ]).catch((error) => {
+        console.error("Script loading error:", error);
+        document.getElementById("results").textContent = "Error loading scripts: " + error;
+      });
+    </script>
+
+    <script>
+      async function runTest() {
+        try {
+          console.log("Available globals:", {
+            accumulate: window.accumulate,
+            accumulateTest: window.accumulateTest,
+            runSecp256k1Test: window.runSecp256k1Test,
+          });
+
+          const testFn =
+            window.runSecp256k1Test ||
+            (window.accumulateTest && window.accumulateTest.runSecp256k1Test);
+          if (!testFn) {
+            throw new Error("Test function not found. Check console for available globals.");
+          }
+          const results = await testFn();
+          document.getElementById("results").textContent = JSON.stringify(results, null, 2);
+        } catch (error) {
+          document.getElementById("results").textContent = "Error: " + error.message;
+          console.error("Test error:", error);
+        }
+      }
+    </script>
+  </body>
+</html>
