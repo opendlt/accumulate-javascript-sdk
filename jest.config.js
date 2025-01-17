@@ -1,11 +1,11 @@
 module.exports = {
-  roots: ["<rootDir>"],
-  testMatch: ["**/__tests__/**/*.+(ts|tsx|js)", "**/?(*.)+(spec|test).+(ts|tsx|js)"],
+  preset: "ts-jest",
+  testEnvironment: "node",
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
+    "^.+\\.js$": "babel-jest", // Use Babel for ES Modules in JS files
   },
-  collectCoverage: true,
-  collectCoverageFrom: ["<rootDir>/src/**"],
-  modulePathIgnorePatterns: ["<rootDir>/accumulate/"],
-  testTimeout: 120000,
+  transformIgnorePatterns: [
+    "/node_modules/(?!(?:@noble/secp256k1)/)", // Allow Jest to transform @noble/secp256k1
+  ],
 };
