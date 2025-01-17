@@ -117,3 +117,46 @@ const client = new api_v2.Client("https://mainnet.accumulatenetwork.io/v2");
 const res = await client.execute(env);
 await client.waitOnTx(res.txid.toString());
 ```
+
+## Browser Usage
+
+To use accumulate.js in a browser environment, you have two options:
+
+### Option 1: Using a Bundler (Recommended)
+
+If you're using a bundler (webpack, rollup, etc.), you can import the library normally:
+
+```js
+import { api_v2, ED25519Key, Signer } from "accumulate.js";
+```
+
+Make sure your bundler is configured to handle Node.js polyfills (buffer, crypto, etc.). You may need to add the following polyfills to your bundler configuration:
+
+- buffer
+- crypto
+- stream
+- assert
+- path
+- util
+
+### Option 2: Direct Browser Usage
+
+For direct browser usage without a bundler, include the browser bundle and necessary polyfills:
+
+```html
+<!-- Include necessary polyfills -->
+<script src="https://bundle.run/buffer"></script>
+<script src="https://bundle.run/process"></script>
+
+<!-- Include accumulate.js browser bundle -->
+<script src="path/to/accumulate.browser.js"></script>
+
+<script>
+  // The library is available as 'accumulate'
+  const { api_v2, ED25519Key, Signer } = accumulate;
+
+  // Use the library as shown in the quick start tutorial
+  const client = new api_v2.Client("https://mainnet.accumulatenetwork.io/v2");
+  // ... rest of your code
+</script>
+```

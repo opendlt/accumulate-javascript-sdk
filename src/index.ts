@@ -10,6 +10,13 @@ export * as messaging from "./messaging";
 export * as network from "./network";
 export * from "./signing";
 
+import { Buffer } from "buffer";
+
+// Ensure global Buffer is available
+if (typeof window !== "undefined") {
+  window.Buffer = window.Buffer || Buffer;
+}
+
 // DO NOT IMPORT ledger UNCONDITIONALLY
 //
 // ./ledger/deferred intentionally A) only imports types and B) only

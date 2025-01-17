@@ -1,12 +1,12 @@
 import { openTransportReplayer, RecordStore } from "@ledgerhq/hw-transport-mocker";
+import { AddCredits, Transaction } from "../src/core";
+import Accumulate from "../src/ledger";
 import {
   LedgerAddress,
   LedgerAppName,
   LedgerSignature,
   LedgerVersion,
-} from "../lib/ledger/model/results";
-import { AddCredits, Transaction } from "../src/core";
-import Accumulate from "../src/ledger";
+} from "../src/ledger/model/results";
 
 test("getAppName", async () => {
   const transport = await openTransportReplayer(

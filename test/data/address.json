@@ -1,43 +1,43 @@
 {
-    "public": {
-        "AC": {
-            "address": "AC12jWw3iqvdCqg11QTLFK9qdgABjknGUnLuX2sLiJMokWcAnqXFk",
-            "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
-            "type":    "ed25519"
-        },
-        "FA": {
-            "address": "FA3hbVKd8MxyVhTqn7RwoWb2PXTiAbfhEbDSFCmTcmPYuQ8PdRGe",
-            "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
-            "type":    "rcd1"
-        },
-        "MH": {
-            "address": "MHz126wLaU5sCEr5zFbyTt7Hg6pTTqSjaoSoXMnUg8izAmxvQ2xjXWL",
-            "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
-            "type":    "unknown"
-        },
-        "BTC": {
-            "address": "BT12jWw3iqvdCqg11QTLFK9qdgABjknGUnLuX2sLiJMokWcBt5rhQ",
-            "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
-            "type":    "btc"
-        },
-        "ETH": {
-            "address": "0xe43be90e349210456662d8b8bdc9cc9e5e46ccb0",
-            "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb0",
-            "type":    "eth"
-        }
+  "public": {
+    "AC": {
+      "address": "AC12jWw3iqvdCqg11QTLFK9qdgABjknGUnLuX2sLiJMokWcAnqXFk",
+      "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
+      "type": "ed25519"
     },
-    "private": {
-		"AS": {
-			"address": "AS12jWw3iqvdCqg11QTLFK9qdgABjknGUnLuX2sLiJMokWcBq53Ux",
-			"seed":    "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
-			"pubKey":  "52813dbcd9e54c8bf504e83b3461355df1f8ed2f2e466c7f30dfd32ce7dbe79e",
-			"type":    "ed25519"
-		},
-		"Fs": {
-			"address": "Fs342EuYBZJ7TbmZLpN2q1nHVVxsQdtJ8wu3uZxiyVojCvfUGwUg",
-			"seed":    "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
-			"pubKey":  "52813dbcd9e54c8bf504e83b3461355df1f8ed2f2e466c7f30dfd32ce7dbe79e",
-			"type":    "rcd1"
-		}
+    "FA": {
+      "address": "FA3hbVKd8MxyVhTqn7RwoWb2PXTiAbfhEbDSFCmTcmPYuQ8PdRGe",
+      "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
+      "type": "rcd1"
+    },
+    "MH": {
+      "address": "MHz126wLaU5sCEr5zFbyTt7Hg6pTTqSjaoSoXMnUg8izAmxvQ2xjXWL",
+      "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
+      "type": "unknown"
+    },
+    "BTC": {
+      "address": "BT12jWw3iqvdCqg11QTLFK9qdgABjknGUnLuX2sLiJMokWcBt5rhQ",
+      "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
+      "type": "btc"
+    },
+    "ETH": {
+      "address": "0xe43be90e349210456662d8b8bdc9cc9e5e46ccb0",
+      "pubHash": "e43be90e349210456662d8b8bdc9cc9e5e46ccb0",
+      "type": "eth"
     }
+  },
+  "private": {
+    "AS": {
+      "address": "AS12jWw3iqvdCqg11QTLFK9qdgABjknGUnLuX2sLiJMokWcBq53Ux",
+      "seed": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
+      "pubKey": "52813dbcd9e54c8bf504e83b3461355df1f8ed2f2e466c7f30dfd32ce7dbe79e",
+      "type": "ed25519"
+    },
+    "Fs": {
+      "address": "Fs342EuYBZJ7TbmZLpN2q1nHVVxsQdtJ8wu3uZxiyVojCvfUGwUg",
+      "seed": "e43be90e349210456662d8b8bdc9cc9e5e46ccb07f2129e7b57a8195e5e916d5",
+      "pubKey": "52813dbcd9e54c8bf504e83b3461355df1f8ed2f2e466c7f30dfd32ce7dbe79e",
+      "type": "rcd1"
+    }
+  }
 }

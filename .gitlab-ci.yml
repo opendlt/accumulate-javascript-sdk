@@ -1,6 +1,7 @@
-
 stages:
   - build
+  - test
+  - pages
 
 cache:
   paths:
@@ -9,47 +10,71 @@ cache:
 
 build:
   stage: build
-  image: node:16
+  image: node:18
   script:
     - yarn install --immutable --immutable-cache --check-cache
+    - yarn build # Build lib directory
+    - yarn build:browser # Build dist directory
     - yarn code-check
   artifacts:
     paths:
-      - docs
+      - lib/
+      - dist/
+      - docs/
 
-test 1/2:
-  stage: build
+test:unit:
+  stage: test
   image: node:18
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-  needs: []
+  needs: ["build"]
   script:
     - yarn install --immutable --immutable-cache --check-cache
     - yarn test:unit
+  artifacts:
+    reports:
+      junit: junit.xml
+    when: always
 
-.test 2/2:
-  stage: build
-  image: node:16
+test:browser:
+  stage: test
+  image: node:18
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-  needs: []
+  needs: ["build"]
+  script:
+    - yarn install --immutable --immutable-cache --check-cache
+    - yarn test:browser
+  artifacts:
+    reports:
+      junit: junit.xml
+    when: always
+
+.test:integration:
+  stage: test
+  image: node:18
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  needs: ["build"]
   script:
     - yarn install --immutable --immutable-cache --check-cache
     - yarn test:integration
+  artifacts:
+    reports:
+      junit: junit.xml
+    when: always
 
 pages:
-  stage: build
+  stage: pages
   image: ruby:3.3
   script:
     - gem install bundler
     - bundle config set --local path 'vendor'
     - bundle install
     - bundle exec jekyll build -s docs -d public
-  needs: [ build ]
+  needs: ["build"]
   artifacts:
     paths:
       - public
-  dependencies:
-    - build
   rules:
     - if: $CI_COMMIT_TAG || $PUBLISH_DOC
