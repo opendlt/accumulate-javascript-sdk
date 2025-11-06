@@ -1,10 +1,11 @@
-import { URL } from "../address";
-import { Client } from "../api_v2";
-import { CreateToken, Transaction, TransactionHeader } from "../core";
-import { hashBody } from "../core/base";
-import { encode } from "../encoding";
-import { combineReceipts, Receipt, ReceiptArgs } from "../merkle";
-import { Buffer, sha256 } from "./index";
+import { URL } from "../address/index.js";
+import { Client } from "../api_v2/index.js";
+import { CreateToken, Transaction, TransactionHeader } from "../core/index.js";
+import { hashBody } from "../core/base.js";
+import { encode } from "../encoding/index.js";
+import { combineReceipts, Receipt, ReceiptArgs } from "../merkle/index.js";
+import { Buffer } from "./buffer.js";
+import { sha256 } from "./sha256.js";
 
 export async function constructIssuerProof(
   client: Client,

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-namespace */
-export * from "./enums_gen";
-export * from "./types_gen";
+export * from "./enums_gen.js";
+export * from "./types_gen.js";
 
-import { Buffer } from "../common/buffer";
-import { Receipt } from "./types_gen";
+import { Buffer } from "../common/buffer.js";
+import { Receipt } from "./types_gen.js";
 
 export function combineReceipts(r1: Receipt, r2: Receipt): Receipt {
   const anchorStr =

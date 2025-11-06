@@ -1,4 +1,3 @@
-import * as secp256k1 from "@noble/secp256k1";
 import { bip44, ED25519Key } from "../src";
 
 const mnemonic =
@@ -54,6 +53,8 @@ describe("bip44 key derivation", () => {
       "02f7aa1eb14de438735c026c7cc719db11baf82e47f8fa2c86b55bff92b677eae2",
     );
 
+    // Use dynamic import for secp256k1 ES module compatibility
+    const secp256k1 = await import("@noble/secp256k1");
     const pubKey1 = secp256k1.getPublicKey(wallet.Btc.getKey(0, 0, 0).privateKey, true);
     const pubKey2 = secp256k1.getPublicKey(
       wallet.Btc.getKeyFromPath(bip44.makePath(bip44.CoinType.Bitcoin, 0, 0, 0)).privateKey,
@@ -68,6 +69,9 @@ describe("bip44 key derivation", () => {
     const pubKey0 = fromHexString(
       "02c4755e0a7a0f7082749bf46cdae4fcddb784e11428446a01478d656f588f94c1",
     );
+
+    // Use dynamic import for secp256k1 ES module compatibility
+    const secp256k1 = await import("@noble/secp256k1");
     const pubKey1 = secp256k1.getPublicKey(wallet.Eth.getKey(0, 0, 0).privateKey, true);
     const pubKey2 = secp256k1.getPublicKey(
       wallet.Eth.getKeyFromPath(bip44.makePath(bip44.CoinType.Ether, 0, 0, 0)).privateKey,

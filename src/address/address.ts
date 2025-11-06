@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import { Buffer, sha256 } from "../common";
-import { keccak256 } from "../common/keccak";
-import { Signature, SignatureType } from "../core";
-import { uvarintMarshalBinary } from "../encoding/encoding";
+import { Buffer, sha256 } from "../common/index.js";
+import { keccak256 } from "../common/keccak.js";
+import { Signature, SignatureType } from "../core/index.js";
+import { uvarintMarshalBinary } from "../encoding/encoding.js";
 
 export namespace Address {
   export function keyHash(type: SignatureType, publicKey: Uint8Array) {

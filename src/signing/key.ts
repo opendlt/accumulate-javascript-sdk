@@ -1,5 +1,5 @@
-import { Address, URLArgs } from "../address";
-import { sha256 } from "../common";
+import { Address, URLArgs } from "../address/index.js";
+import { sha256 } from "../common/index.js";
 import {
   DelegatedSignature,
   KeySignature,
@@ -7,8 +7,8 @@ import {
   Transaction,
   UserSignature,
   VoteType,
-} from "../core";
-import { encode } from "../encoding";
+} from "../core/index.js";
+import { encode } from "../encoding/index.js";
 
 export type SignOptions = {
   signer: URLArgs;

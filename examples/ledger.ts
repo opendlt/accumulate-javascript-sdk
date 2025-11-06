@@ -1,13 +1,13 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { api_v2, ED25519Key, Signer } from "accumulate.js";
-import { SendTokens, Transaction, TransactionHeader } from "accumulate.js/lib/core";
+import { SendTokens, Transaction, TransactionHeader } from "accumulate.js/core";
 import {
   LedgerApi,
   promise,
   queryHidWallets,
   registerTransportModule,
-} from "accumulate.js/lib/ledger";
-import { Envelope } from "accumulate.js/lib/messaging";
+} from "accumulate.js/ledger";
+import { Envelope } from "accumulate.js/messaging";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
@@ -40,7 +40,7 @@ registerTransportModule({
 
   // Initialize the signer
   const Ledger = new LedgerApi(transport);
-  const signer = await Ledger.signerForPage("acc://lite-token-account.acme", "44'/281'/0'/0'/0'");
+  const signer = await Ledger.signerForPage("acc://lite-token-account/acme", "44'/281'/0'/0'/0'");
 
   // Build the Payload
   const recipient = Signer.forLite(ED25519Key.generate());

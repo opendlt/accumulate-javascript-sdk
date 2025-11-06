@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Buffer, sha256 } from "../common";
-import { encode } from "../encoding";
-import { TransactionType } from "./enums_gen";
-import { TransactionHeader } from "./types_gen";
-import { TransactionBody } from "./unions_gen";
+import { Buffer, sha256 } from "../common/index.js";
+import { encode } from "../encoding/index.js";
+import { TransactionType } from "./enums_gen.js";
+import { TransactionHeader } from "./types_gen.js";
+import { TransactionBody } from "./unions_gen.js";
 
 export abstract class TransactionBase {
   private _hash?: Uint8Array;

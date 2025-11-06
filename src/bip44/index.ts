@@ -1,9 +1,9 @@
 import { HDKey } from "@scure/bip32";
 import * as bip39 from "bip39";
 import { derivePath } from "ed25519-hd-key";
-import { SignatureType } from "../core";
-import * as bip44path from "./path";
-export * from "./path";
+import { SignatureType } from "../core/index.js";
+import * as bip44path from "./path.js";
+export * from "./path.js";
 
 const HDSigCoin: Map<SignatureType, bip44path.CoinType> = new Map([
   [SignatureType.RCD1, bip44path.CoinType.FactomFactoids],

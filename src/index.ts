@@ -1,14 +1,14 @@
-export * from "./address";
-export * as api_v2 from "./api_v2";
-export * as api_v3 from "./api_v3";
-export * as bip44 from "./bip44";
-export * as core from "./core";
-export * as errors from "./errors";
-export * as ledger from "./ledger/deferred"; // SEE BELOW
-export * as merkle from "./merkle";
-export * as messaging from "./messaging";
-export * as network from "./network";
-export * from "./signing";
+export * from "./address/index.js";
+export * as api_v2 from "./api_v2/index.js";
+export * as api_v3 from "./api_v3/index.js";
+export * as bip44 from "./bip44/index.js";
+export * as core from "./core/index.js";
+export * as errors from "./errors/index.js";
+export * as ledger from "./ledger/deferred.js"; // SEE BELOW
+export * as merkle from "./merkle/index.js";
+export * as messaging from "./messaging/index.js";
+export * as network from "./network/index.js";
+export * from "./signing/index.js";
 
 import { Buffer } from "buffer";
 

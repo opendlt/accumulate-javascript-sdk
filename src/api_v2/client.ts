@@ -12,9 +12,9 @@ import {
   TxnQueryArgs,
   TxResponse,
 } from ".";
-import { TxID } from "../address";
-import { AccumulateURL as URL } from "../address/url";
-import { Buffer, sha256 } from "../common";
+import { TxID } from "../address/index.js";
+import { AccumulateURL as URL } from "../address/url.js";
+import { Buffer, sha256 } from "../common/index.js";
 import {
   AccountAuthOperationArgs,
   AddCredits,
@@ -48,10 +48,10 @@ import {
   UpdateKeyPage,
   WriteData,
   WriteDataArgs,
-} from "../core";
-import { Envelope } from "../messaging";
-import { Signer, SignerWithVersion } from "../signing";
-import { RpcClient } from "./rpc-client";
+} from "../core/index.js";
+import { Envelope } from "../messaging/index.js";
+import { Signer, SignerWithVersion } from "../signing/index.js";
+import { RpcClient } from "./rpc-client.js";
 
 /**
  * Options for waiting on transaction delivering.

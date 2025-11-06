@@ -1,3 +1,3 @@
-export * from "./ed25519";
-export * from "./key";
-export * from "./signer";
+export * from "./ed25519.js";
+export * from "./key.js";
+export * from "./signer.js";
