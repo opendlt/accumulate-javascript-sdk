@@ -2,25 +2,33 @@ export default API;
 
 export type {
   Discovery,
+  TransportModule,
+} from "./hw/index.js";
+export type {
   LedgerAddress,
-  LedgerApi,
   LedgerAppName,
   LedgerDeviceInfo,
-  LedgerKey,
   LedgerSignature,
   LedgerVersion,
-  Transport,
-  TransportModule,
-} from "./index";
+} from "./model/results.js";
+export type {
+  LedgerApi,
+  LedgerKey,
+} from "./ledger-api.js";
+export type { default as Transport } from "@ledgerhq/hw-transport";
 
 import type {
   Discovery,
-  LedgerApi,
-  LedgerDeviceInfo,
-  LedgerKey,
-  Transport,
   TransportModule,
-} from "./index";
+} from "./hw/index.js";
+import type {
+  LedgerDeviceInfo,
+} from "./model/results.js";
+import type {
+  LedgerApi,
+  LedgerKey,
+} from "./ledger-api.js";
+import type Transport from "@ledgerhq/hw-transport";
 
 export async function discoverDevices(
   accept: (mod: TransportModule) => boolean = () => true,

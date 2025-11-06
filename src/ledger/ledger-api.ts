@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type Transport from "@ledgerhq/hw-transport";
 import { scan as rxScan } from "rxjs/operators";
-import { Address } from "../address";
-import { URLArgs } from "../address/url";
-import * as BIPPath from "../bip44/path";
-import { Buffer } from "../common/buffer";
-import { Signature, SignatureType, Transaction } from "../core";
-import { encode } from "../encoding";
-import { Envelope } from "../messaging";
-import { BaseKey, PublicKey, Signable, Signer } from "../signing";
-import { discoverDevices } from "./hw";
+import { Address } from "../address/index.js";
+import { URLArgs } from "../address/url.js";
+import * as BIPPath from "../bip44/path.js";
+import { Buffer } from "../common/buffer.js";
+import { Signature, SignatureType, Transaction } from "../core/index.js";
+import { encode } from "../encoding/index.js";
+import { Envelope } from "../messaging/index.js";
+import { BaseKey, PublicKey, Signable, Signer } from "../signing/index.js";
+import { discoverDevices } from "./hw/index.js";
 
 import {
   LedgerAddress,
@@ -17,8 +17,8 @@ import {
   LedgerDeviceInfo,
   LedgerSignature,
   LedgerVersion,
-} from "./model/results";
-import { foreach, splitPath } from "./utils";
+} from "./model/results.js";
+import { foreach, splitPath } from "./utils.js";
 
 const ledgerOpGetApplicationVersion = 0x03; // Returns the application version
 const ledgerOpGetAppName = 0x04; // Signs a transaction after having the user validate the parameters

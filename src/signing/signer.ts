@@ -1,7 +1,7 @@
-import { URL, URLArgs } from "../address";
-import { Buffer, sha256 } from "../common";
-import type { UserSignature } from "../core";
-import type { Key, Signable, SignOptions } from "./key";
+import { URL, URLArgs } from "../address/index.js";
+import { Buffer, sha256 } from "../common/index.js";
+import type { UserSignature } from "../core/index.js";
+import type { Key, Signable, SignOptions } from "./key.js";
 
 export class Signer {
   constructor(

@@ -1,5 +1,5 @@
-import { Buffer } from "./buffer";
-import { sha256 } from "./sha256";
+import { Buffer } from "./buffer.js";
+import { sha256 } from "./sha256.js";
 
 export function hashTree(items: Uint8Array[]): Uint8Array {
   const hashes = items.map((i) => sha256(i));

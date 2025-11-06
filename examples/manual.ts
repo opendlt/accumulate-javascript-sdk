@@ -1,8 +1,8 @@
 // You need to import the Payload class for the type of transaction you want to make.
 // Here we are building a SendTokens transaction.
 import { api_v2, ED25519Key, Signer } from "accumulate.js";
-import { SendTokens, Transaction, TransactionHeader } from "accumulate.js/lib/core";
-import { Envelope } from "accumulate.js/lib/messaging";
+import { SendTokens, Transaction, TransactionHeader } from "accumulate.js/core";
+import { Envelope } from "accumulate.js/messaging";
 
 const sender = Signer.forLite(ED25519Key.generate());
 
@@ -22,6 +22,6 @@ const sig = await sender.sign(tx, { timestamp: Date.now() });
 const env = new Envelope({ transaction: [tx], signatures: [sig] });
 
 // Submit the envelope
-const client = new api_v2.Client("https://mainnet.accumulatenetwork.io/v2");
+const client = new api_v2.Client("https://kermit.accumulatenetwork.io/v2");
 const res = await client.execute(env);
 await client.waitOnTx(res.txid.toString());

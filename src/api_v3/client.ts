@@ -1,9 +1,10 @@
-import * as types from ".";
-import { TxID, URLArgs } from "../address";
-import { RpcClient, RpcError } from "../api_v2/rpc-client";
-import * as errors from "../errors";
-import * as messaging from "../messaging";
-import * as msg from "./msg";
+import * as types from "./index.js";
+import { QueryArgs } from "./unions_gen.js";
+import { TxID, URLArgs } from "../address/index.js";
+import { RpcClient, RpcError } from "../api_v2/rpc-client.js";
+import * as errors from "../errors/index.js";
+import * as messaging from "../messaging/index.js";
+import * as msg from "./msg.js";
 
 export const ERR_CODE_PROTOCOL = -33000;
 
@@ -13,7 +14,7 @@ export const ERR_CODE_PROTOCOL = -33000;
  * required.
  */
 export type QueryWith<
-  Base extends types.QueryArgs,
+  Base extends QueryArgs,
   Required extends keyof Base = never,
   Optional extends keyof Base = never,
 > = {
@@ -406,3 +407,6 @@ export class JsonRpcClient {
     return this.typedCall("query", { scope, query }, msg.QueryRequest, types.Record);
   }
 }
+
+// Export Client as an alias for JsonRpcClient for backward compatibility
+export { JsonRpcClient as Client };

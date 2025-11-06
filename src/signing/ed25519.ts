@@ -1,9 +1,9 @@
-import * as nacl from "tweetnacl";
-import { PrivateKeyAddress } from "../address";
-import { Buffer, sha256 } from "../common";
-import { Signature, SignatureType } from "../core";
-import { encode } from "../encoding";
-import { BaseKey, PrivateKey, PublicKey, Signable, SimpleExternalKey } from "./key";
+import nacl from "tweetnacl";
+import { PrivateKeyAddress } from "../address/index.js";
+import { Buffer, sha256 } from "../common/index.js";
+import { Signature, SignatureType } from "../core/index.js";
+import { encode } from "../encoding/index.js";
+import { BaseKey, PrivateKey, PublicKey, Signable, SimpleExternalKey } from "./key.js";
 
 abstract class BaseED25519Key extends BaseKey {
   protected constructor(public readonly address: PrivateKey) {

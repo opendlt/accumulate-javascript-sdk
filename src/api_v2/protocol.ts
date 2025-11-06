@@ -1,2 +1,2 @@
-export * from "../core";
-export { ChainType, ChainTypeArgs } from "../merkle";
+export * from "../core/index.js";
+export { ChainType, ChainTypeArgs } from "../merkle/index.js";

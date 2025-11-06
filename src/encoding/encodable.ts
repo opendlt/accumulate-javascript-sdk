@@ -1,6 +1,7 @@
-import { consume, Consumer, encode } from ".";
-import * as url from "../address";
-import { Buffer } from "../common/buffer";
+// Note: Consumer type and functions moved to avoid circular dependency
+
+import * as url from "../address/index.js";
+import { Buffer } from "../common/buffer.js";
 import {
   bigNumberMarshalBinary as bigIntMarshalBinary,
   booleanMarshalBinary,
@@ -10,12 +11,12 @@ import {
   uvarintMarshalBinary as uintMarshalBinary,
   uvarintMarshalBinary,
   varintMarshalBinary as intMarshalBinary,
-} from "./encoding";
+} from "./encoding.js";
 
 export interface Encodable {
   embedding?: boolean;
   encode(value: any): Uint8Array;
-  consume?(value: any, consumer: Consumer): void;
+  consume?(value: any, consumer: any): void;
   raw?(value: any): { length: Uint8Array; value: Uint8Array };
 }
 
@@ -119,21 +120,63 @@ export class Enum {
 
 export class Union {
   composite = true;
-  encode(value: any) {
-    return bytesMarshalBinary(encode(value));
+  private _encode?: any;
+  private _consume?: any;
+
+  private getEncode() {
+    if (!this._encode) {
+      // Import encode function dynamically to avoid circular dependency
+      const { encode } = require("./index.js");
+      this._encode = encode;
+    }
+    return this._encode;
   }
-  consume(value: any, consumer: Consumer) {
-    consume(value, consumer);
+
+  private getConsume() {
+    if (!this._consume) {
+      // Import consume function dynamically to avoid circular dependency
+      const { consume } = require("./index.js");
+      this._consume = consume;
+    }
+    return this._consume;
+  }
+
+  encode(value: any) {
+    return bytesMarshalBinary(this.getEncode()(value));
+  }
+  consume(value: any, consumer: any) {
+    this.getConsume()(value, consumer);
   }
 }
 
 export class Reference {
   composite = true;
-  encode(value: any) {
-    return bytesMarshalBinary(encode(value));
+  private _encode?: any;
+  private _consume?: any;
+
+  private getEncode() {
+    if (!this._encode) {
+      // Import encode function dynamically to avoid circular dependency
+      const { encode } = require("./index.js");
+      this._encode = encode;
+    }
+    return this._encode;
   }
-  consume(value: any, consumer: Consumer) {
-    consume(value, consumer);
+
+  private getConsume() {
+    if (!this._consume) {
+      // Import consume function dynamically to avoid circular dependency
+      const { consume } = require("./index.js");
+      this._consume = consume;
+    }
+    return this._consume;
+  }
+
+  encode(value: any) {
+    return bytesMarshalBinary(this.getEncode()(value));
+  }
+  consume(value: any, consumer: any) {
+    this.getConsume()(value, consumer);
   }
 }
 

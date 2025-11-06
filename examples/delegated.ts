@@ -1,8 +1,8 @@
 // You need to import the Payload class for the type of transaction you want to make.
 // Here we are building a SendTokens transaction.
 import { api_v2, ED25519Key, Signer } from "accumulate.js";
-import { Transaction } from "accumulate.js/lib/core";
-import { Envelope } from "accumulate.js/lib/messaging";
+import { Transaction } from "accumulate.js/core";
+import { Envelope } from "accumulate.js/messaging";
 
 // An example transaction
 const tx = new Transaction({

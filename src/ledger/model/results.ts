@@ -1,4 +1,4 @@
-import { TransportModule } from "../hw";
+import { TransportModule } from "../hw/index.js";
 
 /**
  * @class LedgerAppName

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { api_v3, ED25519Key, Signer, TxID, URLArgs } from "accumulate.js";
-import { MessageRecord, RpcError } from "accumulate.js/lib/api_v3";
-import { Transaction } from "accumulate.js/lib/core";
-import { Error as Error2, Status } from "accumulate.js/lib/errors";
+import { MessageRecord, RpcError } from "accumulate.js/api_v3";
+import { Transaction } from "accumulate.js/core";
+import { Error as Error2, Status } from "accumulate.js/errors";
 const client = new api_v3.JsonRpcClient("https://kermit.accumulatenetwork.io/v3");
 
 const waitTime = 500;
@@ -54,8 +54,12 @@ console.log(await client.query(lid.url));
 // which is one of the fundamental feature of the network
 
 const identitySigner = ED25519Key.generate(); // Root signer that will control the identity
-const identityUrl = "acc://my-own-identity123.acme";
-const bookUrl = identityUrl + "/my-book";
+// Create dynamic ADI name with timestamp (only allowed characters: letters, numbers, hyphens)
+const timestamp = Date.now().toString();
+const identityUrl = `acc://test-adi-${timestamp}.acme`;
+const bookUrl = identityUrl + "/book";
+
+console.log(`Creating ADI with dynamic name: ${identityUrl}`);
 
 txn = new Transaction({
   header: {
@@ -87,8 +91,10 @@ async function waitForAll(txid: TxID | URLArgs) {
     return;
   }
 
-  for (const { value: txid } of r.produced.records.filter((x) => !!x)) {
-    txid && (await waitForAll(txid));
+  for (const record of r.produced.records.filter((x) => !!x)) {
+    if (record && record.value) {
+      await waitForAll(record.value);
+    }
   }
 
   return r;

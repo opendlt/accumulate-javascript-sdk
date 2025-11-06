@@ -1,4 +1,4 @@
-import { AccumulateTxID } from "./txid";
+import { AccumulateTxID } from "./txid.js";
 
 export type URLArgs = AccumulateURL | URL | string;
 

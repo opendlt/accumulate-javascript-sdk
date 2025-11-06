@@ -2,7 +2,7 @@
 /* eslint-disable no-debugger */
 
 import "reflect-metadata";
-import { Buffer } from "../common/buffer";
+import { Buffer } from "../common/buffer.js";
 import {
   BigInt,
   Bool,
@@ -20,11 +20,11 @@ import {
   Uint,
   Union,
   Url,
-} from "./encodable";
-import { bytesMarshalBinary, uvarintMarshalBinary as uintMarshalBinary } from "./encoding";
+} from "./encodable.js";
+import { bytesMarshalBinary, uvarintMarshalBinary as uintMarshalBinary } from "./encoding.js";
 
-export * from "./encodable";
-export * from "./encoding";
+export * from "./encodable.js";
+export * from "./encoding.js";
 export const FieldNumber = new Uint();
 export const Length = new Uint();
 

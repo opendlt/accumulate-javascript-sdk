@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Buffer } from "../common/buffer";
+import { Buffer } from "../common/buffer.js";
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 export function fieldMarshalBinary(field: number, val: Uint8Array): Uint8Array {

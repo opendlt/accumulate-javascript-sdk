@@ -1,5 +1,5 @@
-export * from "./client";
-export * as config from "./config";
-export * from "./enums_gen";
-export { RpcError } from "./rpc-client";
-export * from "./types_gen";
+export * from "./client.js";
+export * as config from "./config.js";
+export * from "./enums_gen.js";
+export { RpcError } from "./rpc-client.js";
+export * from "./types_gen.js";

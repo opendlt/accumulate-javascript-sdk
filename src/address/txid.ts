@@ -1,5 +1,5 @@
-import { Buffer } from "../common/buffer";
-import { AccumulateURL, parseURL, URLObj } from "./url";
+import { Buffer } from "../common/buffer.js";
+import { AccumulateURL, parseURL, URLObj } from "./url.js";
 
 export type TxIDArgs = AccumulateTxID | URL | string | AccumulateURL;
 

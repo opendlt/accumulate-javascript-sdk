@@ -1,6 +1,6 @@
-export * from "./enums_gen";
-export * from "./types_gen";
-export * from "./unions_gen";
+export * from "./enums_gen.js";
+export * from "./types_gen.js";
+export * from "./unions_gen.js";
 
 declare module "./types_gen" {
   export interface AccumulateDataEntry {
@@ -17,8 +17,8 @@ declare module "./types_gen" {
   }
 }
 
-import { Buffer } from "../common/buffer";
-import { AccumulateDataEntry, DoubleHashDataEntry, FactomDataEntryWrapper } from "./types_gen";
+import { Buffer } from "../common/buffer.js";
+import { AccumulateDataEntry, DoubleHashDataEntry, FactomDataEntryWrapper } from "./types_gen.js";
 
 AccumulateDataEntry.prototype.hash = function () {
   if (!this.data) {
@@ -61,22 +61,21 @@ FactomDataEntryWrapper.prototype.hash = function () {
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import {
-  Account,
   AddCreditsResult,
   BlockValidatorAnchor,
   DirectoryAnchor,
   EmptyResult,
   KeyPage,
   LiteIdentity,
-  TransactionBody,
-  TransactionType,
   UnknownSigner,
   WriteDataResult,
-} from ".";
-import { AccumulateURL as URL } from "../address/url";
-import { hashTree, sha256, sha512 } from "../common";
-import { DelegatedSignature } from "./types_gen";
-import { Signature } from "./unions_gen";
+} from "./types_gen.js";
+import { Account, TransactionBody } from "./unions_gen.js";
+import { TransactionType } from "./enums_gen.js";
+import { AccumulateURL as URL } from "../address/url.js";
+import { hashTree, sha256, sha512 } from "../common/index.js";
+import { DelegatedSignature } from "./types_gen.js";
+import { Signature } from "./unions_gen.js";
 
 /**
  * The URL of the ACME token

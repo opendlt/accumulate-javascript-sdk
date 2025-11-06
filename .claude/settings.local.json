@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(find:*)",
+      "Bash(for dir in address api_v2 api_v3 bip44 common core encoding errors ledger merkle messaging network signing)",
+      "Bash(then echo \"$dir has index.ts\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(node:*)",
+      "Bash(npm run test:unit:*)",
+      "WebSearch",
+      "Bash(npm run lint)",
+      "Read(//c/Accumulate_Stuff/accumulate/pkg/api/v3/**)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout:*)",
+      "Bash(python3:*)",
+      "Bash(npm test)",
+      "Bash(npm run:*)",
+      "Bash(npx tsx:*)",
+      "Bash(tee:*)",
+      "Bash(npm --version)",
+      "Read(//c/Accumulate_Stuff/accumulate/**)",
+      "WebFetch(domain:gitlab.com)",
+      "Read(//c/Users/jason/Downloads/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
