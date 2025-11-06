@@ -1,15 +1,54 @@
+# ────────────────────────────────
+# Node & Package Artifacts
+# ────────────────────────────────
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tsbuildinfo
+
+# ────────────────────────────────
+# Build & Distribution Outputs
+# ────────────────────────────────
 /build/
 /lib/
-/examples/lib/
 /dist/
+/examples/lib/
 /docs/
-.idea/*
-/public
-/vendor
+/public/
+/vendor/
+/tmp/
+/temp/
 
+# ────────────────────────────────
+# IDE / Local Tools
+# ────────────────────────────────
+.vscode/
+.idea/
+.claude/
 .DS_Store
-coverage
-*.log
+Thumbs.db
+
+# ────────────────────────────────
+# Environment / Config Files
+# ────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ────────────────────────────────
+# Coverage / Reports / Sandbox
+# ────────────────────────────────
+coverage/
+reports/
 _notes.txt
 _sandbox.ts
+
+# ────────────────────────────────
+# Logs & Miscellaneous
+# ────────────────────────────────
+*.log
+*.bak
+*.swp
+*.tmp
