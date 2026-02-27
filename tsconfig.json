@@ -27,5 +27,5 @@
     "lib": ["ES2020", "DOM"]
   },
   "include": ["src/**/*.ts", "src/**/*.js", "examples/**/*.ts"],
-  "exclude": ["node_modules", "**/*.test.ts", "examples/demo_with_logging.ts"]
+  "exclude": ["node_modules", "**/*.test.ts", "examples/archive/**", "examples/advanced/**", "examples/demo_with_logging.ts"]
 }

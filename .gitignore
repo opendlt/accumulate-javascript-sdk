@@ -52,3 +52,5 @@ _sandbox.ts
 *.bak
 *.swp
 *.tmp
+nul
+tmpclaude-*

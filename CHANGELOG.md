@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.12.0
+
+- Adds SmartSigner with automatic signer version tracking and transaction lifecycle management.
+- Adds TxBody builders for all transaction types (aligned with Dart/Python/Rust SDKs).
+- Adds KeyManager for key page state queries and multi-sig configuration.
+- Adds QuickStart class for rapid prototyping and tutorials.
+- Adds Ed25519KeyPair, UnifiedKeyPair, and Secp256k1KeyPair helpers.
+- Adds AccumulateHelper with balance polling, oracle queries, and credit math.
+- Adds Accumulate facade class with unified V2/V3 client access.
+- Adds public key hash support for BTC, RSA, and ECDSA signature types.
+- Fixes ESM/browser compatibility by replacing require() with module preloading in encoding.
+- Fixes Time encoding to floor milliseconds before BigInt conversion.
+- Fixes type-only exports for strict TypeScript compilation.
+- Reorganizes examples into v3/, advanced/, and archive/ directories.
+- Rewrites README with comprehensive API documentation and usage examples.
+
 ## v0.11.9
 
 - Fixes rejecting transactions.
