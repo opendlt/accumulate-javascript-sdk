@@ -14,6 +14,7 @@ import {
   Int,
   RawJson,
   Reference,
+  setIndexModule,
   String,
   Time,
   TxID,
@@ -290,3 +291,6 @@ export class Annotator {
     };
   }
 }
+
+// Initialize the index module for Union and Reference encoding (avoids circular dependency)
+setIndexModule({ encode, consume });

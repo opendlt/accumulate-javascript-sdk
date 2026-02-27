@@ -10,6 +10,44 @@ export * as messaging from "./messaging/index.js";
 export * as network from "./network/index.js";
 export * from "./signing/index.js";
 
+// ── Helpers module (aligned with Dart/Python/Rust SDK fleet) ──────────────
+export * as helpers from "./helpers/index.js";
+export {
+  Accumulate,
+  SmartSigner,
+  TxBody,
+  Ed25519KeyPair,
+  UnifiedKeyPair,
+  KeyManager,
+  QuickStart,
+  AccumulateHelper,
+  pollForBalance,
+  pollForCredits,
+  waitForTx,
+  getOraclePrice,
+  calculateCreditsToAcme,
+  deriveLiteIdentityUrl,
+  deriveLiteTokenAccountUrl,
+  KERMIT_V2,
+  KERMIT_V3,
+  DEVNET_V2,
+  DEVNET_V3,
+  MAINNET_V2,
+  MAINNET_V3,
+  NetworkEndpoint,
+} from "./helpers/index.js";
+export type {
+  TxResult,
+  Wallet,
+  AdiInfo,
+  KeyPageState,
+  KeyEntry,
+} from "./helpers/index.js";
+
+// ── Crypto module (multi-signature key pairs) ─────────────────────────────
+export * as crypto from "./crypto/index.js";
+export { Secp256k1KeyPair } from "./crypto/index.js";
+
 import { Buffer } from "buffer";
 
 // Ensure global Buffer is available

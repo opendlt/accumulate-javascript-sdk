@@ -347,7 +347,7 @@ export class TxBody {
    * Update account authorities (add/remove/enable/disable).
    * @param operations  Array of authority operation objects.
    */
-  static updateAccountAuth(operations: unknown[]): UpdateAccountAuth {
+  static updateAccountAuth(operations: any[]): UpdateAccountAuth {
     return new UpdateAccountAuth({ operations });
   }
 
@@ -356,7 +356,7 @@ export class TxBody {
    * For simple cases, prefer updateKeyPageAddKey, updateKeyPageRemoveKey, or updateKeyPageSetThreshold.
    * @param operations  Array of key page operation objects.
    */
-  static updateKeyPage(operations: unknown[]): UpdateKeyPage {
+  static updateKeyPage(operations: any[]): UpdateKeyPage {
     return new UpdateKeyPage({ operation: operations });
   }
 }

@@ -13,6 +13,14 @@ import {
   varintMarshalBinary as intMarshalBinary,
 } from "./encoding.js";
 
+// Global variable for module loading - will be set by index.ts to avoid circular dependency
+let indexModule: { encode: (target: any) => Uint8Array; consume: (target: any, consumer: any) => void } | undefined;
+
+// Function to set the index module (called by index.ts after defining encode/consume)
+export function setIndexModule(module: { encode: (target: any) => Uint8Array; consume: (target: any, consumer: any) => void }) {
+  indexModule = module;
+}
+
 export interface Encodable {
   embedding?: boolean;
   encode(value: any): Uint8Array;
@@ -78,7 +86,8 @@ export class Url {
 
 export class Time {
   encode(value: Date) {
-    return uintMarshalBinary(value.getTime() / 1000);
+    // Floor to convert milliseconds to whole seconds (required for BigInt conversion)
+    return uintMarshalBinary(Math.floor(value.getTime() / 1000));
   }
 }
 
@@ -120,63 +129,39 @@ export class Enum {
 
 export class Union {
   composite = true;
-  private _encode?: any;
-  private _consume?: any;
-
-  private getEncode() {
-    if (!this._encode) {
-      // Import encode function dynamically to avoid circular dependency
-      const { encode } = require("./index.js");
-      this._encode = encode;
-    }
-    return this._encode;
-  }
-
-  private getConsume() {
-    if (!this._consume) {
-      // Import consume function dynamically to avoid circular dependency
-      const { consume } = require("./index.js");
-      this._consume = consume;
-    }
-    return this._consume;
-  }
 
   encode(value: any) {
-    return bytesMarshalBinary(this.getEncode()(value));
+    // Use preloaded module to avoid circular dependency
+    if (!indexModule) {
+      throw new Error("Index module not preloaded - call setIndexModule first");
+    }
+    return bytesMarshalBinary(indexModule.encode(value));
   }
   consume(value: any, consumer: any) {
-    this.getConsume()(value, consumer);
+    // Use preloaded module to avoid circular dependency
+    if (!indexModule) {
+      throw new Error("Index module not preloaded - call setIndexModule first");
+    }
+    indexModule.consume(value, consumer);
   }
 }
 
 export class Reference {
   composite = true;
-  private _encode?: any;
-  private _consume?: any;
-
-  private getEncode() {
-    if (!this._encode) {
-      // Import encode function dynamically to avoid circular dependency
-      const { encode } = require("./index.js");
-      this._encode = encode;
-    }
-    return this._encode;
-  }
-
-  private getConsume() {
-    if (!this._consume) {
-      // Import consume function dynamically to avoid circular dependency
-      const { consume } = require("./index.js");
-      this._consume = consume;
-    }
-    return this._consume;
-  }
 
   encode(value: any) {
-    return bytesMarshalBinary(this.getEncode()(value));
+    // Use preloaded module to avoid circular dependency
+    if (!indexModule) {
+      throw new Error("Index module not preloaded - call setIndexModule first");
+    }
+    return bytesMarshalBinary(indexModule.encode(value));
   }
   consume(value: any, consumer: any) {
-    this.getConsume()(value, consumer);
+    // Use preloaded module to avoid circular dependency
+    if (!indexModule) {
+      throw new Error("Index module not preloaded - call setIndexModule first");
+    }
+    indexModule.consume(value, consumer);
   }
 }
 

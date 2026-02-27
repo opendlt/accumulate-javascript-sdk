@@ -33,7 +33,17 @@ export namespace Address {
 
       case SignatureType.BTC:
       case SignatureType.BTCLegacy:
-        throw new Error(`${type} keys are not currently supported`);
+        // BTC: SHA256 of the compressed (33-byte) or raw public key
+        return sha256(publicKey);
+
+      case SignatureType.RsaSha256:
+        // RSA: SHA256 of the full DER-encoded public key
+        return sha256(publicKey);
+
+      case SignatureType.EcdsaSha256:
+        // ECDSA P-256: SHA256 of the raw public key
+        return sha256(publicKey);
+
       default:
         throw new Error(`${type} is not a key signature type`);
     }
