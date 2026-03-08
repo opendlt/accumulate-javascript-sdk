@@ -33,8 +33,6 @@ Thumbs.db
 # ────────────────────────────────
 # Environment / Config Files
 # ────────────────────────────────
-.env
-.env.*
 !.env.example
 
 # ────────────────────────────────
@@ -54,3 +52,4 @@ _sandbox.ts
 *.tmp
 nul
 tmpclaude-*
+config.bat

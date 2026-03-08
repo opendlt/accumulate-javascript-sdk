@@ -87,7 +87,9 @@ export class Url {
 export class Time {
   encode(value: Date) {
     // Floor to convert milliseconds to whole seconds (required for BigInt conversion)
-    return uintMarshalBinary(Math.floor(value.getTime() / 1000));
+    // Must use signed varint (intMarshalBinary) to match Go's WriteTime which uses
+    // binary.PutVarint (zigzag encoding), not binary.PutUvarint.
+    return intMarshalBinary(Math.floor(value.getTime() / 1000));
   }
 }
 
