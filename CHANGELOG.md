@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.12.1
+
+- Fixes `Time` binary encoding to use a signed varint (zigzag), matching Go's `WriteTime`. Transactions with time fields (signature timestamps, `Expire`/`HoldUntil`) now hash and sign correctly.
+- Updates package metadata (homepage/repository/bugs) to the OpenDLT GitHub home.
+
 ## v0.12.0
 
 - Adds SmartSigner with automatic signer version tracking and transaction lifecycle management.
