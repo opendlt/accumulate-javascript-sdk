@@ -37,8 +37,8 @@ yarn add accumulate.js
 Or clone and build from source:
 
 ```bash
-git clone https://gitlab.com/accumulatenetwork/sdk/javascript.git
-cd javascript
+git clone https://github.com/opendlt/accumulate-javascript-sdk.git
+cd accumulate-javascript-sdk
 yarn install
 yarn build
 ```

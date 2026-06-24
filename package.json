@@ -1,6 +1,6 @@
 {
   "name": "accumulate.js",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "Accumulate JS/TS SDK",
   "keywords": [
     "blockchain",
@@ -12,9 +12,9 @@
   "types": "lib/index.d.ts",
   "author": "Accumulate Foundation",
   "license": "MIT",
-  "homepage": "https://gitlab.com/accumulatenetwork/sdk/javascript",
-  "bugs": "https://gitlab.com/accumulatenetwork/sdk/javascript/-/issues",
-  "repository": "gitlab:accumulatenetwork/sdk/javascript",
+  "homepage": "https://github.com/opendlt/accumulate-javascript-sdk",
+  "bugs": "https://github.com/opendlt/accumulate-javascript-sdk/issues",
+  "repository": "github:opendlt/accumulate-javascript-sdk",
   "private": false,
   "files": [
     "/lib",
