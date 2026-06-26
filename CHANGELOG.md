@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.2
+
+- Renames the npm package to `@opendlt/accumulate.js` (OpenDLT-owned scope). The previous unscoped `accumulate.js` name is maintained by the upstream Accumulate Networks team; this OpenDLT fork now publishes under its own scope.
+
 ## v0.12.1
 
 - Fixes `Time` binary encoding to use a signed varint (zigzag), matching Go's `WriteTime`. Transactions with time fields (signature timestamps, `Expire`/`HoldUntil`) now hash and sign correctly.
