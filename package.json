@@ -1,6 +1,6 @@
 {
-  "name": "@opendlt/accumulate.js",
-  "version": "0.12.2",
+  "name": "accumulate-sdk-opendlt",
+  "version": "0.12.3",
   "description": "Accumulate JS/TS SDK",
   "keywords": [
     "blockchain",

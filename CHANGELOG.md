@@ -1,8 +1,12 @@
 # Changelog
 
+## v0.12.3
+
+- Publishes under the OpenDLT-owned npm name `accumulate-sdk-opendlt` (matching the Python package). The unscoped `accumulate.js` name is maintained by the upstream Accumulate Networks team; this OpenDLT fork ships under its own name.
+
 ## v0.12.2
 
-- Renames the npm package to `@opendlt/accumulate.js` (OpenDLT-owned scope). The previous unscoped `accumulate.js` name is maintained by the upstream Accumulate Networks team; this OpenDLT fork now publishes under its own scope.
+- (unreleased) Interim rename to `@opendlt/accumulate.js`; superseded by the unscoped `accumulate-sdk-opendlt` name in v0.12.3.
 
 ## v0.12.1
 
