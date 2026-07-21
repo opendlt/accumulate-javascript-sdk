@@ -1,0 +1,298 @@
+# Accumulate JavaScript / TypeScript SDK — Full API Digest
+
+Package `accumulate-sdk-opendlt` v0.12.3 (source commit 4d0bbe4). Generated from the Accumulate SDK manifest (single source of truth).
+
+## Install & import
+```
+npm install accumulate-sdk-opendlt
+```
+`import { Accumulate, TxBody, SmartSigner, QuickStart } from 'accumulate-sdk-opendlt';`
+
+## Conventions (read first)
+- Networks: Kermit testnet (used by the examples; fund via faucet), plus mainnet and local devnet.
+- Amounts: ACME is denominated in base units where 1 ACME = 1e8 base units. Passing whole ACME as-is is the single most common integration bug.
+- Credits: buying credits uses the network oracle price; an ADI/key page must hold credits before it can sign transactions.
+- Golden path: connect -> build a body with TxBody.<op>(...) -> sign+submit+wait with SmartSigner -> query to confirm.
+
+## Entry points
+- **Accumulate** (class, `accumulate-sdk-opendlt`) — Main client facade with factory methods for network connection
+- **TxBody** (class, `accumulate-sdk-opendlt`) — Static methods that build transaction body objects
+- **SmartSigner** (class, `accumulate-sdk-opendlt`) — Signs, submits, and waits for transaction results
+- **Ed25519KeyPair** (class, `accumulate-sdk-opendlt`) — Ed25519 key pair generation and derivation
+
+## Operations (24)
+
+### generate_keys  —  Generate Keys  [utility]
+Symbols:
+  - `Ed25519KeyPair.generate` — `() -> Ed25519KeyPair`
+  - `Ed25519KeyPair.deriveLiteIdentityUrl` — `() -> string`
+  - `Ed25519KeyPair.deriveLiteTokenAccountUrl` — `() -> string`
+  - `Ed25519KeyPair.publicKeyHashHex` — `() -> string`
+Outputs:
+  - `keypair` (Ed25519KeyPair)
+  - `liteIdentity` (string)
+  - `liteTokenAccount` (string)
+  - `publicKeyHash` (string)
+Examples: examples/generate_keys.js
+
+### faucet  —  Faucet  [utility]
+Symbols:
+  - `Accumulate.faucet` — `(url: string, times: number, delay: number) -> Promise<void>`
+Inputs:
+  - `account` (string, required) — Lite token account URL to fund
+  - `times` (number, optional) — Number of faucet calls [e.g. 1]
+Requires: keypair
+Examples: examples/faucet.js
+
+### wait_for_balance  —  Wait For Balance  [utility]
+Symbols:
+  - `pollForBalance` — `(client: Accumulate, url: string) -> Promise<bigint>`
+Inputs:
+  - `account` (string, required) — Account URL to poll
+  - `minBalance` (string, required) — Minimum balance to wait for
+Outputs:
+  - `balance` (bigint)
+Requires: keypair
+Examples: examples/wait_for_balance.js
+
+### wait_for_credits  —  Wait For Credits  [utility]
+Symbols:
+  - `pollForCredits` — `(client: Accumulate, url: string) -> Promise<number>`
+Inputs:
+  - `account` (string, required) — Key page URL to poll
+  - `minCredits` (number, required) — Minimum credit balance to wait for
+Outputs:
+  - `credits` (number)
+Requires: keypair
+Examples: examples/wait_for_credits.js
+
+### add_credits  —  Add Credits  [credits]
+Symbols:
+  - `TxBody.addCredits` — `(recipient: string, amount: string, oracle: number) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `recipient` (string, required) — Key page URL to credit
+  - `amount` (string, required) — ACME amount to spend
+  - `oracle` (number, required) — Oracle price (fetched at runtime)
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/add_credits.js
+
+### transfer_credits  —  Transfer Credits  [credits]
+Symbols:
+  - `TxBody.transferCredits` — `(recipient: string, amount: number) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `recipient` (string, required) — Destination key page
+  - `amount` (number, required) — Credits to transfer
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/transfer_credits.js
+
+### burn_credits  —  Burn Credits  [credits]
+Symbols:
+  - `TxBody.burnCredits` — `(amount: number) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `amount` (number, required) — Credits to burn
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/burn_credits.js
+
+### create_identity  —  Create Identity  [identity]
+Symbols:
+  - `TxBody.createIdentity` — `(url: string, keyBookUrl: string, keyHash: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `url` (string, required) — ADI URL
+  - `keyBookUrl` (string, required) — Key book URL
+  - `publicKeyHash` (string, required) — SHA256 hash of public key
+Outputs:
+  - `adiUrl` (string)
+  - `keyBookUrl` (string)
+  - `keyPageUrl` (string)
+Requires: keypair, credits
+Examples: examples/create_identity.js
+
+### create_key_book  —  Create Key Book  [identity]
+Symbols:
+  - `TxBody.createKeyBook` — `(url: string, publicKeyHash: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `url` (string, required) — Key book URL
+  - `publicKeyHash` (string, optional) — Initial key hash
+Outputs:
+  - `keyBookUrl` (string)
+Requires: keypair, credits
+Examples: examples/create_key_book.js
+
+### create_key_page  —  Create Key Page  [identity]
+Symbols:
+  - `TxBody.createKeyPage` — `(url: string, keys: string[]) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `url` (string, required) — Key page URL
+  - `keys` (string[], required) — Initial key hashes
+Outputs:
+  - `keyPageUrl` (string)
+Requires: keypair, credits
+Examples: examples/create_key_page.js
+
+### create_token_account  —  Create Token Account  [account]
+Symbols:
+  - `TxBody.createTokenAccount` — `(url: string, tokenUrl: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `url` (string, required) — Token account URL
+  - `tokenUrl` (string, required) — Token type URL
+Outputs:
+  - `tokenAccountUrl` (string)
+Requires: keypair, credits
+Examples: examples/create_token_account.js
+
+### create_data_account  —  Create Data Account  [account]
+Symbols:
+  - `TxBody.createDataAccount` — `(url: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `url` (string, required) — Data account URL
+Outputs:
+  - `dataAccountUrl` (string)
+Requires: keypair, credits
+Examples: examples/create_data_account.js
+
+### create_token  —  Create Token  [account]
+Symbols:
+  - `TxBody.createToken` — `(url: string, symbol: string, precision: number) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `url` (string, required) — Token URL
+  - `symbol` (string, required) — Token symbol
+  - `precision` (number, required) — Decimal precision
+Outputs:
+  - `tokenUrl` (string)
+Requires: keypair, credits
+Examples: examples/create_token.js
+
+### create_lite_token_account  —  Create Lite Token Account  [account]
+Symbols:
+  - `Ed25519KeyPair.deriveLiteTokenAccountUrl` — `() -> string`
+Outputs:
+  - `liteTokenAccountUrl` (string)
+Requires: keypair
+Examples: examples/create_lite_token_account.js
+
+### send_tokens  —  Send Tokens  [transaction]
+Symbols:
+  - `TxBody.sendTokensSingle` — `(toUrl: string, amount: string) -> object`
+  - `TxBody.sendTokensMulti` — `(recipients: Array<{url, amount}>) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `recipients` (Array<{url: string, amount: string}>, required) — List of {url, amount} recipients
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/send_tokens.js
+
+### issue_tokens  —  Issue Tokens  [transaction]
+Symbols:
+  - `TxBody.issueTokens` — `(recipient: string, amount: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `recipient` (string, required) — Recipient token account
+  - `amount` (string, required) — Amount to issue
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/issue_tokens.js
+
+### burn_tokens  —  Burn Tokens  [transaction]
+Symbols:
+  - `TxBody.burnTokens` — `(amount: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `amount` (string, required) — Amount to burn
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/burn_tokens.js
+
+### write_data  —  Write Data  [transaction]
+Symbols:
+  - `TxBody.writeData` — `(entries: string[]) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `entries` (string[], required) — Hex-encoded data entries
+Outputs:
+  - `txHash` (string)
+  - `entryHash` (string)
+Requires: keypair, credits
+Examples: examples/write_data.js
+
+### write_data_to  —  Write Data To  [transaction]
+Symbols:
+  - `TxBody.writeDataTo` — `(recipient: string, entries: string[]) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `recipient` (string, required) — Target data account
+  - `entries` (string[], required) — Hex-encoded data entries
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/write_data_to.js
+
+### query_account  —  Query Account  [query]
+Symbols:
+  - `Accumulate.queryAccount` — `(url: string) -> Promise<object>`
+Inputs:
+  - `url` (string, required) — Account URL to query
+Outputs:
+  - `account` (object)
+Examples: examples/query_account.js
+
+### update_key_page  —  Update Key Page  [authority]
+Symbols:
+  - `TxBody.updateKeyPage` — `(operations: Array) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `operations` (Array, required) — Key page operations (add, remove, setThreshold)
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/update_key_page.js
+
+### update_key  —  Update Key  [authority]
+Symbols:
+  - `TxBody.updateKey` — `(newKey: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `newKey` (string, required) — New public key hash
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/update_key.js
+
+### lock_account  —  Lock Account  [authority]
+Symbols:
+  - `TxBody.lockAccount` — `(height: number) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `height` (number, required) — Block height to lock until
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/lock_account.js
+
+### update_account_auth  —  Update Account Auth  [authority]
+Symbols:
+  - `TxBody.updateAccountAuth` — `(operations: Array) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+Inputs:
+  - `operations` (Array, required) — Auth operations (enable, disable, add, remove)
+Outputs:
+  - `txHash` (string)
+Requires: keypair, credits
+Examples: examples/update_account_auth.js
