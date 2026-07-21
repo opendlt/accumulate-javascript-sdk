@@ -28,10 +28,10 @@ Production-ready JavaScript/TypeScript SDK for the Accumulate blockchain protoco
 
 ```bash
 # npm
-npm install accumulate.js
+npm install accumulate-sdk-opendlt
 
 # yarn
-yarn add accumulate.js
+yarn add accumulate-sdk-opendlt
 ```
 
 Or clone and build from source:
@@ -43,11 +43,13 @@ yarn install
 yarn build
 ```
 
+> **Amount scaling (read this first):** ACME is denominated in base units where **1 ACME = 1e8 base units**. Pass amounts as `BigInt` base units — e.g. `BigInt(100_000_000)` is 1 ACME. Credits use the oracle price; use `calculateCreditsToAcme` from `accumulate-sdk-opendlt/helpers`. Getting this wrong is the single most common integration bug.
+
 ## Quick Start
 
 ```typescript
-import { Accumulate, Ed25519KeyPair, SmartSigner, TxBody, pollForBalance } from "accumulate.js";
-import { calculateCreditsToAcme } from "accumulate.js/helpers";
+import { Accumulate, Ed25519KeyPair, SmartSigner, TxBody, pollForBalance } from "accumulate-sdk-opendlt";
+import { calculateCreditsToAcme } from "accumulate-sdk-opendlt/helpers";
 
 // Connect to Kermit testnet
 const client = Accumulate.forKermit();
@@ -74,8 +76,8 @@ const account = await client.queryAccount(lta);
 The `SmartSigner` class handles signer version tracking, transaction hashing, signing, submission, and delivery polling in a single call:
 
 ```typescript
-import { Accumulate, Ed25519KeyPair, SmartSigner, TxBody } from "accumulate.js";
-import { calculateCreditsToAcme } from "accumulate.js/helpers";
+import { Accumulate, Ed25519KeyPair, SmartSigner, TxBody } from "accumulate-sdk-opendlt";
+import { calculateCreditsToAcme } from "accumulate-sdk-opendlt/helpers";
 
 // Connect to testnet
 const client = Accumulate.forKermit();
@@ -118,7 +120,7 @@ if (result.success) {
 Build transaction bodies using the static `TxBody` factory class. Each method returns a typed protocol object ready for `SmartSigner`:
 
 ```typescript
-import { TxBody } from "accumulate.js";
+import { TxBody } from "accumulate-sdk-opendlt";
 
 // Send tokens to a single recipient
 TxBody.sendTokensSingle("acc://recipient/tokens", BigInt(100_000_000));
@@ -179,7 +181,7 @@ TxBody.createKeyPage([keyHash1, keyHash2]);
 The `AccumulateHelper` class provides mid-level convenience methods:
 
 ```typescript
-import { Accumulate, AccumulateHelper } from "accumulate.js";
+import { Accumulate, AccumulateHelper } from "accumulate-sdk-opendlt";
 
 const client = Accumulate.forKermit();
 const helper = new AccumulateHelper(client);
@@ -226,7 +228,7 @@ import {
   getOraclePrice,
   deriveLiteIdentityUrl,
   deriveLiteTokenAccountUrl,
-} from "accumulate.js";
+} from "accumulate-sdk-opendlt";
 
 // Poll for balance or credits
 const balance = await pollForBalance(client, ltaUrl);
@@ -248,7 +250,7 @@ const lta = deriveLiteTokenAccountUrl(publicKeyHash, "ACME");
 The `KeyManager` class queries key page state:
 
 ```typescript
-import { Accumulate, KeyManager } from "accumulate.js";
+import { Accumulate, KeyManager } from "accumulate-sdk-opendlt";
 
 const client = Accumulate.forKermit();
 const keyManager = new KeyManager(client, "acc://my-adi.acme/book/1");
@@ -288,7 +290,7 @@ await adiSigner.setThreshold(2);
 The `QuickStart` class provides an ultra-simple API for tutorials and demos:
 
 ```typescript
-import { QuickStart } from "accumulate.js";
+import { QuickStart } from "accumulate-sdk-opendlt";
 
 const qs = QuickStart.forKermit();
 
@@ -324,7 +326,7 @@ await qs.setMultiSigThreshold(adi, 2);
 ## Ed25519 Key Pairs
 
 ```typescript
-import { Ed25519KeyPair } from "accumulate.js";
+import { Ed25519KeyPair } from "accumulate-sdk-opendlt";
 
 // Generate a random key pair
 const kp = Ed25519KeyPair.generate();
@@ -353,7 +355,7 @@ const signer = new SmartSigner(client, kp.toKey(), lid);
 ## BIP44 Hierarchical Wallets
 
 ```typescript
-import { bip44 } from "accumulate.js";
+import { bip44 } from "accumulate-sdk-opendlt";
 
 const { BIP44 } = bip44;
 
@@ -370,7 +372,7 @@ const key = wallet.derive("m/44'/281'/0'/0'/0'");
 ## Network Endpoints
 
 ```typescript
-import { Accumulate, NetworkEndpoint } from "accumulate.js";
+import { Accumulate, NetworkEndpoint } from "accumulate-sdk-opendlt";
 
 // Public networks
 const mainnet = Accumulate.forMainnet();
@@ -419,9 +421,9 @@ client.v3  // V3 JsonRpcClient - current JSON-RPC (submit, query, network-status
 For advanced use cases, you can construct transactions manually using the core protocol types:
 
 ```typescript
-import { api_v2, ED25519Key, Signer } from "accumulate.js";
-import { SendTokens, Transaction, TransactionHeader } from "accumulate.js/core";
-import { Envelope } from "accumulate.js/messaging";
+import { api_v2, ED25519Key, Signer } from "accumulate-sdk-opendlt";
+import { SendTokens, Transaction, TransactionHeader } from "accumulate-sdk-opendlt/core";
+import { Envelope } from "accumulate-sdk-opendlt/messaging";
 
 const sender = await Signer.forLite(await ED25519Key.generate());
 
@@ -486,7 +488,7 @@ npx tsx examples/v3/example_01_lite_identities.ts
 If you are using a bundler (webpack, rollup, etc.), import the library normally:
 
 ```javascript
-import { Accumulate, Ed25519KeyPair, SmartSigner, TxBody } from "accumulate.js";
+import { Accumulate, Ed25519KeyPair, SmartSigner, TxBody } from "accumulate-sdk-opendlt";
 ```
 
 Make sure your bundler is configured to handle Node.js polyfills (buffer, crypto, stream, assert, path, util).
@@ -650,7 +652,7 @@ yarn format:check
 ## Error Handling
 
 ```typescript
-import { Accumulate, SmartSigner, TxBody } from "accumulate.js";
+import { Accumulate, SmartSigner, TxBody } from "accumulate-sdk-opendlt";
 
 const result = await signer.signSubmitAndWait(principal, body);
 

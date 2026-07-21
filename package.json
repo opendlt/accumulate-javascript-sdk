@@ -7,9 +7,9 @@
     "accumulate"
   ],
   "type": "module",
-  "main": "lib/index.js",
-  "module": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/src/index.js",
+  "module": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
   "author": "Accumulate Foundation",
   "license": "MIT",
   "homepage": "https://github.com/opendlt/accumulate-javascript-sdk",
@@ -146,60 +146,64 @@
   },
   "exports": {
     ".": {
-      "import": "./lib/index.js",
-      "types": "./lib/index.d.ts"
+      "import": "./lib/src/index.js",
+      "types": "./lib/src/index.d.ts"
+    },
+    "./helpers": {
+      "import": "./lib/src/helpers/index.js",
+      "types": "./lib/src/helpers/index.d.ts"
     },
     "./address": {
-      "import": "./lib/address/index.js",
-      "types": "./lib/address/index.d.ts"
+      "import": "./lib/src/address/index.js",
+      "types": "./lib/src/address/index.d.ts"
     },
     "./api_v2": {
-      "import": "./lib/api_v2/index.js",
-      "types": "./lib/api_v2/index.d.ts"
+      "import": "./lib/src/api_v2/index.js",
+      "types": "./lib/src/api_v2/index.d.ts"
     },
     "./api_v3": {
-      "import": "./lib/api_v3/index.js",
-      "types": "./lib/api_v3/index.d.ts"
+      "import": "./lib/src/api_v3/index.js",
+      "types": "./lib/src/api_v3/index.d.ts"
     },
     "./bip44": {
-      "import": "./lib/bip44/index.js",
-      "types": "./lib/bip44/index.d.ts"
+      "import": "./lib/src/bip44/index.js",
+      "types": "./lib/src/bip44/index.d.ts"
     },
     "./common": {
-      "import": "./lib/common/index.js",
-      "types": "./lib/common/index.d.ts"
+      "import": "./lib/src/common/index.js",
+      "types": "./lib/src/common/index.d.ts"
     },
     "./core": {
-      "import": "./lib/core/index.js",
-      "types": "./lib/core/index.d.ts"
+      "import": "./lib/src/core/index.js",
+      "types": "./lib/src/core/index.d.ts"
     },
     "./encoding": {
-      "import": "./lib/encoding/index.js",
-      "types": "./lib/encoding/index.d.ts"
+      "import": "./lib/src/encoding/index.js",
+      "types": "./lib/src/encoding/index.d.ts"
     },
     "./errors": {
-      "import": "./lib/errors/index.js",
-      "types": "./lib/errors/index.d.ts"
+      "import": "./lib/src/errors/index.js",
+      "types": "./lib/src/errors/index.d.ts"
     },
     "./ledger": {
-      "import": "./lib/ledger/index.js",
-      "types": "./lib/ledger/index.d.ts"
+      "import": "./lib/src/ledger/index.js",
+      "types": "./lib/src/ledger/index.d.ts"
     },
     "./merkle": {
-      "import": "./lib/merkle/index.js",
-      "types": "./lib/merkle/index.d.ts"
+      "import": "./lib/src/merkle/index.js",
+      "types": "./lib/src/merkle/index.d.ts"
     },
     "./messaging": {
-      "import": "./lib/messaging/index.js",
-      "types": "./lib/messaging/index.d.ts"
+      "import": "./lib/src/messaging/index.js",
+      "types": "./lib/src/messaging/index.d.ts"
     },
     "./network": {
-      "import": "./lib/network/index.js",
-      "types": "./lib/network/index.d.ts"
+      "import": "./lib/src/network/index.js",
+      "types": "./lib/src/network/index.d.ts"
     },
     "./signing": {
-      "import": "./lib/signing/index.js",
-      "types": "./lib/signing/index.d.ts"
+      "import": "./lib/src/signing/index.js",
+      "types": "./lib/src/signing/index.d.ts"
     }
   },
   "browser": {
