@@ -1,0 +1,49 @@
+# Accumulate JavaScript / TypeScript SDK
+
+> Build on the Accumulate blockchain from JavaScript / TypeScript. Package: `accumulate-sdk-opendlt` (v0.12.3).
+
+## Install
+```
+npm install accumulate-sdk-opendlt
+```
+Import: `import { Accumulate, TxBody, SmartSigner, QuickStart } from 'accumulate-sdk-opendlt';`
+
+## Canonical usage
+Connect, build a transaction body with `TxBody`, then sign + submit + wait with `SmartSigner`. **1 ACME = 1e8 base units.**
+```
+const client = Accumulate.forKermit();   // or forMainnet()/forDevnet()
+// body = TxBody.<operation>(...)
+const r = await new SmartSigner(signer).signSubmitAndWait(principal, body);
+```
+
+## Resources
+- Full API digest: `llms-full.txt`
+- Agent guide / rules: `AGENTS.md`
+- Runnable end-to-end examples: `examples/v3/`
+- 24 operations across 7 categories.
+
+## Operations
+- `generate_keys` — Generate Keys (utility)
+- `faucet` — Faucet (utility)
+- `wait_for_balance` — Wait For Balance (utility)
+- `wait_for_credits` — Wait For Credits (utility)
+- `add_credits` — Add Credits (credits)
+- `create_identity` — Create Identity (identity)
+- `create_key_book` — Create Key Book (identity)
+- `create_key_page` — Create Key Page (identity)
+- `create_token_account` — Create Token Account (account)
+- `create_data_account` — Create Data Account (account)
+- `create_token` — Create Token (account)
+- `send_tokens` — Send Tokens (transaction)
+- `issue_tokens` — Issue Tokens (transaction)
+- `burn_tokens` — Burn Tokens (transaction)
+- `write_data` — Write Data (transaction)
+- `query_account` — Query Account (query)
+- `update_key_page` — Update Key Page (authority)
+- `update_key` — Update Key (authority)
+- `create_lite_token_account` — Create Lite Token Account (account)
+- `transfer_credits` — Transfer Credits (credits)
+- `burn_credits` — Burn Credits (credits)
+- `write_data_to` — Write Data To (transaction)
+- `lock_account` — Lock Account (authority)
+- `update_account_auth` — Update Account Auth (authority)
