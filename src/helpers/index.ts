@@ -53,6 +53,7 @@ export { AccumulateHelper } from "./accumulate_helper.js";
 // ── Polling & Utilities ───────────────────────────────────────────────────
 export { pollForBalance, pollForCredits, waitForTx } from "./polling.js";
 export { getOraclePrice, calculateCreditsToAcme } from "./oracle.js";
+export { Amount, ACME_BASE_UNITS, ACME_PRECISION } from "./amount.js";
 export { deriveLiteIdentityUrl, deriveLiteTokenAccountUrl } from "./lite_url.js";
 
 // ── Types ─────────────────────────────────────────────────────────────────
