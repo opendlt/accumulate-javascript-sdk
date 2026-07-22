@@ -1,6 +1,6 @@
 # Accumulate JavaScript / TypeScript SDK — Full API Digest
 
-Package `accumulate-sdk-opendlt` v0.12.3 (source commit 4d0bbe4). Generated from the Accumulate SDK manifest (single source of truth).
+Package `accumulate-sdk-opendlt` v0.13.0 (source commit 4d0bbe4). Generated from the Accumulate SDK manifest (single source of truth).
 
 ## Install & import
 ```
