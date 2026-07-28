@@ -1,33 +1,72 @@
-# Building on Accumulate with the JavaScript / TypeScript SDK
+# opendlt-javascript-v2v3-sdk — repository guide for agents
 
-You are integrating the Accumulate blockchain using the JavaScript / TypeScript SDK (`accumulate-sdk-opendlt`). Follow this guide.
+The JavaScript / TypeScript SDK for the Accumulate blockchain. Published as `accumulate-sdk-opendlt` (v2.2.1).
 
-## Golden path (use this, not the low-level API)
+> **The project root is `javascript/`, not the repository root.** Run every command below from there unless stated otherwise.
+
+> Building **on** Accumulate rather than **on this SDK**? You want `llms.txt` (quickstart + rules) and `llms-full.txt` (full API). This file is about working on the SDK itself.
+
+## Setup
+
+Toolchain: **Node >= 18**
+
+```bash
+cd javascript
+npm ci
 ```
-const client = Accumulate.forKermit();   // or forMainnet()/forDevnet()
-// 1. build the transaction body
-// body = TxBody.<operation>(...)   // see Operations below
-// 2. sign, submit, and wait for delivery
-const r = await new SmartSigner(signer).signSubmitAndWait(principal, body);
-// 3. query the account to confirm the effect
+
+## Build
+
+```bash
+npm run build   # tsc -p tsconfig.json
 ```
 
-## Rules
-- **Amounts:** 1 ACME = 1e8 base units. Never pass whole ACME as-is.
-- **Testnet first:** target Kermit and fund lite accounts via the faucet before spending.
-- **Prerequisites matter:** create an ADI, then buy credits for its key page before it can sign; wait for balances/credits to settle before the next step.
-- **Errors are typed:** branch on the SDK error type/code; retry only on network errors, not validation errors.
-- **One canonical client:** connect with `Accumulate`, build with `TxBody`, sign with `SmartSigner`. Do not hand-roll envelopes/signing, and ignore any alternate or legacy client classes — this is the only path you need.
+## Test
 
-## Operations available
-- **utility:** `generate_keys`, `faucet`, `wait_for_balance`, `wait_for_credits`
-- **credits:** `add_credits`, `transfer_credits`, `burn_credits`
-- **identity:** `create_identity`, `create_key_book`, `create_key_page`
-- **account:** `create_token_account`, `create_data_account`, `create_token`, `create_lite_token_account`
-- **transaction:** `send_tokens`, `issue_tokens`, `burn_tokens`, `write_data`, `write_data_to`
-- **query:** `query_account`
-- **authority:** `update_key_page`, `update_key`, `lock_account`, `update_account_auth`
+| Command | Covers | Needs network |
+|---|---|:--:|
+| `npm run test:unit` | unit suite | no |
+| `npm run test:integration` | integration | **yes** |
+| `npm run test:all` | everything except browser | **yes** |
 
-## More
-- Complete API with signatures, inputs, outputs, and errors: `llms-full.txt`.
-- Runnable end-to-end examples: `examples/v3/`.
+Network-dependent suites talk to a live testnet. If they fail while the unit suite passes, suspect the network before suspecting your change.
+
+## Lint & format
+
+```bash
+npm run lint
+npm run format:check
+```
+
+## Layout
+
+```
+javascript/src/     TypeScript sources (this is the real project root)
+javascript/lib/     build output; `lib/index.js` re-exports `lib/src/index.js`
+javascript/test/    unit tests
+javascript/test-it/ integration tests
+```
+
+## Gotchas
+
+- The repo root is not the package root; `javascript/` holds `package.json`.
+- `npm run build` must run before tests that import from `lib/`.
+- The SDK submits transactions as JSON via the V2 `execute-direct` endpoint, not binary — do not port binary-marshaling assumptions here.
+- `TxBody.updateKeyPage([{...}])` with plain objects does not work. Use the typed methods: `updateKeyPageAddKey`, `updateKeyPageRemoveKey`, `updateKeyPageSetThreshold`.
+
+## Permitted commands
+
+Safe to run unattended: build, test, lint, format, and any read-only query against a **testnet**.
+
+Require a human first:
+
+- publishing or releasing (registry writes are irreversible)
+- anything targeting **mainnet**
+- rewriting git history, force-pushing, or changing CI credentials
+- changing transaction marshaling or signing bytes — consensus-visible
+
+## Before you commit
+
+```bash
+npm run code-check && npm run test:unit
+```
