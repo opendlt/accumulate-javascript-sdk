@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.2.1
+
+### Fixed
+- **The root import was broken in a clean install.** `import { ... } from 'accumulate-sdk-opendlt'` threw `ERR_MODULE_NOT_FOUND`. The root barrel eagerly re-exports `bip44` (`export * as bip44` in `src/index.ts`), whose module imports `@scure/bip32`, `bip39`, and `ed25519-hd-key` — all three declared under `devDependencies` and therefore absent for consumers. They are now runtime `dependencies`.
+
+  This affected every consumer following the documented quickstart. The `accumulate-sdk-opendlt/helpers` subpath was unaffected and was the only working entry point in 2.2.0.
+
 ## v0.12.3
 
 - Publishes under the OpenDLT-owned npm name `accumulate-sdk-opendlt` (matching the Python package). The unscoped `accumulate.js` name is maintained by the upstream Accumulate Networks team; this OpenDLT fork ships under its own name.

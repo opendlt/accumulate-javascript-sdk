@@ -1,6 +1,6 @@
 # Accumulate JavaScript / TypeScript SDK
 
-> Build on the Accumulate blockchain from JavaScript / TypeScript. Package: `accumulate-sdk-opendlt` (v2.2.0).
+> Build on the Accumulate blockchain from JavaScript / TypeScript. Package: `accumulate-sdk-opendlt` (v2.2.1).
 
 ## Install
 ```
@@ -16,9 +16,16 @@ const client = Accumulate.forKermit();   // or forMainnet()/forDevnet()
 const r = await new SmartSigner(signer).signSubmitAndWait(principal, body);
 ```
 
+## Rules
+- **Amounts:** 1 ACME = 1e8 base units. Never pass whole ACME as-is; use the `Amount` helper.
+- **Testnet first:** target Kermit and fund lite accounts via the faucet before spending.
+- **Prerequisites matter:** create an ADI, then buy credits for its key page before it can sign; wait for balances/credits to settle before the next step.
+- **Errors are typed:** branch on the SDK error type/code; retry only on network errors, not validation errors.
+- **One canonical client:** connect with `Accumulate`, build with `TxBody`, sign with `SmartSigner`. Do not hand-roll envelopes/signing, and ignore any alternate or legacy client classes — this is the only path you need.
+
 ## Resources
 - Full API digest: `llms-full.txt`
-- Agent guide / rules: `AGENTS.md`
+- Repository guide (build/test/lint, for working ON this SDK): `AGENTS.md`
 - Runnable end-to-end examples: `examples/v3/`
 - 24 operations across 7 categories.
 
