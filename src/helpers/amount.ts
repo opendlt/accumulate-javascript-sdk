@@ -43,6 +43,34 @@ export class Amount {
   }
 
   /**
+   * Create from whole units of a **custom token** with the given precision.
+   *
+   * Custom tokens declare their own precision at creation; the wire format is
+   * always base units. `Amount.token(1000, 8)` is 1000 whole tokens =
+   * `100000000000` base units.
+   *
+   * Without this the only options are hand-computing a power of ten or passing
+   * a raw base-unit string, and both are routinely got wrong: issuing `1000`
+   * against a precision-8 token mints `0.00001` tokens, not 1000. The
+   * transaction succeeds either way, so the mistake is silent.
+   *
+   * @example
+   * Amount.token(1000, 8).toWire(); // "100000000000"
+   * Amount.token(100, 2).toWire();  // "10000"
+   * Amount.token(1000, 0).toWire(); // "1000"
+   */
+  static token(wholeTokens: number | bigint | string, precision: number): Amount {
+    const scale = 10n ** BigInt(precision);
+    if (typeof wholeTokens === "bigint") return new Amount(wholeTokens * scale);
+    const s = String(wholeTokens);
+    const negative = s.startsWith("-");
+    const [whole, frac = ""] = s.replace("-", "").split(".");
+    const fracPadded = (frac + "0".repeat(precision)).slice(0, precision);
+    const units = BigInt(whole || "0") * scale + BigInt(fracPadded || "0");
+    return new Amount(negative ? -units : units);
+  }
+
+  /**
    * ACME base units needed to buy `creditCount` credits at `oraclePrice`
    * (the integer oracle value from the network oracle query).
    */
@@ -62,5 +90,15 @@ export class Amount {
   /** Whole ACME as a number (may lose precision for very large amounts). */
   toAcme(): number {
     return Number(this.baseUnits) / Number(ACME_BASE_UNITS);
+  }
+
+  /**
+   * Whole units of a token with the given precision.
+   *
+   * @example
+   * Amount.baseUnits("100000000000").toToken(8); // 1000
+   */
+  toToken(precision: number): number {
+    return Number(this.baseUnits) / Number(10n ** BigInt(precision));
   }
 }

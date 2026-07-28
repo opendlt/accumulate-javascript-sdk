@@ -1,6 +1,6 @@
 # opendlt-javascript-v2v3-sdk — repository guide for agents
 
-The JavaScript / TypeScript SDK for the Accumulate blockchain. Published as `accumulate-sdk-opendlt` (v2.2.1).
+The JavaScript / TypeScript SDK for the Accumulate blockchain. Published as `accumulate-sdk-opendlt` (v2.3.0).
 
 > **The project root is `javascript/`, not the repository root.** Run every command below from there unless stated otherwise.
 
