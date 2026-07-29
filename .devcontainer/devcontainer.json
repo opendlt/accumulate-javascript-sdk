@@ -1,0 +1,27 @@
+{
+  "name": "accumulate-javascript-sdk",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // This directory IS the package root: package.json sits here.
+  // Build on create: the package's `main`/`types`/`exports` all point at real
+  // tsc output under lib/src/, so an unbuilt tree cannot be imported.
+  "postCreateCommand": "npm ci && npm run build",
+
+  "containerEnv": {
+    "ACCUMULATE_NETWORK": "kermit",
+    "NPM_CONFIG_FUND": "false",
+    "NPM_CONFIG_AUDIT": "false"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  },
+
+  "remoteUser": "node"
+}

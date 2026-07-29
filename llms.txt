@@ -18,9 +18,10 @@ const r = await new SmartSigner(signer).signSubmitAndWait(principal, body);
 
 ## Rules
 - **Amounts:** 1 ACME = 1e8 base units. Never pass whole ACME as-is; use the `Amount` helper.
+- **Custom tokens have their OWN precision**, set when the token is created — it is not 1e8. Issuing `1000` against a precision-8 token mints `0.00001` tokens, not 1000, and the transaction succeeds either way. Convert with the token helper (`Amount.token(whole, precision)` / `Amount::token` / `Amount.Token`) rather than passing a raw number.
 - **Testnet first:** target Kermit and fund lite accounts via the faucet before spending.
 - **Prerequisites matter:** create an ADI, then buy credits for its key page before it can sign; wait for balances/credits to settle before the next step.
-- **Errors are typed:** branch on the SDK error type/code; retry only on network errors, not validation errors.
+- **Errors are typed:** catch `AccumulateError` (`catch (e) { if (e instanceof AccumulateError) ... }`) and branch on the code. The full catalog — every code, its `retryable` flag, and the fix — is the **Error catalog** section of `llms-full.txt`. **Retry ONLY `ACC_NETWORK_UNAVAILABLE` / `ACC_INTERNAL`;** every other code is a condition that will not change on its own, so retrying it just burns turns.
 - **One canonical client:** connect with `Accumulate`, build with `TxBody`, sign with `SmartSigner`. Do not hand-roll envelopes/signing, and ignore any alternate or legacy client classes — this is the only path you need.
 
 ## Resources
