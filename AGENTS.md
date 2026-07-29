@@ -2,8 +2,6 @@
 
 The JavaScript / TypeScript SDK for the Accumulate blockchain. Published as `accumulate-sdk-opendlt` (v2.3.0).
 
-> **The project root is `javascript/`, not the repository root.** Run every command below from there unless stated otherwise.
-
 > Building **on** Accumulate rather than **on this SDK**? You want `llms.txt` (quickstart + rules) and `llms-full.txt` (full API). This file is about working on the SDK itself.
 
 ## Setup
@@ -11,7 +9,6 @@ The JavaScript / TypeScript SDK for the Accumulate blockchain. Published as `acc
 Toolchain: **Node >= 18**
 
 ```bash
-cd javascript
 npm ci
 ```
 
@@ -41,15 +38,14 @@ npm run format:check
 ## Layout
 
 ```
-javascript/src/     TypeScript sources (this is the real project root)
-javascript/lib/     build output; `lib/index.js` re-exports `lib/src/index.js`
-javascript/test/    unit tests
-javascript/test-it/ integration tests
+src/     TypeScript sources
+lib/     build output; `lib/index.js` re-exports `lib/src/index.js`
+test/    unit tests
 ```
 
 ## Gotchas
 
-- The repo root is not the package root; `javascript/` holds `package.json`.
+- This repository root IS the package root: `package.json` sits here. Do not look for a `javascript/` subdirectory — that is an artifact of some local working copies and is not part of this repo.
 - `npm run build` must run before tests that import from `lib/`.
 - The SDK submits transactions as JSON via the V2 `execute-direct` endpoint, not binary — do not port binary-marshaling assumptions here.
 - `TxBody.updateKeyPage([{...}])` with plain objects does not work. Use the typed methods: `updateKeyPageAddKey`, `updateKeyPageRemoveKey`, `updateKeyPageSetThreshold`.

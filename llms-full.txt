@@ -12,6 +12,7 @@ npm install accumulate-sdk-opendlt
 - Networks: Kermit testnet (used by the examples; fund via faucet), plus mainnet and local devnet.
 - Amounts: ACME is denominated in base units where 1 ACME = 1e8 base units. Passing whole ACME as-is is the single most common integration bug.
 - Credits: buying credits uses the network oracle price; an ADI/key page must hold credits before it can sign transactions.
+- Custom tokens: each declares its own precision at creation (not 1e8). Amounts on the wire are always base units, so issuing 1000 against a precision-8 token mints 0.00001 tokens. Use the SDK amount helper to convert whole tokens to base units.
 - Golden path: connect -> build a body with TxBody.<op>(...) -> sign+submit+wait with SmartSigner -> query to confirm.
 
 ## Entry points
@@ -19,6 +20,129 @@ npm install accumulate-sdk-opendlt
 - **TxBody** (class, `accumulate-sdk-opendlt`) — Static methods that build transaction body objects
 - **SmartSigner** (class, `accumulate-sdk-opendlt`) — Signs, submits, and waits for transaction results
 - **Ed25519KeyPair** (class, `accumulate-sdk-opendlt`) — Ed25519 key pair generation and derivation
+
+## Error catalog (v1.0)
+
+Branch on `code`. **`retryable` decides whether a retry is productive** — retrying a
+validation or auth error only burns turns; the condition will not change on its own.
+
+```
+import { AccumulateError } from 'accumulate-sdk-opendlt';
+catch (e) { if (e instanceof AccumulateError) ... }
+    e.code
+```
+
+### `ACC_ACCOUNT_NOT_FOUND`
+The account URL does not exist on this network.
+
+- category: `not_found` · wire -33404
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Verify the URL and the network. If you just created the account, wait for its creating transaction to reach 'delivered' first — use wait_for_balance / wait_for_credits rather than querying straight away.
+
+### `ACC_UNAUTHORIZED_SIGNER`
+The signing key is not on the key page that authorizes this principal.
+
+- category: `auth` · wire 403
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Sign with a key that is on the principal's authorizing key page. After create_identity, ADI-owned principals are signed by `<adi>/book/1`. A key page owned by a second book (e.g. `multisig-book/1`) must be signed by that page's OWN book — Accumulate requires every authority to approve.
+
+### `ACC_INSUFFICIENT_CREDITS`
+The signing key page does not hold enough credits to pay for this transaction.
+
+- category: `insufficient_credits`
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Call add_credits for the SIGNING key page, then wait_for_credits on that same page before retrying. Credits are separate from token balance — an account can hold ACME and still be unable to sign. Note add_credits itself must be signed by an account that already has credits (typically the funded lite identity).
+
+### `ACC_NOT_SIGNED`
+The envelope reached the network without a valid signature over the transaction body.
+
+- category: `auth`
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Build and sign through the canonical path — TxBody to construct, SmartSigner to sign and submit. Do not hand-roll envelopes. If you are working ON an SDK and see this for one specific transaction type, its marshaler is missing or its type code is wrong.
+
+### `ACC_ALREADY_EXISTS`
+The account or identity being created already exists on chain.
+
+- category: `conflict`
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Query the URL first — if it exists and you own it, skip creation and continue. For repeatable scripts, derive a unique URL (e.g. a timestamp suffix) rather than a fixed name.
+
+### `ACC_INVALID_PRINCIPAL`
+The principal URL is not a valid target for this transaction type.
+
+- category: `validation`
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Match the principal to the transaction type. Token transfers use the token account URL (`<lite>/ACME`), credit purchases and key operations use the identity or key page URL.
+
+### `ACC_INSUFFICIENT_BALANCE`
+The source account does not hold enough tokens for this transfer.
+
+- category: `insufficient_balance`
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Confirm the balance with wait_for_balance before transferring. Build amounts with the Amount helper — 1 ACME = 1e8 base units, and custom tokens carry their OWN precision set at creation.
+
+### `ACC_TX_PENDING`
+The transaction was accepted but is not final — it is awaiting additional signatures.
+
+- category: `pending`
+- retryable: **yes**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: This is not a failure. Collect the remaining signatures up to the page threshold, then poll status until 'delivered'. Treating 'pending' as success is the common multisig bug; so is treating it as a hard error.
+
+### `ACC_TX_NOT_SETTLED`
+The transaction was submitted and accepted, but did not reach a final state before the wait timed out.
+
+- category: `pending`
+- retryable: **yes**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Do NOT resubmit — a resubmit risks a duplicate or an ACC_ALREADY_EXISTS. Keep polling the transaction status until 'delivered', with a longer timeout. Synthetic deposits (faucet, cross-account transfers) routinely need more time than a single block.
+
+### `ACC_INVALID_URL`
+The string is not a well-formed Accumulate URL.
+
+- category: `validation` · wire 1002
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Accumulate URLs are `acc://<authority>[/<path>]`. Lite token accounts end in the token symbol, e.g. `acc://<keyhash>/ACME`.
+
+### `ACC_INVALID_PARAMS`
+The JSON-RPC parameters were rejected by the node.
+
+- category: `validation` · wire -32602
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Check the operation's declared inputs in llms-full.txt. Hashes are 32-byte hex; amounts are base-unit integers, not decimals.
+
+### `ACC_METHOD_NOT_FOUND`
+The node does not expose the RPC method that was called.
+
+- category: `validation` · wire -32601
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Use the SDK's canonical client rather than raw RPC — it targets the correct API version for the endpoint.
+
+### `ACC_NETWORK_UNAVAILABLE`
+The endpoint could not be reached, or the request timed out.
+
+- category: `network`
+- retryable: **yes**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Retry with exponential backoff. This is the ONLY class of error where a bare retry is productive — retrying a validation or auth error just burns turns.
+
+### `ACC_INTERNAL`
+The node reported an internal error.
+
+- category: `internal` · wire -32603
+- retryable: **yes**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Retry once with backoff. If it persists, the request is likely malformed in a way the node did not classify — re-check the transaction body against llms-full.txt.
 
 ## Operations (24)
 
@@ -33,6 +157,7 @@ Outputs:
   - `liteIdentity` (string)
   - `liteTokenAccount` (string)
   - `publicKeyHash` (string)
+Errors: ACC_NETWORK_UNAVAILABLE
 Examples: examples/generate_keys.js
 
 ### faucet  —  Faucet  [utility]
@@ -42,6 +167,7 @@ Inputs:
   - `account` (string, required) — Lite token account URL to fund
   - `times` (number, optional) — Number of faucet calls [e.g. 1]
 Requires: keypair
+Errors: ACC_INSUFFICIENT_BALANCE, ACC_NETWORK_UNAVAILABLE, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/faucet.js
 
 ### wait_for_balance  —  Wait For Balance  [utility]
@@ -53,6 +179,7 @@ Inputs:
 Outputs:
   - `balance` (bigint)
 Requires: keypair
+Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_BALANCE, ACC_NETWORK_UNAVAILABLE, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/wait_for_balance.js
 
 ### wait_for_credits  —  Wait For Credits  [utility]
@@ -64,6 +191,7 @@ Inputs:
 Outputs:
   - `credits` (number)
 Requires: keypair
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/wait_for_credits.js
 
 ### add_credits  —  Add Credits  [credits]
@@ -77,6 +205,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PRINCIPAL, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/add_credits.js
 
 ### transfer_credits  —  Transfer Credits  [credits]
@@ -89,6 +218,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_NOT_SIGNED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/transfer_credits.js
 
 ### burn_credits  —  Burn Credits  [credits]
@@ -100,6 +230,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/burn_credits.js
 
 ### create_identity  —  Create Identity  [identity]
@@ -115,6 +246,7 @@ Outputs:
   - `keyBookUrl` (string)
   - `keyPageUrl` (string)
 Requires: keypair, credits
+Errors: ACC_ALREADY_EXISTS, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_URL, ACC_NETWORK_UNAVAILABLE, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/create_identity.js
 
 ### create_key_book  —  Create Key Book  [identity]
@@ -127,6 +259,7 @@ Inputs:
 Outputs:
   - `keyBookUrl` (string)
 Requires: keypair, credits
+Errors: ACC_ALREADY_EXISTS, ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_NOT_SIGNED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/create_key_book.js
 
 ### create_key_page  —  Create Key Page  [identity]
@@ -139,6 +272,7 @@ Inputs:
 Outputs:
   - `keyPageUrl` (string)
 Requires: keypair, credits
+Errors: ACC_ALREADY_EXISTS, ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/create_key_page.js
 
 ### create_token_account  —  Create Token Account  [account]
@@ -151,6 +285,7 @@ Inputs:
 Outputs:
   - `tokenAccountUrl` (string)
 Requires: keypair, credits
+Errors: ACC_ALREADY_EXISTS, ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/create_token_account.js
 
 ### create_data_account  —  Create Data Account  [account]
@@ -162,6 +297,7 @@ Inputs:
 Outputs:
   - `dataAccountUrl` (string)
 Requires: keypair, credits
+Errors: ACC_ALREADY_EXISTS, ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/create_data_account.js
 
 ### create_token  —  Create Token  [account]
@@ -175,6 +311,7 @@ Inputs:
 Outputs:
   - `tokenUrl` (string)
 Requires: keypair, credits
+Errors: ACC_ALREADY_EXISTS, ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/create_token.js
 
 ### create_lite_token_account  —  Create Lite Token Account  [account]
@@ -183,6 +320,7 @@ Symbols:
 Outputs:
   - `liteTokenAccountUrl` (string)
 Requires: keypair
+Errors: ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/create_lite_token_account.js
 
 ### send_tokens  —  Send Tokens  [transaction]
@@ -195,6 +333,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_BALANCE, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PRINCIPAL, ACC_INVALID_URL, ACC_NETWORK_UNAVAILABLE, ACC_NOT_SIGNED, ACC_TX_NOT_SETTLED, ACC_TX_PENDING, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/send_tokens.js
 
 ### issue_tokens  —  Issue Tokens  [transaction]
@@ -207,6 +346,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_BALANCE, ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/issue_tokens.js
 
 ### burn_tokens  —  Burn Tokens  [transaction]
@@ -218,6 +358,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_BALANCE, ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/burn_tokens.js
 
 ### write_data  —  Write Data  [transaction]
@@ -230,6 +371,7 @@ Outputs:
   - `txHash` (string)
   - `entryHash` (string)
 Requires: keypair, credits
+Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PARAMS, ACC_INVALID_PRINCIPAL, ACC_NETWORK_UNAVAILABLE, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/write_data.js
 
 ### write_data_to  —  Write Data To  [transaction]
@@ -242,6 +384,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/write_data_to.js
 
 ### query_account  —  Query Account  [query]
@@ -251,6 +394,7 @@ Inputs:
   - `url` (string, required) — Account URL to query
 Outputs:
   - `account` (object)
+Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INVALID_PARAMS, ACC_INVALID_URL, ACC_METHOD_NOT_FOUND, ACC_NETWORK_UNAVAILABLE
 Examples: examples/query_account.js
 
 ### update_key_page  —  Update Key Page  [authority]
@@ -262,6 +406,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PRINCIPAL, ACC_NETWORK_UNAVAILABLE, ACC_TX_PENDING, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/update_key_page.js
 
 ### update_key  —  Update Key  [authority]
@@ -273,6 +418,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_NOT_SIGNED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/update_key.js
 
 ### lock_account  —  Lock Account  [authority]
@@ -284,6 +430,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/lock_account.js
 
 ### update_account_auth  —  Update Account Auth  [authority]
@@ -295,4 +442,5 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_TX_PENDING, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/update_account_auth.js
