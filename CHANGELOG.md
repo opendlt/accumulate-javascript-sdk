@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.3.4] - 2026-07-30
+
+### Added
+- **`tx sign`** — the CLI can now sign. It is the ONLY verb that signs, requires an
+  explicit `--key-file`/`--key-env`, and delegates to the SDK's own signer so the
+  produced bytes match the library path exactly (they are consensus-visible).
+- `tx build` now emits a **real transaction body** via `TxBody` and rejects unknown
+  ops. It previously echoed `{op, params}` back, so a typo exited 0 and only
+  surfaced at submit — or never.
+- `--out` on `tx build`/`tx sign`, so build -> sign -> submit composes through files.
+- Op and parameter names accept either `snake_case` or `camelCase`.
+
+### Fixed
+- **`tx submit` no longer claims to sign.** It accepted `--key-file`/`--key-env`
+  and never used them, advertising a capability that did not exist. Those flags are
+  gone and it now declares `signs: false`; the envelope must already be signed.
+
 ## [2.3.3] - 2026-07-30
 
 ### Added
