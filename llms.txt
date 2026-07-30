@@ -24,6 +24,20 @@ const r = await new SmartSigner(signer).signSubmitAndWait(principal, body);
 - **Errors are typed:** catch `AccumulateError` (`catch (e) { if (e instanceof AccumulateError) ... }`) and branch on the code. The full catalog — every code, its `retryable` flag, and the fix — is the **Error catalog** section of `llms-full.txt`. **Retry ONLY `ACC_NETWORK_UNAVAILABLE` / `ACC_INTERNAL`;** every other code is a condition that will not change on its own, so retrying it just burns turns.
 - **One canonical client:** connect with `Accumulate`, build with `TxBody`, sign with `SmartSigner`. Do not hand-roll envelopes/signing, and ignore any alternate or legacy client classes — this is the only path you need.
 
+## CLI (no code required)
+```
+npm install -g accumulate-sdk-opendlt
+accumulate query acc://<account>            // any account
+accumulate balance acc://<lta>              // token balance
+accumulate faucet acc://<lta>               // testnet ACME
+```
+Scoped invocation (no global shim): `npx accumulate-sdk-opendlt`
+- **`--json` emits exactly one envelope object on stdout**, nothing else. Logs go to stderr.
+- **Exit codes:** `0` ok · `1` operation failed · `2` usage error · `3` network unreachable. Branch on these without parsing.
+- Failures carry the same `ACC_*` codes and `retryable` flag as the SDK, so the retry decision is identical either way.
+- `accumulate --help --json` returns the whole command tree (verbs, flags, types) in one call.
+- Defaults to testnet. Mainnet needs `--network mainnet` AND `ACCUMULATE_ALLOW_MAINNET=1`.
+
 ## Resources
 - Full API digest: `llms-full.txt`
 - Repository guide (build/test/lint, for working ON this SDK): `AGENTS.md`

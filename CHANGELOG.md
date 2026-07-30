@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.3.3] - 2026-07-30
+
+### Added
+- **Structured CLI** (`accumulate`): 13 verbs, `--json` emits exactly one envelope
+  object on stdout, canonical `ACC_*` error codes with a `retryable` flag, and exit
+  codes 0/1/2/3 an agent can branch on without parsing. `accumulate --help --json`
+  returns the whole command tree. Defaults to testnet; mainnet requires both
+  `--network mainnet` and `ACCUMULATE_ALLOW_MAINNET=1`.
+  Conforms to `CLI-SPEC.md`; verified by a shared conformance suite across all five SDKs.
+- `llms.txt` and `AGENTS.md` now document the CLI.
+
 ## [2.3.2] - 2026-07-29
 
 ### Fixed
