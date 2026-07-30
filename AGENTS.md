@@ -43,6 +43,22 @@ lib/     build output; `lib/index.js` re-exports `lib/src/index.js`
 test/    unit tests
 ```
 
+## CLI
+
+This repo ships the `accumulate` CLI. Run it from the checkout with:
+
+```bash
+node lib/src/cli.js --json version
+```
+
+It conforms to `docs/ai-agent-readiness/CLI-SPEC.md` in accumulate-studio: one JSON
+envelope on stdout, `ACC_*` error codes, exit codes 0/1/2/3. **Changing its output shape
+is a contract change** — re-run the shared conformance suite, which gates all five SDKs:
+
+```bash
+node tools/cli-conformance/run.mjs --cmd "node lib/src/cli.js" --cwd . --sdk javascript
+```
+
 ## Gotchas
 
 - This repository root IS the package root: `package.json` sits here. Do not look for a `javascript/` subdirectory — that is an artifact of some local working copies and is not part of this repo.
