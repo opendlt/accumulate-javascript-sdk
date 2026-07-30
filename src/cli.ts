@@ -505,6 +505,12 @@ async function runVerb(verb: string, a: Record<string, unknown>, network: string
     let body: unknown;
     try {
       body = builder(...argNames.map((n) => params[n]));
+      // Builders return SDK class instances whose JSON form is the INTERNAL
+      // object graph (nested Url objects), not the wire shape. Round-tripping
+      // that through a file and back gives "Invalid scheme: undefined" at sign
+      // time. asObject() is the wire serializer.
+      const maybe = body as { asObject?: () => unknown };
+      if (typeof maybe?.asObject === 'function') body = maybe.asObject();
     } catch (e) {
       throw new UsageError(`bad parameters for '${op}(${argNames.join(', ')})': ${(e as Error).message}`);
     }
@@ -512,7 +518,7 @@ async function runVerb(verb: string, a: Record<string, unknown>, network: string
     const outPath = a.out as string | undefined;
     if (outPath) {
       const { writeFileSync } = await import('node:fs');
-      writeFileSync(outPath, JSON.stringify(body));
+      writeFileSync(outPath, JSON.stringify(body, bigintSafe));
     }
     return em.ok({ op, params, body, signed: false, out: outPath ?? null,
       note: 'unsigned body; sign it with `tx sign --body <file>`, then `tx submit`' });
@@ -535,11 +541,15 @@ async function runVerb(verb: string, a: Record<string, unknown>, network: string
     const signer = new (SmartSigner as unknown as new (c: unknown, k: unknown, u: string) => {
       sign: (p: string, b: unknown) => Promise<{ envelope: unknown }>;
     })(client, keypair, String(a.signer));
-    const { envelope } = await signer.sign(String(a.principal), body);
+    const { envelope: envObj } = await signer.sign(String(a.principal), body);
+    // Same reason as tx build: the Envelope class serializes to the internal
+    // graph (signature Type as a number), and the node wants the wire form.
+    const envMaybe = envObj as { asObject?: () => unknown };
+    const envelope = typeof envMaybe?.asObject === 'function' ? envMaybe.asObject() : envObj;
     const outPath = a.out as string | undefined;
     if (outPath) {
       const { writeFileSync } = await import('node:fs');
-      writeFileSync(outPath, JSON.stringify(envelope));
+      writeFileSync(outPath, JSON.stringify(envelope, bigintSafe));
     }
     return em.ok({ signed: true, principal: a.principal, signer: a.signer, envelope, out: outPath ?? null });
   }
