@@ -178,11 +178,19 @@ const VERBS: VerbSpec[] = [
     flags: [{ name: '--amount', type: 'number', required: true }] },
   { name: 'tx build', summary: 'Build an unsigned transaction body', network: false, signs: false,
     args: [{ name: 'op', type: 'string', required: true }],
-    flags: [{ name: '--param', type: 'key=value', required: false, repeatable: true }] },
-  { name: 'tx submit', summary: 'Submit a signed envelope', network: true, signs: true, args: [],
-    flags: [{ name: '--envelope', type: 'path', required: true },
+    flags: [{ name: '--param', type: 'key=value', required: false, repeatable: true },
+            { name: '--out', type: 'path', required: false }] },
+  { name: 'tx sign', summary: 'Sign a transaction body into a submittable envelope',
+    network: true, signs: true, args: [],
+    flags: [{ name: '--body', type: 'path', required: true },
+            { name: '--principal', type: 'string', required: true },
+            { name: '--signer', type: 'string', required: true },
             { name: '--key-file', type: 'path', required: false },
-            { name: '--key-env', type: 'string', required: false }] },
+            { name: '--key-env', type: 'string', required: false },
+            { name: '--out', type: 'path', required: false }] },
+  { name: 'tx submit', summary: 'Submit an ALREADY-SIGNED envelope (does not sign)',
+    network: true, signs: false, args: [],
+    flags: [{ name: '--envelope', type: 'path', required: true }] },
   { name: 'tx wait', summary: 'Poll a transaction until it reaches a final state', network: true, signs: false,
     args: [{ name: 'txid', type: 'string', required: true }],
     flags: [{ name: '--timeout', type: 'integer', required: false, default: 60 }] },
@@ -218,6 +226,16 @@ function sdkVersion(): string {
   return '0.0.0';
 }
 
+
+/**
+ * JSON replacer for BigInt. Amounts are base-unit integers that exceed 2^53, so
+ * the SDK models them as BigInt, and JSON.stringify throws on those outright.
+ * Emitted as strings, which is also the shape the node expects on the wire.
+ */
+function bigintSafe(_k: string, v: unknown): unknown {
+  return typeof v === 'bigint' ? v.toString() : v;
+}
+
 class Emitter {
   private emitted = false;
   constructor(private asJson: boolean, private network: string | null, private started: number) {}
@@ -233,12 +251,14 @@ class Emitter {
 
   ok(data: unknown): number {
     if (this.emitted) throw new Error('envelope emitted twice');
+    const text = this.asJson
+      ? JSON.stringify({ envelope: ENVELOPE_VERSION, ok: true, data, meta: this.meta() }, bigintSafe)
+      : JSON.stringify(data, bigintSafe, 2);
+    // Set the guard only AFTER serialization succeeds. Setting it first turned a
+    // serialization failure into a misleading "envelope emitted twice" from the
+    // outer catch, hiding the real cause (a BigInt amount).
     this.emitted = true;
-    if (this.asJson) {
-      process.stdout.write(JSON.stringify({ envelope: ENVELOPE_VERSION, ok: true, data, meta: this.meta() }) + '\n');
-    } else {
-      process.stdout.write(JSON.stringify(data, null, 2) + '\n');
-    }
+    process.stdout.write(text + '\n');
     return EXIT_OK;
   }
 
@@ -272,6 +292,59 @@ class Emitter {
     }
     return ec;
   }
+}
+
+
+/**
+ * Resolve the signing key from an EXPLICIT source only.
+ *
+ * Never falls back to an ambient default: a CLI that quietly finds a key is a
+ * CLI that signs something the caller did not intend. Keys are never positional
+ * either, so they stay out of shell history.
+ */
+async function loadPrivateKey(a: Record<string, unknown>): Promise<string> {
+  const keyFile = a.key_file as string | undefined;
+  const keyEnv = a.key_env as string | undefined;
+  if (keyFile && keyEnv) throw new UsageError('pass only one of --key-file or --key-env');
+  if (keyFile) {
+    const { readFileSync } = await import('node:fs');
+    try {
+      return readFileSync(keyFile, 'utf-8').trim();
+    } catch (e) {
+      throw new UsageError(`could not read --key-file: ${(e as Error).message}`);
+    }
+  }
+  if (keyEnv) {
+    const v = process.env[keyEnv];
+    if (!v) throw new UsageError(`--key-env '${keyEnv}' is not set or empty`);
+    return v.trim();
+  }
+  throw new UsageError(
+    'signing requires an explicit key source: --key-file <path> or --key-env <VAR>. ' +
+      'No ambient default key is ever used.',
+  );
+}
+
+
+
+/** Case- and underscore-insensitive lookup, so snake_case and camelCase both work. */
+function matchKey(keys: string[], wanted: string): string | undefined {
+  const norm = (x: string) => x.replace(/_/g, '').toLowerCase();
+  const target = norm(wanted);
+  return keys.find((k) => norm(k) === target);
+}
+
+/** Parameter names of a builder, read from its source so --param can be by-name. */
+function builderArgNames(fn: (...args: unknown[]) => unknown): string[] {
+  const src = Function.prototype.toString.call(fn);
+  const open = src.indexOf('(');
+  const close = src.indexOf(')', open);
+  if (open < 0 || close < 0) return [];
+  return src
+    .slice(open + 1, close)
+    .split(',')
+    .map((p) => p.split('=')[0].trim())
+    .filter((p) => p && !p.startsWith('...'));
 }
 
 function resolveEndpoint(network: string): string {
@@ -401,15 +474,79 @@ async function runVerb(verb: string, a: Record<string, unknown>, network: string
       const idx = raw.indexOf('=');
       params[raw.slice(0, idx)] = raw.slice(idx + 1);
     }
-    return em.ok({ op: a.op, params, signed: false, note: 'unsigned body; sign and submit with `tx submit --envelope`' });
+
+    const { TxBody } = await import('./index.js');
+    const op = String(a.op);
+    const builders = TxBody as unknown as Record<string, (...args: unknown[]) => unknown>;
+    // Accept either casing. Op names differ per SDK (send_tokens_single vs
+    // sendTokensSingle); making an agent learn each one defeats having a single
+    // CLI spec, so match on the case-and-underscore-insensitive form.
+    const builder = op.startsWith('_') ? undefined : (builders[op] ?? builders[matchKey(Object.getOwnPropertyNames(TxBody), op) ?? '']);
+    if (typeof builder !== 'function') {
+      const ops = Object.getOwnPropertyNames(TxBody)
+        .filter((x) => !['length', 'name', 'prototype'].includes(x)).sort();
+      throw new UsageError(`unknown transaction op '${op}' — available: ${ops.join(', ')}`);
+    }
+    // Builders take positional args, so map the declared parameter names onto
+    // them. Echoing {op, params} back instead (the old stub) meant a typo exited
+    // 0 and only surfaced at submit, or never.
+    const argNames = builderArgNames(builder);
+    // Same normalization for parameter names (to_url vs toUrl).
+    for (const n of argNames) {
+      if (params[n] === undefined) {
+        const k = matchKey(Object.keys(params), n);
+        if (k) params[n] = params[k];
+      }
+    }
+    const missing = argNames.filter((n) => params[n] === undefined);
+    if (missing.length) {
+      throw new UsageError(`'${op}' requires --param for: ${missing.join(', ')} (order: ${argNames.join(', ')})`);
+    }
+    let body: unknown;
+    try {
+      body = builder(...argNames.map((n) => params[n]));
+    } catch (e) {
+      throw new UsageError(`bad parameters for '${op}(${argNames.join(', ')})': ${(e as Error).message}`);
+    }
+
+    const outPath = a.out as string | undefined;
+    if (outPath) {
+      const { writeFileSync } = await import('node:fs');
+      writeFileSync(outPath, JSON.stringify(body));
+    }
+    return em.ok({ op, params, body, signed: false, out: outPath ?? null,
+      note: 'unsigned body; sign it with `tx sign --body <file>`, then `tx submit`' });
   }
 
   const endpoint = resolveEndpoint(network);
 
-  if (verb === 'tx submit') {
-    if (!a.key_file && !a.key_env) {
-      throw new UsageError('tx submit signs, so it requires --key-file or --key-env; no ambient default key is ever used');
+  if (verb === 'tx sign') {
+    // The ONLY verb that signs. Delegates to the SDK signer: signing bytes are
+    // consensus-visible and a second implementation is how they drift.
+    const privateHex = await loadPrivateKey(a);
+    const { Accumulate, SmartSigner } = await import('./index.js');
+    const { ED25519Key } = await import('./signing/ed25519.js');
+    const body = JSON.parse(readFileSync(String(a.body), 'utf-8'));
+    const seed = Uint8Array.from(Buffer.from(privateHex, 'hex'));
+    const keypair = (ED25519Key as unknown as { from: (s: Uint8Array) => unknown }).from(seed);
+    const client = (Accumulate as unknown as { forEndpoint?: (u: string) => unknown }).forEndpoint
+      ? (Accumulate as unknown as { forEndpoint: (u: string) => unknown }).forEndpoint(endpoint)
+      : (Accumulate as unknown as { forKermit: () => unknown }).forKermit();
+    const signer = new (SmartSigner as unknown as new (c: unknown, k: unknown, u: string) => {
+      sign: (p: string, b: unknown) => Promise<{ envelope: unknown }>;
+    })(client, keypair, String(a.signer));
+    const { envelope } = await signer.sign(String(a.principal), body);
+    const outPath = a.out as string | undefined;
+    if (outPath) {
+      const { writeFileSync } = await import('node:fs');
+      writeFileSync(outPath, JSON.stringify(envelope));
     }
+    return em.ok({ signed: true, principal: a.principal, signer: a.signer, envelope, out: outPath ?? null });
+  }
+
+  if (verb === 'tx submit') {
+    // Deliberately does NOT sign, and no longer pretends to: it used to accept
+    // --key-file/--key-env and never use them.
     const envelope = JSON.parse(readFileSync(String(a.envelope), 'utf-8'));
     const r = await rpc(endpoint, 'execute-direct', { envelope });
     if (r.error) return em.fail(rpcErrorText(r.error));
