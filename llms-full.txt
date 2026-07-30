@@ -35,7 +35,7 @@ catch (e) { if (e instanceof AccumulateError) ... }
 ### `ACC_ACCOUNT_NOT_FOUND`
 The account URL does not exist on this network.
 
-- category: `not_found` · wire -33404
+- category: `not_found` · wire -32807, -33404
 - retryable: **no**
 - JavaScript / TypeScript type: `AccumulateError`
 - fix: Verify the URL and the network. If you just created the account, wait for its creating transaction to reach 'delivered' first — use wait_for_balance / wait_for_credits rather than querying straight away.
@@ -115,7 +115,7 @@ The string is not a well-formed Accumulate URL.
 ### `ACC_INVALID_PARAMS`
 The JSON-RPC parameters were rejected by the node.
 
-- category: `validation` · wire -32602
+- category: `validation` · wire -32802, -32602
 - retryable: **no**
 - JavaScript / TypeScript type: `AccumulateError`
 - fix: Check the operation's declared inputs in llms-full.txt. Hashes are 32-byte hex; amounts are base-unit integers, not decimals.
@@ -143,6 +143,14 @@ The node reported an internal error.
 - retryable: **yes**
 - JavaScript / TypeScript type: `AccumulateError`
 - fix: Retry once with backoff. If it persists, the request is likely malformed in a way the node did not classify — re-check the transaction body against llms-full.txt.
+
+### `ACC_ROUTING_FAILED`
+The node could not determine which partition should handle the request.
+
+- category: `validation` · wire -33400
+- retryable: **no**
+- JavaScript / TypeScript type: `AccumulateError`
+- fix: Build the envelope through TxBody + SmartSigner rather than by hand. Every transaction needs a header with a valid `principal` — that URL is the routing key, and without it the node rejects the request before validating anything else.
 
 ## Operations (24)
 
@@ -205,7 +213,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
-Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PRINCIPAL, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
+Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PRINCIPAL, ACC_NETWORK_UNAVAILABLE, ACC_ROUTING_FAILED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/add_credits.js
 
 ### transfer_credits  —  Transfer Credits  [credits]
@@ -246,7 +254,7 @@ Outputs:
   - `keyBookUrl` (string)
   - `keyPageUrl` (string)
 Requires: keypair, credits
-Errors: ACC_ALREADY_EXISTS, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_URL, ACC_NETWORK_UNAVAILABLE, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
+Errors: ACC_ALREADY_EXISTS, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_URL, ACC_NETWORK_UNAVAILABLE, ACC_ROUTING_FAILED, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/create_identity.js
 
 ### create_key_book  —  Create Key Book  [identity]
@@ -333,7 +341,7 @@ Inputs:
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
-Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_BALANCE, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PRINCIPAL, ACC_INVALID_URL, ACC_NETWORK_UNAVAILABLE, ACC_NOT_SIGNED, ACC_TX_NOT_SETTLED, ACC_TX_PENDING, ACC_UNAUTHORIZED_SIGNER
+Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_BALANCE, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PRINCIPAL, ACC_INVALID_URL, ACC_NETWORK_UNAVAILABLE, ACC_NOT_SIGNED, ACC_ROUTING_FAILED, ACC_TX_NOT_SETTLED, ACC_TX_PENDING, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/send_tokens.js
 
 ### issue_tokens  —  Issue Tokens  [transaction]
@@ -371,7 +379,7 @@ Outputs:
   - `txHash` (string)
   - `entryHash` (string)
 Requires: keypair, credits
-Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PARAMS, ACC_INVALID_PRINCIPAL, ACC_NETWORK_UNAVAILABLE, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
+Errors: ACC_ACCOUNT_NOT_FOUND, ACC_INSUFFICIENT_CREDITS, ACC_INVALID_PARAMS, ACC_INVALID_PRINCIPAL, ACC_NETWORK_UNAVAILABLE, ACC_ROUTING_FAILED, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/write_data.js
 
 ### write_data_to  —  Write Data To  [transaction]

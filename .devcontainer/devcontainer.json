@@ -23,5 +23,20 @@
     }
   },
 
-  "remoteUser": "node"
+  // remoteUser is root deliberately.
+  //
+  // Verified on Docker Desktop for Windows: bind-mounted workspace files are
+  // presented as root:root, `chown` on them fails, and a non-root user cannot
+  // call utime on them. Every command these containers are built to run writes
+  // into the workspace (`dart pub get` touches pubspec.lock, `pip install -e .`
+  // writes egg-info, `npm ci` writes node_modules, `cargo build` writes target/,
+  // `dotnet restore` writes obj/), so a non-root remoteUser made `dart test`
+  // fail with "Operation not permitted" before running a single test.
+  //
+  // The isolation boundary here is the CONTAINER, not the in-container user: the
+  // only host path mounted is the workspace, and no credentials are baked in. On
+  // a Linux or macOS host, prefer the image's non-root user instead — there the
+  // bind mount carries real ownership and root would leave root-owned files on
+  // the host.
+  "remoteUser": "root"
 }
