@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.3.2] - 2026-07-29
+
+### Fixed
+- `@noble/secp256k1` was declared only under `devDependencies` while
+  `lib/src/crypto/secp256k1_keypair.js` imports it, and `rxjs` was not declared
+  at all while `lib/src/ledger/hw/index.js` imports it. Both modules ship, so
+  consumers importing them got `ERR_MODULE_NOT_FOUND`. Both are now runtime
+  dependencies. Found by the new `DEPS_DECLARED` check in `artifact-verify`,
+  which audits every bare import in the published tarball against the declared
+  dependencies — the root-import probe missed these because neither module sits
+  on the root barrel's import path.
+
 ## [2.3.1] - 2026-07-29
 
 ### Added
