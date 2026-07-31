@@ -173,6 +173,56 @@ export class SmartSigner {
    * @param options  Optional memo, metadata, delegators.
    * @returns TxResult with txid from submission response.
    */
+  /**
+   * Co-sign an EXISTING envelope, appending this signer's signature.
+   *
+   * This is what a multi-signature (M-of-N) flow needs, and it is NOT the same as
+   * calling {@link sign} twice. `sign` derives the transaction's `initiator` from
+   * the FIRST signer's metadata and stores it in the header, so the transaction
+   * hash is a function of that signer. Building and signing the same body again
+   * with a different key therefore produces a *different transaction*, and
+   * neither one ever reaches the threshold.
+   *
+   * Re-signing the EXISTING transaction is safe because `BaseKey.sign` only sets
+   * `header.initiator` when it is absent — so the original initiator, and hence
+   * the transaction hash, is preserved.
+   */
+  async signExisting(envelope: Envelope): Promise<Envelope> {
+    const txns = envelope.transaction ?? [];
+    if (!txns.length) throw new Error("envelope has no `transaction` to co-sign");
+    const txn = txns[0];
+    if (!txn) throw new Error("envelope has no `transaction` to co-sign");
+    if (!txn.header?.initiator) {
+      throw new Error("envelope transaction has no `initiator`; sign it first");
+    }
+
+    const existing = envelope.signatures ?? [];
+    const mine = this.keypair.address?.toString?.();
+    if (mine && existing.some((s) => (s as { publicKey?: unknown }).publicKey !== undefined
+        && String((s as { signer?: unknown }).signer ?? "") === this._signerUrl
+        && String((s as { publicKey?: unknown }).publicKey) === mine)) {
+      throw new Error(
+        "this key has already signed the envelope; a threshold needs DISTINCT signers",
+      );
+    }
+
+    if (this.cachedVersion === null) {
+      await this.refreshVersion();
+    }
+
+    const timestamp = Date.now() * 1000;
+    const sig = await this.keypair.sign(txn as Signable, {
+      signer: this._signerUrl,
+      signerVersion: this.cachedVersion!,
+      timestamp,
+    });
+
+    return new Envelope({
+      transaction: txns,
+      signatures: [...existing, sig],
+    });
+  }
+
   async signAndSubmit(
     principal: string,
     body: TransactionBody,

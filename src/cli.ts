@@ -180,10 +180,11 @@ const VERBS: VerbSpec[] = [
     args: [{ name: 'op', type: 'string', required: true }],
     flags: [{ name: '--param', type: 'key=value', required: false, repeatable: true },
             { name: '--out', type: 'path', required: false }] },
-  { name: 'tx sign', summary: 'Sign a transaction body into a submittable envelope',
+  { name: 'tx sign', summary: 'Sign a body into an envelope, or co-sign an existing envelope (M-of-N)',
     network: true, signs: true, args: [],
-    flags: [{ name: '--body', type: 'path', required: true },
-            { name: '--principal', type: 'string', required: true },
+    flags: [{ name: '--body', type: 'path', required: false },
+            { name: '--envelope', type: 'path', required: false },
+            { name: '--principal', type: 'string', required: false },
             { name: '--signer', type: 'string', required: true },
             { name: '--key-file', type: 'path', required: false },
             { name: '--key-env', type: 'string', required: false },
@@ -498,10 +499,10 @@ async function runVerb(verb: string, a: Record<string, unknown>, network: string
         if (k) params[n] = params[k];
       }
     }
-    const missing = argNames.filter((n) => params[n] === undefined);
-    if (missing.length) {
-      throw new UsageError(`'${op}' requires --param for: ${missing.join(', ')} (order: ${argNames.join(', ')})`);
-    }
+    // Do NOT require every parameter: reflection cannot tell an optional
+    // trailing argument (createDataAccount's `authorities`) from a required one,
+    // and demanding it made valid calls impossible. Missing values are passed as
+    // undefined and the builder itself decides what is mandatory.
     let body: unknown;
     try {
       body = builder(...argNames.map((n) => params[n]));
@@ -530,9 +531,18 @@ async function runVerb(verb: string, a: Record<string, unknown>, network: string
     // The ONLY verb that signs. Delegates to the SDK signer: signing bytes are
     // consensus-visible and a second implementation is how they drift.
     const privateHex = await loadPrivateKey(a);
+    const bodyPath = a.body as string | undefined;
+    const envPath = a.envelope as string | undefined;
+    if (Boolean(bodyPath) === Boolean(envPath)) {
+      throw new UsageError(
+        'pass exactly one of --body (start a new transaction) or --envelope ' +
+          '(co-sign an existing one for an M-of-N threshold)',
+      );
+    }
+
     const { Accumulate, SmartSigner } = await import('./index.js');
+    const { Envelope } = await import('./messaging/index.js');
     const { ED25519Key } = await import('./signing/ed25519.js');
-    const body = JSON.parse(readFileSync(String(a.body), 'utf-8'));
     const seed = Uint8Array.from(Buffer.from(privateHex, 'hex'));
     const keypair = (ED25519Key as unknown as { from: (s: Uint8Array) => unknown }).from(seed);
     const client = (Accumulate as unknown as { forEndpoint?: (u: string) => unknown }).forEndpoint
@@ -540,18 +550,46 @@ async function runVerb(verb: string, a: Record<string, unknown>, network: string
       : (Accumulate as unknown as { forKermit: () => unknown }).forKermit();
     const signer = new (SmartSigner as unknown as new (c: unknown, k: unknown, u: string) => {
       sign: (p: string, b: unknown) => Promise<{ envelope: unknown }>;
+      signExisting: (e: unknown) => Promise<unknown>;
     })(client, keypair, String(a.signer));
-    const { envelope: envObj } = await signer.sign(String(a.principal), body);
+
+    let envelope: unknown;
+    let cosigned: boolean;
+    if (envPath) {
+      const raw = JSON.parse(readFileSync(envPath, 'utf-8'));
+      // Accept both the bare envelope and the {"envelope": {...}} submit shape.
+      const inner = (raw && typeof raw === 'object' && 'envelope' in raw)
+        ? (raw as { envelope: unknown }).envelope
+        : raw;
+      const existing = new (Envelope as unknown as new (a: unknown) => unknown)(inner);
+      envelope = await signer.signExisting(existing);
+      cosigned = true;
+    } else {
+      const body = JSON.parse(readFileSync(String(bodyPath), 'utf-8'));
+      if (!a.principal) throw new UsageError('--principal is required when signing a --body');
+      const { envelope: envObj } = await signer.sign(String(a.principal), body);
+      envelope = envObj;
+      cosigned = false;
+    }
+
     // Same reason as tx build: the Envelope class serializes to the internal
     // graph (signature Type as a number), and the node wants the wire form.
-    const envMaybe = envObj as { asObject?: () => unknown };
-    const envelope = typeof envMaybe?.asObject === 'function' ? envMaybe.asObject() : envObj;
+    const envMaybe = envelope as { asObject?: () => unknown };
+    const wire = typeof envMaybe?.asObject === 'function' ? envMaybe.asObject() : envelope;
+    const sigCount = Array.isArray((wire as { signatures?: unknown[] })?.signatures)
+      ? (wire as { signatures: unknown[] }).signatures.length
+      : 0;
+
     const outPath = a.out as string | undefined;
     if (outPath) {
       const { writeFileSync } = await import('node:fs');
-      writeFileSync(outPath, JSON.stringify(envelope, bigintSafe));
+      writeFileSync(outPath, JSON.stringify(wire, bigintSafe));
     }
-    return em.ok({ signed: true, principal: a.principal, signer: a.signer, envelope, out: outPath ?? null });
+    return em.ok({
+      signed: true, cosigned, signatures: sigCount,
+      principal: a.principal ?? null, signer: a.signer,
+      envelope: wire, out: outPath ?? null,
+    });
   }
 
   if (verb === 'tx submit') {
@@ -560,6 +598,16 @@ async function runVerb(verb: string, a: Record<string, unknown>, network: string
     const envelope = JSON.parse(readFileSync(String(a.envelope), 'utf-8'));
     const r = await rpc(endpoint, 'execute-direct', { envelope });
     if (r.error) return em.fail(rpcErrorText(r.error));
+    // A response without an RPC error does NOT mean the transaction was accepted:
+    // the result carries a per-message status, and a rejected envelope shows up as
+    // `failed: true` inside it. Reporting that as success is the
+    // "submitted != delivered" trap that makes an agent believe a write landed.
+    const items = Array.isArray(r.result) ? r.result : [];
+    const failures = items
+      .map((it) => (it as { status?: { failed?: boolean; code?: string; error?: { message?: string } } })?.status)
+      .filter((st) => st?.failed)
+      .map((st) => st?.error?.message ?? st?.code ?? 'unknown');
+    if (failures.length) return em.fail(failures.join('; '));
     return em.ok({ submitted: true, result: r.result });
   }
 
