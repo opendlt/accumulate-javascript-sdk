@@ -10,10 +10,12 @@
 // additional key, then submit ONCE. Submitting between signatures trips replay
 // protection on the signature already on chain.
 //
-// This example builds a 2-of-3 key page and then raises its threshold to 3 -- a
-// change that itself requires two signatures. It targets the multisig page
-// because a page's own book is its authority; a transaction against a sub-account
-// would be authorized by the ADI's DEFAULT book instead and would sit pending.
+// This example builds a 2-of-3 key book and then creates a data account governed
+// by it. That creation needs BOTH authorities to approve: the parent ADI's own
+// book (it owns the namespace) and the multi-sig book being installed -- three
+// signatures on one envelope. Note the first key signs twice, under two different
+// pages: a signature is identified by (key, signer), so those are distinct and
+// satisfy two separate authorities.
 
 /**
  * Multi-Signature Setup
@@ -278,43 +280,46 @@ async function main() {
 
 
         // =========================================================
-        // Raise Threshold to 3 (2-of-3 signatures) (Action: CoSign — update_key_page under an M-of-N threshold)
+        // Create Data Account Governed by the Multi-Sig Book (Action: CoSign — create_data_account under an M-of-N threshold)
         // =========================================================
         // A threshold needs DISTINCT keys signing the SAME transaction. Signing the
         // body twice does not work: the first signature's metadata becomes the
         // transaction's `initiator` and is baked into the header, so a second
         // independent signature is over a different transaction hash and neither
         // copy reaches the threshold. Co-sign the existing envelope instead.
-        const raiseThresholdTo_3_2Of_3SignaturesBody = TxBody.updateKeyPageSetThreshold(3);
-        const raiseThresholdTo_3_2Of_3SignaturesSigner = new SmartSigner(client, generateKeysSigner_1Kp.toKey(), `${createAdiUrl}/multisig-book/1`);
-        let raiseThresholdTo_3_2Of_3SignaturesEnvelope = (await raiseThresholdTo_3_2Of_3SignaturesSigner.sign(`${createAdiUrl}/multisig-book/1`, raiseThresholdTo_3_2Of_3SignaturesBody)).envelope;
+        const createDataAccountGovernedByTheMultiSigBookBody = TxBody.createDataAccount(`${createAdiUrl}/ms-data`, [`${createAdiUrl}/multisig-book`]);
+        const createDataAccountGovernedByTheMultiSigBookSigner = new SmartSigner(client, generateKeysSigner_1Kp.toKey(), `${createAdiUrl}/book/1`);
+        let createDataAccountGovernedByTheMultiSigBookEnvelope = (await createDataAccountGovernedByTheMultiSigBookSigner.sign(createAdiUrl, createDataAccountGovernedByTheMultiSigBookBody)).envelope;
         // Co-signer 0: appends a signature to the SAME transaction hash.
-        raiseThresholdTo_3_2Of_3SignaturesEnvelope = await new SmartSigner(client, generateKeysSigner_2Kp.toKey(), `${createAdiUrl}/multisig-book/1`)
-            .signExisting(raiseThresholdTo_3_2Of_3SignaturesEnvelope);
+        createDataAccountGovernedByTheMultiSigBookEnvelope = await new SmartSigner(client, generateKeysSigner_1Kp.toKey(), `${createAdiUrl}/multisig-book/1`)
+            .signExisting(createDataAccountGovernedByTheMultiSigBookEnvelope);
+        // Co-signer 1: appends a signature to the SAME transaction hash.
+        createDataAccountGovernedByTheMultiSigBookEnvelope = await new SmartSigner(client, generateKeysSigner_2Kp.toKey(), `${createAdiUrl}/multisig-book/1`)
+            .signExisting(createDataAccountGovernedByTheMultiSigBookEnvelope);
         // Submit only once every signature is collected: resubmitting a signature
         // that is already on chain trips replay protection.
         // execute() throws on a rejected envelope, so reaching the next line means
         // the network accepted it.
         // execute() serialises the Envelope itself — passing asObject() here would
         // hand it a plain object it cannot re-serialise.
-        const raiseThresholdTo_3_2Of_3SignaturesResult = await client.v2.execute(raiseThresholdTo_3_2Of_3SignaturesEnvelope);
-        const raiseThresholdTo_3_2Of_3SignaturesTxid = raiseThresholdTo_3_2Of_3SignaturesResult.txid.toString();
+        const createDataAccountGovernedByTheMultiSigBookResult = await client.v2.execute(createDataAccountGovernedByTheMultiSigBookEnvelope);
+        const createDataAccountGovernedByTheMultiSigBookTxid = createDataAccountGovernedByTheMultiSigBookResult.txid.toString();
         // Acceptance is not execution. A transaction that has not reached its
         // threshold is accepted and then sits pending, so the only honest
         // confirmation is the delivered status.
-        let raiseThresholdTo_3_2Of_3SignaturesStatus = 'unknown';
+        let createDataAccountGovernedByTheMultiSigBookStatus = 'unknown';
         for (let i = 0; i < 30; i++) {
             try {
-                const { status } = await client.v2.queryTx(raiseThresholdTo_3_2Of_3SignaturesTxid);
-                raiseThresholdTo_3_2Of_3SignaturesStatus = status?.code ?? 'unknown';
-                if (raiseThresholdTo_3_2Of_3SignaturesStatus !== 'pending' && raiseThresholdTo_3_2Of_3SignaturesStatus !== 'remote') break;
+                const { status } = await client.v2.queryTx(createDataAccountGovernedByTheMultiSigBookTxid);
+                createDataAccountGovernedByTheMultiSigBookStatus = status?.code ?? 'unknown';
+                if (createDataAccountGovernedByTheMultiSigBookStatus !== 'pending' && createDataAccountGovernedByTheMultiSigBookStatus !== 'remote') break;
             } catch { /* not indexed yet */ }
             await new Promise((r) => setTimeout(r, 2000));
         }
-        if (raiseThresholdTo_3_2Of_3SignaturesStatus === 'delivered') {
-            console.log(`CoSign update_key_page DELIVERED with 2 signature(s) - TxID: ${raiseThresholdTo_3_2Of_3SignaturesTxid}`);
+        if (createDataAccountGovernedByTheMultiSigBookStatus === 'delivered') {
+            console.log(`CoSign create_data_account DELIVERED with 3 signature(s) - TxID: ${createDataAccountGovernedByTheMultiSigBookTxid}`);
         } else {
-            console.log(`CoSign update_key_page NOT DELIVERED (status=${raiseThresholdTo_3_2Of_3SignaturesStatus}) - TxID: ${raiseThresholdTo_3_2Of_3SignaturesTxid}`);
+            console.log(`CoSign create_data_account NOT DELIVERED (status=${createDataAccountGovernedByTheMultiSigBookStatus}) - TxID: ${createDataAccountGovernedByTheMultiSigBookTxid}`);
         }
 
 
