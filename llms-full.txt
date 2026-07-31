@@ -94,7 +94,7 @@ The transaction was accepted but is not final — it is awaiting additional sign
 - category: `pending`
 - retryable: **yes**
 - JavaScript / TypeScript type: `AccumulateError`
-- fix: This is not a failure. Collect the remaining signatures up to the page threshold, then poll status until 'delivered'. Treating 'pending' as success is the common multisig bug; so is treating it as a hard error.
+- fix: This is not a failure. Collect the remaining signatures up to the page threshold, then poll status until delivered. Co-sign the EXISTING envelope (SmartSigner.sign_existing / signExisting / SignExistingAsync, or accumulate tx sign --envelope) — signing the same body again creates a DIFFERENT transaction that never reaches the threshold. Collect every signature before submitting: resubmitting one already on chain trips replay protection. Treating pending as success is the common multisig bug; so is treating it as a hard error.
 
 ### `ACC_TX_NOT_SETTLED`
 The transaction was submitted and accepted, but did not reach a final state before the wait timed out.
