@@ -42,7 +42,7 @@ Scoped invocation (no global shim): `npx accumulate-sdk-opendlt`
 - Full API digest: `llms-full.txt`
 - Repository guide (build/test/lint, for working ON this SDK): `AGENTS.md`
 - Runnable end-to-end examples: `examples/v3/`
-- 24 operations across 7 categories.
+- 25 operations across 7 categories.
 
 ## Operations
 - `generate_keys` — Generate Keys (utility)
@@ -69,3 +69,4 @@ Scoped invocation (no global shim): `npx accumulate-sdk-opendlt`
 - `write_data_to` — Write Data To (transaction)
 - `lock_account` — Lock Account (authority)
 - `update_account_auth` — Update Account Auth (authority)
+- `co_sign` — Co Sign (authority)
