@@ -152,7 +152,7 @@ The node could not determine which partition should handle the request.
 - JavaScript / TypeScript type: `AccumulateError`
 - fix: Build the envelope through TxBody + SmartSigner rather than by hand. Every transaction needs a header with a valid `principal` — that URL is the routing key, and without it the node rejects the request before validating anything else.
 
-## Operations (24)
+## Operations (25)
 
 ### generate_keys  —  Generate Keys  [utility]
 Symbols:
@@ -452,3 +452,17 @@ Outputs:
 Requires: keypair, credits
 Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_TX_PENDING, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/update_account_auth.js
+
+### co_sign  —  Co Sign  [authority]
+Symbols:
+  - `SmartSigner.sign` — `build a signed envelope WITHOUT submitting`
+  - `SmartSigner.signExisting` — `(envelope: Envelope) => Promise<Envelope>`
+  - `Accumulate.v2.execute` — `submit the fully-signed envelope`
+Inputs:
+  - `operation` (str, required) — Transaction to run under the threshold, e.g. create_data_account
+  - `additionalSigners` (list, required) — Distinct keys that must ALSO sign the SAME transaction
+Outputs:
+  - `txHash` (str)
+Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
+Examples: examples/v3/example_15_co_signing.ts
