@@ -33,7 +33,7 @@ import {
     KERMIT_V3,
     pollForBalance,
     pollForCredits,
-} from "accumulate-sdk-opendlt";
+} from "../../src/index.js";
 
 const V2_ENDPOINT = process.env.ACCUMULATE_V2_URL || KERMIT_V2;
 const V3_ENDPOINT = process.env.ACCUMULATE_V3_URL || KERMIT_V3;
@@ -157,6 +157,7 @@ async function main() {
         // Create Multi-Sig Key Book (Action: CreateKeyBook)
         // =========================================================
         const createMultiSigKeyBookUrl = `${createAdiUrl}/multisig-book`;
+        console.log(`Multi-sig key book: ${createMultiSigKeyBookUrl}`);
         const createMultiSigKeyBookSigner = new SmartSigner(client, generateKeysSigner_1Kp.toKey(), `${createAdiUrl}/book/1`);
         const createMultiSigKeyBookResult = await createMultiSigKeyBookSigner.signSubmitAndWait(
             createAdiUrl,
@@ -292,30 +293,28 @@ async function main() {
             .signExisting(raiseThresholdTo_3_2Of_3SignaturesEnvelope);
         // Submit only once every signature is collected: resubmitting a signature
         // that is already on chain trips replay protection.
-        const raiseThresholdTo_3_2Of_3SignaturesResult = await client.v2.execute(raiseThresholdTo_3_2Of_3SignaturesEnvelope.asObject());
-        const raiseThresholdTo_3_2Of_3SignaturesTxid = raiseThresholdTo_3_2Of_3SignaturesResult?.txid ?? raiseThresholdTo_3_2Of_3SignaturesResult?.transactionHash ?? '';
-        if (raiseThresholdTo_3_2Of_3SignaturesResult?.error) {
-            console.log(`CoSign update_key_page FAILED:`, raiseThresholdTo_3_2Of_3SignaturesResult.error);
+        // execute() throws on a rejected envelope, so reaching the next line means
+        // the network accepted it.
+        // execute() serialises the Envelope itself — passing asObject() here would
+        // hand it a plain object it cannot re-serialise.
+        const raiseThresholdTo_3_2Of_3SignaturesResult = await client.v2.execute(raiseThresholdTo_3_2Of_3SignaturesEnvelope);
+        const raiseThresholdTo_3_2Of_3SignaturesTxid = raiseThresholdTo_3_2Of_3SignaturesResult.txid.toString();
+        // Acceptance is not execution. A transaction that has not reached its
+        // threshold is accepted and then sits pending, so the only honest
+        // confirmation is the delivered status.
+        let raiseThresholdTo_3_2Of_3SignaturesStatus = 'unknown';
+        for (let i = 0; i < 30; i++) {
+            try {
+                const { status } = await client.v2.queryTx(raiseThresholdTo_3_2Of_3SignaturesTxid);
+                raiseThresholdTo_3_2Of_3SignaturesStatus = status?.code ?? 'unknown';
+                if (raiseThresholdTo_3_2Of_3SignaturesStatus !== 'pending' && raiseThresholdTo_3_2Of_3SignaturesStatus !== 'remote') break;
+            } catch { /* not indexed yet */ }
+            await new Promise((r) => setTimeout(r, 2000));
+        }
+        if (raiseThresholdTo_3_2Of_3SignaturesStatus === 'delivered') {
+            console.log(`CoSign update_key_page DELIVERED with 2 signature(s) - TxID: ${raiseThresholdTo_3_2Of_3SignaturesTxid}`);
         } else {
-            // Acceptance is not execution. A transaction that has not reached its
-            // threshold is accepted and then sits pending, so the only honest
-            // confirmation is the delivered status.
-            let raiseThresholdTo_3_2Of_3SignaturesStatus = 'unknown';
-            for (let i = 0; i < 30; i++) {
-                try {
-                    const q = await client.v2.queryTx({ txid: raiseThresholdTo_3_2Of_3SignaturesTxid });
-                    raiseThresholdTo_3_2Of_3SignaturesStatus = q?.status?.delivered ? 'delivered'
-                        : q?.status?.pending ? 'pending'
-                        : (q?.status?.code ?? 'unknown');
-                    if (raiseThresholdTo_3_2Of_3SignaturesStatus !== 'pending') break;
-                } catch { /* not indexed yet */ }
-                await new Promise((r) => setTimeout(r, 2000));
-            }
-            if (raiseThresholdTo_3_2Of_3SignaturesStatus === 'delivered') {
-                console.log(`CoSign update_key_page DELIVERED with 2 signature(s) - TxID: ${raiseThresholdTo_3_2Of_3SignaturesTxid}`);
-            } else {
-                console.log(`CoSign update_key_page NOT DELIVERED (status=${raiseThresholdTo_3_2Of_3SignaturesStatus}) - TxID: ${raiseThresholdTo_3_2Of_3SignaturesTxid}`);
-            }
+            console.log(`CoSign update_key_page NOT DELIVERED (status=${raiseThresholdTo_3_2Of_3SignaturesStatus}) - TxID: ${raiseThresholdTo_3_2Of_3SignaturesTxid}`);
         }
 
 
