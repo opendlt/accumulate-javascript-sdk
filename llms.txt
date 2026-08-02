@@ -13,7 +13,8 @@ Connect, build a transaction body with `TxBody`, then sign + submit + wait with 
 ```
 const client = Accumulate.forKermit();   // or forMainnet()/forDevnet()
 // body = TxBody.<operation>(...)
-const r = await new SmartSigner(signer).signSubmitAndWait(principal, body);
+const signer = new SmartSigner(client, keypair.toKey(), signerUrl);
+const r = await signer.signSubmitAndWait(principal, body);
 ```
 
 ## Rules
