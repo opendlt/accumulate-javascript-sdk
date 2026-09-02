@@ -1,0 +1,62 @@
+name: payload-scan
+
+# Fails the build if the injected loader payload appears in the tree.
+#
+# WHY THIS EXISTS. Between 2026-02 and 2026-09 an injector amended commits in
+# this org, appending an obfuscated remote-code loader to config and test files
+# that load automatically (vite/vitest/babel/hardhat/tailwind configs, entry
+# points, *.test.ts). Three payload generations were seen; generation 3 carries
+# no campaign tag, no obfuscation and no padding, so size and entropy heuristics
+# do not catch it. Fixed strings do.
+#
+# It also catches reintroduction: if anyone merges pre-rewrite history back in,
+# this fails loudly instead of the payload sitting unnoticed. It ran for 74 days
+# undetected in one repository.
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '17 6 * * 1'   # Mondays, so a dormant repo still gets checked
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan working tree for injected loader
+        run: |
+          set -euo pipefail
+          cat > /tmp/pat.txt <<'PAT'
+          global.i="
+          global['!']='
+          /*C260512A*/
+          AUTH_API_KEY
+          atob(process.env
+          eval(proxyInfo
+          auth-confirm-eight
+          PAT
+          if hits=$(git grep -lFf /tmp/pat.txt HEAD -- \
+                '*.js' '*.mjs' '*.cjs' '*.ts' '*.tsx' '*.jsx' '*.json' '*.env*'); then
+            echo "::error::Injected loader payload detected"
+            echo "$hits" | sed 's/^/  /'
+            exit 1
+          fi
+          echo "clean: no payload markers found"
+
+      - name: Flag off-screen padding concealment
+        run: |
+          if hits=$(grep -rlE ' {100,}[^ ]' \
+                --include='*.js' --include='*.mjs' --include='*.cjs' \
+                --include='*.ts' --include='*.tsx' \
+                --exclude-dir=node_modules --exclude-dir=.git . 2>/dev/null); then
+            echo "::error::Source line with 100+ consecutive spaces then code - the concealment signature"
+            echo "$hits" | sed 's/^/  /'
+            exit 1
+          fi
+          echo "clean: no padding concealment found"
