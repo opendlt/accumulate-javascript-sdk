@@ -36,12 +36,13 @@ export namespace Address {
         // BTC: SHA256 of the compressed (33-byte) or raw public key
         return sha256(publicKey);
 
+      // RSA and ECDSA: SHA256 of the DER-encoded (PKIX/SPKI) public key, exactly as it appears in
+      // the signature's publicKey field. NOT the raw modulus or the raw EC point — hashing those
+      // yields a key page entry that silently never matches the signature.
+      // cf. Go protocol/signature.go: Rsa/EcdsaSha256Signature.GetPublicKeyHash = doSha256(PublicKey).
+      // No length check: DER is variable-length.
       case SignatureType.RsaSha256:
-        // RSA: SHA256 of the full DER-encoded public key
-        return sha256(publicKey);
-
       case SignatureType.EcdsaSha256:
-        // ECDSA P-256: SHA256 of the raw public key
         return sha256(publicKey);
 
       default:
@@ -68,6 +69,8 @@ export namespace Address {
       case SignatureType.ETH:
       case SignatureType.BTC:
       case SignatureType.BTCLegacy:
+      case SignatureType.RsaSha256:
+      case SignatureType.EcdsaSha256:
         return PublicKeyAddress.from(sig.type, sig.publicKey!);
       case SignatureType.Delegated:
         return fromSignature(sig.signature!);
@@ -123,6 +126,12 @@ export class PublicKeyHashAddress implements Address {
       case SignatureType.BTC:
       case SignatureType.BTCLegacy:
         return formatBTC(this.publicKeyHash);
+      // AC2/AC3 are the display forms Go uses for these — cf. pkg/types/address/address.go,
+      // formatAddr. Without them, rendering ANY page that shows an ECDSA or RSA signer throws.
+      case SignatureType.EcdsaSha256:
+        return formatAC2(this.publicKeyHash);
+      case SignatureType.RsaSha256:
+        return formatAC3(this.publicKeyHash);
       case SignatureType.Unknown:
         return formatMH(this.publicKeyHash);
       default:
@@ -165,6 +174,16 @@ function doChecksum(...parts: Uint8Array[]) {
 
 function formatAC1(hash: Uint8Array) {
   return formatWithPrefix2("AC1", hash);
+}
+
+/** ECDSA (SHA-256) public key hash. Go: FormatAC2 = format2(hash, "AC2"). */
+function formatAC2(hash: Uint8Array) {
+  return formatWithPrefix2("AC2", hash);
+}
+
+/** RSA (SHA-256) public key hash. Go: FormatAC3 = format2(hash, "AC3"). */
+function formatAC3(hash: Uint8Array) {
+  return formatWithPrefix2("AC3", hash);
 }
 
 function formatFA(hash: Uint8Array) {
