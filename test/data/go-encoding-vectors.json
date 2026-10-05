@@ -1,0 +1,176 @@
+[
+ {
+  "name": "data-account-inherited-authority",
+  "json": {
+   "type": "dataAccount",
+   "url": "acc://certen-protocol.acme/billing-receipts"
+  },
+  "binary": "010b022b6163633a2f2f63657274656e2d70726f746f636f6c2e61636d652f62696c6c696e672d7265636569707473030180"
+ },
+ {
+  "name": "key-page-blacklist",
+  "json": {
+   "type": "keyPage",
+   "keyBook": "acc://x.acme/book",
+   "url": "acc://x.acme/book/1",
+   "acceptThreshold": 1,
+   "threshold": 1,
+   "version": 1,
+   "keys": [
+    {
+     "publicKeyHash": "0000000000000000000000000000000000000000000000000000000000000000",
+     "publicKey": "0000000000000000000000000000000000000000000000000000000000000000",
+     "lastUsedOn": 5
+    }
+   ],
+   "transactionBlacklist": [
+    "updateKeyPage",
+    "updateAccountAuth"
+   ]
+  },
+  "binary": "010902136163633a2f2f782e61636d652f626f6f6b2f310401080109240120000000000000000000000000000000000000000000000000000000000000000002050a06"
+ },
+ {
+  "name": "key-page-blacklist-one-bit",
+  "json": {
+   "type": "keyPage",
+   "keyBook": "acc://x.acme/book",
+   "url": "acc://x.acme/book/2",
+   "acceptThreshold": 1,
+   "threshold": 1,
+   "version": 3,
+   "transactionBlacklist": [
+    "updateKeyPage"
+   ]
+  },
+  "binary": "010902136163633a2f2f782e61636d652f626f6f6b2f32040108030a02"
+ },
+ {
+  "name": "kermit-directory-self-anchor",
+  "json": {
+   "type": "sequenced",
+   "message": {
+    "type": "transaction",
+    "transaction": {
+     "header": {
+      "principal": "acc://dn.acme/anchors"
+     },
+     "body": {
+      "type": "directoryAnchor",
+      "source": "acc://dn.acme",
+      "minorBlockIndex": 10347905,
+      "rootChainIndex": 2543521,
+      "rootChainAnchor": "c21c96538479640a465580c86afa69929a2fae7332de85beb718533c7674073d",
+      "stateTreeAnchor": "2fac7720417186e479542c4d3737c225eecf0f9a3eb64af45bb282fa9a651b7e",
+      "receipts": [
+       {
+        "anchor": {
+         "source": "acc://dn.acme",
+         "minorBlockIndex": 10347903,
+         "rootChainIndex": 2543513,
+         "rootChainAnchor": "a75a53c42b0ea47e8fad5cdf6f7ff1732462dea382e1b1d67912ce0bffbb4f9d",
+         "stateTreeAnchor": "b0293b3048ab88a1b256e11d433d01201d648fc39daef51188702a41db354cd1"
+        },
+        "rootChainReceipt": {
+         "start": "a75a53c42b0ea47e8fad5cdf6f7ff1732462dea382e1b1d67912ce0bffbb4f9d",
+         "startIndex": 292073,
+         "end": "a75a53c42b0ea47e8fad5cdf6f7ff1732462dea382e1b1d67912ce0bffbb4f9d",
+         "endIndex": 292073,
+         "anchor": "c21c96538479640a465580c86afa69929a2fae7332de85beb718533c7674073d",
+         "entries": [
+          {
+           "hash": "347451b2c05d38a143e06ee860e0d3b1d6699fef5b18774e6ecb6a131473f4a0"
+          },
+          {
+           "hash": "e7bd079d677c49756ca9405369425a82f4c790c28a27e4bf4716e39a7be9523b"
+          },
+          {
+           "hash": "71c1ab48244cb33812e7fcd9aeecdbf0dcdb3d6eca214db548cb70607680e3dd"
+          },
+          {
+           "hash": "4239934432941cd8209081cbef8b728e6a02ea6828b0a33a52aaaf041eb7a148"
+          },
+          {
+           "hash": "3deaf1d36d857562024e649217d598f7420804178e6c05731c177be3ee61edce"
+          },
+          {
+           "hash": "cdf4aa8bfc299ed0b9fc770bcc5b073ccc85f81172f0b94dc58a4470cd225e1c"
+          },
+          {
+           "hash": "cabc4871193caf0aac710ad89c802f12a14958c028cf5bc4cd571b41c1fb59ba"
+          },
+          {
+           "hash": "21f828d60939b57fab6a481f16fbb604a294c6be24deae3a4b668db94dd2e6f6"
+          },
+          {
+           "hash": "6cf54e822d541c3284ec988a5c0799f5074a31f2d1b76aa08eee4b82defbdd88"
+          },
+          {
+           "hash": "504e02889d07ada66ae1511045f507738f4d9016a11ce405f7f67e54492fef6a"
+          },
+          {
+           "hash": "40d681ffe42fc3302847c60e13843b756e0929904d51e4b87e820146a5b9164b"
+          },
+          {
+           "right": true,
+           "hash": "03a603db36f986a9d652ee3f0bf17b3441b17b17e9ada13755b753d15b7dcf22"
+          },
+          {
+           "hash": "443dd7b6bd4b38635f1f446f598f2429b43a7e2e0407e9c39ceddaa5b278e98f"
+          },
+          {
+           "hash": "c1133e5c7f917deb52b3cb02f46bd4fce5c79192b3fdb8d4026220792b3ac709"
+          },
+          {
+           "hash": "48f6532996560a8a48ae664c30ab2e6f6b563d7c60290bec53e3416796c1a039"
+          },
+          {
+           "right": true,
+           "hash": "807abf5efa88a98d2409ad725107dec06fb983b2efb3bfec46769c6e15c19ab5"
+          },
+          {
+           "hash": "379b1b8da188ad53c112de85da3d38a7ac2b7d4142064d621f9d0d3e1c63e82e"
+          },
+          {
+           "hash": "0484ea202d1a9c79bb517b1162419da87e1e9c01b22d332cb09adccae0440fab"
+          },
+          {
+           "hash": "44c86e38359d56d9a0a127b461d016a9762373fba21ef945655f9c72e0526872"
+          },
+          {
+           "hash": "6353f0cf2ea51f9fe10eff80595f7de40dd589607d1e4504ee6ead0f98cb975d"
+          },
+          {
+           "hash": "b2849fe364c7f92b5354f6deb28d7438f95de59f8bb8a99efef5cf0a896f4cbe"
+          },
+          {
+           "hash": "210a64a15d6a3c5fa0acfb6e232b4b3cabc7bb6a4d6a97002c4661c5ff4a9d38"
+          },
+          {
+           "hash": "ca4dbf098325bea03b51de43576e93d32e100b1de058aa8f9770a19bd5ab4c5f"
+          },
+          {
+           "hash": "9e81f9751893eefdca4715052e5acb80d582c660b93b4c932ffeea1084261b38"
+          },
+          {
+           "hash": "a43007663b4a0ebc61f0062c18f631533bfca8e47146fc7a39dd14415cb3edf5"
+          },
+          {
+           "hash": "1fdab57e357dfe8f6d5a328b652da432ba9ebc8dc03b3cfa6b11f401b5b5b30e"
+          }
+         ]
+        }
+       }
+      ],
+      "makeMajorBlockTime": "0001-01-01T00:00:00Z"
+     }
+    }
+   },
+   "source": "acc://dn.acme",
+   "destination": "acc://dn.acme",
+   "number": 292075
+  },
+  "binary": "010502fd09010102f809011701156163633a2f2f646e2e61636d652f616e63686f727302dc090161025b010d6163633a2f2f646e2e61636d650381cbf70404a19f9b0105c21c96538479640a465580c86afa69929a2fae7332de85beb718533c7674073d062fac7720417186e479542c4d3737c225eecf0f9a3eb64af45bb282fa9a651b7e04fa08015b010d6163633a2f2f646e2e61636d6503ffcaf70404999f9b0105a75a53c42b0ea47e8fad5cdf6f7ff1732462dea382e1b1d67912ce0bffbb4f9d06b0293b3048ab88a1b256e11d433d01201d648fc39daef51188702a41db354cd1029a080120a75a53c42b0ea47e8fad5cdf6f7ff1732462dea382e1b1d67912ce0bffbb4f9d02d2d3230320a75a53c42b0ea47e8fad5cdf6f7ff1732462dea382e1b1d67912ce0bffbb4f9d04d2d3230520c21c96538479640a465580c86afa69929a2fae7332de85beb718533c7674073d06220220347451b2c05d38a143e06ee860e0d3b1d6699fef5b18774e6ecb6a131473f4a006220220e7bd079d677c49756ca9405369425a82f4c790c28a27e4bf4716e39a7be9523b0622022071c1ab48244cb33812e7fcd9aeecdbf0dcdb3d6eca214db548cb70607680e3dd062202204239934432941cd8209081cbef8b728e6a02ea6828b0a33a52aaaf041eb7a148062202203deaf1d36d857562024e649217d598f7420804178e6c05731c177be3ee61edce06220220cdf4aa8bfc299ed0b9fc770bcc5b073ccc85f81172f0b94dc58a4470cd225e1c06220220cabc4871193caf0aac710ad89c802f12a14958c028cf5bc4cd571b41c1fb59ba0622022021f828d60939b57fab6a481f16fbb604a294c6be24deae3a4b668db94dd2e6f6062202206cf54e822d541c3284ec988a5c0799f5074a31f2d1b76aa08eee4b82defbdd8806220220504e02889d07ada66ae1511045f507738f4d9016a11ce405f7f67e54492fef6a0622022040d681ffe42fc3302847c60e13843b756e0929904d51e4b87e820146a5b9164b06240101022003a603db36f986a9d652ee3f0bf17b3441b17b17e9ada13755b753d15b7dcf2206220220443dd7b6bd4b38635f1f446f598f2429b43a7e2e0407e9c39ceddaa5b278e98f06220220c1133e5c7f917deb52b3cb02f46bd4fce5c79192b3fdb8d4026220792b3ac7090622022048f6532996560a8a48ae664c30ab2e6f6b563d7c60290bec53e3416796c1a039062401010220807abf5efa88a98d2409ad725107dec06fb983b2efb3bfec46769c6e15c19ab506220220379b1b8da188ad53c112de85da3d38a7ac2b7d4142064d621f9d0d3e1c63e82e062202200484ea202d1a9c79bb517b1162419da87e1e9c01b22d332cb09adccae0440fab0622022044c86e38359d56d9a0a127b461d016a9762373fba21ef945655f9c72e0526872062202206353f0cf2ea51f9fe10eff80595f7de40dd589607d1e4504ee6ead0f98cb975d06220220b2849fe364c7f92b5354f6deb28d7438f95de59f8bb8a99efef5cf0a896f4cbe06220220210a64a15d6a3c5fa0acfb6e232b4b3cabc7bb6a4d6a97002c4661c5ff4a9d3806220220ca4dbf098325bea03b51de43576e93d32e100b1de058aa8f9770a19bd5ab4c5f062202209e81f9751893eefdca4715052e5acb80d582c660b93b4c932ffeea1084261b3806220220a43007663b4a0ebc61f0062c18f631533bfca8e47146fc7a39dd14415cb3edf5062202201fdab57e357dfe8f6d5a328b652da432ba9ebc8dc03b3cfa6b11f401b5b5b30e030d6163633a2f2f646e2e61636d65040d6163633a2f2f646e2e61636d6505ebe911",
+  "hash": "2d637e93b97864919703b2adfe7840a2ab02a7a4ce54b0d79bff1b2f7cbf303e"
+ }
+]
