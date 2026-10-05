@@ -71,10 +71,10 @@ import {
   WriteDataResult,
 } from "./types_gen.js";
 import { Account, TransactionBody } from "./unions_gen.js";
-import { TransactionType } from "./enums_gen.js";
+import { AllowedTransactionBit, TransactionType } from "./enums_gen.js";
 import { AccumulateURL as URL } from "../address/url.js";
 import { hashTree, sha256, sha512 } from "../common/index.js";
-import { DelegatedSignature } from "./types_gen.js";
+import { DelegatedSignature, registerCoreTypes } from "./types_gen.js";
 import { Signature } from "./unions_gen.js";
 
 /**
@@ -107,15 +107,37 @@ export namespace Fee {
   }
 }
 
-export type AllowedTransactions = TransactionType[];
-export type AllowedTransactionsArgs = AllowedTransactions | string[];
+/**
+ * A set of AllowedTransactionBit, as Go's protocol.AllowedTransactions holds it: a uint64 bitmask, the OR of
+ * 1 << bit. Its JSON is the list of bit names; its binary form is the mask, written as an enum varint. (It used to be
+ * modelled here as a list of TransactionType, which named the wrong enum and could not be encoded.)
+ */
+export type AllowedTransactions = number;
+export type AllowedTransactionsArgs = AllowedTransactions | (AllowedTransactionBit | string)[];
 
 /** @ignore */
 export namespace AllowedTransactions {
   export function fromObject(obj: AllowedTransactionsArgs): AllowedTransactions {
-    if (!obj.length) return [];
-    if (typeof obj[0] === "number") return <number[]>obj;
-    return (<string[]>obj).map((v) => TransactionType.byName(v));
+    if (typeof obj === "number") return obj;
+    const bits = new Set<number>();
+    for (const v of obj) {
+      const bit = AllowedTransactionBit.fromObject(v);
+      // A JavaScript number holds a bitmask exactly up to bit 52; the protocol defines bits 1 and 2.
+      if (bit > 52) throw new Error(`AllowedTransactionBit ${bit} does not fit a JavaScript number`);
+      bits.add(bit);
+    }
+    let mask = 0;
+    for (const bit of bits) mask += 2 ** bit;
+    return mask;
+  }
+
+  /** The bit names, in ascending order, as Go's AllowedTransactions.MarshalJSON gives them. */
+  export function unpack(mask: AllowedTransactions): string[] {
+    const names: string[] = [];
+    for (let bit = 0; bit <= 52 && 2 ** bit <= mask; bit++) {
+      if (Math.floor(mask / 2 ** bit) % 2 === 1) names.push(AllowedTransactionBit.getName(bit));
+    }
+    return names;
   }
 }
 
@@ -183,3 +205,6 @@ export namespace UserSignature {
     return <UserSignature>Signature.fromObject(obj);
   }
 }
+
+// The generated classes in ./types_gen.ts resolve these hand-written types lazily (a direct import would be circular).
+registerCoreTypes({ Fee, AllowedTransactions, AnchorBody, TransactionResult, Signer });

@@ -49,65 +49,41 @@ import { TransactionBase } from "./base.js";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 
-// Lazy loaders to avoid circular dependency - use delayed imports to avoid Jest issues
+// The hand-written types these classes refer to live in ./index.ts, which imports this module, so they cannot be
+// imported here. ./index.ts registers them when it loads (registerCoreTypes). A lookup before that is a load-order
+// bug and throws: the stand-ins that used to sit here returned plain objects, which encode wrongly or not at all.
 
-let _Fee: any;
-let _AllowedTransactions: any;
-let _AnchorBody: any;
-let _TransactionResult: any;
-let _Signer: any;
+type CoreTypes = { Fee: any; AllowedTransactions: any; AnchorBody: any; TransactionResult: any; Signer: any };
+let _core: CoreTypes | undefined;
+
+/** @ignore Called once by ./index.ts. */
+export function registerCoreTypes(types: CoreTypes) {
+  _core = types;
+}
+
+function coreType<K extends keyof CoreTypes>(name: K): CoreTypes[K] {
+  if (!_core) throw new Error(`core type ${name} is not registered: import the package (or src/core/index), not types_gen`);
+  return _core[name];
+}
 
 function getFeeClass() {
-  if (!_Fee) {
-    // Use dynamic import for Jest compatibility
-    _Fee = {
-      fromObject: (obj: any) => {
-        if (typeof obj === "string") return Number(obj);
-        return obj;
-      }
-    };
-  }
-  return _Fee;
+  return coreType("Fee");
 }
 
 function getAllowedTransactionsClass() {
-  if (!_AllowedTransactions) {
-    _AllowedTransactions = {
-      fromObject: (obj: any) => {
-        if (!obj.length) return [];
-        if (typeof obj[0] === "number") return obj;
-        return obj.map((v: any) => typeof v === "string" ? 0 : v); // Simplified
-      }
-    };
-  }
-  return _AllowedTransactions;
+  return coreType("AllowedTransactions");
 }
 
 function getAnchorBodyClass() {
-  if (!_AnchorBody) {
-    _AnchorBody = {
-      fromObject: (obj: any) => obj
-    };
-  }
-  return _AnchorBody;
+  return coreType("AnchorBody");
 }
 
 function getTransactionResultClass() {
-  if (!_TransactionResult) {
-    _TransactionResult = {
-      fromObject: (obj: any) => obj
-    };
-  }
-  return _TransactionResult;
+  return coreType("TransactionResult");
 }
 
 function getSignerClass() {
-  if (!_Signer) {
-    _Signer = {
-      fromObject: (obj: any) => obj
-    };
-  }
-  return _Signer;
+  return coreType("Signer");
 }
 
 export type ADIArgs = {
@@ -2625,7 +2601,7 @@ export class KeyPage {
       transactionBlacklist:
         this.transactionBlacklist === undefined
           ? undefined
-          : this.transactionBlacklist.map((v) => TransactionType.getName(v)),
+          : getAllowedTransactionsClass().unpack(this.transactionBlacklist),
     };
   }
 }

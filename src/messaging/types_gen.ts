@@ -4,16 +4,19 @@ import { MessageType } from "./enums_gen.js";
 type Message = any;
 type MessageArgs = any;
 
-// Lazy loader to avoid circular dependency
+// The Message union lives in ./unions_gen.ts, which imports this module, so it is resolved lazily: ./index.ts registers
+// it when it loads. A lookup before that is a load-order bug and throws; the stand-in that used to sit here returned
+// plain objects, so a message nested in another (a sequenced message's transaction) could not be encoded.
 
 let _MessageClass: any;
+
+/** @ignore Called once by ./index.ts. */
+export function registerMessageClass(cls: any) {
+  _MessageClass = cls;
+}
+
 function getMessageClass() {
-  if (!_MessageClass) {
-    // Fallback for Jest compatibility
-    _MessageClass = {
-      fromObject: (obj: any) => obj
-    };
-  }
+  if (!_MessageClass) throw new Error("the Message union is not registered: import the package (or src/messaging/index), not types_gen");
   return _MessageClass;
 }
 import { AccumulateTxID as TxID, TxIDArgs } from "../address/txid.js";

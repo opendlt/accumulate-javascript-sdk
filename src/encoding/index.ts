@@ -29,6 +29,13 @@ export * from "./encoding.js";
 export const FieldNumber = new Uint();
 export const Length = new Uint();
 
+/**
+ * Written for an object that would otherwise encode to nothing, as Go's encoding.Writer does (writer.go Reset). Without
+ * it, an empty nested object - such as the AccountAuth of an account that inherits its authorities - encodes
+ * differently from the network's, and every hash over it disagrees with the chain's.
+ */
+export const EmptyObject = 0x80;
+
 export function encode(target: any) {
   const parts: Uint8Array[] = [];
   consume(target, (field, value) => {
@@ -36,6 +43,7 @@ export function encode(target: any) {
     parts.push(field.type.encode(value));
   });
 
+  if (parts.length === 0) return Buffer.from([EmptyObject]);
   return Buffer.concat(parts);
 }
 
@@ -69,12 +77,24 @@ function encodeValue(value: any, field: Field, consume: Consumer) {
     case field.type instanceof Embedded:
       break;
 
+    case field.type instanceof Time:
+      // Go omits a zero time.Time, which its JSON shows as "0001-01-01T00:00:00Z".
+      if (!field.keepEmpty && (!value || isZeroTime(value))) return;
+      break;
+
     default:
       if (!field.keepEmpty && !value) return;
       break;
   }
 
   consume(field, value);
+}
+
+/** Go's zero time.Time: January 1, year 1, 00:00:00 UTC. */
+const ZERO_TIME_MS = -62135596800000;
+
+function isZeroTime(value: any) {
+  return value instanceof Date && value.getTime() === ZERO_TIME_MS;
 }
 
 function isZeroHash(value: any) {
@@ -104,6 +124,7 @@ class Embedded {
       parts.push(uintMarshalBinary(field.number));
       parts.push(field.type.encode(value));
     });
+    if (parts.length === 0) return bytesMarshalBinary(Buffer.from([EmptyObject]));
     return bytesMarshalBinary(Buffer.concat(parts));
   }
 

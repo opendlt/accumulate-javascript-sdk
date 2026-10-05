@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **Binary encoding now matches the network's byte for byte** where it did not, so hashes and signatures built
+  from it agree with the chain's. Each case is pinned by `test/go-encoding.test.ts` to bytes Go's `MarshalBinary`
+  produced for the same object:
+  - An object that would encode to nothing is written as the empty-object marker `0x80`, as Go's encoder does.
+    Before, an account inheriting its authorities (an empty `AccountAuth`) encoded differently.
+  - A zero time (Go JSON `0001-01-01T00:00:00Z`) is omitted, as Go omits it. Before, it was encoded as a real time,
+    so for example a `DirectoryAnchor` read from the API re-encoded to different bytes.
+  - `AllowedTransactions` (a key page's `transactionBlacklist`) is Go's bitmask of `AllowedTransactionBit`, encoded as
+    the mask and marshalled to JSON as the bit names. Before, it was modelled as a list of `TransactionType` and the
+    generated code mapped every name to `0`, so a key page with a blacklist could not be encoded.
+- **Nested union members are real classes.** The generated classes resolved `Message`, `AnchorBody`,
+  `TransactionResult`, `Signer`, `Fee` and `AllowedTransactions` through stand-ins that returned plain objects, so a
+  message nested in a `SequencedMessage` (and the others) could not be encoded. The package indexes now register the
+  real implementations, and a lookup before registration throws instead of degrading silently.
+
+### Changed
+- `AllowedTransactions` is now `number` (the bitmask), with `AllowedTransactions.unpack(mask)` giving the bit names.
+
 ## [2.3.5] - 2026-07-31
 
 ### Added
