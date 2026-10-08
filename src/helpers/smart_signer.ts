@@ -19,7 +19,15 @@
  *   - Dart:   SmartSigner.signSubmitAndWait()
  */
 
-import { Transaction, type TransactionBody } from "../core/index.js";
+import type { URLArgs } from "../address/index.js";
+import {
+  Transaction,
+  type ExpireOptionsArgs,
+  type HashLockOptions,
+  type HashLockOptionsArgs,
+  type HoldUntilOptionsArgs,
+  type TransactionBody,
+} from "../core/index.js";
 import { Envelope } from "../messaging/index.js";
 import type { Key, Signable } from "../signing/key.js";
 import type { Accumulate } from "./accumulate.js";
@@ -34,6 +42,39 @@ export interface SignOptions {
   metadata?: Uint8Array;
   /** Optional delegator URLs for delegated signing. */
   delegators?: string[];
+  /**
+   * Expire the transaction as pending once this time passes (header field 5). A Date, or
+   * `{ atTime }`.
+   */
+  expire?: Date | ExpireOptionsArgs;
+  /** Hold the transaction as pending until this minor block (header field 6). A number, or `{ minorBlock }`. */
+  holdUntil?: number | HoldUntilOptionsArgs;
+  /** Additional authorities that must approve the transaction (header field 7). */
+  authorities?: URLArgs[];
+  /**
+   * Hash lock (HTLC) condition (header field 8). On a SendTokens the recipient receives a
+   * SyntheticLockedDeposit that only a ReleaseLockedOperation revealing the preimage unlocks.
+   * Build one with `TxBody.hashLock(...)`; check it with `validateHashLockForSubmit`.
+   */
+  hashLock?: HashLockOptions | HashLockOptionsArgs;
+}
+
+/**
+ * Build the transaction header for {@link SmartSigner.sign}. Every optional field set here is
+ * part of the transaction hash; leaving them unset leaves the hash exactly as it was.
+ */
+export function buildTransactionHeader(principal: string, options?: SignOptions) {
+  const expire = options?.expire;
+  const holdUntil = options?.holdUntil;
+  return {
+    principal,
+    memo: options?.memo,
+    metadata: options?.metadata,
+    expire: expire instanceof Date ? { atTime: expire } : expire,
+    holdUntil: typeof holdUntil === "number" ? { minorBlock: holdUntil } : holdUntil,
+    authorities: options?.authorities,
+    hashLock: options?.hashLock,
+  };
 }
 
 export interface SignAndSubmitOptions extends SignOptions {
@@ -136,11 +177,7 @@ export class SmartSigner {
 
     // Build the transaction
     const txn = new Transaction({
-      header: {
-        principal,
-        memo: options?.memo,
-        metadata: options?.metadata,
-      },
+      header: buildTransactionHeader(principal, options),
       body,
     });
 

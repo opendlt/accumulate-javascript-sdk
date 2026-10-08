@@ -1,3 +1,4 @@
+import { Duration, type DurationArgs } from "../encoding/encodable";
 import {
   AccountAuthOperationType,
   AccountType,
@@ -6,6 +7,8 @@ import {
   DataEntryType,
   ExecutorVersion,
   ExecutorVersionArgs,
+  HashAlgorithm,
+  HashAlgorithmArgs,
   KeyPageOperationType,
   NetworkMaintenanceOperationType,
   PartitionType,
@@ -2307,6 +2310,51 @@ export class FeeSchedule {
   }
 }
 
+export type HashLockOptionsArgs = {
+  hashAlgorithm?: HashAlgorithmArgs;
+  hash?: Uint8Array | string;
+  expiration?: Date | string;
+};
+export class HashLockOptions {
+  @(encodeAs.field(1).enum)
+  public hashAlgorithm?: HashAlgorithm;
+  @(encodeAs.field(2).bytes)
+  public hash?: Uint8Array;
+  @(encodeAs.field(3).time)
+  public expiration?: Date;
+
+  constructor(args: HashLockOptionsArgs) {
+    this.hashAlgorithm =
+      args.hashAlgorithm == undefined ? undefined : HashAlgorithm.fromObject(args.hashAlgorithm);
+    this.hash =
+      args.hash == undefined
+        ? undefined
+        : args.hash instanceof Uint8Array
+          ? args.hash
+          : Buffer.from(args.hash, "hex");
+    this.expiration =
+      args.expiration == undefined
+        ? undefined
+        : args.expiration instanceof Date
+          ? args.expiration
+          : new Date(args.expiration);
+  }
+
+  copy() {
+    return new HashLockOptions(this.asObject());
+  }
+
+  asObject(): HashLockOptionsArgs {
+    return {
+      hashAlgorithm:
+        this.hashAlgorithm === undefined ? undefined : HashAlgorithm.getName(this.hashAlgorithm),
+      hash:
+        this.hash === undefined ? undefined : this.hash && Buffer.from(this.hash).toString("hex"),
+      expiration: this.expiration === undefined ? undefined : this.expiration,
+    };
+  }
+}
+
 export type HoldUntilOptionsArgs = {
   minorBlock?: number;
 };
@@ -2992,6 +3040,7 @@ export type NetworkGlobalsArgs = {
   anchorEmptyBlocks?: boolean;
   feeSchedule?: FeeSchedule | FeeScheduleArgs;
   limits?: NetworkLimits | NetworkLimitsArgs;
+  blockInterval?: DurationArgs;
 };
 export class NetworkGlobals {
   @(encodeAs.field(1).reference)
@@ -3006,6 +3055,9 @@ export class NetworkGlobals {
   public feeSchedule?: FeeSchedule;
   @(encodeAs.field(6).reference)
   public limits?: NetworkLimits;
+  /** The cadence the network produces blocks at, in seconds. Absent on older networks. */
+  @(encodeAs.field(7).duration)
+  public blockInterval?: number;
 
   constructor(args: NetworkGlobalsArgs) {
     this.operatorAcceptThreshold =
@@ -3036,6 +3088,8 @@ export class NetworkGlobals {
         : args.limits instanceof NetworkLimits
           ? args.limits
           : new NetworkLimits(args.limits);
+    this.blockInterval =
+      args.blockInterval == undefined ? undefined : Duration.toSeconds(args.blockInterval);
   }
 
   copy() {
@@ -3057,6 +3111,7 @@ export class NetworkGlobals {
       anchorEmptyBlocks: this.anchorEmptyBlocks === undefined ? undefined : this.anchorEmptyBlocks,
       feeSchedule: this.feeSchedule === undefined ? undefined : this.feeSchedule.asObject(),
       limits: this.limits === undefined ? undefined : this.limits.asObject(),
+      blockInterval: this.blockInterval === undefined ? undefined : this.blockInterval,
     };
   }
 }
@@ -3609,6 +3664,116 @@ export class ReceiptSignature {
         this.transactionHash === undefined
           ? undefined
           : this.transactionHash && Buffer.from(this.transactionHash).toString("hex"),
+    };
+  }
+}
+
+export type ReleaseLockedOperationArgs = {
+  lockedTxID?: TxIDArgs;
+  preimage?: Uint8Array | string;
+};
+export type ReleaseLockedOperationArgsWithType = ReleaseLockedOperationArgs & {
+  type: TransactionType.ReleaseLockedOperation | "releaseLockedOperation";
+};
+export class ReleaseLockedOperation {
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
+  public readonly type = TransactionType.ReleaseLockedOperation;
+  @(encodeAs.field(2).txid)
+  public lockedTxID?: TxID;
+  @(encodeAs.field(3).bytes)
+  public preimage?: Uint8Array;
+
+  constructor(args: ReleaseLockedOperationArgs) {
+    this.lockedTxID = args.lockedTxID == undefined ? undefined : TxID.parse(args.lockedTxID);
+    this.preimage =
+      args.preimage == undefined
+        ? undefined
+        : args.preimage instanceof Uint8Array
+          ? args.preimage
+          : Buffer.from(args.preimage, "hex");
+  }
+
+  copy() {
+    return new ReleaseLockedOperation(this.asObject());
+  }
+
+  asObject(): ReleaseLockedOperationArgsWithType {
+    return {
+      type: "releaseLockedOperation",
+      lockedTxID: this.lockedTxID === undefined ? undefined : this.lockedTxID.toString(),
+      preimage:
+        this.preimage === undefined
+          ? undefined
+          : this.preimage && Buffer.from(this.preimage).toString("hex"),
+    };
+  }
+}
+
+export type ReleaseLockedOperationResultArgs = {
+  preimage?: Uint8Array | string;
+  hashAlgorithm?: HashAlgorithmArgs;
+  hash?: Uint8Array | string;
+  amount?: bigint | string | number;
+  token?: URLArgs;
+};
+export type ReleaseLockedOperationResultArgsWithType = ReleaseLockedOperationResultArgs & {
+  type: TransactionType.ReleaseLockedOperation | "releaseLockedOperation";
+};
+export class ReleaseLockedOperationResult {
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
+  public readonly type = TransactionType.ReleaseLockedOperation;
+  @(encodeAs.field(2).bytes)
+  public preimage?: Uint8Array;
+  @(encodeAs.field(3).enum)
+  public hashAlgorithm?: HashAlgorithm;
+  @(encodeAs.field(4).bytes)
+  public hash?: Uint8Array;
+  @(encodeAs.field(5).bigInt)
+  public amount?: bigint;
+  @(encodeAs.field(6).url)
+  public token?: URL;
+
+  constructor(args: ReleaseLockedOperationResultArgs) {
+    this.preimage =
+      args.preimage == undefined
+        ? undefined
+        : args.preimage instanceof Uint8Array
+          ? args.preimage
+          : Buffer.from(args.preimage, "hex");
+    this.hashAlgorithm =
+      args.hashAlgorithm == undefined ? undefined : HashAlgorithm.fromObject(args.hashAlgorithm);
+    this.hash =
+      args.hash == undefined
+        ? undefined
+        : args.hash instanceof Uint8Array
+          ? args.hash
+          : Buffer.from(args.hash, "hex");
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : typeof args.amount === "bigint"
+          ? args.amount
+          : BigInt(args.amount);
+    this.token = args.token == undefined ? undefined : URL.parse(args.token);
+  }
+
+  copy() {
+    return new ReleaseLockedOperationResult(this.asObject());
+  }
+
+  asObject(): ReleaseLockedOperationResultArgsWithType {
+    return {
+      type: "releaseLockedOperation",
+      preimage:
+        this.preimage === undefined
+          ? undefined
+          : this.preimage && Buffer.from(this.preimage).toString("hex"),
+      hashAlgorithm:
+        this.hashAlgorithm === undefined ? undefined : HashAlgorithm.getName(this.hashAlgorithm),
+      hash:
+        this.hash === undefined ? undefined : this.hash && Buffer.from(this.hash).toString("hex"),
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
+      token: this.token === undefined ? undefined : this.token.toString(),
     };
   }
 }
@@ -4171,7 +4336,6 @@ export class SyntheticBurnTokens {
   public readonly type = TransactionType.SyntheticBurnTokens;
   @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @(encodeAs.field(2, 0).url)
   public source?: URL;
   @(encodeAs.field(2, 3).url)
   public initiator?: URL;
@@ -4233,7 +4397,6 @@ export class SyntheticCreateIdentity {
   public readonly type = TransactionType.SyntheticCreateIdentity;
   @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @(encodeAs.field(2, 0).url)
   public source?: URL;
   @(encodeAs.field(2, 3).url)
   public initiator?: URL;
@@ -4294,7 +4457,6 @@ export class SyntheticDepositCredits {
   public readonly type = TransactionType.SyntheticDepositCredits;
   @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @(encodeAs.field(2, 0).url)
   public source?: URL;
   @(encodeAs.field(2, 3).url)
   public initiator?: URL;
@@ -4364,7 +4526,6 @@ export class SyntheticDepositTokens {
   public readonly type = TransactionType.SyntheticDepositTokens;
   @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @(encodeAs.field(2, 0).url)
   public source?: URL;
   @(encodeAs.field(2, 3).url)
   public initiator?: URL;
@@ -4509,6 +4670,134 @@ export class SyntheticLedger {
   }
 }
 
+export type SyntheticLockedDepositArgs = {
+  cause?: TxIDArgs;
+  source?: URLArgs;
+  initiator?: URLArgs;
+  feeRefund?: number;
+  index?: number;
+  token?: URLArgs;
+  amount?: bigint | string | number;
+  sender?: URLArgs;
+  hashAlgorithm?: HashAlgorithmArgs;
+  hash?: Uint8Array | string;
+  expiration?: Date | string;
+  isIssuer?: boolean;
+};
+export type SyntheticLockedDepositArgsWithType = SyntheticLockedDepositArgs & {
+  type: TransactionType.SyntheticLockedDeposit | "syntheticLockedDeposit";
+};
+export class SyntheticLockedDeposit {
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
+  public readonly type = TransactionType.SyntheticLockedDeposit;
+  @(encodeAs.field(2, 1).txid)
+  public cause?: TxID;
+  public source?: URL;
+  @(encodeAs.field(2, 3).url)
+  public initiator?: URL;
+  @(encodeAs.field(2, 4).uint)
+  public feeRefund?: number;
+  @(encodeAs.field(2, 5).uint)
+  public index?: number;
+  @(encodeAs.field(3).url)
+  public token?: URL;
+  @(encodeAs.field(4).bigInt)
+  public amount?: bigint;
+  @(encodeAs.field(5).url)
+  public sender?: URL;
+  @(encodeAs.field(6).enum)
+  public hashAlgorithm?: HashAlgorithm;
+  @(encodeAs.field(7).bytes)
+  public hash?: Uint8Array;
+  @(encodeAs.field(8).time)
+  public expiration?: Date;
+  @(encodeAs.field(9).bool)
+  public isIssuer?: boolean;
+
+  constructor(args: SyntheticLockedDepositArgs) {
+    this.cause = args.cause == undefined ? undefined : TxID.parse(args.cause);
+    this.source = args.source == undefined ? undefined : URL.parse(args.source);
+    this.initiator = args.initiator == undefined ? undefined : URL.parse(args.initiator);
+    this.feeRefund = args.feeRefund == undefined ? undefined : args.feeRefund;
+    this.index = args.index == undefined ? undefined : args.index;
+    this.token = args.token == undefined ? undefined : URL.parse(args.token);
+    this.amount =
+      args.amount == undefined
+        ? undefined
+        : typeof args.amount === "bigint"
+          ? args.amount
+          : BigInt(args.amount);
+    this.sender = args.sender == undefined ? undefined : URL.parse(args.sender);
+    this.hashAlgorithm =
+      args.hashAlgorithm == undefined ? undefined : HashAlgorithm.fromObject(args.hashAlgorithm);
+    this.hash =
+      args.hash == undefined
+        ? undefined
+        : args.hash instanceof Uint8Array
+          ? args.hash
+          : Buffer.from(args.hash, "hex");
+    this.expiration =
+      args.expiration == undefined
+        ? undefined
+        : args.expiration instanceof Date
+          ? args.expiration
+          : new Date(args.expiration);
+    this.isIssuer = args.isIssuer == undefined ? undefined : args.isIssuer;
+  }
+
+  copy() {
+    return new SyntheticLockedDeposit(this.asObject());
+  }
+
+  asObject(): SyntheticLockedDepositArgsWithType {
+    return {
+      type: "syntheticLockedDeposit",
+      cause: this.cause === undefined ? undefined : this.cause.toString(),
+      source: this.source === undefined ? undefined : this.source.toString(),
+      initiator: this.initiator === undefined ? undefined : this.initiator.toString(),
+      feeRefund: this.feeRefund === undefined ? undefined : this.feeRefund,
+      index: this.index === undefined ? undefined : this.index,
+      token: this.token === undefined ? undefined : this.token.toString(),
+      amount: this.amount === undefined ? undefined : this.amount.toString(),
+      sender: this.sender === undefined ? undefined : this.sender.toString(),
+      hashAlgorithm:
+        this.hashAlgorithm === undefined ? undefined : HashAlgorithm.getName(this.hashAlgorithm),
+      hash:
+        this.hash === undefined ? undefined : this.hash && Buffer.from(this.hash).toString("hex"),
+      expiration: this.expiration === undefined ? undefined : this.expiration,
+      isIssuer: this.isIssuer === undefined ? undefined : this.isIssuer,
+    };
+  }
+}
+
+export type SyntheticLockedDepositResultArgs = {
+  releaseTxID?: TxIDArgs;
+};
+export type SyntheticLockedDepositResultArgsWithType = SyntheticLockedDepositResultArgs & {
+  type: TransactionType.SyntheticLockedDeposit | "syntheticLockedDeposit";
+};
+export class SyntheticLockedDepositResult {
+  @(encodeAs.field(1).keepEmpty.enum.of(TransactionType))
+  public readonly type = TransactionType.SyntheticLockedDeposit;
+  @(encodeAs.field(2).txid)
+  public releaseTxID?: TxID;
+
+  constructor(args: SyntheticLockedDepositResultArgs) {
+    this.releaseTxID = args.releaseTxID == undefined ? undefined : TxID.parse(args.releaseTxID);
+  }
+
+  copy() {
+    return new SyntheticLockedDepositResult(this.asObject());
+  }
+
+  asObject(): SyntheticLockedDepositResultArgsWithType {
+    return {
+      type: "syntheticLockedDeposit",
+      releaseTxID: this.releaseTxID === undefined ? undefined : this.releaseTxID.toString(),
+    };
+  }
+}
+
 export type SyntheticOriginArgs = {
   cause?: TxIDArgs;
   initiator?: URLArgs;
@@ -4562,7 +4851,6 @@ export class SyntheticWriteData {
   public readonly type = TransactionType.SyntheticWriteData;
   @(encodeAs.field(2, 1).txid)
   public cause?: TxID;
-  @(encodeAs.field(2, 0).url)
   public source?: URL;
   @(encodeAs.field(2, 3).url)
   public initiator?: URL;
@@ -4996,6 +5284,7 @@ export type TransactionHeaderArgs = {
   expire?: ExpireOptions | ExpireOptionsArgs;
   holdUntil?: HoldUntilOptions | HoldUntilOptionsArgs;
   authorities?: (URLArgs | undefined)[];
+  hashLock?: HashLockOptions | HashLockOptionsArgs;
 };
 export class TransactionHeader {
   @(encodeAs.field(1).url)
@@ -5012,6 +5301,8 @@ export class TransactionHeader {
   public holdUntil?: HoldUntilOptions;
   @(encodeAs.field(7).repeatable.url)
   public authorities?: (URL | undefined)[];
+  @(encodeAs.field(8).reference)
+  public hashLock?: HashLockOptions;
 
   constructor(args: TransactionHeaderArgs) {
     this.principal = args.principal == undefined ? undefined : URL.parse(args.principal);
@@ -5044,6 +5335,12 @@ export class TransactionHeader {
       args.authorities == undefined
         ? undefined
         : args.authorities.map((v) => (v == undefined ? undefined : URL.parse(v)));
+    this.hashLock =
+      args.hashLock == undefined
+        ? undefined
+        : args.hashLock instanceof HashLockOptions
+          ? args.hashLock
+          : new HashLockOptions(args.hashLock);
   }
 
   copy() {
@@ -5068,6 +5365,7 @@ export class TransactionHeader {
         this.authorities === undefined
           ? undefined
           : this.authorities?.map((v) => (v == undefined ? undefined : v.toString())),
+      hashLock: this.hashLock === undefined ? undefined : this.hashLock.asObject(),
     };
   }
 }

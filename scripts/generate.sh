@@ -144,6 +144,7 @@ gen types -l typescript -o ../src/core/types_gen.ts \
     protocol/{accounts,operations,general,key_page_operations,signatures,synthetic_transactions,system,transaction,transaction_results,user_transactions}.yml \
     -x Object \
     --header='
+import { Duration, type DurationArgs } from "../encoding/encodable";
 import { ChainType, ChainTypeArgs } from "../merkle";
 import * as errors2 from "../errors";
 import * as merkle from "../merkle";
@@ -197,4 +198,14 @@ import { Buffer } from "../common/buffer";
 
 # Change directory to REPO/, format everything
 cd $SCRIPT_DIR/..
+# SyntheticOrigin.Source is virtual and non-binary in Go (it is derived, never marshaled), but the
+# TypeScript template tags every field of an embedded type for binary encoding. Writing it would change
+# the bytes, and so the transaction hash, of every synthetic transaction. Untag it.
+perl -0pi -e 's/[ \t]*\@\(encodeAs\.field\(2, 0\)\.url\)\r?\n([ \t]*public source\?: URL;)/$1/g' src/core/types_gen.ts
+
+# A duration decodes from {seconds, nanoseconds} (what the node emits), a number of seconds or a Go
+# duration string. The generator types it as a plain number and stores the raw argument, so normalize
+# it for NetworkGlobals.blockInterval and widen its argument type.
+perl -0pi -e 's/(blockInterval\?: )number;(\s*\};\s*export class NetworkGlobals)/$1DurationArgs;$2/; s/(this\.blockInterval =\s*)args\.blockInterval == undefined \? undefined : args\.blockInterval;/$1args.blockInterval == undefined ? undefined : Duration.toSeconds(args.blockInterval);/' src/core/types_gen.ts
+
 yarn prettier --config .prettierrc --write src{,/**}/*.ts

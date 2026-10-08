@@ -42,6 +42,8 @@ export type {
 } from "./smart_signer.js";
 
 export { TxBody } from "./tx_body.js";
+export { validateHashLockForSubmit } from "./hash_lock.js";
+export { buildTransactionHeader } from "./smart_signer.js";
 export { UnifiedKeyPair } from "./unified_keypair.js";
 export { Ed25519KeyPair } from "./ed25519_keypair.js";
 
