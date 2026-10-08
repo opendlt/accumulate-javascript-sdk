@@ -5,6 +5,12 @@ import { RpcClient, RpcError } from "../api_v2/rpc-client.js";
 import * as errors from "../errors/index.js";
 import * as messaging from "../messaging/index.js";
 import * as msg from "./msg.js";
+import {
+  anchorReceiptParams,
+  type AnchorReceiptOptionsArgs,
+  type MajorHeaderRangeOptionsArgs,
+  type MinorRootRangeOptionsArgs,
+} from "./proof_service.js";
 
 export const ERR_CODE_PROTOCOL = -33000;
 
@@ -76,6 +82,34 @@ export class JsonRpcClient {
     return "fromObject" in outType
       ? res.map((x) => outType.fromObject(x))
       : res.map((x) => new outType(x));
+  }
+
+  /**
+   * Returns a record per major block in [start, end] (directory only): the block's index entry,
+   * the quorum-signed anchor of the minor block that closed it, and its network-account updates.
+   */
+  majorHeaderRange(opts: MajorHeaderRangeOptionsArgs): Promise<any[]> {
+    return this.call("major-header-range", {
+      partition: opts.partition,
+      start: opts.start,
+      end: opts.end,
+    });
+  }
+
+  /** Binds minor blocks past the spine to it (directory only). */
+  minorRootRange(opts: MinorRootRangeOptionsArgs): Promise<any> {
+    return this.call("minor-root-range", {
+      partition: opts.partition,
+      since: opts.since,
+      until: opts.until ?? 0,
+    });
+  }
+
+  /**
+   * Binds a partition's BPT root to a directory root: the second call of a two-call account proof.
+   */
+  anchorReceipt(opts: AnchorReceiptOptionsArgs): Promise<any> {
+    return this.call("anchor-receipt", anchorReceiptParams(opts));
   }
 
   consensusStatus(opts: types.ConsensusStatusOptionsArgs = {}): Promise<types.ConsensusStatus> {

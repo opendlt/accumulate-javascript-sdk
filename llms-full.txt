@@ -152,6 +152,15 @@ The node could not determine which partition should handle the request.
 - JavaScript / TypeScript type: `AccumulateError`
 - fix: Build the envelope through TxBody + SmartSigner rather than by hand. Every transaction needs a header with a valid `principal` — that URL is the routing key, and without it the node rejects the request before validating anything else.
 
+## Hash-locked transfers (HTLC, Accumulate 1.4.6.x) — library API only
+- Lock: `signer.signSubmitAndWait(principal, TxBody.sendTokensSingle(to, amount), { hashLock: TxBody.hashLock(HashAlgorithm.SHA256, sha256(secret), expiration) })`.
+  The recipient gets a `SyntheticLockedDeposit` (type 0x37) instead of a normal deposit.
+- Release: the recipient submits `TxBody.releaseLockedOperation(lockedTxId, preimage)` (type 0x18) before expiry; otherwise the tokens are refunded to the sender.
+- Node limits: hash is 32 bytes (SHA256, SHA256D) or 20 bytes (HASH160); expiration 10 minutes to 30 days ahead. `validateHashLockForSubmit(lock)` checks these locally.
+- `SignOptions` also takes `expire`, `holdUntil` and `authorities` (header fields 5-7). All of fields 5-8 are part of the transaction hash; `signExisting` re-signs the envelope's own transaction, so they survive a hand-off to a co-signer.
+- Not exposed by the `accumulate` CLI yet.
+- v3 proof methods: `majorHeaderRange`, `minorRootRange`, `anchorReceipt`; `api_v3.Receipt` has `forHeight`, `complete`, `partition`, `startsAtMainState`; `NetworkGlobals.blockInterval` (seconds).
+
 ## Operations (25)
 
 ### generate_keys  —  Generate Keys  [utility]

@@ -1802,6 +1802,10 @@ export type ReceiptArgs = {
   localBlock?: number;
   localBlockTime?: Date | string;
   majorBlock?: number;
+  forHeight?: number;
+  complete?: boolean;
+  partition?: string;
+  startsAtMainState?: boolean;
 };
 export class Receipt {
   @(encodeAs.field(1, 1).bytes)
@@ -1822,6 +1826,25 @@ export class Receipt {
   public localBlockTime?: Date;
   @(encodeAs.field(4).uint)
   public majorBlock?: number;
+  /** The minor block height this receipt was produced against; 0/absent means the current state. */
+  @(encodeAs.field(5).uint)
+  public forHeight?: number;
+  /**
+   * The receipt terminates at a directory root, so there is no second call to make. When not
+   * complete, `partition` names the BPT root it ends at.
+   */
+  @(encodeAs.field(6).bool)
+  public complete?: boolean;
+  /** When not complete, whose BPT root the receipt terminates at. */
+  @(encodeAs.field(7).string)
+  public partition?: string;
+  /**
+   * Set only on a historical receipt: it starts at a plain hash of the account's main state, and
+   * the account served beside it is that state as of `forHeight`. Without it the receipt starts
+   * at the account's whole BPT entry and no account body is served.
+   */
+  @(encodeAs.field(8).bool)
+  public startsAtMainState?: boolean;
 
   constructor(args: ReceiptArgs) {
     this.start =
@@ -1862,6 +1885,11 @@ export class Receipt {
           ? args.localBlockTime
           : new Date(args.localBlockTime);
     this.majorBlock = args.majorBlock == undefined ? undefined : args.majorBlock;
+    this.forHeight = args.forHeight == undefined ? undefined : args.forHeight;
+    this.complete = args.complete == undefined ? undefined : args.complete;
+    this.partition = args.partition == undefined ? undefined : args.partition;
+    this.startsAtMainState =
+      args.startsAtMainState == undefined ? undefined : args.startsAtMainState;
   }
 
   copy() {
@@ -1888,6 +1916,10 @@ export class Receipt {
       localBlock: this.localBlock === undefined ? undefined : this.localBlock,
       localBlockTime: this.localBlockTime === undefined ? undefined : this.localBlockTime,
       majorBlock: this.majorBlock === undefined ? undefined : this.majorBlock,
+      forHeight: this.forHeight === undefined ? undefined : this.forHeight,
+      complete: this.complete === undefined ? undefined : this.complete,
+      partition: this.partition === undefined ? undefined : this.partition,
+      startsAtMainState: this.startsAtMainState === undefined ? undefined : this.startsAtMainState,
     };
   }
 }

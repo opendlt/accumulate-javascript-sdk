@@ -93,10 +93,63 @@ export class Time {
   }
 }
 
+/**
+ * A duration as the node reports it and accepts it: `{ seconds, nanoseconds }` (what the node
+ * emits), a number of seconds, or a Go duration string such as `"1m30s"`.
+ */
+export type DurationArgs = number | string | { seconds?: number; nanoseconds?: number };
+
+const GO_DURATION_UNITS: Record<string, number> = {
+  ns: 1e-9,
+  us: 1e-6,
+  "\u00b5s": 1e-6,
+  "\u03bcs": 1e-6,
+  ms: 1e-3,
+  s: 1,
+  m: 60,
+  h: 3600,
+};
+
 export class Duration {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  encode(_value: number): Uint8Array {
-    throw new Error("TODO: marshal duration to binary");
+  /**
+   * Convert any accepted duration form to a number of seconds.
+   * @throws if a string is not a valid Go duration.
+   */
+  static toSeconds(value: DurationArgs): number {
+    if (typeof value === "number") return value;
+    if (typeof value === "string") {
+      const text = value.trim();
+      if (text === "0") return 0;
+      const re = /(\d+(?:\.\d+)?|\.\d+)([a-z\u00b5\u03bc]+)/gy;
+      let total = 0;
+      let consumed = 0;
+      for (let m = re.exec(text); m; m = re.exec(text)) {
+        const unit = GO_DURATION_UNITS[m[2]];
+        if (unit === undefined)
+          throw new Error(`Invalid duration '${value}': unknown unit '${m[2]}'`);
+        total += parseFloat(m[1]) * unit;
+        consumed = re.lastIndex;
+      }
+      if (consumed === 0 || consumed !== text.length)
+        throw new Error(`Invalid duration '${value}'`);
+      return total;
+    }
+    return (value.seconds ?? 0) + (value.nanoseconds ?? 0) / 1e9;
+  }
+
+  /**
+   * Marshal as Go's WriteDuration does: unsigned varint seconds followed by unsigned varint
+   * nanoseconds (the field number is written by the caller).
+   */
+  encode(value: DurationArgs): Uint8Array {
+    const total = Duration.toSeconds(value);
+    let sec = Math.floor(total);
+    let ns = Math.round((total - sec) * 1e9);
+    if (ns >= 1e9) {
+      sec += 1;
+      ns -= 1e9;
+    }
+    return Buffer.concat([uvarintMarshalBinary(sec), uvarintMarshalBinary(ns)]);
   }
 }
 

@@ -330,8 +330,10 @@ export enum ExecutorVersion {
   V2Vandenberg = 7,
   /** V2Jiuquan enables the Jiuquan release. */
   V2Jiuquan = 8,
+  /** V2Kourou enables collection proofs for cross-partition messaging. */
+  V2Kourou = 9,
   /** VNext is a placeholder for testing. DO NOT USE. */
-  VNext = 9,
+  VNext = 10,
 }
 
 export type ExecutorVersionArgs = ExecutorVersion | string;
@@ -363,6 +365,8 @@ export namespace ExecutorVersion {
         return ExecutorVersion.V2Vandenberg;
       case "v2-jiuquan":
         return ExecutorVersion.V2Jiuquan;
+      case "v2-kourou":
+        return ExecutorVersion.V2Kourou;
       case "vnext":
         return ExecutorVersion.VNext;
       default:
@@ -388,10 +392,63 @@ export namespace ExecutorVersion {
         return "v2-vandenberg";
       case ExecutorVersion.V2Jiuquan:
         return "v2-jiuquan";
+      case ExecutorVersion.V2Kourou:
+        return "v2-kourou";
       case ExecutorVersion.VNext:
         return "vnext";
       default:
         throw new Error(`Unknown ExecutorVersion ${v}`);
+    }
+  }
+}
+
+export enum HashAlgorithm {
+  /** Unknown is used when the hash algorithm is not known. */
+  Unknown = 0,
+  /** SHA256 SHA-256, 32 bytes output (Ethereum, Bitcoin OP_SHA256). */
+  SHA256 = 1,
+  /** SHA256D double SHA-256, 32 bytes output (Bitcoin block hashing). */
+  SHA256D = 2,
+  /** HASH160 RIPEMD160(SHA256(x)), 20 bytes output (Bitcoin OP_HASH160, addresses). */
+  HASH160 = 3,
+}
+
+export type HashAlgorithmArgs = HashAlgorithm | string;
+
+/** @ignore */
+export namespace HashAlgorithm {
+  export function fromObject(obj: HashAlgorithmArgs): HashAlgorithm {
+    if (typeof obj === "number") return obj;
+    return byName(obj);
+  }
+
+  export function byName(name: string): HashAlgorithm {
+    switch (name.toLowerCase()) {
+      case "unknown":
+        return HashAlgorithm.Unknown;
+      case "sha256":
+        return HashAlgorithm.SHA256;
+      case "sha256d":
+        return HashAlgorithm.SHA256D;
+      case "hash160":
+        return HashAlgorithm.HASH160;
+      default:
+        throw new Error(`Unknown HashAlgorithm '${name}'`);
+    }
+  }
+
+  export function getName(v: HashAlgorithm) {
+    switch (v) {
+      case HashAlgorithm.Unknown:
+        return "unknown";
+      case HashAlgorithm.SHA256:
+        return "sha256";
+      case HashAlgorithm.SHA256D:
+        return "sha256D";
+      case HashAlgorithm.HASH160:
+        return "hash160";
+      default:
+        throw new Error(`Unknown HashAlgorithm ${v}`);
     }
   }
 }
@@ -831,6 +888,8 @@ export enum TransactionType {
   UpdateAccountAuth = 21,
   /** UpdateKey update key for existing keys. */
   UpdateKey = 22,
+  /** ReleaseLockedOperation releases a locked deposit by revealing the hash preimage. */
+  ReleaseLockedOperation = 24,
   /** NetworkMaintenance executes network maintenance operations. */
   NetworkMaintenance = 46,
   /** ActivateProtocolVersion activates a new version of the protocol. */
@@ -849,6 +908,8 @@ export enum TransactionType {
   SyntheticBurnTokens = 53,
   /** SyntheticForwardTransaction forwards a transaction from one partition to another. */
   SyntheticForwardTransaction = 54,
+  /** SyntheticLockedDeposit deposits locked tokens requiring preimage revelation to unlock. */
+  SyntheticLockedDeposit = 55,
   /** SystemGenesis initializes system chains. */
   SystemGenesis = 96,
   /** DirectoryAnchor anchors one network to another. */
@@ -912,6 +973,8 @@ export namespace TransactionType {
         return TransactionType.UpdateAccountAuth;
       case "updatekey":
         return TransactionType.UpdateKey;
+      case "releaselockedoperation":
+        return TransactionType.ReleaseLockedOperation;
       case "networkmaintenance":
         return TransactionType.NetworkMaintenance;
       case "activateprotocolversion":
@@ -932,6 +995,8 @@ export namespace TransactionType {
         return TransactionType.SyntheticBurnTokens;
       case "syntheticforwardtransaction":
         return TransactionType.SyntheticForwardTransaction;
+      case "syntheticlockeddeposit":
+        return TransactionType.SyntheticLockedDeposit;
       case "systemgenesis":
         return TransactionType.SystemGenesis;
       case "directoryanchor":
@@ -989,6 +1054,8 @@ export namespace TransactionType {
         return "updateAccountAuth";
       case TransactionType.UpdateKey:
         return "updateKey";
+      case TransactionType.ReleaseLockedOperation:
+        return "releaseLockedOperation";
       case TransactionType.NetworkMaintenance:
         return "networkMaintenance";
       case TransactionType.ActivateProtocolVersion:
@@ -1007,6 +1074,8 @@ export namespace TransactionType {
         return "syntheticBurnTokens";
       case TransactionType.SyntheticForwardTransaction:
         return "syntheticForwardTransaction";
+      case TransactionType.SyntheticLockedDeposit:
+        return "syntheticLockedDeposit";
       case TransactionType.SystemGenesis:
         return "systemGenesis";
       case TransactionType.DirectoryAnchor:

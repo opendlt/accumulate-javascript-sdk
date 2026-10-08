@@ -179,6 +179,7 @@ export type TransactionBody =
   | types.IssueTokens
   | types.LockAccount
   | types.NetworkMaintenance
+  | types.ReleaseLockedOperation
   | types.RemoteTransaction
   | types.SendTokens
   | types.SyntheticBurnTokens
@@ -186,6 +187,7 @@ export type TransactionBody =
   | types.SyntheticDepositCredits
   | types.SyntheticDepositTokens
   | types.SyntheticForwardTransaction
+  | types.SyntheticLockedDeposit
   | types.SyntheticWriteData
   | types.SystemGenesis
   | types.SystemWriteData
@@ -231,6 +233,8 @@ export type TransactionBodyArgs =
   | types.LockAccountArgsWithType
   | types.NetworkMaintenance
   | types.NetworkMaintenanceArgsWithType
+  | types.ReleaseLockedOperation
+  | types.ReleaseLockedOperationArgsWithType
   | types.RemoteTransaction
   | types.RemoteTransactionArgsWithType
   | types.SendTokens
@@ -245,6 +249,8 @@ export type TransactionBodyArgs =
   | types.SyntheticDepositTokensArgsWithType
   | types.SyntheticForwardTransaction
   | types.SyntheticForwardTransactionArgsWithType
+  | types.SyntheticLockedDeposit
+  | types.SyntheticLockedDepositArgsWithType
   | types.SyntheticWriteData
   | types.SyntheticWriteDataArgsWithType
   | types.SystemGenesis
@@ -284,6 +290,7 @@ export namespace TransactionBody {
     if (obj instanceof types.IssueTokens) return obj;
     if (obj instanceof types.LockAccount) return obj;
     if (obj instanceof types.NetworkMaintenance) return obj;
+    if (obj instanceof types.ReleaseLockedOperation) return obj;
     if (obj instanceof types.RemoteTransaction) return obj;
     if (obj instanceof types.SendTokens) return obj;
     if (obj instanceof types.SyntheticBurnTokens) return obj;
@@ -291,6 +298,7 @@ export namespace TransactionBody {
     if (obj instanceof types.SyntheticDepositCredits) return obj;
     if (obj instanceof types.SyntheticDepositTokens) return obj;
     if (obj instanceof types.SyntheticForwardTransaction) return obj;
+    if (obj instanceof types.SyntheticLockedDeposit) return obj;
     if (obj instanceof types.SyntheticWriteData) return obj;
     if (obj instanceof types.SystemGenesis) return obj;
     if (obj instanceof types.SystemWriteData) return obj;
@@ -353,6 +361,9 @@ export namespace TransactionBody {
       case TransactionType.NetworkMaintenance:
       case "networkMaintenance":
         return new types.NetworkMaintenance(obj);
+      case TransactionType.ReleaseLockedOperation:
+      case "releaseLockedOperation":
+        return new types.ReleaseLockedOperation(obj);
       case TransactionType.Remote:
       case "remote":
         return new types.RemoteTransaction(obj);
@@ -374,6 +385,9 @@ export namespace TransactionBody {
       case TransactionType.SyntheticForwardTransaction:
       case "syntheticForwardTransaction":
         return new types.SyntheticForwardTransaction(obj);
+      case TransactionType.SyntheticLockedDeposit:
+      case "syntheticLockedDeposit":
+        return new types.SyntheticLockedDeposit(obj);
       case TransactionType.SyntheticWriteData:
       case "syntheticWriteData":
         return new types.SyntheticWriteData(obj);

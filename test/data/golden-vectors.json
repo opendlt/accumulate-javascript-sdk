@@ -1,0 +1,299 @@
+[
+  {
+    "name": "header_plain",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf"
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+    "note": "regression: bytes must be unchanged"
+  },
+  {
+    "name": "header_memo_metadata",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+      "memo": "hi",
+      "metadata": "010203"
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf030268690403010203",
+    "note": "fields 3,4"
+  },
+  {
+    "name": "header_authorities",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+      "authorities": [
+        "acc://auth1.acme/book",
+        "acc://auth2.acme/book"
+      ]
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf07156163633a2f2f61757468312e61636d652f626f6f6b07156163633a2f2f61757468322e61636d652f626f6f6b",
+    "note": "field 7 repeated"
+  },
+  {
+    "name": "header_expire",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+      "expire": {
+        "atTime": "2031-05-06T07:08:09Z"
+      }
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf050601b2ef91b60e",
+    "note": "field 5"
+  },
+  {
+    "name": "header_holduntil",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+      "holdUntil": {
+        "minorBlock": 77
+      }
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf0602014d",
+    "note": "field 6"
+  },
+  {
+    "name": "header_hashlock_sha256",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+      "hashLock": {
+        "hashAlgorithm": "sha256",
+        "hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+        "expiration": "2030-01-02T03:04:05Z"
+      }
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf082a010102200102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2003cad4ea8d0e",
+    "note": "field 8"
+  },
+  {
+    "name": "header_hashlock_sha256d",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+      "hashLock": {
+        "hashAlgorithm": "sha256D",
+        "hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+        "expiration": "2030-01-02T03:04:05Z"
+      }
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf082a010202200102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2003cad4ea8d0e",
+    "note": "field 8"
+  },
+  {
+    "name": "header_hashlock_hash160",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+      "hashLock": {
+        "hashAlgorithm": "hash160",
+        "hash": "0102030405060708090a0b0c0d0e0f1011121314",
+        "expiration": "2030-01-02T03:04:05Z"
+      }
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf081e010302140102030405060708090a0b0c0d0e0f101112131403cad4ea8d0e",
+    "note": "field 8"
+  },
+  {
+    "name": "header_all_fields",
+    "json": {
+      "principal": "acc://alice.acme/tokens",
+      "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+      "memo": "all",
+      "metadata": "09",
+      "expire": {
+        "atTime": "2031-05-06T07:08:09Z"
+      },
+      "holdUntil": {
+        "minorBlock": 5
+      },
+      "authorities": [
+        "acc://auth1.acme/book"
+      ],
+      "hashLock": {
+        "hashAlgorithm": "sha256",
+        "hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+        "expiration": "2030-01-02T03:04:05Z"
+      }
+    },
+    "binaryHex": "01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf0303616c6c040109050601b2ef91b60e0602010507156163633a2f2f61757468312e61636d652f626f6f6b082a010102200102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2003cad4ea8d0e",
+    "note": "fields 1-8"
+  },
+  {
+    "name": "hashlockoptions_sha256",
+    "json": {
+      "hashAlgorithm": "sha256",
+      "hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "expiration": "2030-01-02T03:04:05Z"
+    },
+    "binaryHex": "010102200102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2003cad4ea8d0e"
+  },
+  {
+    "name": "hashlockoptions_no_expiration",
+    "json": {
+      "hashAlgorithm": "hash160",
+      "hash": "0102030405060708090a0b0c0d0e0f1011121314"
+    },
+    "binaryHex": "010302140102030405060708090a0b0c0d0e0f1011121314"
+  },
+  {
+    "name": "tx_sendtokens_plain",
+    "json": {
+      "header": {
+        "principal": "acc://alice.acme/tokens",
+        "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf"
+      },
+      "body": {
+        "type": "sendTokens",
+        "to": [
+          {
+            "url": "acc://bob.acme/tokens",
+            "amount": "12345"
+          }
+        ]
+      }
+    },
+    "binaryHex": "013a01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf021f0103041b01156163633a2f2f626f622e61636d652f746f6b656e7302023039",
+    "hashHex": "0d6d5781c3ea1bbf1d956333923c95eef63dec36f17a4fcf2121615cf07a7153",
+    "note": "regression"
+  },
+  {
+    "name": "tx_sendtokens_hashlock",
+    "json": {
+      "header": {
+        "principal": "acc://alice.acme/tokens",
+        "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+        "hashLock": {
+          "hashAlgorithm": "sha256",
+          "hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+          "expiration": "2030-01-02T03:04:05Z"
+        }
+      },
+      "body": {
+        "type": "sendTokens",
+        "to": [
+          {
+            "url": "acc://bob.acme/tokens",
+            "amount": "12345"
+          }
+        ]
+      }
+    },
+    "binaryHex": "016601176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf082a010102200102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2003cad4ea8d0e021f0103041b01156163633a2f2f626f622e61636d652f746f6b656e7302023039",
+    "hashHex": "c8bed4fc4014c14fccc02a4e2c14a29cbf24ef9ca4696b1eb0857bb454c624e0",
+    "note": "txn hash includes header field 8"
+  },
+  {
+    "name": "tx_releaselockedoperation",
+    "json": {
+      "header": {
+        "principal": "acc://alice.acme/tokens",
+        "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf"
+      },
+      "body": {
+        "type": "releaseLockedOperation",
+        "lockedTxID": "acc://0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20@alice.acme/tokens",
+        "preimage": "73656372657420707265696d616765"
+      }
+    },
+    "binaryHex": "013a01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf026d011802586163633a2f2f3031303230333034303530363037303830393061306230633064306530663130313131323133313431353136313731383139316131623163316431653166323040616c6963652e61636d652f746f6b656e73030f73656372657420707265696d616765",
+    "hashHex": "bc545083be4df663672909f54da22db9dd24911bd622d4c94a11d28d474723aa",
+    "note": "type 0x18"
+  },
+  {
+    "name": "tx_syntheticlockeddeposit",
+    "json": {
+      "header": {
+        "principal": "acc://alice.acme/tokens",
+        "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf"
+      },
+      "body": {
+        "type": "syntheticLockedDeposit",
+        "cause": "acc://0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20@alice.acme/tokens",
+        "source": "acc://alice.acme/tokens",
+        "initiator": "acc://alice.acme",
+        "index": 3,
+        "token": "acc://ACME",
+        "amount": "555",
+        "sender": "acc://alice.acme/tokens",
+        "hashAlgorithm": "sha256",
+        "hash": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+        "expiration": "2030-01-02T03:04:05Z",
+        "isIssuer": true
+      }
+    },
+    "binaryHex": "013a01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf02c7010137026e01586163633a2f2f3031303230333034303530363037303830393061306230633064306530663130313131323133313431353136313731383139316131623163316431653166323040616c6963652e61636d652f746f6b656e7303106163633a2f2f616c6963652e61636d650503030a6163633a2f2f41434d450402022b05176163633a2f2f616c6963652e61636d652f746f6b656e73060107200102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2008cad4ea8d0e0901",
+    "hashHex": "4fe9bd5bcc2ea8a09aaf3736360948a1f32117e4728250841598bee7d13f27e3",
+    "note": "type 0x37"
+  },
+  {
+    "name": "tx_syntheticdeposittokens",
+    "json": {
+      "header": {
+        "principal": "acc://alice.acme/tokens",
+        "initiator": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf"
+      },
+      "body": {
+        "type": "syntheticDepositTokens",
+        "cause": "acc://0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20@alice.acme/tokens",
+        "source": "acc://alice.acme/tokens",
+        "initiator": "acc://alice.acme",
+        "index": 2,
+        "token": "acc://ACME",
+        "amount": "777",
+        "isIssuer": true
+      }
+    },
+    "binaryHex": "013a01176163633a2f2f616c6963652e61636d652f746f6b656e7302a0a1a2a3a4a5a6a7a8a9aaabacadaeafa0a1a2a3a4a5a6a7a8a9aaabacadaeaf0284010133026e01586163633a2f2f3031303230333034303530363037303830393061306230633064306530663130313131323133313431353136313731383139316131623163316431653166323040616c6963652e61636d652f746f6b656e7303106163633a2f2f616c6963652e61636d650502030a6163633a2f2f41434d45040203090501",
+    "hashHex": "0f4e57d4a133ba7655959e09c883afbda6df96a2c0d45f2d433c32f20f65f394",
+    "note": "existing synthetic type; Source is virtual/non-binary"
+  },
+  {
+    "name": "networkglobals_blockinterval",
+    "json": {
+      "operatorAcceptThreshold": {
+        "numerator": 2,
+        "denominator": 3
+      },
+      "validatorAcceptThreshold": {
+        "numerator": 2,
+        "denominator": 3
+      },
+      "majorBlockSchedule": "0 */12 * * *",
+      "anchorEmptyBlocks": true,
+      "blockInterval": {
+        "seconds": 1,
+        "nanoseconds": 500000000
+      }
+    },
+    "binaryHex": "010401020203020401020203030c30202a2f3132202a202a202a0401070180cab5ee01",
+    "note": "duration = uvarint(sec) uvarint(ns)"
+  },
+  {
+    "name": "networkglobals_no_blockinterval",
+    "json": {
+      "operatorAcceptThreshold": {
+        "numerator": 2,
+        "denominator": 3
+      },
+      "validatorAcceptThreshold": {
+        "numerator": 2,
+        "denominator": 3
+      },
+      "majorBlockSchedule": "0 */12 * * *",
+      "anchorEmptyBlocks": true
+    },
+    "binaryHex": "010401020203020401020203030c30202a2f3132202a202a202a0401",
+    "note": "regression: unchanged when unset"
+  },
+  {
+    "name": "txtype_codes",
+    "json": null,
+    "binaryHex": "",
+    "note": "ReleaseLockedOperation=0x18 SyntheticLockedDeposit=0x37"
+  }
+]

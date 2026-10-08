@@ -1,6 +1,20 @@
 # Changelog
 
-## [Unreleased]
+## [2.5.0] - 2026-10-08
+
+### Added
+- **Accumulate 1.4.6.x protocol support.**
+  - `ExecutorVersion.V2Kourou = 9` (`v2-kourou`; runs on Kermit, destined for mainnet); `VNext`
+    moves from 9 to 10 to match the protocol. Previously `networkStatus()` threw on a Kourou node.
+  - **Hash-locked transfers (HTLC).** `TransactionHeader.hashLock` (header field 8, `HashLockOptions`,
+    `HashAlgorithm`), transaction types `ReleaseLockedOperation` (0x18) and `SyntheticLockedDeposit`
+    (0x37), `TxBody.hashLock` / `TxBody.releaseLockedOperation`, `validateHashLockForSubmit`, and
+    `expire` / `holdUntil` / `authorities` / `hashLock` options on `SmartSigner` (`buildTransactionHeader`).
+  - v3: `Receipt.forHeight` / `complete` / `partition` / `startsAtMainState`, and
+    `majorHeaderRange` / `minorRootRange` / `anchorReceipt` with their option types.
+  - `NetworkGlobals.blockInterval`, accepting `{seconds, nanoseconds}`, seconds, or a Go duration string.
+- `test/golden-vectors.test.ts` checks header, HashLock, body, `NetworkGlobals` and transaction-hash
+  bytes against vectors produced by Go's own marshaler (accumulate e1d1db9, 1.4.6.7).
 
 ### Fixed
 - **Binary encoding now matches the network's byte for byte** where it did not, so hashes and signatures built
@@ -17,6 +31,13 @@
   `TransactionResult`, `Signer`, `Fee` and `AllowedTransactions` through stand-ins that returned plain objects, so a
   message nested in a `SequencedMessage` (and the others) could not be encoded. The package indexes now register the
   real implementations, and a lookup before registration throws instead of degrading silently.
+- **Synthetic transaction hashes were wrong.** The generated classes `SyntheticDepositTokens`,
+  `SyntheticDepositCredits`, `SyntheticBurnTokens`, `SyntheticCreateIdentity` and `SyntheticWriteData`
+  wrote the virtual, non-binary `source` field into the binary encoding, so `encode()` and `hash()`
+  disagreed with Go (verified against a Go-produced `SyntheticDepositTokens` vector). They no longer do,
+  and `scripts/generate.sh` reapplies the fix after regeneration.
+- `Duration` (used by `FindServiceRequest.timeout` and `NetworkGlobals.blockInterval`) threw
+  "TODO: marshal duration to binary"; it now encodes as Go does.
 
 ### Changed
 - `AllowedTransactions` is now `number` (the bitmask), with `AllowedTransactions.unpack(mask)` giving the bit names.

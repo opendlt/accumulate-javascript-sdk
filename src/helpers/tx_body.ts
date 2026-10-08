@@ -22,9 +22,12 @@ import {
   CreateKeyPage,
   CreateToken,
   CreateTokenAccount,
+  HashAlgorithm,
+  HashLockOptions,
   IssueTokens,
   KeySpecParams,
   LockAccount,
+  ReleaseLockedOperation,
   SendTokens,
   TokenRecipient,
   TransferCredits,
@@ -304,6 +307,40 @@ export class TxBody {
   }
 
   // ── Additional operations ───────────────────────────────────────────────
+
+  // ── Hash locks (HTLC, Accumulate 1.4.6.x) ───────────────────────────────
+
+  /**
+   * Build a header hash lock (header field 8). Pass it as `hashLock` in the SmartSigner options of
+   * a SendTokens: the recipient then receives a SyntheticLockedDeposit that only a
+   * {@link releaseLockedOperation} revealing the preimage can unlock, or the tokens are refunded
+   * to the sender when `expiration` passes.
+   *
+   * @param algorithm  Hash algorithm of the lock.
+   * @param hash  The hash of the secret preimage (32 bytes for SHA256/SHA256D, 20 for HASH160);
+   *   bytes or a hex string.
+   * @param expiration  When the lock expires (10 minutes to 30 days ahead).
+   */
+  static hashLock(
+    algorithm: HashAlgorithm,
+    hash: Uint8Array | string,
+    expiration: Date,
+  ): HashLockOptions {
+    return new HashLockOptions({ hashAlgorithm: algorithm, hash: toBytes(hash), expiration });
+  }
+
+  /**
+   * Release a hash-locked deposit (type 0x18) by revealing the preimage. Submit it from the
+   * recipient account holding the locked deposit, before the lock expires.
+   * @param lockedTxId  Transaction ID of the SyntheticLockedDeposit to release.
+   * @param preimage  The secret (bytes or hex string).
+   */
+  static releaseLockedOperation(
+    lockedTxId: string,
+    preimage: Uint8Array | string,
+  ): ReleaseLockedOperation {
+    return new ReleaseLockedOperation({ lockedTxID: lockedTxId, preimage: toBytes(preimage) });
+  }
 
   /**
    * Burn credits from a credit account.
