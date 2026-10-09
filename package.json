@@ -1,6 +1,6 @@
 {
   "name": "accumulate-sdk-opendlt",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Accumulate JS/TS SDK",
   "keywords": [
     "blockchain",
@@ -27,6 +27,7 @@
     "build": "tsc -p tsconfig.json",
     "build:browser": "webpack --config webpack.browser.config.js && webpack --config webpack.browser-test.config.js",
     "test:unit": "jest --config=test/jest.config.cjs",
+    "test:esm": "node scripts/smoke-esm.mjs",
     "test:integration": "jest --config=test-it/jest.config.js",
     "test:browser": "jest --config=test/jest.browser.config.js",
     "test:browser:serve": "npx http-server -o /test/browser-test.html",

@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.5.1] - 2026-10-08
+
+### Fixed
+- **2.5.0 could not be imported.** `core/types_gen.ts` imported `../encoding/encodable` without the `.js`
+  extension the ESM build needs, so `import "accumulate-sdk-opendlt"` failed with `ERR_MODULE_NOT_FOUND`
+  (the unit tests run the TypeScript sources and did not catch it). 2.5.0 is deprecated; use 2.5.1.
+- `npm run test:esm` now imports every public entry point of the built package the way a consumer does.
+  `./ledger` is a known failure (its hardware-wallet module deep-imports `rxjs/operators`, also in 2.4.0).
+
 ## [2.5.0] - 2026-10-08
 
 ### Added
