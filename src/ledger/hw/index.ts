@@ -1,7 +1,7 @@
 import type Transport from "@ledgerhq/hw-transport";
 import type { Observable } from "rxjs";
 import { EMPTY, merge } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { catchError } from "rxjs/operators/index.js";
 
 /**
  * @type Discovery

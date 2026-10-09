@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type Transport from "@ledgerhq/hw-transport";
-import { scan as rxScan } from "rxjs/operators";
+import { scan as rxScan } from "rxjs/operators/index.js";
 import { Address } from "../address/index.js";
 import { URLArgs } from "../address/url.js";
 import * as BIPPath from "../bip44/path.js";

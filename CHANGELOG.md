@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **`accumulate-sdk-opendlt/ledger` could not be imported.** The hardware-wallet modules imported
+  `rxjs/operators`, a bare directory import that Node's ESM loader rejects with rxjs 6 (which has no
+  `exports` map). They now import `rxjs/operators/index.js`. `npm run test:esm` no longer lists any
+  entry point as a known failure.
+
 ## [2.5.1] - 2026-10-08
 
 ### Fixed
