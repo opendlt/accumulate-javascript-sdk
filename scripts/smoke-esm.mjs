@@ -12,11 +12,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
 
 // Entry points that already fail to import, for reasons unrelated to the package's own sources.
-// They are reported but do not fail the run; remove an entry when it is fixed.
-const KNOWN_BROKEN = {
-  "./ledger":
-    "hardware-wallet module deep-imports 'rxjs/operators', which Node's ESM loader rejects (also in 2.4.0)",
-};
+// They are reported but do not fail the run; add an entry here only with the reason, and remove it
+// when it is fixed. (./ledger was listed until its rxjs deep import was fixed.)
+const KNOWN_BROKEN = {};
 
 const failures = [];
 const known = [];
