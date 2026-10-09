@@ -1,4 +1,4 @@
-import { Duration, type DurationArgs } from "../encoding/encodable";
+import { Duration, type DurationArgs } from "../encoding/encodable.js";
 import {
   AccountAuthOperationType,
   AccountType,
