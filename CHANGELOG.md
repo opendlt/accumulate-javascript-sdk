@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [2.5.2] - 2026-10-09
 
 ### Fixed
 - **`accumulate-sdk-opendlt/ledger` could not be imported.** The hardware-wallet modules imported
