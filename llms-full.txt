@@ -1,6 +1,6 @@
 # Accumulate JavaScript / TypeScript SDK — Full API Digest
 
-Package `accumulate-sdk-opendlt` v2.3.0 (source commit 4d0bbe4). Generated from the Accumulate SDK manifest (single source of truth).
+Package `accumulate-sdk-opendlt` v2.5.2 (source commit e35ce43). Generated from the Accumulate SDK manifest (single source of truth).
 
 ## Install & import
 ```
@@ -152,16 +152,63 @@ The node could not determine which partition should handle the request.
 - JavaScript / TypeScript type: `AccumulateError`
 - fix: Build the envelope through TxBody + SmartSigner rather than by hand. Every transaction needs a header with a valid `principal` — that URL is the routing key, and without it the node rejects the request before validating anything else.
 
-## Hash-locked transfers (HTLC, Accumulate 1.4.6.x) — library API only
-- Lock: `signer.signSubmitAndWait(principal, TxBody.sendTokensSingle(to, amount), { hashLock: TxBody.hashLock(HashAlgorithm.SHA256, sha256(secret), expiration) })`.
-  The recipient gets a `SyntheticLockedDeposit` (type 0x37) instead of a normal deposit.
-- Release: the recipient submits `TxBody.releaseLockedOperation(lockedTxId, preimage)` (type 0x18) before expiry; otherwise the tokens are refunded to the sender.
-- Node limits: hash is 32 bytes (SHA256, SHA256D) or 20 bytes (HASH160); expiration 10 minutes to 30 days ahead. `validateHashLockForSubmit(lock)` checks these locally.
+## Hash-locked transfers (HTLC, Accumulate 1.4.6.4+) — library API only
+A hash lock is a header field (`hashLock`, TransactionHeader field 8) on an ordinary `send_tokens`, not a new transaction type. The sender is debited at once; each recipient gets a `SyntheticLockedDeposit` (type 0x37) instead of a normal deposit and is credited only when a `ReleaseLockedOperation` (type 0x18) reveals the preimage.
+
+Four steps, in order. Each is also listed under Operations below with its inputs and outputs.
+
+### 1. Make the secret and the lock — `generate_hash_lock`
+Symbols:
+  - `TxBody.hashLock` — `(algorithm: core.HashAlgorithm, hashHex: string, expiration: Date) -> object`
+  - `helpers.validateHashLockForSubmit` — `(lock: object) -> void`
+  - `core.HashAlgorithm` — `enum { SHA256, SHA256D, HASH160 }`
+Notes:
+  - Nothing is sent to the network. The preimage (1 to 256 bytes) is the secret: keep it until the release transaction reveals it on-chain. sha256, sha256d and hash160 are supported here.
+  - The node requires an expiration 10 minutes to 30 days ahead; 15 minutes or more leaves room for clock skew. The expiration must be whole UTC seconds.
+  - The expiration is fixed when the lock is made, and the node checks the 10-minute floor again when the send is submitted, so create the lock right before the locked send: every wait in between shortens the margin.
+  - hash160 is RIPEMD160(SHA256(preimage)), 20 bytes, computed with node:crypto createHash('ripemd160') (Node 18 or later); pass core.HashAlgorithm.HASH160.
+
+### 2. Send with the lock — `send_tokens`
+Symbols:
+  - `TxBody.sendTokensSingle` — `(toUrl: string, amount: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object, options?: { hashLock?: object, maxAttempts?: number }) -> Promise<object>`
+Notes:
+  - A hash-locked send debits the sender immediately. The recipient is credited only when a ReleaseLockedOperation reveals the preimage; until then the recipient balance does not change. The lock is a transaction HEADER field (hashLock), not a new transaction type, and it is silently ignored on every transaction type except SendTokens.
+  - The lock expiration must be 10 minutes to 30 days ahead (whole UTC seconds, checked against the node clock at submit and at execute); use at least 15 minutes. Refund on expiry is the protocol design but is NOT currently functional on the network: an unreleased lock is never refunded and cannot be released after it expires, so the funds are stranded. Use small amounts and always release.
+  - JavaScript: HashAlgorithm and validateHashLockForSubmit are reachable only as core.HashAlgorithm and helpers.validateHashLockForSubmit. Buffer.from(hex, 'hex') silently truncates invalid hex, so validate every hex value before use. The V3 fallback of the SDK wait cannot detect delivery: confirm with a raw v3 query.
+
+### 3. Find the locked deposit — `wait_for_locked_deposit`
+Symbols:
+  - `Accumulate.v3.call` — `(method: string, params: object) -> Promise<object>`
+Notes:
+  - A release targets the locked DEPOSIT (a SyntheticLockedDeposit), not the send. Find it among the send's produced records: the first whose message.transaction.body.type is syntheticLockedDeposit and whose status is delivered. A query error on a produced id means it is not ready yet. Never trust produced.total (it can exceed the records returned); scan the records themselves.
+  - No SDK ships a helper for this, so generated code contains the polling loop.
+  - Use the raw client.v3.call('query', { scope }): the typed client.v3.query throws on a delivered release transaction.
+
+### 4. Release it with the preimage — `release_locked`
+Symbols:
+  - `TxBody.releaseLockedOperation` — `(lockedTxId: string, preimageHex: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object, options?: object) -> Promise<object>`
+Notes:
+  - The principal is the RECIPIENT account that holds the deposit, and that account's authority must sign and have credits (the release fee, about 0.01 credits, is paid by the recipient's signer).
+  - A wrong preimage, an expired lock or a double release is ACCEPTED at submit and FAILS at execute (for example 'preimage does not match hash'). Always check the final transaction status, not the submit response. After a successful release the deposit's result carries the release txid and the recipient balance increases by the locked amount.
+  - Refund on expiry is the protocol design but is NOT currently functional on the network: an unreleased lock is never refunded and cannot be released after it expires, so the funds are stranded. Use small amounts and always release.
+  - The SDK wait drops the node's error text for a failed release; read error.message from a raw v3 query of the transaction.
+
+### Limits and rules
+- Algorithms: `sha256` (SHA-256 of the preimage, 32 bytes), `sha256d` (SHA-256 of that hash, 32 bytes) and `hash160` (RIPEMD-160 of the SHA-256, 20 bytes, as in Bitcoin). The hash length must match the algorithm.
+- Expiration: absolute UTC, whole seconds, 10 minutes to 30 days ahead of the node clock, checked at submit and again at execute. Use 15 minutes or more for clock skew.
+- Preimage: 1 to 256 bytes, hashed raw with no prefix. The release publishes it on-chain.
+- The release is signed by the RECIPIENT account holding the locked deposit, and that signer pays its fee (about 0.01 credits).
+- Needs a node at 1.4.6.4 or later (1.4.6.3 used a different header field). `hashLock` is part of the transaction hash; headers without it are byte-identical to before.
+- **Refund status:** Refund on expiry is the protocol design but is NOT currently functional on the network (core issue https://gitlab.com/accumulatenetwork/accumulate/-/work_items/4578): an unreleased lock is never refunded and cannot be released after it expires, so the funds are stranded. Do not promise or rely on a refund; use small amounts and always release.
+- The `accumulate` CLI has no HTLC commands: use the library API.
+
+## Other API notes
 - `SignOptions` also takes `expire`, `holdUntil` and `authorities` (header fields 5-7). All of fields 5-8 are part of the transaction hash; `signExisting` re-signs the envelope's own transaction, so they survive a hand-off to a co-signer.
-- Not exposed by the `accumulate` CLI yet.
 - v3 proof methods: `majorHeaderRange`, `minorRootRange`, `anchorReceipt`; `api_v3.Receipt` has `forHeight`, `complete`, `partition`, `startsAtMainState`; `NetworkGlobals.blockInterval` (seconds).
 
-## Operations (25)
+## Operations (28)
 
 ### generate_keys  —  Generate Keys  [utility]
 Symbols:
@@ -210,6 +257,35 @@ Outputs:
 Requires: keypair
 Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_TX_NOT_SETTLED, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/wait_for_credits.js
+
+### generate_hash_lock  —  Generate Hash Lock  [utility]
+Symbols:
+  - `TxBody.hashLock` — `(algorithm: core.HashAlgorithm, hashHex: string, expiration: Date) -> object`
+  - `helpers.validateHashLockForSubmit` — `(lock: object) -> void`
+  - `core.HashAlgorithm` — `enum { SHA256, SHA256D, HASH160 }`
+Inputs:
+  - `hashAlgorithm` (str, optional) — sha256 (default), sha256d or hash160
+  - `expirationMinutes` (int, optional) — Minutes until the lock expires, 15 to 43200 (default 30)
+  - `preimage` (str, optional) — Optional hex preimage, 1 to 256 bytes; 32 random bytes when empty
+Outputs:
+  - `preimage` (str)
+  - `hash` (str)
+  - `hashAlgorithm` (str)
+  - `expiration` (int)
+  - `expirationIso` (str)
+Errors: ACC_NETWORK_UNAVAILABLE
+
+### wait_for_locked_deposit  —  Wait For Locked Deposit  [utility]
+Symbols:
+  - `Accumulate.v3.call` — `(method: string, params: object) -> Promise<object>`
+Inputs:
+  - `sendTxId` (str, required) — Txid of the hash-locked SendTokens
+  - `maxAttempts` (int, optional) — Polling attempts (default 60)
+  - `delayMs` (int, optional) — Delay between attempts in ms (default 2000)
+Outputs:
+  - `lockedTxId` (str)
+Requires: keypair
+Errors: ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 
 ### add_credits  —  Add Credits  [credits]
 Symbols:
@@ -345,8 +421,10 @@ Symbols:
   - `TxBody.sendTokensSingle` — `(toUrl: string, amount: string) -> object`
   - `TxBody.sendTokensMulti` — `(recipients: Array<{url, amount}>) -> object`
   - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object) -> Promise<object>`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object, options?: { hashLock?: object, maxAttempts?: number }) -> Promise<object>`
 Inputs:
   - `recipients` (Array<{url: string, amount: string}>, required) — List of {url, amount} recipients
+  - `hashLock` (object, optional) — Optional hash lock from TxBody.hashLock(); pass as { hashLock } to signSubmitAndWait
 Outputs:
   - `txHash` (string)
 Requires: keypair, credits
@@ -403,6 +481,19 @@ Outputs:
 Requires: keypair, credits
 Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 Examples: examples/write_data_to.js
+
+### release_locked  —  Release Locked  [transaction]
+Symbols:
+  - `TxBody.releaseLockedOperation` — `(lockedTxId: string, preimageHex: string) -> object`
+  - `SmartSigner.signSubmitAndWait` — `(principal: string, body: object, options?: object) -> Promise<object>`
+Inputs:
+  - `principal` (str, required) — Recipient account URL that holds the locked deposit
+  - `lockedTxId` (str, required) — Txid of the locked deposit (not of the send)
+  - `preimage` (str, required) — Hex preimage that hashes to the lock
+Outputs:
+  - `txHash` (str)
+Requires: keypair, credits
+Errors: ACC_INSUFFICIENT_CREDITS, ACC_NETWORK_UNAVAILABLE, ACC_UNAUTHORIZED_SIGNER
 
 ### query_account  —  Query Account  [query]
 Symbols:

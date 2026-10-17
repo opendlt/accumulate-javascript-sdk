@@ -1,6 +1,6 @@
 # opendlt-javascript-v2v3-sdk — repository guide for agents
 
-The JavaScript / TypeScript SDK for the Accumulate blockchain. Published as `accumulate-sdk-opendlt` (v2.3.0).
+The JavaScript / TypeScript SDK for the Accumulate blockchain. Published as `accumulate-sdk-opendlt` (v2.5.2).
 
 > Building **on** Accumulate rather than **on this SDK**? You want `llms.txt` (quickstart + rules) and `llms-full.txt` (full API). This file is about working on the SDK itself.
 
@@ -25,6 +25,7 @@ npm run build   # tsc -p tsconfig.json
 | `npm run test:unit` | unit suite | no |
 | `npm run test:integration` | integration | **yes** |
 | `npm run test:all` | everything except browser | **yes** |
+| `npx jest --config=test/jest.config.cjs test/htlc-api.test.ts test/golden-vectors.test.ts` | hash-lock (HTLC) golden vectors and API | no |
 
 Network-dependent suites talk to a live testnet. If they fail while the unit suite passes, suspect the network before suspecting your change.
 
@@ -65,6 +66,7 @@ node tools/cli-conformance/run.mjs --cmd "node lib/src/cli.js" --cwd . --sdk jav
 - `npm run build` must run before tests that import from `lib/`.
 - The SDK submits transactions as JSON via the V2 `execute-direct` endpoint, not binary — do not port binary-marshaling assumptions here.
 - `TxBody.updateKeyPage([{...}])` with plain objects does not work. Use the typed methods: `updateKeyPageAddKey`, `updateKeyPageRemoveKey`, `updateKeyPageSetThreshold`.
+- Hash locks (HTLC) are library-only. `hashLock` is TransactionHeader field 8 and part of the transaction hash; `npx jest --config=test/jest.config.cjs test/htlc-api.test.ts test/golden-vectors.test.ts` pins those bytes. A failing vector means the signing bytes changed — a consensus-visible break, not a test to update. Refund on expiry is not currently functional on the network, so no test or doc may claim it works.
 
 ## Permitted commands
 
